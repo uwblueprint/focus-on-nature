@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  frontend:
+    # TODO: rename container for your project
+    container_name: scv2_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    env_file:
+      - ./frontend/.env
+  ts-backend:
+    # TODO: rename container for your project
+    container_name: scv2_ts_backend
+    build:
+      context: ./backend/typescript
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/typescript:/app
+      - /app/node_modules
+    ports:
+      - 5000:5000
+    dns:
+      - 8.8.8.8
+    env_file:
+      - ./.env
+
