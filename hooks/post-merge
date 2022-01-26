@@ -4,7 +4,7 @@
 branch=`git symbolic-ref HEAD`
 root_dir=`git rev-parse --show-toplevel`
 # must replace with actual vault_path and default_branch, can run setup.sh
-vault_path="kv/internal-tools"
+vault_path="kv/focus-on-nature"
 default_branch="main"
 
 if [ $branch = "refs/heads/${default_branch}" ]; then
