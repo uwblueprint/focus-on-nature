@@ -3,14 +3,19 @@ import mongoose, { Schema, Document } from "mongoose";
 import { Role } from "../types";
 
 export interface User extends Document {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
-  authId: string;
+  email: string;
   role: Role;
+  active: boolean;
 }
 
 const UserSchema: Schema = new Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,
@@ -19,14 +24,18 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  authId: {
+  email: {
     type: String,
     required: true,
   },
   role: {
     type: String,
     required: true,
-    enum: ["User", "Admin"],
+    enum: ["Admin", "CampLeader"],
+  },
+  active: {
+    type: Boolean,
+    required: true,
   },
 });
 
