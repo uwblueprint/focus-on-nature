@@ -5,12 +5,13 @@ export type Token = {
   refreshToken: string;
 };
 
-export type UserDTO = {
+export type UserDTO = { // add fields to match 
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: Role;
+  active: boolean; 
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };

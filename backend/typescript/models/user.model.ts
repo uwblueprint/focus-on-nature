@@ -3,9 +3,10 @@ import mongoose, { Schema, Document } from "mongoose";
 import { Role } from "../types";
 
 export interface User extends Document {
-  id: number;
+  id: string; // update to string 
   firstName: string;
   lastName: string;
+  authId: string; 
   email: string;
   role: Role;
   active: boolean;
@@ -13,7 +14,7 @@ export interface User extends Document {
 
 const UserSchema: Schema = new Schema({
   id: {
-    type: Number,
+    type: String,
     required: true,
   },
   firstName: {
@@ -21,6 +22,10 @@ const UserSchema: Schema = new Schema({
     required: true,
   },
   lastName: {
+    type: String,
+    required: true,
+  },
+  authId: {
     type: String,
     required: true,
   },
