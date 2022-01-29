@@ -1,7 +1,6 @@
 import { Schema, Document, model } from "mongoose";
 
 export interface AbstractCamp extends Document {
-    id: string;
     name: string;
     description: string;
     location: string;

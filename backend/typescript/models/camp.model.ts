@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Model } from "mongoose";
 import AbstractCampSchema, { AbstractCamp } from "./abstractCamp.model";
 
 export interface Camp extends AbstractCamp {
@@ -9,7 +9,7 @@ export interface Camp extends AbstractCamp {
     active: boolean;
 }
 
-const CampSchema: Schema = AbstractCampSchema.discriminator('Camp', new Schema({
+const CampSchema: Model<Camp> = AbstractCampSchema.discriminator("Camp", new Schema({
     campers: {
         type: [String],
         required: true,
@@ -32,4 +32,4 @@ const CampSchema: Schema = AbstractCampSchema.discriminator('Camp', new Schema({
     }
 }));
 
-export default model<Camp>("Camp");
+export default CampSchema;
