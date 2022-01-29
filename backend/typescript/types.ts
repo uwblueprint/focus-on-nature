@@ -1,5 +1,7 @@
 export type Role = "User" | "Admin";
 
+export type DropOffType = "EarlyDropOff" | "LatePickUp";
+
 export type Token = {
   accessToken: string;
   refreshToken: string;
