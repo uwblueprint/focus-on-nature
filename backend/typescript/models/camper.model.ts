@@ -1,6 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-
-import { Role } from "../types";
 import { DropOffType } from "../types";
 
 export interface Camper extends Document {
@@ -11,7 +9,7 @@ export interface Camper extends Document {
   parentName: number;
   contactEmail: string;
   contactNumber: string;
-  // camps: [{type: mongoose.Schema.Types.ObjectId, ref: 'Camp'}];
+  camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -37,14 +35,14 @@ const CamperSchema: Schema = new Schema({
   },
   contactEmail: {
     type: String,
-    required: true
+    required: true,
   },
   contactNumber: {
     type: String,
-    required: true
+    required: true,
   },
   camps: {
-    type: [{type: Schema.Types.ObjectId, ref: 'Camp'}],
+    type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
     default: [],
   },
   hasCamera: {
@@ -70,16 +68,16 @@ const CamperSchema: Schema = new Schema({
   },
   registrationDate: {
     type: Date,
-    required: true
+    required: true,
   },
   hasPaid: {
     type: Boolean,
-    required: true
+    required: true,
   },
   charge_id: {
     type: Number,
-    required: true
+    required: true,
   },
 });
 
-export default mongoose.model<Camper>("User", CamperSchema);
+export default mongoose.model<Camper>("Camper", CamperSchema);
