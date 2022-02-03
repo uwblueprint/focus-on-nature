@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export type Role = "User" | "Admin";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
@@ -14,6 +16,25 @@ export type UserDTO = {
   email: string;
   role: Role;
 };
+
+export type CamperDTO = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  parentName: number;
+  contactEmail: string;
+  contactNumber: string;
+  camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  allergies: string;
+  additionalDetails: string;
+  dropOffType: DropOffType;
+  registrationDate: Date;
+  hasPaid: boolean;
+  charge_id: number;
+}
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
 
