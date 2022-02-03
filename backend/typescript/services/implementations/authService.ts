@@ -64,11 +64,9 @@ class AuthService implements IAuthService {
           lastName: googleUser.lastName,
           email: googleUser.email,
           role: "Admin",
-          password: "",
-          active: true, 
+          active: true,
         },
         googleUser.localId,
-        "GOOGLE",
       );
 
       return { ...token, ...user };

@@ -14,7 +14,7 @@ export type UserDTO = {
   active: boolean;
 };
 
-export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
+export type CreateUserDTO = Omit<UserDTO, "id">;
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
 
@@ -34,5 +34,3 @@ export type NodemailerConfig = {
     refreshToken: string;
   };
 };
-
-export type SignUpMethod = "PASSWORD" | "GOOGLE";
