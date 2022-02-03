@@ -1,4 +1,4 @@
-export type Role = "User" | "Admin";
+export type Role = "Admin" | "CampLeader";
 
 export type Token = {
   accessToken: string;
@@ -11,6 +11,7 @@ export type UserDTO = {
   lastName: string;
   email: string;
   role: Role;
+  active: boolean;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
