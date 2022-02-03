@@ -22,10 +22,10 @@ export type CamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: number;
+  parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
+  camps: [string];
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;

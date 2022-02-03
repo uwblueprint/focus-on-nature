@@ -6,7 +6,7 @@ export interface Camper extends Document {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: number;
+  parentName: string;
   contactEmail: string;
   contactNumber: string;
   camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
@@ -33,6 +33,10 @@ const CamperSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
+  parentName: {
+    type: String,
+    required: true,
+  },
   contactEmail: {
     type: String,
     required: true,
@@ -55,11 +59,9 @@ const CamperSchema: Schema = new Schema({
   },
   allergies: {
     type: String,
-    required: true,
   },
   additionalDetails: {
     type: String,
-    required: true,
   },
   dropOffType: {
     type: String,
