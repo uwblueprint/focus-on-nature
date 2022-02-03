@@ -41,6 +41,7 @@ class UserService implements IUserService {
       lastName: user.lastName,
       email: firebaseUser.email ?? "",
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -66,6 +67,7 @@ class UserService implements IUserService {
       lastName: user.lastName,
       email: firebaseUser.email ?? "",
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -129,6 +131,7 @@ class UserService implements IUserService {
             lastName: user.lastName,
             email: firebaseUser.email ?? "",
             role: user.role,
+            active: user.active,
           };
         }),
       );
@@ -166,6 +169,7 @@ class UserService implements IUserService {
           lastName: user.lastName,
           authId: firebaseUser.uid,
           role: user.role,
+          active: user.active,
         });
       } catch (mongoDbError) {
         // rollback user creation in Firebase
@@ -194,6 +198,7 @@ class UserService implements IUserService {
       lastName: newUser.lastName,
       email: firebaseUser.email ?? "",
       role: newUser.role,
+      active: newUser.active,
     };
   }
 
@@ -205,7 +210,12 @@ class UserService implements IUserService {
       // must explicitly specify runValidators when updating through findByIdAndUpdate
       oldUser = await MgUser.findByIdAndUpdate(
         userId,
-        { firstName: user.firstName, lastName: user.lastName, role: user.role },
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          active: user.active,
+        },
         { runValidators: true },
       );
 
@@ -226,6 +236,7 @@ class UserService implements IUserService {
               firstName: oldUser.firstName,
               lastName: oldUser.lastName,
               role: oldUser.role,
+              active: oldUser.active,
             },
             { runValidators: true },
           );
@@ -252,6 +263,7 @@ class UserService implements IUserService {
       lastName: user.lastName,
       email: updatedFirebaseUser.email ?? "",
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -273,6 +285,7 @@ class UserService implements IUserService {
             lastName: deletedUser.lastName,
             authId: deletedUser.authId,
             role: deletedUser.role,
+            active: deletedUser.active,
           });
         } catch (mongoDbError: unknown) {
           const errorMessage = [
@@ -315,6 +328,7 @@ class UserService implements IUserService {
             lastName: deletedUser.lastName,
             authId: deletedUser.authId,
             role: deletedUser.role,
+            active: deletedUser.active,
           });
         } catch (mongoDbError: unknown) {
           const errorMessage = [

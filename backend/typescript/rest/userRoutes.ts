@@ -92,10 +92,11 @@ userRouter.post("/", createUserDtoValidator, async (req, res) => {
       email: req.body.email,
       role: req.body.role,
       password: req.body.password,
+      active: req.body.active,
     });
 
     await authService.sendEmailVerificationLink(req.body.email);
-    
+
     res.status(201).json(newUser);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
@@ -110,6 +111,7 @@ userRouter.put("/:userId", updateUserDtoValidator, async (req, res) => {
       lastName: req.body.lastName,
       email: req.body.email,
       role: req.body.role,
+      active: req.body.active,
     });
     res.status(200).json(updatedUser);
   } catch (error: unknown) {
