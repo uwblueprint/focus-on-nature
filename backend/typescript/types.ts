@@ -14,7 +14,7 @@ export type UserDTO = {
   active: boolean;
 };
 
-export type CampleaderDTO = {
+export type CampLeaderDTO = {
   camps: [string];
 };
 
