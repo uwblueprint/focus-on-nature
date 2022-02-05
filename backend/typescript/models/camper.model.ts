@@ -76,7 +76,7 @@ const CamperSchema: Schema = new Schema({
     type: Boolean,
     required: true,
   },
-  charge_id: {
+  chargeId: {
     type: Number,
     required: true,
   },
