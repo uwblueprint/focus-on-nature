@@ -9,3 +9,8 @@
 .vscode
 **/*.cache
 **/*.egg-info
+hooks/post-merge
+update_secrets/secret.config
+update_secrets/setup.sh
+update_secrets/update_secret_files.py
+update_secrets/hooks/post-merge
