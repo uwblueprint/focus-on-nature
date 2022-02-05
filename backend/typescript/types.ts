@@ -23,7 +23,7 @@ export type CamperDTO = {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: [string];
+  camps: string[];
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -31,7 +31,7 @@ export type CamperDTO = {
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
-  charge_id: number;
+  chargeId: number;
 }
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
