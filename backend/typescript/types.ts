@@ -14,9 +14,7 @@ export type UserDTO = {
   active: boolean;
 };
 
-export type CampLeaderDTO = {
-  camps: [string];
-};
+export type CampLeaderDTO = UserDTO & { camps: string[] };  
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
 
