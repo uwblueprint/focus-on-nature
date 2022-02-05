@@ -17,7 +17,7 @@ export interface Camper extends Document {
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
-  charge_id: number;
+  chargeId: number;
 }
 
 const CamperSchema: Schema = new Schema({
