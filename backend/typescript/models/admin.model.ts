@@ -1,4 +1,4 @@
-import mongoose, {Schema, Model} from "mongoose";
+import {Schema, Model} from "mongoose";
 import UserSchema, {User} from "./user.model";
 
 export interface Admin extends User{
