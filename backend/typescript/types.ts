@@ -1,5 +1,7 @@
 export type Role = "Admin" | "CampLeader";
 
+export type DropOffType = "EarlyDropOff" | "LatePickUp";
+
 export type Token = {
   accessToken: string;
   refreshToken: string;
@@ -13,6 +15,25 @@ export type UserDTO = {
   role: Role;
   active: boolean;
 };
+
+export type CamperDTO = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  parentName: string;
+  contactEmail: string;
+  contactNumber: string;
+  camps: string[];
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  allergies: string;
+  additionalDetails: string;
+  dropOffType: DropOffType;
+  registrationDate: Date;
+  hasPaid: boolean;
+  chargeId: number;
+}
 
 export type CreateUserDTO = Omit<UserDTO, "id"> & { password: string };
 
