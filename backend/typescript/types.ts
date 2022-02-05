@@ -23,7 +23,7 @@ export type CamperDTO = {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: [string];
+  camps: string[];
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
