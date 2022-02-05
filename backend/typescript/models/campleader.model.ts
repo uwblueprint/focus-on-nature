@@ -5,11 +5,11 @@ export interface CampLeader extends User {
     camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
 }
 
-const CampLeaderSchema: Model<User> = UserSchema.discriminator("CampLeader", new Schema({
+const CampLeaderModel: Model<User> = UserSchema.discriminator("CampLeader", new Schema({
   camps: {
     type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
     default: [],
   },
-});
+}));
 
-export default CampLeaderSchema;
+export default CampLeaderModel;
