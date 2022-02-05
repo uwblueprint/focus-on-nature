@@ -35,7 +35,7 @@ camperModel.create({
   parentName: "testParent",
   contactEmail: "test@test.com",
   contactNumber: "11111",
-  camps: ["61fb4407241fcd00721d4846"],
+  camps: [testId],
   hasCamera: true,
   hasLaptop: false,
   allergies: "",

@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export type Role = "User" | "Admin";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
