@@ -91,7 +91,6 @@ userRouter.post("/", createUserDtoValidator, async (req, res) => {
       lastName: req.body.lastName,
       email: req.body.email,
       role: req.body.role,
-      password: req.body.password,
       active: req.body.active,
     });
 
