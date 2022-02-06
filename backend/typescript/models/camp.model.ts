@@ -1,7 +1,8 @@
 import { Schema, model, Model } from "mongoose";
-import AbstractCampSchema, { AbstractCamp } from "./abstractCamp.model";
+import AbstractCampSchema, { AbstractCamp } from "./abstractCamp";
 
 export interface Camp extends AbstractCamp {
+    baseCamp: Schema.Types.ObjectId;
     campers: string[]; // TODO: make camper array
     waitlist: string[]; // TODO: make camper array
     startDate: Date;
@@ -9,7 +10,8 @@ export interface Camp extends AbstractCamp {
     active: boolean;
 }
 
-const CampSchema: Model<Camp> = AbstractCampSchema.discriminator("Camp", new Schema({
+const CampSchema: Schema = new Schema({
+    camp: { type: Schema.Types.ObjectId, ref: 'C' },
     campers: {
         type: [String],
         required: true,
@@ -30,6 +32,6 @@ const CampSchema: Model<Camp> = AbstractCampSchema.discriminator("Camp", new Sch
         type: Boolean,
         required: true,
     }
-}));
+});
 
-export default CampSchema;
+export default model<Camp>("Camp", CampSchema);

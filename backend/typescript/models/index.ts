@@ -13,7 +13,7 @@ export const mongo = {
       },
       (error) => {
         if (error) {
-          /* eslint-disable-next-line no-console */
+          /* eslint-disable-next-line no-console */ 
           console.error(`Error connecting to MongoDB: ${error.message}`);
         } else {
           /* eslint-disable-next-line no-console */
