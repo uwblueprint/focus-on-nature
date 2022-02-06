@@ -1,7 +1,6 @@
 import { Schema, Document, model } from "mongoose";
 
 export interface Entity extends Document {
-  id: string;
   stringField: string;
   intField: number;
   enumField: string;
