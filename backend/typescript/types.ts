@@ -43,6 +43,8 @@ export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
+export type CreateCamperDTO = Omit<CamperDTO, "id">;
+
 export type AuthDTO = Token & UserDTO;
 
 export type Letters = "A" | "B" | "C" | "D";
