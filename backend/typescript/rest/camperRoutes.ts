@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { updateCamperDtoValidator } from "../middlewares/validators/camperValidators";
 import CamperService from "../services/implementations/camperService";
-import CammperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 

@@ -24,7 +24,7 @@ class CamperService implements ICamperService {
           parentName: camper.parentName,
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
-          //camps: camper.camps,
+          camps: camper.camps,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
           allergies: camper.allergies,

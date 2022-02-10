@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { getApiValidationError, validatePrimitive } from "./util";
+import { DropOffType } from "../../types";
 
 export const updateCamperDtoValidator = async (
   req: Request,
@@ -12,8 +13,8 @@ export const updateCamperDtoValidator = async (
   if (!validatePrimitive(req.body.lastName, "string")) {
     return res.status(400).send(getApiValidationError("lastName", "string"));
   }
-  if (!validatePrimitive(req.body.age, "integer")) {
-    return res.status(400).send(getApiValidationError("age", "integer"));
+  if (!validatePrimitive(req.body.age, "string")) {
+    return res.status(400).send(getApiValidationError("age", "string"));
   }
   if (!validatePrimitive(req.body.parentName, "string")) {
     return res.status(400).send(getApiValidationError("parentName", "string"));
@@ -24,34 +25,32 @@ export const updateCamperDtoValidator = async (
   if (!validatePrimitive(req.body.contactNumber, "string")) {
     return res.status(400).send(getApiValidationError("contactNumber", "string"));
   }
-  /* what to do for string[]? 
-  if (!validatePrimitive(req.body.camps, "string[]")) {
+  if (!validatePrimitive(req.body.camps, "string")) {
     return res.status(400).send(getApiValidationError("camps", "string"));
-  }*/
-  if (!validatePrimitive(req.body.hasCamera, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasCamera", "boolean"));
   }
-  if (!validatePrimitive(req.body.hasLaptop, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasLaptop", "boolean"));
+  if (!validatePrimitive(req.body.hasCamera, "string")) {
+    return res.status(400).send(getApiValidationError("hasCamera", "string"));
+  }
+  if (!validatePrimitive(req.body.hasLaptop, "string")) {
+    return res.status(400).send(getApiValidationError("hasLaptop", "string"));
   }
   if (!validatePrimitive(req.body.allergies, "string")) {
     return res.status(400).send(getApiValidationError("allergies", "string"));
   }
   if (!validatePrimitive(req.body.additionalDetails, "string")) {
     return res.status(400).send(getApiValidationError("additionalDetails", "string"));
+  } 
+  if (!validatePrimitive(req.body.dropOffType, "string")) {
+    return res.status(400).send(getApiValidationError("dropOffType", "string"));
   }
-  /* what to do for these types? 
-  if (!validatePrimitive(req.body.dropOffType, "DropOffType")) {
-    return res.status(400).send(getApiValidationError("dropOffType", "DropOffType"));
+  if (!validatePrimitive(req.body.registrationDate, "string")) {
+    return res.status(400).send(getApiValidationError("registrationDate", "string"));
   }
-  if (!validatePrimitive(req.body.registrationDate, "Date")) {
-    return res.status(400).send(getApiValidationError("registrationDate", "Date"));
-  }*/
-  if (!validatePrimitive(req.body.hasPaid, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
+  if (!validatePrimitive(req.body.hasPaid, "string")) {
+    return res.status(400).send(getApiValidationError("hasPaid", "string"));
   }
-  if (!validatePrimitive(req.body.chargeId, "integer")) {
-    return res.status(400).send(getApiValidationError("chargeId", "integer"));
+  if (!validatePrimitive(req.body.chargeId, "string")) {
+    return res.status(400).send(getApiValidationError("chargeId", "string"));
   }
   return next();
 };
