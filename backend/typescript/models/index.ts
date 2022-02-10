@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import AbstractCamp from "./abstractCamp.model";
+import Camp from "./camp.model";
+import Camper from "./camper.model";
 
 /* eslint-disable-next-line import/prefer-default-export */
 export const mongo = {
@@ -13,7 +16,7 @@ export const mongo = {
       },
       (error) => {
         if (error) {
-          /* eslint-disable-next-line no-console */ 
+          /* eslint-disable-next-line no-console */
           console.error(`Error connecting to MongoDB: ${error.message}`);
         } else {
           /* eslint-disable-next-line no-console */
