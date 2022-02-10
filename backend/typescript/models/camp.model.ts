@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { AbstractCamp } from "./abstractCamp.model";
 
 export interface Camp extends AbstractCamp {
