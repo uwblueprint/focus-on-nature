@@ -1,3 +1,5 @@
+import { Camper } from "./models/camper.model";
+
 export type Role = "Admin" | "CampLeader";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
@@ -36,6 +38,8 @@ export type CamperDTO = {
   hasPaid: boolean;
   chargeId: number;
 };
+
+export type CamperCSVInfoDTO = Omit<CamperDTO, "camps">;
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
