@@ -9,7 +9,7 @@ export interface Camper extends Document {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: [{ type: mongoose.Schema.Types.ObjectId; ref: "Camp" }];
+  camps: Schema.Types.ObjectId;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
