@@ -1,25 +1,33 @@
-import { Schema, model, Model } from "mongoose";
-import AbstractCampSchema, { AbstractCamp } from "./abstractCamp";
+import mongoose, { Schema, model } from "mongoose";
+import { AbstractCamp } from "./abstractCamp.model";
 
 export interface Camp extends AbstractCamp {
     baseCamp: Schema.Types.ObjectId;
-    campers: string[]; // TODO: make camper array
-    waitlist: string[]; // TODO: make camper array
+    campers: Schema.Types.ObjectId[];
+    waitlist: Schema.Types.ObjectId[];
     startDate: Date;
     endDate: Date;
     active: boolean;
 }
 
 const CampSchema: Schema = new Schema({
-    camp: { type: Schema.Types.ObjectId, ref: 'C' },
-    campers: {
-        type: [String],
+    baseCamp: { 
+        type: Schema.Types.ObjectId, 
+        ref: 'Camp',
         required: true,
-    }, // TODO: make camper array
-    waitlist: {
-        type: [String],
+    },
+    campers: [{
+        type: Schema.Types.ObjectId, 
+        ref: "Camper", 
         required: true,
-    }, // TODO: make camper array
+        default: []
+    }],
+    waitlist: [{
+        type: Schema.Types.ObjectId, 
+        ref: "Camper", 
+        required: true,
+        default: []
+    }],
     startDate: {
         type: Date,
         required: true,

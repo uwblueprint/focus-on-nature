@@ -29,12 +29,13 @@ const AbstractCampSchema: Schema = new Schema({
     },
     fee: {
         type: Number,
+        required: true,
     },
     camperInfo: {
         type: [String],
-        required: true,
+        default: []
     },
-    camps: [{ type: Schema.Types.ObjectId, ref: 'Camp' }]
+    camps: [{ type: Schema.Types.ObjectId, ref: "Camp" }]
 });
 
 export default model<AbstractCamp>("AbstractCamp", AbstractCampSchema);
