@@ -1,11 +1,10 @@
-import MgCamp, { Camp } from "../../models/camp.model";
-import { Camper } from "../../models/camper.model";
-import { CamperCSVInfoDTO } from "../../types";
-import { getErrorMessage } from "../../utilities/errorUtils";
+import { CamperDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
-
-import logger from "../../utilities/logger";
+import MgCamp, { Camp } from "../../models/camp.model";
+import MgCamper from "../../models/camper.model";
+import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
+import logger from "../../utilities/logger";
 
 const Logger = logger(__filename);
 
@@ -16,9 +15,20 @@ class CampService implements ICampService {
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
-      const campers: Camper[] = camp.populate("campers");
+      /* WARNING:
+        execPopulate is depricated in mongoose 6. Thus, if we decide to migrate to
+        mongoose 6, the following line should be replaced by:
+        const populatedCamp = await camp.populate({path: "campers", model: MgCamper})
+        Source: https://mongoosejs.com/docs/migrating_to_6.html#removed-execpopulate
+      */
+
+      const populatedCamp = await camp
+        .populate({ path: "campers", model: MgCamper })
+        .execPopulate();
+
+      const campers: CamperDTO[] = populatedCamp.campers;
+
       return campers.map((camper) => ({
-        id: camper.id,
         firstName: camper.firstName,
         lastName: camper.lastName,
         age: camper.age,
@@ -44,11 +54,14 @@ class CampService implements ICampService {
 
   async generateCampersCSV(campId: string): Promise<string> {
     try {
-      const camper = await this.getCampersByCampId(campId);
-      const fields = camper.length > 0 ? Object.keys(camper[0]) : [];
-
-      const csvString = await generateCSV({ data: camper, fields });
-
+      const campers = await this.getCampersByCampId(campId);
+      if (campers.length == 0) {
+        // if there are no campers, we return an empty string
+        return "";
+      }
+      // grabbing column names
+      const fields = Object.keys(campers[0]);
+      const csvString = await generateCSV({ data: campers, fields });
       return csvString;
     } catch (error: unknown) {
       Logger.error(

@@ -39,7 +39,7 @@ export type CamperDTO = {
   chargeId: number;
 };
 
-export type CamperCSVInfoDTO = Omit<CamperDTO, "camps">;
+export type CamperCSVInfoDTO = Omit<CamperDTO, "camps" | "id">;
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
