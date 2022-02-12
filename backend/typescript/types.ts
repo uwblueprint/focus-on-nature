@@ -16,7 +16,7 @@ export type UserDTO = {
   active: boolean;
 };
 
-export type CampLeaderDTO = UserDTO & { camps: string[] };  
+export type CampLeaderDTO = UserDTO & { camps: string[] };
 
 export type CamperDTO = {
   id: string;

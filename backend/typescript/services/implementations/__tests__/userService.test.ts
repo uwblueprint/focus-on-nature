@@ -1,4 +1,3 @@
-
 import UserModel from "../../../models/user.model";
 import UserService from "../userService";
 
@@ -59,4 +58,3 @@ describe("mongo userService", (): void => {
     });
   });
 });
-
