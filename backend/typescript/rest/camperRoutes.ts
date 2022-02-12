@@ -18,7 +18,7 @@ camperRouter.post("/", createCamperDtoValidator, async (req, res) => {
       parentName: req.body.parentName,
       contactEmail: req.body.contactEmail,
       contactNumber: req.body.contactNumber,
-      camps: req.body.camps,
+      camp: req.body.camp,
       hasCamera: req.body.hasCamera,
       hasLaptop: req.body.hasLaptop,
       allergies: req.body.allergies,
@@ -34,3 +34,5 @@ camperRouter.post("/", createCamperDtoValidator, async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+export default camperRouter;
