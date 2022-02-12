@@ -9,7 +9,7 @@ const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
-camperRouter.post("/", createCamperDtoValidator, async (req, res) => {
+camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
     const newCamper = await camperService.createCamper({
       firstName: req.body.firstName,
