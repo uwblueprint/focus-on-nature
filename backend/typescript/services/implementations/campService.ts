@@ -21,12 +21,11 @@ class CampService implements ICampService {
         const populatedCamp = await camp.populate({path: "campers", model: MgCamper})
         Source: https://mongoosejs.com/docs/migrating_to_6.html#removed-execpopulate
       */
-
       const populatedCamp = await camp
         .populate({ path: "campers", model: MgCamper })
         .execPopulate();
 
-      const campers: CamperDTO[] = populatedCamp.campers;
+      const campers = populatedCamp.campers as CamperDTO[];
 
       return campers.map((camper) => ({
         firstName: camper.firstName,
