@@ -9,7 +9,7 @@ export interface Camper extends Document {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: Schema.Types.ObjectId;
+  camp: Schema.Types.ObjectId;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -45,9 +45,9 @@ const CamperSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  camps: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
-    default: [],
+  camp: {
+    type: Schema.Types.ObjectId, ref: "Camp",
+    required: true,
   },
   hasCamera: {
     type: Boolean,

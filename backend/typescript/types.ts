@@ -26,7 +26,7 @@ export type CamperDTO = {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: string[];
+  camp: string;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -37,10 +37,9 @@ export type CamperDTO = {
   chargeId: number;
 };
 
-<<<<<<< HEAD
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
-export type UpdateCamperDTO = Omit<CamperDTO, "id">; 
+export type UpdateCamperDTO = Partial<Omit<CamperDTO, "id" | "camp">>; 
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
 

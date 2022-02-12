@@ -6,19 +6,20 @@ import { getErrorMessage } from "../utilities/errorUtils";
 
 const camperRouter: Router = Router();
 
-const camperService: ICamperService = new CamperService(); 
+const camperService: ICamperService = new CamperService();
 
 /* Update the camper with the specified camperId */
 camperRouter.put("/:camperId", updateCamperDtoValidator, async (req, res) => {
-    try {
-      const updatedCamper = await camperService.updateCamperById(req.params.camperId, {
+  try {
+    const updatedCamper = await camperService.updateCamperById(
+      req.params.camperId,
+      {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         age: req.body.age,
         parentName: req.body.parentName,
         contactEmail: req.body.contactEmail,
         contactNumber: req.body.contactNumber,
-        camps: req.body.camps,
         hasCamera: req.body.hasCamera,
         hasLaptop: req.body.hasLaptop,
         allergies: req.body.allergies,
@@ -27,9 +28,12 @@ camperRouter.put("/:camperId", updateCamperDtoValidator, async (req, res) => {
         registrationDate: req.body.registrationDate,
         hasPaid: req.body.hasPaid,
         chargeId: req.body.chargeId,
-      });
-      res.status(200).json(updatedCamper);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
-  });
+      },
+    );
+    res.status(200).json(updatedCamper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+export default camperRouter;
