@@ -1,7 +1,7 @@
-import { CamperDTO, CamperCSVInfoDTO } from "../../types";
+import { CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
-import MgCamper from "../../models/camper.model";
+import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
@@ -9,23 +9,19 @@ import logger from "../../utilities/logger";
 const Logger = logger(__filename);
 
 class CampService implements ICampService {
+  /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
       const camp: Camp | null = await MgCamp.findById(campId);
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
-      /* WARNING:
-        execPopulate is depricated in mongoose 6. Thus, if we decide to migrate to
-        mongoose 6, the following line should be replaced by:
-        const populatedCamp = await camp.populate({path: "campers", model: MgCamper})
-        Source: https://mongoosejs.com/docs/migrating_to_6.html#removed-execpopulate
-      */
+
       const populatedCamp = await camp
         .populate({ path: "campers", model: MgCamper })
         .execPopulate();
 
-      const campers = populatedCamp.campers as CamperDTO[];
+      const campers = populatedCamp.campers as Camper[];
 
       return campers.map((camper) => ({
         firstName: camper.firstName,
@@ -54,7 +50,7 @@ class CampService implements ICampService {
   async generateCampersCSV(campId: string): Promise<string> {
     try {
       const campers = await this.getCampersByCampId(campId);
-      if (campers.length == 0) {
+      if (campers.length === 0) {
         // if there are no campers, we return an empty string
         return "";
       }
