@@ -1,5 +1,3 @@
-import { Camper } from "./models/camper.model";
-
 export type Role = "Admin" | "CampLeader";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
