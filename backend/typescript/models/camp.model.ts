@@ -1,10 +1,10 @@
-import { Schema, model, PopulatedDoc } from "mongoose";
+import { Schema, model } from "mongoose";
 import { AbstractCamp } from "./abstractCamp.model";
-import { CamperDTO } from "../types";
+import { Camper } from "./camper.model";
 
 export interface Camp extends AbstractCamp {
   baseCamp: Schema.Types.ObjectId;
-  campers: PopulatedDoc<CamperDTO>[];
+  campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: Schema.Types.ObjectId[];
   startDate: Date;
   endDate: Date;
