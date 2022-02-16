@@ -1,6 +1,6 @@
 import ICamperService from "../interfaces/camperService";
-import MgUser, { Camper } from "../../models/camper.model";
-import { CamperDTO, UpdateCamperDTO, DropOffType } from "../../types";
+import MgCamper, { Camper } from "../../models/camper.model";
+import { CamperDTO, UpdateCamperDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
@@ -15,7 +15,7 @@ class CamperService implements ICamperService {
 
     try {
       // must explicitly specify runValidators when updating through findByIdAndUpdate
-      oldCamper = await MgUser.findByIdAndUpdate(
+      oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
           firstName: camper.firstName,
@@ -33,7 +33,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
         },
-        { runValidators: true },
+        { runValidators: true, omitUndefined: true }, // must omitUndefined if not all fields are passed
       );
 
       if (!oldCamper) {

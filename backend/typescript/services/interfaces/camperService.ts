@@ -1,12 +1,7 @@
-import {
-    CamperDTO, 
-    UpdateCamperDTO,
-    DropOffType, 
-} from "../../types";
+import { CamperDTO, UpdateCamperDTO } from "../../types";
 
 interface ICamperService {
-
-/**
+  /**
    * Update a camper.
    * Note: the password cannot be updated using this method, use IAuthService.resetPassword instead
    * @param camperId camper's id
@@ -14,8 +9,10 @@ interface ICamperService {
    * @returns a CamperDTO with the updated camper's information
    * @throws Error if camper update fails
    */
- updateCamperById(camperId: string, camper: UpdateCamperDTO): Promise<CamperDTO>;
-
+  updateCamperById(
+    camperId: string,
+    camper: UpdateCamperDTO,
+  ): Promise<CamperDTO>;
 }
 
-export default ICamperService
+export default ICamperService;

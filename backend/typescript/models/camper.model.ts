@@ -46,7 +46,8 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   camp: {
-    type: Schema.Types.ObjectId, ref: "Camp",
+    type: Schema.Types.ObjectId,
+    ref: "Camp",
     required: true,
   },
   hasCamera: {
