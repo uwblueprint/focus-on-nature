@@ -7,6 +7,7 @@ import logger from "../../utilities/logger";
 const Logger = logger(__filename);
 
 class CamperService implements ICamperService {
+  /* eslint-disable class-methods-use-this */
   async updateCamperById(
     camperId: string,
     camper: UpdateCamperDTO,
