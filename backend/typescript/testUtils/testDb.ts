@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MongoMemoryServer } from "mongodb-memory-server";
 
-
 const mongo = new MongoMemoryServer();
 
 const mongoTest = {
@@ -32,4 +31,3 @@ const mongoTest = {
 };
 
 export default mongoTest;
-
