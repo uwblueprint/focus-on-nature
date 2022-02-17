@@ -37,11 +37,39 @@ export type CamperDTO = {
   chargeId: number;
 };
 
+export type CamperCSVInfoDTO = Omit<CamperDTO, "camps" | "id">;
+
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
+
+export type CampDTO = {
+  id: string;
+  abstractCamp: string;
+  campers: string[];
+  waitlist: string[];
+  startDate: Date;
+  endDate: Date;
+  active: boolean;
+};
+
+export type AbstractCampDTO = {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  capacity: number;
+  fee: number;
+  camperInfo: string[];
+  camps: string[];
+};
+
+export type CreateCampDTO = Omit<
+  CampDTO & AbstractCampDTO,
+  "id" | "abstractCamp"
+>;
 
 export type AuthDTO = Token & UserDTO;
 

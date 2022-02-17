@@ -9,7 +9,7 @@ export interface Camper extends Document {
   parentName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: Schema.Types.ObjectId;
+  camps: Schema.Types.ObjectId[];
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
