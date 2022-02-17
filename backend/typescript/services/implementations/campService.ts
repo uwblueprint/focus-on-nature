@@ -1,10 +1,11 @@
-import { CamperCSVInfoDTO } from "../../types";
+import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
+import MgAbstractCamp from "../../models/abstractCamp.model";
 
 const Logger = logger(__filename);
 
@@ -47,9 +48,46 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    return "";
+  async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
+    var abstractCamp = new MgAbstractCamp({
+      name: camp.name,
+      description: camp.description,
+      location: camp.location,
+      capacity: camp.capacity,
+      fee: camp.fee,
+      camperInfo: camp.camperInfo,
+    });
+    var newCamp = new MgCamp({
+      abstractCamp: abstractCamp,
+      campers: camp.campers,
+      waitlist: camp.waitlist,
+      startDate: camp.startDate,
+      endDate: camp.endDate,
+      active: camp.active,
+    });
+    try {
+      await abstractCamp.save(function (err) {
+        throw err;
+      });
+      await newCamp.save(function (err) {
+        throw err;
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: newCamp.id,
+      abstractCamp: newCamp.abstractCamp.toString(),
+      campers: newCamp.campers.map((camper) => camper.toString()),
+      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
+      startDate: newCamp.startDate,
+      endDate: newCamp.endDate,
+      active: newCamp.active,
+    };
   }
+
   async generateCampersCSV(campId: string): Promise<string> {
     try {
       const campers = await this.getCampersByCampId(campId);
