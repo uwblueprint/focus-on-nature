@@ -38,7 +38,7 @@ export type CamperDTO = {
 };
 
 export type WaitlistedCamperDTO = {
-  id: string; 
+  id: string;
   firstName: string;
   lastName: string;
   age: number;
@@ -46,7 +46,7 @@ export type WaitlistedCamperDTO = {
   contactEmail: string;
   contactNumber: string;
   camps: string[];
-}
+};
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
 

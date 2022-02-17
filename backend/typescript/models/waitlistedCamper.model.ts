@@ -39,7 +39,10 @@ const WaitlistedCamperSchema: Schema = new Schema({
   camps: {
     type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
     default: [],
-  }
+  },
 });
 
-export default mongoose.model<WaitlistedCamper>("WaitlistedCamper", WaitlistedCamperSchema);
+export default mongoose.model<WaitlistedCamper>(
+  "WaitlistedCamper",
+  WaitlistedCamperSchema,
+);
