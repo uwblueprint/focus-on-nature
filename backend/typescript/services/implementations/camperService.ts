@@ -34,7 +34,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
         },
-        { runValidators: true, omitUndefined: true }, // must omitUndefined if not all fields are passed
+        { runValidators: true, omitUndefined: true }, 
       );
 
       if (!oldCamper) {
