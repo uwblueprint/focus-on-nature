@@ -5,10 +5,10 @@ export interface WaitlistedCamper extends Document {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: Schema.Types.ObjectId;
+  camp: Schema.Types.ObjectId;
 }
 
 const WaitlistedCamperSchema: Schema = new Schema({
@@ -24,7 +24,7 @@ const WaitlistedCamperSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  parentName: {
+  contactName: {
     type: String,
     required: true,
   },
@@ -36,9 +36,10 @@ const WaitlistedCamperSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  camps: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
-    default: [],
+  camp: {
+    type: Schema.Types.ObjectId,
+    ref: "Camp",
+    required: true,
   },
 });
 
