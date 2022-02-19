@@ -49,7 +49,7 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    let abstractCamp = new MgAbstractCamp({
+    const abstractCamp = new MgAbstractCamp({
       name: camp.name,
       description: camp.description,
       location: camp.location,
@@ -57,7 +57,7 @@ class CampService implements ICampService {
       fee: camp.fee,
       camperInfo: camp.camperInfo,
     });
-    let newCamp = new MgCamp({
+    const newCamp = new MgCamp({
       abstractCamp,
       campers: camp.campers,
       waitlist: camp.waitlist,
