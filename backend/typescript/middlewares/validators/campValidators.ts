@@ -6,6 +6,7 @@ import {
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
 export const createCampDtoValidator = async (
   req: Request,
   res: Response,
@@ -34,9 +35,6 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("camperInfo", "string", true));
   }
-  if (!validateArray(req.body.camps, "string")) {
-    return res.status(400).send(getApiValidationError("camps", "string", true));
-  }
   if (req.body.campers && !validateArray(req.body.campers, "string")) {
     return res
       .status(400)
@@ -55,6 +53,10 @@ export const createCampDtoValidator = async (
   }
   if (!validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
+  // camps field is filled in automatically
+  if (req.body.camps) {
+    return res.status(400).send("camps should be null");
   }
   return next();
 };

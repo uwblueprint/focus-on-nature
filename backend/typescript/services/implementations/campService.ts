@@ -49,7 +49,7 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    var abstractCamp = new MgAbstractCamp({
+    let abstractCamp = new MgAbstractCamp({
       name: camp.name,
       description: camp.description,
       location: camp.location,
@@ -57,8 +57,8 @@ class CampService implements ICampService {
       fee: camp.fee,
       camperInfo: camp.camperInfo,
     });
-    var newCamp = new MgCamp({
-      abstractCamp: abstractCamp,
+    let newCamp = new MgCamp({
+      abstractCamp,
       campers: camp.campers,
       waitlist: camp.waitlist,
       startDate: camp.startDate,
@@ -67,6 +67,7 @@ class CampService implements ICampService {
     });
 
     try {
+      /* eslint no-underscore-dangle: ["error", { "allow": ["__place"] }]*/
       abstractCamp.camps.push(newCamp._id);
       await abstractCamp.save(function (err) {
         if (err) throw err;
@@ -79,6 +80,7 @@ class CampService implements ICampService {
       throw error;
     }
     return {
+      /* eslint no-underscore-dangle: ["error", { "allow": ["__place"] }]*/
       id: newCamp._id,
       abstractCamp: abstractCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
