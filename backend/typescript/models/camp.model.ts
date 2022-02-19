@@ -21,7 +21,6 @@ const CampSchema: Schema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: "Camper",
-      required: true,
       default: [],
     },
   ],
@@ -29,7 +28,6 @@ const CampSchema: Schema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: "Camper",
-      required: true,
       default: [],
     },
   ],

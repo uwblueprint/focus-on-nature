@@ -50,8 +50,8 @@ export type CampDTO = {
   abstractCamp: string;
   campers: string[];
   waitlist: string[];
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   active: boolean;
 };
 

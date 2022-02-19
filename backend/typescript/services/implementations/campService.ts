@@ -65,25 +65,26 @@ class CampService implements ICampService {
       endDate: camp.endDate,
       active: camp.active,
     });
+
     try {
+      abstractCamp.camps.push(newCamp._id);
       await abstractCamp.save(function (err) {
-        throw err;
+        if (err) throw err;
       });
       await newCamp.save(function (err) {
-        throw err;
+        if (err) throw err;
       });
     } catch (error: unknown) {
       Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
-
     return {
       id: newCamp._id,
       abstractCamp: abstractCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startDate: newCamp.startDate,
-      endDate: newCamp.endDate,
+      startDate: newCamp.startDate.toString(),
+      endDate: newCamp.endDate.toString(),
       active: newCamp.active,
     };
   }
