@@ -48,6 +48,25 @@ class CampService implements ICampService {
     }
   }
 
+  async getCamps(): Promise<any> {
+    try {
+      const camps = MgCamp.find({}).populate('abstractCamp');
+      if(!camps) {
+        return [];
+      }
+
+      // const populatedCamps = 
+      return camps.map((camp) => ({
+        id: camp.id,
+        abstractCamp: camp.abstractCamp,
+        campers: camp.campers,
+        waitlist: camp.waitlist,
+        startDate: camp.startDate,
+        endDate: camp.endDate,
+        active: camp.active
+      }));
+    }
+  }
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
     var abstractCamp = new MgAbstractCamp({
       name: camp.name,
