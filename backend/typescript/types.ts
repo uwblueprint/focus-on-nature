@@ -42,10 +42,10 @@ export type WaitlistedCamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: string[];
+  camp: string;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
