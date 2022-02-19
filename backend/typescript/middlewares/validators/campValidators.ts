@@ -7,8 +7,8 @@ export const createCampDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.firstName, "string")) {
-    return res.status(400).send(getApiValidationError("firstName", "string"));
+  if (!validatePrimitive(req.body.name, "string")) {
+    return res.status(400).send(getApiValidationError("name", "string"));
   }
 
   return next();

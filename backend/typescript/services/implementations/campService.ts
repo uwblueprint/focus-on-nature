@@ -78,8 +78,8 @@ class CampService implements ICampService {
     }
 
     return {
-      id: newCamp.id,
-      abstractCamp: newCamp.abstractCamp.toString(),
+      id: newCamp._id,
+      abstractCamp: abstractCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
       startDate: newCamp.startDate,

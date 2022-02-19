@@ -20,7 +20,7 @@ campRouter.get("/csv/:id", async (req, res) => {
 /* Create a camp */
 campRouter.post("/", createCampDtoValidator, async (req, res) => {
   try {
-    const newUser = await campService.createCamp({
+    const newCamp = await campService.createCamp({
       campers: req.body.campers,
       waitlist: req.body.waitlist,
       startDate: req.body.startDate,
@@ -35,7 +35,7 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
       camps: req.body.camps,
     });
 
-    res.status(201).json(newUser);
+    res.status(201).json(newCamp);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

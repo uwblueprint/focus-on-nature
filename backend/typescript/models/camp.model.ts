@@ -12,7 +12,7 @@ export interface Camp extends AbstractCamp {
 }
 
 const CampSchema: Schema = new Schema({
-  baseCamp: {
+  abstractCamp: {
     type: Schema.Types.ObjectId,
     ref: "AbstractCamp",
     required: true,
