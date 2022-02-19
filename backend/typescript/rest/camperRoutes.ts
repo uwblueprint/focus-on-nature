@@ -15,7 +15,7 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       age: req.body.age,
-      parentName: req.body.parentName,
+      contactName: req.body.contactName,
       contactEmail: req.body.contactEmail,
       contactNumber: req.body.contactNumber,
       camp: req.body.camp,

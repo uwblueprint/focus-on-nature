@@ -17,8 +17,8 @@ export const createCamperDtoValidator = async (
   if (!validatePrimitive(req.body.age, "integer")) {
     return res.status(400).send(getApiValidationError("age", "integer"));
   }
-  if (!validatePrimitive(req.body.parentName, "string")) {
-    return res.status(400).send(getApiValidationError("parentName", "string"));
+  if (!validatePrimitive(req.body.contactName, "string")) {
+    return res.status(400).send(getApiValidationError("contactName", "string"));
   }
   if (!validatePrimitive(req.body.contactEmail, "string")) {
     return res
@@ -39,15 +39,21 @@ export const createCamperDtoValidator = async (
   if (!validatePrimitive(req.body.hasLaptop, "boolean")) {
     return res.status(400).send(getApiValidationError("hasLaptop", "boolean"));
   }
-  if (!validatePrimitive(req.body.allergies, "string")) {
+  if (req.body.allergies && !validatePrimitive(req.body.allergies, "string")) {
     return res.status(400).send(getApiValidationError("allergies", "string"));
   }
-  if (!validatePrimitive(req.body.additionalDetails, "string")) {
+  if (
+    req.body.additionalDetails &&
+    !validatePrimitive(req.body.additionalDetails, "string")
+  ) {
     return res
       .status(400)
       .send(getApiValidationError("additionalDetails", "string"));
   }
-  if (!validatePrimitive(req.body.dropOffType, "string")) {
+  if (
+    req.body.dropOffType &&
+    !validatePrimitive(req.body.dropOffType, "string")
+  ) {
     return res.status(400).send(getApiValidationError("dropOffType", "string"));
   }
   if (!validateDate(req.body.registrationDate)) {

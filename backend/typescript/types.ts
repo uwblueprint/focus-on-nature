@@ -23,7 +23,7 @@ export type CamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
   camp: string;
