@@ -39,6 +39,17 @@ export type CamperDTO = {
 
 export type CamperCSVInfoDTO = Omit<CamperDTO, "camps" | "id">;
 
+export type WaitlistedCamperDTO = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  contactName: string;
+  contactEmail: string;
+  contactNumber: string;
+  camp: string;
+};
+
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
