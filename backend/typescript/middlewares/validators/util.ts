@@ -55,3 +55,11 @@ export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
+
+// server side validation for email domains
+export const validateUserEmail = (userEmail: string): boolean => {
+  return (
+    userEmail.split("@")[1] === "focusonnature.ca" ||
+    userEmail.split("@")[1] === "uwblueprint.org"
+  );
+};

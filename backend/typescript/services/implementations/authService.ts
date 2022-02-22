@@ -7,6 +7,7 @@ import { AuthDTO, Role, Token } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import FirebaseRestClient from "../../utilities/firebaseRestClient";
 import logger from "../../utilities/logger";
+import { validateUserEmail } from "../../middlewares/validators/util";
 
 const Logger = logger(__filename);
 
@@ -38,14 +39,6 @@ class AuthService implements IAuthService {
     }
   }
 
-  // server side validation for email domains
-  async validAccount(userEmail: string): Promise<boolean> {
-    return (
-      userEmail.split("@")[1] === "focusonnature.ca" ||
-      userEmail.split("@")[1] === "uwblueprint.org"
-    );
-  }
-
   /* eslint-disable class-methods-use-this */
   async generateTokenOAuth(idToken: string): Promise<AuthDTO> {
     try {
@@ -53,9 +46,9 @@ class AuthService implements IAuthService {
         idToken,
       );
 
-      const valid = await this.validAccount(googleUser.email);
+      const userEmailValid = await validateUserEmail(googleUser.email);
 
-      if (!valid) {
+      if (!userEmailValid) {
         const errorMessage = "Invalid Google domain for the account.";
         Logger.error(errorMessage);
         throw new Error(errorMessage);
