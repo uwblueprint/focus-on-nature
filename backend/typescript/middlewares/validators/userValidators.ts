@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { getApiValidationError, validatePrimitive } from "./util";
+import {
+  getApiValidationError,
+  validatePrimitive,
+  isArrayOfStrings,
+} from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export const createUserDtoValidator = async (
@@ -45,6 +49,9 @@ export const updateUserDtoValidator = async (
   }
   if (!validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
+  if (req.body.role === "CampLeader" && !isArrayOfStrings(req.body.camps)) {
+    return res.status(400).send(getApiValidationError("camps", "string", true));
   }
   return next();
 };

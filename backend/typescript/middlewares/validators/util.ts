@@ -55,3 +55,10 @@ export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
+
+// function to check that the input is an array of strings
+export const isArrayOfStrings = (value: any): boolean => {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+};
