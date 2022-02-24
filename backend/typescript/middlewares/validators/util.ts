@@ -60,6 +60,8 @@ export const getFileTypeValidationError = (mimetype: string): string => {
 export const isArrayOfStrings = (value: any): boolean => {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+};
 
 // server side validation for email domains
 export const validateUserEmail = (userEmail: string): boolean => {
