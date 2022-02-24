@@ -46,7 +46,7 @@ class AuthService implements IAuthService {
         idToken,
       );
 
-      const userEmailValid = await validateUserEmail(googleUser.email);
+      const userEmailValid = validateUserEmail(googleUser.email);
 
       if (!userEmailValid) {
         const errorMessage = "Invalid Google domain for the account.";
