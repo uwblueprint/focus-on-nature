@@ -7,6 +7,7 @@ import { AuthDTO, Role, Token } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import FirebaseRestClient from "../../utilities/firebaseRestClient";
 import logger from "../../utilities/logger";
+import { validateUserEmail } from "../../middlewares/validators/util";
 
 const Logger = logger(__filename);
 
@@ -53,9 +54,9 @@ class AuthService implements IAuthService {
         idToken,
       );
 
-      const valid = await this.validAccount(googleUser.email);
+      const userEmailValid = validateUserEmail(googleUser.email);
 
-      if (!valid) {
+      if (!userEmailValid) {
         const errorMessage = "Invalid Google domain for the account.";
         Logger.error(errorMessage);
         throw new Error(errorMessage);
