@@ -56,6 +56,8 @@ export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
+export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
+
 export type AuthDTO = Token & UserDTO;
 
 export type Letters = "A" | "B" | "C" | "D";
