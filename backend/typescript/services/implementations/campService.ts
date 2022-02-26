@@ -5,7 +5,7 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgAbstractCamp from "../../models/abstractCamp.model";
+import MgBaseCamp from "../../models/baseCamp.model";
 
 const Logger = logger(__filename);
 
@@ -49,7 +49,7 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    const abstractCamp = new MgAbstractCamp({
+    const baseCamp = new MgBaseCamp({
       name: camp.name,
       description: camp.description,
       location: camp.location,
@@ -58,7 +58,7 @@ class CampService implements ICampService {
       camperInfo: camp.camperInfo,
     });
     const newCamp = new MgCamp({
-      abstractCamp,
+      baseCamp,
       campers: camp.campers,
       waitlist: camp.waitlist,
       startDate: camp.startDate,
@@ -68,8 +68,8 @@ class CampService implements ICampService {
 
     try {
       /*eslint no-underscore-dangle: "error"*/
-      abstractCamp.camps.push(newCamp._id);
-      await abstractCamp.save(function (err) {
+      baseCamp.camps.push(newCamp._id);
+      await baseCamp.save(function (err) {
         if (err) throw err;
       });
       await newCamp.save(function (err) {
@@ -82,7 +82,7 @@ class CampService implements ICampService {
     return {
       /*eslint no-underscore-dangle: "error"*/
       id: newCamp._id,
-      abstractCamp: abstractCamp.id,
+      baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
       startDate: newCamp.startDate.toString(),

@@ -1,6 +1,6 @@
 import { Schema, Document, model } from "mongoose";
 
-export interface AbstractCamp extends Document {
+export interface BaseCamp extends Document {
   id: string;
   name: string;
   description: string;
@@ -11,7 +11,7 @@ export interface AbstractCamp extends Document {
   camps: Schema.Types.ObjectId[];
 }
 
-const AbstractCampSchema: Schema = new Schema({
+const BaseCampSchema: Schema = new Schema({
   name: {
     type: String,
     required: true,
@@ -38,4 +38,4 @@ const AbstractCampSchema: Schema = new Schema({
   camps: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
 });
 
-export default model<AbstractCamp>("AbstractCamp", AbstractCampSchema);
+export default model<BaseCamp>("BaseCamp", BaseCampSchema);

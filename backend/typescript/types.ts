@@ -58,7 +58,7 @@ export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
 export type CampDTO = {
   id: string;
-  abstractCamp: string;
+  baseCamp: string;
   campers: string[];
   waitlist: string[];
   startDate: string;
@@ -66,7 +66,7 @@ export type CampDTO = {
   active: boolean;
 };
 
-export type AbstractCampDTO = {
+export type BaseCampDTO = {
   id: string;
   name: string;
   description: string;
@@ -77,10 +77,7 @@ export type AbstractCampDTO = {
   camps: string[];
 };
 
-export type CreateCampDTO = Omit<
-  CampDTO & AbstractCampDTO,
-  "id" | "abstractCamp"
->;
+export type CreateCampDTO = Omit<CampDTO & BaseCampDTO, "id" | "baseCamp">;
 
 export type AuthDTO = Token & UserDTO;
 
