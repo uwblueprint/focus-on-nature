@@ -58,6 +58,8 @@ export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
 export type CampDTO = {
   id: string;
+  ageLower: number;
+  ageUpper: number;
   baseCamp: string;
   campers: string[];
   waitlist: string[];

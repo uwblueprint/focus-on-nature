@@ -26,6 +26,12 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(req.body.location, "string")) {
     return res.status(400).send(getApiValidationError("location", "string"));
   }
+  if (!validatePrimitive(req.body.ageLower, "integer")) {
+    return res.status(400).send(getApiValidationError("ageLower", "integer"));
+  }
+  if (!validatePrimitive(req.body.ageUpper, "integer")) {
+    return res.status(400).send(getApiValidationError("ageUpper", "integer"));
+  }
   if (!validatePrimitive(req.body.capacity, "integer")) {
     return res.status(400).send(getApiValidationError("capacity", "integer"));
   }

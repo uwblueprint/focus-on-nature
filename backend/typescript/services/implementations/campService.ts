@@ -50,6 +50,8 @@ class CampService implements ICampService {
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
     const baseCamp = new MgBaseCamp({
       name: camp.name,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
       description: camp.description,
       location: camp.location,
       capacity: camp.capacity,
@@ -82,8 +84,9 @@ class CampService implements ICampService {
     }
     return {
       /* eslint no-underscore-dangle: 0 */
-
       id: newCamp._id,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       dates: newCamp.dates.map((date) => date.toString()),

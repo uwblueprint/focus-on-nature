@@ -2,6 +2,8 @@ import { Schema, Document, model } from "mongoose";
 
 export interface BaseCamp extends Document {
   id: string;
+  ageLower: number;
+  ageUpper: number;
   name: string;
   description: string;
   location: string;
@@ -12,6 +14,14 @@ export interface BaseCamp extends Document {
 }
 
 const BaseCampSchema: Schema = new Schema({
+  ageLower: {
+    type: Number,
+    required: true,
+  },
+  ageUpper: {
+    type: Number,
+    required: true,
+  },
   name: {
     type: String,
     required: true,

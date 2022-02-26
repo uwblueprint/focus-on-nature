@@ -22,6 +22,8 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
   try {
     const newCamp = await campService.createCamp({
       active: req.body.active,
+      ageLower: req.body.ageLower,
+      ageUpper: req.body.ageUpper,
       name: req.body.name,
       description: req.body.description,
       location: req.body.location,
