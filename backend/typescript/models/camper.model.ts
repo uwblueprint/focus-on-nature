@@ -6,7 +6,7 @@ export interface Camper extends Document {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
   camps: Schema.Types.ObjectId[];
@@ -33,7 +33,7 @@ const CamperSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  parentName: {
+  contactName: {
     type: String,
     required: true,
   },
@@ -45,9 +45,9 @@ const CamperSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  camps: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
-    default: [],
+  camp: {
+    type: Schema.Types.ObjectId,
+    required: true,
   },
   hasCamera: {
     type: Boolean,
@@ -65,7 +65,6 @@ const CamperSchema: Schema = new Schema({
   },
   dropOffType: {
     type: String,
-    required: true,
     enum: ["EarlyDropOff", "LatePickUp"],
   },
   registrationDate: {

@@ -23,10 +23,10 @@ export type CamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camps: string[];
+  camp: string;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -78,6 +78,7 @@ export type BaseCampDTO = {
 };
 
 export type CreateCampDTO = Omit<CampDTO & BaseCampDTO, "id" | "baseCamp">;
+export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type AuthDTO = Token & UserDTO;
 
