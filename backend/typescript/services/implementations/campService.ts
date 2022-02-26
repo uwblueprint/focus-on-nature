@@ -12,22 +12,22 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId);
+      const camp: Camp | null = await MgCamp.findById(campId).populate({
+        path: "campers",
+        model: MgCamper,
+      });
+
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
 
-      const populatedCamp = await camp
-        .populate({ path: "campers", model: MgCamper })
-        .execPopulate();
-
-      const campers = populatedCamp.campers as Camper[];
+      const campers = camp.campers as Camper[];
 
       return campers.map((camper) => ({
         firstName: camper.firstName,
         lastName: camper.lastName,
         age: camper.age,
-        parentName: camper.parentName,
+        contactName: camper.contactName,
         contactEmail: camper.contactEmail,
         contactNumber: camper.contactNumber,
         hasCamera: camper.hasCamera,
