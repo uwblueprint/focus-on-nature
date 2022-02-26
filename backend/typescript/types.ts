@@ -23,10 +23,10 @@ export type CamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camp: string[];
+  camp: string;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -39,11 +39,24 @@ export type CamperDTO = {
 
 export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
 
+export type WaitlistedCamperDTO = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  contactName: string;
+  contactEmail: string;
+  contactNumber: string;
+  camp: string;
+};
+
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
+
+export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type AuthDTO = Token & UserDTO;
 

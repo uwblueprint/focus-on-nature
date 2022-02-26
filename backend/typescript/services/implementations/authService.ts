@@ -7,6 +7,7 @@ import { AuthDTO, Role, Token } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import FirebaseRestClient from "../../utilities/firebaseRestClient";
 import logger from "../../utilities/logger";
+import { validateUserEmail } from "../../middlewares/validators/util";
 
 const Logger = logger(__filename);
 
@@ -44,6 +45,15 @@ class AuthService implements IAuthService {
       const googleUser = await FirebaseRestClient.signInWithGoogleOAuth(
         idToken,
       );
+
+      const userEmailValid = validateUserEmail(googleUser.email);
+
+      if (!userEmailValid) {
+        const errorMessage = "Invalid Google domain for the account.";
+        Logger.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
       // googleUser.idToken refers to the Firebase Auth access token for the user
       const token = {
         accessToken: googleUser.idToken,
@@ -56,14 +66,16 @@ class AuthService implements IAuthService {
         const user = await this.userService.getUserByEmail(googleUser.email);
         return { ...token, ...user };
         /* eslint-disable-next-line no-empty */
-      } catch (error) {}
+      } catch (error) {
+        Logger.error(error as string);
+      }
 
       const user = await this.userService.createUser(
         {
           firstName: googleUser.firstName,
           lastName: googleUser.lastName,
           email: googleUser.email,
-          role: "Admin",
+          role: "CampLeader",
           active: true,
         },
         googleUser.localId,
