@@ -7,10 +7,11 @@ const campRouter: Router = Router();
 
 const campService: ICampService = new CampService();
 
+/* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
   try {
     const csvString = await campService.generateCampersCSV(req.params.id);
-    res.status(200).json(csvString);
+    res.status(200).set("Content-Type", "text/csv").send(csvString);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
