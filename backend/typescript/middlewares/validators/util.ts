@@ -1,4 +1,4 @@
-type Type = "string" | "integer" | "boolean";
+type Type = "string" | "integer" | "boolean" | "Date string";
 
 const allowableContentTypes = new Set([
   "text/plain",
@@ -54,6 +54,10 @@ export const getApiValidationError = (
 export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
+};
+
+export const validateDate = (value: string): boolean => {
+  return !!Date.parse(value);
 };
 
 // server side validation for email domains
