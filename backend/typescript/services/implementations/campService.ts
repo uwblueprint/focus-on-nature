@@ -67,7 +67,7 @@ class CampService implements ICampService {
     });
 
     try {
-      /* eslint no-underscore-dangle: ["error", { "allow": ["__place"] }]*/
+      /*eslint no-underscore-dangle: "error"*/
       abstractCamp.camps.push(newCamp._id);
       await abstractCamp.save(function (err) {
         if (err) throw err;
@@ -80,7 +80,7 @@ class CampService implements ICampService {
       throw error;
     }
     return {
-      /* eslint no-underscore-dangle: ["error", { "allow": ["__place"] }]*/
+      /*eslint no-underscore-dangle: "error"*/
       id: newCamp._id,
       abstractCamp: abstractCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
