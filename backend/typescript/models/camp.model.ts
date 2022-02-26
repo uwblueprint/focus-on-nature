@@ -3,7 +3,7 @@ import { AbstractCamp } from "./abstractCamp.model";
 import { Camper } from "./camper.model";
 
 export interface Camp extends AbstractCamp {
-  abstractCamp: Schema.Types.ObjectId;
+  abstractCamp: AbstractCamp | Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: Schema.Types.ObjectId[];
   startDate: Date;

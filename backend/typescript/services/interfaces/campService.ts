@@ -1,6 +1,19 @@
-import { CampDTO, CamperCSVInfoDTO, CreateCampDTO } from "../../types";
+import {
+  CampDTO,
+  CamperCSVInfoDTO,
+  CreateCampDTO,
+  getCampDTO,
+} from "../../types";
 
 interface ICampService {
+  /**
+   * Get all camps
+   * @param
+   * @returns array of getCampDTO object containing camp information
+   * @throws Error if camp retrieval fails
+   */
+  getCamps(): Promise<getCampDTO[]>;
+
   /**
    * Get all campers associated with camps of id campId
    * @param campId camp's id

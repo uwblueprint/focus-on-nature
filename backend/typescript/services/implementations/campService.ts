@@ -1,16 +1,52 @@
-import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
+import {
+  CreateCampDTO,
+  CampDTO,
+  CamperCSVInfoDTO,
+  getCampDTO,
+} from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgAbstractCamp from "../../models/abstractCamp.model";
+import MgAbstractCamp, { AbstractCamp } from "../../models/abstractCamp.model";
 
 const Logger = logger(__filename);
 
 class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
+  async getCamps(): Promise<getCampDTO[]> {
+    try {
+      const camps: Camp[] | null = await MgCamp.find({}).populate(
+        "abstractCamp",
+      );
+
+      if (!camps) {
+        return [];
+      }
+
+      return camps.map((camp) => {
+        const abstractCamp = camp.abstractCamp as AbstractCamp;
+        return {
+          id: camp.id,
+          name: abstractCamp.name,
+          description: abstractCamp.description,
+          location: abstractCamp.location,
+          capacity: abstractCamp.capacity,
+          fee: abstractCamp.fee,
+          camperInfo: abstractCamp.camperInfo,
+          startDate: camp.startDate,
+          endDate: camp.endDate,
+          active: camp.active,
+        };
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+  }
+
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
       const camp: Camp | null = await MgCamp.findById(campId);
@@ -48,25 +84,6 @@ class CampService implements ICampService {
     }
   }
 
-  async getCamps(): Promise<any> {
-    try {
-      const camps = MgCamp.find({}).populate('abstractCamp');
-      if(!camps) {
-        return [];
-      }
-
-      // const populatedCamps = 
-      return camps.map((camp) => ({
-        id: camp.id,
-        abstractCamp: camp.abstractCamp,
-        campers: camp.campers,
-        waitlist: camp.waitlist,
-        startDate: camp.startDate,
-        endDate: camp.endDate,
-        active: camp.active
-      }));
-    }
-  }
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
     var abstractCamp = new MgAbstractCamp({
       name: camp.name,

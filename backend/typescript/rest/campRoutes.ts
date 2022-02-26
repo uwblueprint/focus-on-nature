@@ -8,6 +8,16 @@ const campRouter: Router = Router();
 
 const campService: ICampService = new CampService();
 
+/* Get all camps */
+campRouter.get("/", async (req, res) => {
+  try {
+    const camps = await campService.getCamps();
+    res.status(200).json(camps);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 campRouter.get("/csv/:id", async (req, res) => {
   try {
     const csvString = await campService.generateCampersCSV(req.params.id);
