@@ -1,4 +1,9 @@
-type Type = "string" | "integer" | "boolean" | "Date string";
+type Type =
+  | "string"
+  | "integer"
+  | "boolean"
+  | "Date string"
+  | "24 hr time string";
 
 const allowableContentTypes = new Set([
   "text/plain",
@@ -58,6 +63,11 @@ export const getFileTypeValidationError = (mimetype: string): string => {
 
 export const validateDate = (value: string): boolean => {
   return !!Date.parse(value);
+};
+
+export const validateTime = (value: string): boolean => {
+  const regex = /([01]?[0-9]|2[0-3]):[0-5][0-9]/g;
+  return regex.test(value);
 };
 
 // server side validation for email domains

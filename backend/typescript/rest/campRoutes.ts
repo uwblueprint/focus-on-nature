@@ -21,10 +21,9 @@ campRouter.get("/csv/:id", async (req, res) => {
 campRouter.post("/", createCampDtoValidator, async (req, res) => {
   try {
     const newCamp = await campService.createCamp({
-      campers: req.body.campers,
-      waitlist: req.body.waitlist,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
+      startTime: req.body.startTime,
+      endTime: req.body.endTime,
+      dates: req.body.dates,
       active: req.body.active,
       name: req.body.name,
       description: req.body.description,

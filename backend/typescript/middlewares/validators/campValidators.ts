@@ -3,6 +3,8 @@ import {
   getApiValidationError,
   validateArray,
   validatePrimitive,
+  validateDate,
+  validateTime,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -35,21 +37,31 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("camperInfo", "string", true));
   }
-  if (req.body.campers && !validateArray(req.body.campers, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("campers", "string", true));
+  if (req.body.dates && !validateArray(req.body.dates, "string")) {
+    return res.status(400).send(getApiValidationError("dates", "string", true));
+  } else {
+    for (var date of req.body.dates) {
+      if (!validateDate(date))
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "Date string"));
+    }
   }
-  if (req.body.waitlist && !validateArray(req.body.waitlist, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("waitlist", "string", true));
+  if (!validatePrimitive(req.body.startTime, "string")) {
+    return res.status(400).send(getApiValidationError("startTime", "string"));
+  } else {
+    if (!validateTime(req.body.startTime))
+      return res
+        .status(400)
+        .send(getApiValidationError("startTime", "24 hr time string"));
   }
-  if (!validatePrimitive(req.body.startDate, "string")) {
-    return res.status(400).send(getApiValidationError("startDate", "string"));
-  }
-  if (!validatePrimitive(req.body.endDate, "string")) {
-    return res.status(400).send(getApiValidationError("endDate", "string"));
+  if (!validatePrimitive(req.body.endTime, "string")) {
+    return res.status(400).send(getApiValidationError("endTime", "string"));
+  } else {
+    if (!validateTime(req.body.endTime))
+      return res
+        .status(400)
+        .send(getApiValidationError("endTime", "24 hr time string"));
   }
   if (!validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
@@ -57,6 +69,12 @@ export const createCampDtoValidator = async (
   // camps field is filled in automatically
   if (req.body.camps) {
     return res.status(400).send("camps should be null");
+  }
+  if (req.body.campers) {
+    return res.status(400).send("campers should be empty");
+  }
+  if (req.body.waitlist) {
+    return res.status(400).send("waitlist should be empty");
   }
   return next();
 };

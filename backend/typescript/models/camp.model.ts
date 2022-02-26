@@ -6,8 +6,9 @@ export interface Camp extends BaseCamp {
   baseCamp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: Schema.Types.ObjectId[];
-  startDate: Date;
-  endDate: Date;
+  dates: Date[];
+  startTime: String;
+  endTime: String;
   active: boolean;
 }
 
@@ -31,12 +32,19 @@ const CampSchema: Schema = new Schema({
       default: [],
     },
   ],
-  startDate: {
-    type: Date,
+  dates: [
+    {
+      type: Date,
+      default: [],
+      required: true,
+    },
+  ],
+  startTime: {
+    type: String,
     required: true,
   },
-  endDate: {
-    type: Date,
+  endTime: {
+    type: String,
     required: true,
   },
   active: {

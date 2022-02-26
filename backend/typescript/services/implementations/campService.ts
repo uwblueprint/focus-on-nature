@@ -13,16 +13,16 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId);
+      const camp: Camp | null = await MgCamp.findById(campId).populate({
+        path: "campers",
+        model: MgCamper,
+      });
+
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
 
-      const populatedCamp = await camp
-        .populate({ path: "campers", model: MgCamper })
-        .execPopulate();
-
-      const campers = populatedCamp.campers as Camper[];
+      const campers = camp.campers as Camper[];
 
       return campers.map((camper) => ({
         firstName: camper.firstName,
@@ -31,6 +31,7 @@ class CampService implements ICampService {
         parentName: camper.parentName,
         contactEmail: camper.contactEmail,
         contactNumber: camper.contactNumber,
+        contactName: camper.contactName,
         hasCamera: camper.hasCamera,
         hasLaptop: camper.hasLaptop,
         allergies: camper.allergies,
@@ -41,9 +42,7 @@ class CampService implements ICampService {
         chargeId: camper.chargeId,
       }));
     } catch (error: unknown) {
-      Logger.error(
-        `Failed to get entities. Reason = ${getErrorMessage(error)}`,
-      );
+      Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -59,10 +58,11 @@ class CampService implements ICampService {
     });
     const newCamp = new MgCamp({
       baseCamp,
-      campers: camp.campers,
-      waitlist: camp.waitlist,
-      startDate: camp.startDate,
-      endDate: camp.endDate,
+      campers: [],
+      waitlist: [],
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      dates: camp.dates,
       active: camp.active,
     });
 
@@ -84,9 +84,10 @@ class CampService implements ICampService {
       id: newCamp._id,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
+      dates: newCamp.dates.map((date) => date.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startDate: newCamp.startDate.toString(),
-      endDate: newCamp.endDate.toString(),
+      startTime: newCamp.startTime.toString(),
+      endTime: newCamp.endTime.toString(),
       active: newCamp.active,
     };
   }
