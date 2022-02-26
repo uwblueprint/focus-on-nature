@@ -8,11 +8,7 @@ const mongoTest = {
   connect: async (): Promise<void> => {
     await mongo.start();
     const uri = mongo.getUri();
-    await mongoose.connect(uri, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      useFindAndModify: false,
-    });
+    await mongoose.connect(uri);
   },
 
   disconnect: async (): Promise<void> => {
