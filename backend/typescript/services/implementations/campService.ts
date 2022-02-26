@@ -54,13 +54,13 @@ class CampService implements ICampService {
       ageUpper: camp.ageUpper,
       description: camp.description,
       location: camp.location,
-      capacity: camp.capacity,
       fee: camp.fee,
       camperInfo: camp.camperInfo,
     });
     const newCamp = new MgCamp({
       baseCamp,
       campers: [],
+      capacity: camp.capacity,
       waitlist: [],
       startTime: camp.startTime,
       endTime: camp.endTime,
@@ -89,6 +89,7 @@ class CampService implements ICampService {
       ageUpper: newCamp.ageUpper,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
+      capacity: newCamp.capacity,
       dates: newCamp.dates.map((date) => date.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
       startTime: newCamp.startTime.toString(),

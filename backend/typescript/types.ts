@@ -62,6 +62,7 @@ export type CampDTO = {
   ageUpper: number;
   baseCamp: string;
   campers: string[];
+  capacity: number;
   waitlist: string[];
   dates: string[];
   startTime: string;
@@ -74,7 +75,6 @@ export type BaseCampDTO = {
   name: string;
   description: string;
   location: string;
-  capacity: number;
   fee: number;
   camperInfo: string[];
   camps: string[];
