@@ -66,6 +66,11 @@ export type AbstractCampDTO = {
   camps: string[];
 };
 
+export type getCampDTO = Omit<
+  CampDTO & AbstractCampDTO,
+  "waitlist" | "campers" | "abstractCamp" | "camps"
+>;
+
 export type CreateCampDTO = Omit<
   CampDTO & AbstractCampDTO,
   "id" | "abstractCamp"
