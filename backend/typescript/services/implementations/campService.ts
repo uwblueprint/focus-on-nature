@@ -67,12 +67,13 @@ class CampService implements ICampService {
     });
 
     try {
-      /*eslint no-underscore-dangle: "error"*/
+      /* eslint no-underscore-dangle: 0 */
+
       baseCamp.camps.push(newCamp._id);
-      await baseCamp.save(function (err) {
+      await baseCamp.save((err) => {
         if (err) throw err;
       });
-      await newCamp.save(function (err) {
+      await newCamp.save((err) => {
         if (err) throw err;
       });
     } catch (error: unknown) {
@@ -80,7 +81,8 @@ class CampService implements ICampService {
       throw error;
     }
     return {
-      /*eslint no-underscore-dangle: "error"*/
+      /* eslint no-underscore-dangle: 0 */
+
       id: newCamp._id,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),

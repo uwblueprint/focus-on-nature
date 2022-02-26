@@ -37,32 +37,37 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("camperInfo", "string", true));
   }
+
   if (req.body.dates && !validateArray(req.body.dates, "string")) {
     return res.status(400).send(getApiValidationError("dates", "string", true));
-  } else {
-    for (var date of req.body.dates) {
-      if (!validateDate(date))
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "Date string"));
-    }
   }
+  if (
+    !req.body.dates.every((date: string) => {
+      if (!validateDate(date)) return false;
+      return true;
+    })
+  ) {
+    return res.status(400).send(getApiValidationError("dates", "Date string"));
+  }
+
   if (!validatePrimitive(req.body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
-  } else {
-    if (!validateTime(req.body.startTime))
-      return res
-        .status(400)
-        .send(getApiValidationError("startTime", "24 hr time string"));
   }
+  if (!validateTime(req.body.startTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("startTime", "24 hr time string"));
+  }
+
   if (!validatePrimitive(req.body.endTime, "string")) {
     return res.status(400).send(getApiValidationError("endTime", "string"));
-  } else {
-    if (!validateTime(req.body.endTime))
-      return res
-        .status(400)
-        .send(getApiValidationError("endTime", "24 hr time string"));
   }
+  if (!validateTime(req.body.endTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("endTime", "24 hr time string"));
+  }
+
   if (!validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }

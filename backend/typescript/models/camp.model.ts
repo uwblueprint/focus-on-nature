@@ -7,8 +7,8 @@ export interface Camp extends BaseCamp {
   campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: Schema.Types.ObjectId[];
   dates: Date[];
-  startTime: String;
-  endTime: String;
+  startTime: string;
+  endTime: string;
   active: boolean;
 }
 

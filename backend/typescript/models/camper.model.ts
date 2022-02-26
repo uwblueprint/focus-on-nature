@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { DropOffType } from "../types";
+
 export interface Camper extends Document {
   id: string;
   firstName: string;
