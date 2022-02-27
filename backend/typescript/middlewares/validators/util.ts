@@ -1,4 +1,4 @@
-type Type = "string" | "integer" | "boolean";
+type Type = "string" | "integer" | "boolean" | "Date string";
 
 const allowableContentTypes = new Set([
   "text/plain",
@@ -49,6 +49,10 @@ export const getApiValidationError = (
   isArray = false,
 ): string => {
   return `The ${fieldName} is not a ${type}${isArray ? " Array" : ""}`;
+};
+
+export const validateDate = (value: string): boolean => {
+  return !!Date.parse(value);
 };
 
 export const getFileTypeValidationError = (mimetype: string): string => {

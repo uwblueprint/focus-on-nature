@@ -2,8 +2,6 @@ import { CamperDTO, UpdateCamperDTO } from "../../types";
 
 interface ICamperService {
   /**
-   * Update a camper.
-   * Note: the password cannot be updated using this method, use IAuthService.resetPassword instead
    * @param camperId camper's id
    * @param camper the camper to be updated
    * @returns a CamperDTO with the updated camper's information

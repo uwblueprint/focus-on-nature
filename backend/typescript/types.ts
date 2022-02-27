@@ -39,7 +39,7 @@ export type CamperDTO = {
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
-export type UpdateCamperDTO = Omit<CamperDTO, "id" | "camp">;
+export type UpdateCamperDTO = Omit<CamperDTO, "id">;
 
 export type UpdateUserDTO = Omit<UserDTO, "id">;
 

@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import ICamperService from "../interfaces/camperService";
+import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { CamperDTO, UpdateCamperDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
@@ -15,6 +17,31 @@ class CamperService implements ICamperService {
     let oldCamper: Camper | null;
 
     try {
+      oldCamper = await MgCamper.findById(camperId);
+
+      if (oldCamper) {
+        const newCamp: Camp | null = await MgCamp.findById(camper.camp);
+        const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
+
+        if (!newCamp) {
+          throw new Error(`Error: camp does not exist`);
+        }
+
+        if (!oldCamp) {
+          throw new Error(`Error: camp does not exist`);
+        }
+
+        if (
+          newCamp &&
+          oldCamp &&
+          newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
+        ) {
+          throw new Error(
+            `Error: can only change sessions between the same camp`,
+          );
+        }
+      }
+
       // must explicitly specify runValidators when updating through findByIdAndUpdate
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
@@ -25,6 +52,7 @@ class CamperService implements ICamperService {
           parentName: camper.parentName,
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
+          // camp: camper.camp,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
           allergies: camper.allergies,
@@ -47,21 +75,21 @@ class CamperService implements ICamperService {
 
     return {
       id: camperId,
-      firstName: oldCamper.firstName,
-      lastName: oldCamper.lastName,
-      age: oldCamper.age,
-      parentName: oldCamper.parentName,
-      contactEmail: oldCamper.contactEmail,
-      contactNumber: oldCamper.contactNumber,
-      camp: oldCamper.camp.toString(),
-      hasCamera: oldCamper.hasCamera,
-      hasLaptop: oldCamper.hasLaptop,
-      allergies: oldCamper.allergies,
-      additionalDetails: oldCamper.additionalDetails,
-      dropOffType: oldCamper.dropOffType,
-      registrationDate: oldCamper.registrationDate,
-      hasPaid: oldCamper.hasPaid,
-      chargeId: oldCamper.chargeId,
+      firstName: camper.firstName,
+      lastName: camper.lastName,
+      age: camper.age,
+      parentName: camper.parentName,
+      contactEmail: camper.contactEmail,
+      contactNumber: camper.contactNumber,
+      camp: camper.camp,
+      hasCamera: camper.hasCamera,
+      hasLaptop: camper.hasLaptop,
+      allergies: camper.allergies,
+      additionalDetails: camper.additionalDetails,
+      dropOffType: camper.dropOffType,
+      registrationDate: camper.registrationDate,
+      hasPaid: camper.hasPaid,
+      chargeId: camper.chargeId,
     };
   }
 }
