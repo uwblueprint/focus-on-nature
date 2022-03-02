@@ -23,7 +23,7 @@ class EmailService implements IEmailService {
   async sendConfirmationEmail(to: string): Promise<void> {
     await this.sendEmail(
       to,
-      "Focus on Nature: Confirmatin Email",
+      "Focus on Nature: Confirmation Email",
       "dummy body",
     );
   }
