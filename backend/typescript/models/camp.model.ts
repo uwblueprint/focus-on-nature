@@ -1,9 +1,10 @@
 import { Schema, model } from "mongoose";
 import { AbstractCamp } from "./abstractCamp.model";
+import { Camper } from "./camper.model";
 
 export interface Camp extends AbstractCamp {
   baseCamp: Schema.Types.ObjectId;
-  campers: Schema.Types.ObjectId[];
+  campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: Schema.Types.ObjectId[];
   startDate: Date;
   endDate: Date;

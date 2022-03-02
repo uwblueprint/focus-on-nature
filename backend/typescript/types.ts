@@ -37,6 +37,8 @@ export type CamperDTO = {
   chargeId: number;
 };
 
+export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
+
 export type WaitlistedCamperDTO = {
   id: string;
   firstName: string;
