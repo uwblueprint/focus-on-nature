@@ -1,4 +1,4 @@
-import { CamperCSVInfoDTO } from "../../types";
+import { CampDTO, CamperCSVInfoDTO, CreateCampDTO } from "../../types";
 
 interface ICampService {
   /**
@@ -8,6 +8,10 @@ interface ICampService {
    * @throws Error if camper retrieval fails
    */
   getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]>;
+
+  createCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
+
+  //  createBaseCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
 
   /**
    * Generates CSV string containg all the campers associated with a camp

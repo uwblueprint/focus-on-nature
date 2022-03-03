@@ -1,10 +1,11 @@
-import { CamperCSVInfoDTO } from "../../types";
+import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
+import MgBaseCamp from "../../models/baseCamp.model";
 
 const Logger = logger(__filename);
 
@@ -45,6 +46,55 @@ class CampService implements ICampService {
       );
       throw error;
     }
+  }
+
+  async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
+    const baseCamp = new MgBaseCamp({
+      name: camp.name,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      description: camp.description,
+      location: camp.location,
+      fee: camp.fee,
+      camperInfo: camp.camperInfo,
+    });
+    const newCamp = new MgCamp({
+      baseCamp,
+      campers: [],
+      capacity: camp.capacity,
+      waitlist: [],
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      dates: camp.dates,
+      active: camp.active,
+    });
+
+    try {
+      /* eslint no-underscore-dangle: 0 */
+
+      baseCamp.camps.push(newCamp._id);
+      await baseCamp.save((err) => {
+        if (err) throw err;
+      });
+      await newCamp.save((err) => {
+        if (err) throw err;
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+    return {
+      /* eslint no-underscore-dangle: 0 */
+      id: newCamp._id,
+      baseCamp: baseCamp.id,
+      campers: newCamp.campers.map((camper) => camper.toString()),
+      capacity: newCamp.capacity,
+      dates: newCamp.dates.map((date) => date.toString()),
+      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
+      startTime: newCamp.startTime.toString(),
+      endTime: newCamp.endTime.toString(),
+      active: newCamp.active,
+    };
   }
 
   async generateCampersCSV(campId: string): Promise<string> {

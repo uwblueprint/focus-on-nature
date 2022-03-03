@@ -1,44 +1,56 @@
 import { Schema, model } from "mongoose";
-import { AbstractCamp } from "./abstractCamp.model";
+import { BaseCamp } from "./baseCamp.model";
 import { Camper } from "./camper.model";
 
-export interface Camp extends AbstractCamp {
+export interface Camp extends BaseCamp {
   baseCamp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
+  capacity: number;
   waitlist: Schema.Types.ObjectId[];
-  startDate: Date;
-  endDate: Date;
+  dates: Date[];
+  startTime: string;
+  endTime: string;
   active: boolean;
 }
 
 const CampSchema: Schema = new Schema({
   baseCamp: {
     type: Schema.Types.ObjectId,
-    ref: "Camp",
+    ref: "BaseCamp",
     required: true,
   },
-  campers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Camper",
-      required: true,
-      default: [],
-    },
-  ],
-  waitlist: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Camper",
-      required: true,
-      default: [],
-    },
-  ],
-  startDate: {
-    type: Date,
+  campers: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Camper",
+      },
+    ],
+    default: [],
+  },
+  capacity: {
+    type: Number,
     required: true,
   },
-  endDate: {
-    type: Date,
+  waitlist: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "WaitlistedCamper",
+      },
+    ],
+    default: [],
+  },
+  dates: {
+    type: [Date],
+    required: true,
+  },
+  startTime: {
+    type: String,
+    required: true,
+  },
+  endTime: {
+    type: String,
     required: true,
   },
   active: {
