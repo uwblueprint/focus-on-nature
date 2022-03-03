@@ -86,8 +86,6 @@ class CampService implements ICampService {
     return {
       /* eslint no-underscore-dangle: 0 */
       id: newCamp._id,
-      ageLower: newCamp.ageLower,
-      ageUpper: newCamp.ageUpper,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       capacity: newCamp.capacity,
