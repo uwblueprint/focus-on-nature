@@ -28,10 +28,9 @@ class CampService implements ICampService {
         firstName: camper.firstName,
         lastName: camper.lastName,
         age: camper.age,
-        parentName: camper.parentName,
+        contactName: camper.contactName,
         contactEmail: camper.contactEmail,
         contactNumber: camper.contactNumber,
-        contactName: camper.contactName,
         hasCamera: camper.hasCamera,
         hasLaptop: camper.hasLaptop,
         allergies: camper.allergies,
@@ -42,7 +41,9 @@ class CampService implements ICampService {
         chargeId: camper.chargeId,
       }));
     } catch (error: unknown) {
-      Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
+      Logger.error(
+        `Failed to get entities. Reason = ${getErrorMessage(error)}`,
+      );
       throw error;
     }
   }

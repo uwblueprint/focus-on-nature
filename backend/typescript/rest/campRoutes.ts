@@ -8,15 +8,6 @@ const campRouter: Router = Router();
 
 const campService: ICampService = new CampService();
 
-campRouter.get("/csv/:id", async (req, res) => {
-  try {
-    const csvString = await campService.generateCampersCSV(req.params.id);
-    res.status(200).json(csvString);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
-
 /* Create a camp */
 campRouter.post("/", createCampDtoValidator, async (req, res) => {
   try {
@@ -37,6 +28,15 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
     });
 
     res.status(201).json(newCamp);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+campRouter.get("/csv/:id", async (req, res) => {
+  try {
+    const csvString = await campService.generateCampersCSV(req.params.id);
+    res.status(200).set("Content-Type", "text/csv").send(csvString);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

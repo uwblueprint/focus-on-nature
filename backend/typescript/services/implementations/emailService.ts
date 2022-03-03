@@ -20,6 +20,34 @@ class EmailService implements IEmailService {
     }
   }
 
+  async sendConfirmationEmail(to: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Focus on Nature: Confirmation Email",
+      "dummy body",
+    );
+  }
+
+  async sendWaitlistEmail(to: string): Promise<void> {
+    await this.sendEmail(to, "Focus on Nature: Waitlist Email", "dummy body");
+  }
+
+  async sendWaitlistAdminEmail(to: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Focus on Nature: Waitlist Admin Email",
+      "dummy body",
+    );
+  }
+
+  async sendCancellationEmail(to: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Focus on Nature: Cancellation Email",
+      "dummy body",
+    );
+  }
+
   async sendEmail(
     to: string,
     subject: string,
