@@ -33,6 +33,7 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
   }
 });
 
+/* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
   try {
     const csvString = await campService.generateCampersCSV(req.params.id);
