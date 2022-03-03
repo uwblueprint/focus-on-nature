@@ -6,11 +6,10 @@ export interface Camper extends Document {
   firstName: string;
   lastName: string;
   age: number;
-  parentName: string;
+  contactName: string;
   contactEmail: string;
   contactNumber: string;
-  contactName: string;
-  camps: Schema.Types.ObjectId[];
+  camp: Schema.Types.ObjectId;
   hasCamera: boolean;
   hasLaptop: boolean;
   allergies: string;
@@ -20,6 +19,7 @@ export interface Camper extends Document {
   hasPaid: boolean;
   chargeId: number;
 }
+
 const CamperSchema: Schema = new Schema({
   firstName: {
     type: String,
@@ -33,7 +33,7 @@ const CamperSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  parentName: {
+  contactName: {
     type: String,
     required: true,
   },
@@ -45,13 +45,9 @@ const CamperSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  contactName: {
-    type: String,
+  camp: {
+    type: Schema.Types.ObjectId,
     required: true,
-  },
-  camps: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
-    default: [],
   },
   hasCamera: {
     type: Boolean,
@@ -69,7 +65,6 @@ const CamperSchema: Schema = new Schema({
   },
   dropOffType: {
     type: String,
-    required: true,
     enum: ["EarlyDropOff", "LatePickUp"],
   },
   registrationDate: {
@@ -85,4 +80,5 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
 });
+
 export default mongoose.model<Camper>("Camper", CamperSchema);
