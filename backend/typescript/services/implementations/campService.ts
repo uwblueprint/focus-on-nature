@@ -10,7 +10,7 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgAbstractCamp, { AbstractCamp } from "../../models/abstractCamp.model";
+import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
 
 const Logger = logger(__filename);
 
@@ -49,22 +49,22 @@ class CampService implements ICampService {
 
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId);
+      const camp: Camp | null = await MgCamp.findById(campId).populate({
+        path: "campers",
+        model: MgCamper,
+      });
+
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
 
-      const populatedCamp = await camp
-        .populate({ path: "campers", model: MgCamper })
-        .execPopulate();
-
-      const campers = populatedCamp.campers as Camper[];
+      const campers = camp.campers as Camper[];
 
       return campers.map((camper) => ({
         firstName: camper.firstName,
         lastName: camper.lastName,
         age: camper.age,
-        parentName: camper.parentName,
+        contactName: camper.contactName,
         contactEmail: camper.contactEmail,
         contactNumber: camper.contactNumber,
         hasCamera: camper.hasCamera,
@@ -85,41 +85,52 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    var abstractCamp = new MgAbstractCamp({
+    const baseCamp = new MgBaseCamp({
       name: camp.name,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
       description: camp.description,
       location: camp.location,
-      capacity: camp.capacity,
       fee: camp.fee,
       camperInfo: camp.camperInfo,
     });
-    var newCamp = new MgCamp({
-      abstractCamp: abstractCamp,
-      campers: camp.campers,
-      waitlist: camp.waitlist,
-      startDate: camp.startDate,
-      endDate: camp.endDate,
+    const newCamp = new MgCamp({
+      baseCamp,
+      campers: [],
+      capacity: camp.capacity,
+      waitlist: [],
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      dates: camp.dates,
       active: camp.active,
     });
+
     try {
-      await abstractCamp.save(function (err) {
-        throw err;
+      /* eslint no-underscore-dangle: 0 */
+
+      baseCamp.camps.push(newCamp._id);
+      await baseCamp.save((err) => {
+        if (err) throw err;
       });
-      await newCamp.save(function (err) {
-        throw err;
+      await newCamp.save((err) => {
+        if (err) throw err;
       });
     } catch (error: unknown) {
       Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
-
     return {
+      /* eslint no-underscore-dangle: 0 */
       id: newCamp._id,
-      abstractCamp: abstractCamp.id,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
+      baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
+      capacity: newCamp.capacity,
+      dates: newCamp.dates.map((date) => date.toString()),
       waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startDate: newCamp.startDate,
-      endDate: newCamp.endDate,
+      startTime: newCamp.startTime.toString(),
+      endTime: newCamp.endTime.toString(),
       active: newCamp.active,
     };
   }

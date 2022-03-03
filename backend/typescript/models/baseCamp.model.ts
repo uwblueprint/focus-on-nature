@@ -1,17 +1,26 @@
 import { Schema, Document, model } from "mongoose";
 
-export interface AbstractCamp extends Document {
+export interface BaseCamp extends Document {
   id: string;
+  ageLower: number;
+  ageUpper: number;
   name: string;
   description: string;
   location: string;
-  capacity: number;
   fee: number;
   camperInfo: string[];
   camps: Schema.Types.ObjectId[];
 }
 
-const AbstractCampSchema: Schema = new Schema({
+const BaseCampSchema: Schema = new Schema({
+  ageLower: {
+    type: Number,
+    required: true,
+  },
+  ageUpper: {
+    type: Number,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -23,10 +32,6 @@ const AbstractCampSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  capacity: {
-    type: Number,
-    required: true,
-  },
   fee: {
     type: Number,
     required: true,
@@ -35,7 +40,14 @@ const AbstractCampSchema: Schema = new Schema({
     type: [String],
     default: [],
   },
-  camps: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
+  camps: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Camp",
+      },
+    ],
+  },
 });
 
-export default model<AbstractCamp>("AbstractCamp", AbstractCampSchema);
+export default model<BaseCamp>("BaseCamp", BaseCampSchema);

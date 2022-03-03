@@ -1,4 +1,9 @@
-type Type = "string" | "integer" | "boolean";
+type Type =
+  | "string"
+  | "integer"
+  | "boolean"
+  | "Date string"
+  | "24 hr time string";
 
 const allowableContentTypes = new Set([
   "text/plain",
@@ -54,4 +59,21 @@ export const getApiValidationError = (
 export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
+};
+
+export const validateDate = (value: string): boolean => {
+  return !!Date.parse(value);
+};
+
+export const validateTime = (value: string): boolean => {
+  const regex = /([01]?[0-9]|2[0-3]):[0-5][0-9]/g;
+  return regex.test(value);
+};
+
+// server side validation for email domains
+export const validateUserEmail = (userEmail: string): boolean => {
+  return (
+    userEmail.split("@")[1] === "focusonnature.ca" ||
+    userEmail.split("@")[1] === "uwblueprint.org"
+  );
 };

@@ -19,8 +19,8 @@ export const createUserDtoValidator = async (
   if (!validatePrimitive(req.body.role, "string")) {
     return res.status(400).send(getApiValidationError("role", "string"));
   }
-  if (!validatePrimitive(req.body.password, "string")) {
-    return res.status(400).send(getApiValidationError("password", "string"));
+  if (!validatePrimitive(req.body.active, "boolean")) {
+    return res.status(400).send(getApiValidationError("active", "boolean"));
   }
 
   return next();
@@ -42,6 +42,9 @@ export const updateUserDtoValidator = async (
   }
   if (!validatePrimitive(req.body.role, "string")) {
     return res.status(400).send(getApiValidationError("role", "string"));
+  }
+  if (!validatePrimitive(req.body.active, "boolean")) {
+    return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   return next();
 };

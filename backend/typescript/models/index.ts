@@ -6,11 +6,6 @@ export const mongo = {
     mongoose.connect(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       encodeURI(process.env.MG_DATABASE_URL!),
-      {
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-        useFindAndModify: false,
-      },
       (error) => {
         if (error) {
           /* eslint-disable-next-line no-console */
