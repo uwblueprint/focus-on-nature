@@ -40,7 +40,14 @@ const BaseCampSchema: Schema = new Schema({
     type: [String],
     default: [],
   },
-  camps: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
+  camps: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Camp",
+      },
+    ],
+  },
 });
 
 export default model<BaseCamp>("BaseCamp", BaseCampSchema);

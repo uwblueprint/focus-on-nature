@@ -19,31 +19,32 @@ const CampSchema: Schema = new Schema({
     ref: "BaseCamp",
     required: true,
   },
-  campers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Camper",
-      default: [],
-    },
-  ],
+  campers: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Camper",
+      },
+    ],
+    default: [],
+  },
   capacity: {
     type: Number,
     required: true,
   },
-  waitlist: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Camper",
-      default: [],
-    },
-  ],
-  dates: [
-    {
-      type: Date,
-      default: [],
-      required: true,
-    },
-  ],
+  waitlist: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "WaitlistedCamper",
+      },
+    ],
+    default: [],
+  },
+  dates: {
+    type: [Date],
+    required: true,
+  },
   startTime: {
     type: String,
     required: true,
