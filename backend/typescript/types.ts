@@ -37,6 +37,8 @@ export type CamperDTO = {
   chargeId: number;
 };
 
+export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
+
 export type WaitlistedCamperDTO = {
   id: string;
   firstName: string;
@@ -54,6 +56,34 @@ export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
+export type BaseCampDTO = {
+  id: string;
+  ageLower: number;
+  ageUpper: number;
+  name: string;
+  description: string;
+  location: string;
+  fee: number;
+  camperInfo: string[];
+  camps: string[];
+};
+
+export type CampDTO = {
+  id: string;
+  baseCamp: string;
+  campers: string[];
+  capacity: number;
+  waitlist: string[];
+  dates: string[];
+  startTime: string;
+  endTime: string;
+  active: boolean;
+};
+
+export type CreateCampDTO = Omit<
+  CampDTO & BaseCampDTO,
+  "id" | "baseCamp" | "campers" | "waitlist"
+>;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;

@@ -91,6 +91,82 @@ class CamperService implements ICamperService {
       chargeId: newCamper.chargeId,
     };
   }
+
+  async getAllCampers(): Promise<Array<CamperDTO>> {
+    let camperDtos: Array<CamperDTO> = [];
+
+    try {
+      const campers: Array<Camper> = await MgCamper.find();
+      camperDtos = campers.map((camper) => {
+        return {
+          id: camper.id,
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          contactName: camper.contactName,
+          contactEmail: camper.contactEmail,
+          contactNumber: camper.contactNumber,
+          camp: camper.camp ? camper.camp.toString() : "",
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          allergies: camper.allergies,
+          additionalDetails: camper.additionalDetails,
+          dropOffType: camper.dropOffType,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+        };
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return camperDtos;
+  }
+
+  async getCampersByCampId(campId: string): Promise<Array<CamperDTO>> {
+    let camperDtos: Array<CamperDTO> = [];
+
+    try {
+      const existingCamp: Camp | null = await MgCamp.findById(campId).populate({
+        path: "campers",
+        model: MgCamper,
+      });
+
+      if (!existingCamp) {
+        throw new Error(`Camp ${existingCamp} not found.`);
+      }
+
+      const campers = existingCamp.campers as Camper[];
+
+      camperDtos = campers.map((camper) => {
+        return {
+          id: camper.id,
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          contactName: camper.contactName,
+          contactEmail: camper.contactEmail,
+          contactNumber: camper.contactNumber,
+          camp: camper.camp ? camper.camp.toString() : "",
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          allergies: camper.allergies,
+          additionalDetails: camper.additionalDetails,
+          dropOffType: camper.dropOffType,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+        };
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return camperDtos;
+  }
 }
 
 export default CamperService;
