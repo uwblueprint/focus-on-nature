@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/camperValidators";
+import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 import WaitlistService from "../services/implementations/waitlistService";
 import IWaitlistService from "../services/interfaces/waitlistService";
 import { getErrorMessage } from "../utilities/errorUtils";
