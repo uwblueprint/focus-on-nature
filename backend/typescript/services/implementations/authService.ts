@@ -39,14 +39,6 @@ class AuthService implements IAuthService {
     }
   }
 
-  // server side validation for email domains
-  async validAccount(userEmail: string): Promise<Boolean> {
-    return (
-      userEmail.split("@")[1] === "focusonnature.ca" ||
-      userEmail.split("@")[1] === "uwblueprint.org"
-    );
-  }
-
   /* eslint-disable class-methods-use-this */
   async generateTokenOAuth(idToken: string): Promise<AuthDTO> {
     try {

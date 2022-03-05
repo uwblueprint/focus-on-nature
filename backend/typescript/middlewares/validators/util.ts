@@ -77,10 +77,3 @@ export const validateUserEmail = (userEmail: string): boolean => {
     userEmail.split("@")[1] === "uwblueprint.org"
   );
 };
-
-// function to check that the input is an array of strings
-export const isArrayOfStrings = (value: any): boolean => {
-  return (
-    Array.isArray(value) && value.every((item) => typeof item === "string")
-  );
-};
