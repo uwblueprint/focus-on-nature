@@ -2,7 +2,7 @@ import {
   CreateCampDTO,
   CampDTO,
   CamperCSVInfoDTO,
-  getCampDTO,
+  GetCampDTO,
 } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
@@ -16,28 +16,29 @@ const Logger = logger(__filename);
 
 class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
-  async getCamps(): Promise<getCampDTO[]> {
+  async getCamps(): Promise<GetCampDTO[]> {
     try {
-      const camps: Camp[] | null = await MgCamp.find({}).populate(
-        "abstractCamp",
-      );
+      const camps: Camp[] | null = await MgCamp.find({}).populate("baseCamp");
 
       if (!camps) {
         return [];
       }
 
       return camps.map((camp) => {
-        const abstractCamp = camp.abstractCamp as AbstractCamp;
+        const baseCamp = camp.baseCamp as BaseCamp;
         return {
           id: camp.id,
-          name: abstractCamp.name,
-          description: abstractCamp.description,
-          location: abstractCamp.location,
-          capacity: abstractCamp.capacity,
-          fee: abstractCamp.fee,
-          camperInfo: abstractCamp.camperInfo,
-          startDate: camp.startDate,
-          endDate: camp.endDate,
+          name: baseCamp.name,
+          description: baseCamp.description,
+          location: baseCamp.location,
+          fee: baseCamp.fee,
+          ageLower: baseCamp.ageLower,
+          ageUpper: baseCamp.ageUpper,
+          camperInfo: baseCamp.camperInfo,
+          capacity: camp.capacity,
+          dates: camp.dates.map((date) => date.toString()),
+          startTime: camp.startTime,
+          endTime: camp.endTime,
           active: camp.active,
         };
       });
@@ -84,7 +85,7 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
+  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     const baseCamp = new MgBaseCamp({
       name: camp.name,
       ageLower: camp.ageLower,
@@ -122,8 +123,6 @@ class CampService implements ICampService {
     return {
       /* eslint no-underscore-dangle: 0 */
       id: newCamp._id,
-      ageLower: newCamp.ageLower,
-      ageUpper: newCamp.ageUpper,
       baseCamp: baseCamp.id,
       campers: newCamp.campers.map((camper) => camper.toString()),
       capacity: newCamp.capacity,

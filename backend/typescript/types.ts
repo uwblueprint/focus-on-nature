@@ -80,6 +80,11 @@ export type CampDTO = {
   active: boolean;
 };
 
+export type GetCampDTO = Omit<
+  CampDTO & BaseCampDTO,
+  "baseCamp" | "campers" | "waitlist" | "camps"
+>;
+
 export type CreateCampDTO = Omit<
   CampDTO & BaseCampDTO,
   "id" | "baseCamp" | "campers" | "waitlist"

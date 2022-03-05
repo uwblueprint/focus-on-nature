@@ -2,7 +2,7 @@ import {
   CampDTO,
   CamperCSVInfoDTO,
   CreateCampDTO,
-  getCampDTO,
+  GetCampDTO,
 } from "../../types";
 
 interface ICampService {
@@ -12,7 +12,7 @@ interface ICampService {
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
-  getCamps(): Promise<getCampDTO[]>;
+  getCamps(): Promise<GetCampDTO[]>;
 
   /**
    * Get all campers associated with camps of id campId

@@ -3,7 +3,7 @@ import { BaseCamp } from "./baseCamp.model";
 import { Camper } from "./camper.model";
 
 export interface Camp extends BaseCamp {
-  baseCamp: Schema.Types.ObjectId;
+  baseCamp: BaseCamp | Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   capacity: number;
   waitlist: Schema.Types.ObjectId[];
