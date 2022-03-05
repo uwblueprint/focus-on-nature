@@ -44,30 +44,30 @@ campRouter.get("/csv/:id", async (req, res) => {
   }
 });
 
-campRouter.post("/waiver", async(req, res) => {
-  try{
+campRouter.post("/waiver", async (req, res) => {
+  try {
     const waiver = await waiverModel.updateOne(
       {
-        ...req.body
+        ...req.body,
       },
       {
-        ...req.body
+        ...req.body,
       },
-      {upsert: true}
-    )
-    res.status(200).json(waiver)
+      { upsert: true },
+    );
+    res.status(200).json(waiver);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
-})
+});
 
-campRouter.get("/waiver", async(req, res) => {
-  try{
-    const waiver = await waiverModel.findOne()
-    res.status(200).json(waiver)
+campRouter.get("/waiver", async (req, res) => {
+  try {
+    const waiver = await waiverModel.findOne();
+    res.status(200).json(waiver);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
-})
+});
 
 export default campRouter;
