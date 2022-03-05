@@ -2,13 +2,8 @@ import { Schema, model } from "mongoose";
 import { BaseCamp } from "./baseCamp.model";
 import { Camper } from "./camper.model";
 
-<<<<<<< HEAD
-export interface Camp extends AbstractCamp {
-  abstractCamp: AbstractCamp | Schema.Types.ObjectId;
-=======
 export interface Camp extends BaseCamp {
   baseCamp: Schema.Types.ObjectId;
->>>>>>> ce11e41841bf7bb7860f61ade769cf9f7cda24a5
   campers: (Camper | Schema.Types.ObjectId)[];
   capacity: number;
   waitlist: Schema.Types.ObjectId[];

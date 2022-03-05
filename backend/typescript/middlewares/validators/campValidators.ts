@@ -32,6 +32,9 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(req.body.ageUpper, "integer")) {
     return res.status(400).send(getApiValidationError("ageUpper", "integer"));
   }
+  if (req.body.ageUpper < req.body.ageLower) {
+    return res.status(400).send("ageUpper must be larger than ageLower");
+  }
   if (!validatePrimitive(req.body.capacity, "integer")) {
     return res.status(400).send(getApiValidationError("capacity", "integer"));
   }

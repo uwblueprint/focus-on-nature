@@ -56,10 +56,20 @@ export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
-export type CampDTO = {
+export type BaseCampDTO = {
   id: string;
   ageLower: number;
   ageUpper: number;
+  name: string;
+  description: string;
+  location: string;
+  fee: number;
+  camperInfo: string[];
+  camps: string[];
+};
+
+export type CampDTO = {
+  id: string;
   baseCamp: string;
   campers: string[];
   capacity: number;
@@ -69,21 +79,6 @@ export type CampDTO = {
   endTime: string;
   active: boolean;
 };
-
-export type BaseCampDTO = {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  fee: number;
-  camperInfo: string[];
-  camps: string[];
-};
-
-export type getCampDTO = Omit<
-  CampDTO & AbstractCampDTO,
-  "waitlist" | "campers" | "abstractCamp" | "camps"
->;
 
 export type CreateCampDTO = Omit<
   CampDTO & BaseCampDTO,
