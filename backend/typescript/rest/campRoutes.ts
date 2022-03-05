@@ -3,6 +3,7 @@ import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { createCampDtoValidator } from "../middlewares/validators/campValidators";
+import waiverModel from "../models/waiver.model";
 
 const campRouter: Router = Router();
 
@@ -42,5 +43,31 @@ campRouter.get("/csv/:id", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+campRouter.post("/waiver", async(req, res) => {
+  try{
+    const waiver = await waiverModel.updateOne(
+      {
+        ...req.body
+      },
+      {
+        ...req.body
+      },
+      {upsert: true}
+    )
+    res.status(200).json(waiver)
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+})
+
+campRouter.get("/waiver", async(req, res) => {
+  try{
+    const waiver = await waiverModel.findOne()
+    res.status(200).json(waiver)
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+})
 
 export default campRouter;
