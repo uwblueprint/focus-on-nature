@@ -3,6 +3,7 @@ import { DropOffType } from "../types";
 
 export interface Camper extends Document {
   id: string;
+  camp: Schema.Types.ObjectId,
   formResponses: Schema.Types.Mixed;
   dropOffType: DropOffType;
   registrationDate: Date;
