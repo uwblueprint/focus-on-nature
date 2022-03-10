@@ -2,17 +2,17 @@ import mongoose, { Schema, Document } from "mongoose";
 
 import { QuestionType } from "../types";
 
-export interface Question extends Document {
+export interface FormQuestion extends Document {
   id: string;
-  questionType: QuestionType;
+  type: QuestionType;
   question: string;
-  questionRequired: boolean;
+  required: boolean;
   description?: string;
   options?: string[];
 }
 
-const QuestionSchema: Schema = new Schema({
-  questionType: {
+const FormQuestionSchema: Schema = new Schema({
+  type: {
     type: String,
     required: true,
     enum: ["Text", "Multiple Choice", "Multiselect"],
@@ -25,14 +25,12 @@ const QuestionSchema: Schema = new Schema({
     type: Boolean,
     required: true,
   },
-  desciption: {
+  description: {
     type: String,
-    required: false,
   },
   options: {
     type: String,
-    required: false,
   },
 });
 
-export default mongoose.model<Question>("Question", QuestionSchema);
+export default mongoose.model<FormQuestion>("FormQuestion", FormQuestionSchema);
