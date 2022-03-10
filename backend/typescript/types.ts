@@ -2,6 +2,8 @@ export type Role = "Admin" | "CampLeader";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
+export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
+
 export type Token = {
   accessToken: string;
   refreshToken: string;
@@ -16,25 +18,27 @@ export type UserDTO = {
   active: boolean;
 };
 
+export type FormQuestionDTO = {
+  id: string;
+  type: QuestionType;
+  question: string;
+  required: boolean;
+  description?: string;
+  options?: string[];
+}
+
 export type CampLeaderDTO = UserDTO & { camps: string[] };
 
 export type CamperDTO = {
   id: string;
-  firstName: string;
-  lastName: string;
-  age: number;
-  contactName: string;
-  contactEmail: string;
-  contactNumber: string;
   camp: string;
-  hasCamera: boolean;
-  hasLaptop: boolean;
-  allergies: string;
-  additionalDetails: string;
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
+  formResponses: {
+    [key: string]: string
+  };
 };
 
 export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
@@ -64,7 +68,7 @@ export type BaseCampDTO = {
   description: string;
   location: string;
   fee: number;
-  camperInfo: string[];
+  formQuestions: FormQuestionDTO[];
   camps: string[];
 };
 

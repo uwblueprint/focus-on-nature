@@ -8,7 +8,7 @@ export interface BaseCamp extends Document {
   description: string;
   location: string;
   fee: number;
-  camperInfo: string[];
+  formQuestions: Schema.Types.ObjectId[];
   camps: Schema.Types.ObjectId[];
 }
 
@@ -36,9 +36,14 @@ const BaseCampSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  camperInfo: {
-    type: [String],
-    default: [],
+  formQuestions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "FormQuestion"
+      }
+    ],
+    required: true,
   },
   camps: {
     type: [
