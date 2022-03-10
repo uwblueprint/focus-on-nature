@@ -15,7 +15,7 @@ const FormQuestionSchema: Schema = new Schema({
   type: {
     type: String,
     required: true,
-    enum: ["Text", "Multiple Choice", "Multiselect"],
+    enum: ["Text", "MultipleChoice", "Multiselect"],
   },
   question: {
     type: String,

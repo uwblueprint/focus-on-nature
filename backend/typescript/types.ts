@@ -2,7 +2,7 @@ export type Role = "Admin" | "CampLeader";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
-export type QuestionType = "Text" | "Multiple Choice" | "Multiselect";
+export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
 export type Token = {
   accessToken: string;
