@@ -68,7 +68,7 @@ export type BaseCampDTO = {
   description: string;
   location: string;
   fee: number;
-  questions: FormQuestionDTO[];
+  formQuestions: FormQuestionDTO[];
   camps: string[];
 };
 
