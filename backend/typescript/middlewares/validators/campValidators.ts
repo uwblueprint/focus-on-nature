@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
   validateArray,
@@ -41,10 +42,18 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
-  if (req.body.camperInfo && !validateArray(req.body.camperInfo, "string")) {
+
+  if (
+    req.body.formQuestions &&
+    Array.isArray(req.body.formQuestions) &&
+    !req.body.formQuestions.every((formQuestion: any) => {
+      if (!validateFormQuestion(formQuestion)) return false;
+      return true;
+    })
+  ) {
     return res
       .status(400)
-      .send(getApiValidationError("camperInfo", "string", true));
+      .send(getApiValidationError("formQuestion", "string", true));
   }
 
   if (req.body.dates && !validateArray(req.body.dates, "string")) {
