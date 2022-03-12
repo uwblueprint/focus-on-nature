@@ -30,11 +30,10 @@ class CampService implements ICampService {
       const campers = camp.campers as Camper[];
 
       return campers.map((camper) => ({
-        dropOffType: camper.dropOffType,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
-        formResponses: { key: "beans" },
+        formResponses: camper.formResponses,
       }));
     } catch (error: unknown) {
       Logger.error(
