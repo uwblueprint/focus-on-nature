@@ -1,9 +1,4 @@
-import {
-  CreateCampDTO,
-  CampDTO,
-  CamperCSVInfoDTO,
-  FormQuestionDTO,
-} from "../../types";
+import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
@@ -46,19 +41,21 @@ class CampService implements ICampService {
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     let baseCamp: BaseCamp;
     let newCamp: Camp;
-    var formQuestionIDs: string[] = [];
+    let formQuestionIDs: string[] = [];
     try {
-      for (const formQuestion of camp.formQuestions) {
-        const question = await MgFormQuestion.create({
-          id: formQuestion.id,
-          type: formQuestion.type,
-          question: formQuestion.question,
-          required: formQuestion.required,
-          description: formQuestion.description,
-          options: formQuestion.options,
-        });
-        formQuestionIDs.push(question._id);
-      }
+      await Promise.all(
+        camp.formQuestions.map(async (formQuestion, i) => {
+          const question = await MgFormQuestion.create({
+            id: formQuestion.id,
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIDs[i] = question._id;
+        }),
+      );
 
       baseCamp = new MgBaseCamp({
         name: camp.name,
@@ -93,9 +90,9 @@ class CampService implements ICampService {
         });
       } catch (error: unknown) {
         // rollback incomplete camp creation
-        for (const formQuestionID of formQuestionIDs) {
-          MgFormQuestion.deleteOne({ _id: formQuestionID });
-        }
+        formQuestionIDs.forEach((formQuestionID) =>
+          MgFormQuestion.deleteOne({ _id: formQuestionID }),
+        );
 
         MgCamp.findByIdAndDelete(baseCamp.id);
 

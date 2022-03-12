@@ -9,15 +9,12 @@ const FormTemplateSchema: Schema = new Schema({
   questions: {
     type: [
       {
-        type: Schema.Types.ObjectId, 
-        ref: "FormQuestion"
+        type: Schema.Types.ObjectId,
+        ref: "FormQuestion",
       },
     ],
     required: true,
-  }
+  },
 });
 
-export default mongoose.model<FormTemplate>(
-  "FormTemplate",
-  FormTemplateSchema,
-);
+export default mongoose.model<FormTemplate>("FormTemplate", FormTemplateSchema);
