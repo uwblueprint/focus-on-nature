@@ -23,6 +23,14 @@ interface ICamperService {
    * @throws Error if camper retrieval fails
    */
   getCampersByCampId(campId: string): Promise<Array<CamperDTO>>;
+
+  /**
+   * Get campers associated with charge id
+   * @param chargeId camper's charge id for refunds
+   * @returns CamperDTO
+   * @throws Error if camper retrieval fails
+   */
+  getCamperByChargeId(chargeId: number): Promise<CamperDTO>;
 }
 
 export default ICamperService;

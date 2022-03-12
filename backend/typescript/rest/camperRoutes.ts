@@ -76,4 +76,16 @@ camperRouter.get("/", async (req, res) => {
   }
 });
 
+camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const camper = camperService.getCamperByChargeId(
+      (chargeId as unknown) as number,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 export default camperRouter;
