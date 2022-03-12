@@ -1,4 +1,5 @@
 import { Schema, Document, model } from "mongoose";
+import { FormQuestion } from "./formQuestion.model";
 
 export interface BaseCamp extends Document {
   id: string;
@@ -8,7 +9,7 @@ export interface BaseCamp extends Document {
   description: string;
   location: string;
   fee: number;
-  formQuestions: Schema.Types.ObjectId[];
+  formQuestions: FormQuestion[] | Schema.Types.ObjectId[];
   camps: Schema.Types.ObjectId[];
 }
 
@@ -40,8 +41,8 @@ const BaseCampSchema: Schema = new Schema({
     type: [
       {
         type: Schema.Types.ObjectId,
-        ref: "FormQuestion"
-      }
+        ref: "FormQuestion",
+      },
     ],
     required: true,
   },
