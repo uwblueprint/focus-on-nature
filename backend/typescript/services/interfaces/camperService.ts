@@ -1,4 +1,4 @@
-import { CreateCamperDTO, CamperDTO } from "../../types";
+import { CreateCamperDTO, UpdateCamperDTO, CamperDTO } from "../../types";
 
 interface ICamperService {
   /**
@@ -7,14 +7,14 @@ interface ICamperService {
    * @returns a CamperDTO with the created camper's information
    * @throws Error if user creation fails
    */
-  createCamper(camper: CreateCamperDTO): Promise<CamperDTO>;
+  // createCamper(camper: CreateCamperDTO): Promise<CamperDTO>;
 
   /**
    * Get all campers and their information
    * @returns array of CamperDTOs
    * @throws Error if camper retrieval fails
    */
-  getAllCampers(): Promise<Array<CamperDTO>>;
+  // getAllCampers(): Promise<Array<CamperDTO>>;
 
   /**
    * Get campers associated with camp id
@@ -22,7 +22,18 @@ interface ICamperService {
    * @returns array of CamperDTOs
    * @throws Error if camper retrieval fails
    */
-  getCampersByCampId(campId: string): Promise<Array<CamperDTO>>;
+  // getCampersByCampId(campId: string): Promise<Array<CamperDTO>>;
+
+  /**
+   * @param camperId camper's id
+   * @param camper the camper to be updated
+   * @returns a CamperDTO with the updated camper's information
+   * @throws Error if camper update fails
+   */
+  updateCamperById(
+    camperId: string,
+    camper: UpdateCamperDTO,
+  ): Promise<CamperDTO>;
 }
 
 export default ICamperService;

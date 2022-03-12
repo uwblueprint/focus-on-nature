@@ -3,8 +3,10 @@ import { DropOffType } from "../types";
 
 export interface Camper extends Document {
   id: string;
-  camp: Schema.Types.ObjectId,
-  formResponses: Schema.Types.Mixed;
+  camp: Schema.Types.ObjectId;
+  formResponses: {
+    [key: string]: string;
+  };
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
@@ -19,6 +21,11 @@ const CamperSchema: Schema = new Schema({
   formResponses: {
     type: Schema.Types.Mixed,
     required: true,
+  },
+  dropOffType: {
+    type: String,
+    required: true,
+    enum: ["EarlyDropOff", "LatePickUp"],
   },
   registrationDate: {
     type: Date,

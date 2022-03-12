@@ -25,7 +25,7 @@ export type FormQuestionDTO = {
   required: boolean;
   description?: string;
   options?: string[];
-}
+};
 
 export type CampLeaderDTO = UserDTO & { camps: string[] };
 
@@ -37,7 +37,7 @@ export type CamperDTO = {
   hasPaid: boolean;
   chargeId: number;
   formResponses: {
-    [key: string]: string
+    [key: string]: string;
   };
 };
 
@@ -89,6 +89,8 @@ export type CreateCampDTO = Omit<
   "id" | "baseCamp" | "campers" | "waitlist"
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
+
+export type UpdateCamperDTO = Omit<CamperDTO, "id">;
 
 export type AuthDTO = Token & UserDTO;
 
