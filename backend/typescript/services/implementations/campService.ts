@@ -41,7 +41,7 @@ class CampService implements ICampService {
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     let baseCamp: BaseCamp;
     let newCamp: Camp;
-    let formQuestionIDs: string[] = [];
+    const formQuestionIDs: string[] = [];
     try {
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
