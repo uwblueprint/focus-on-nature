@@ -4,6 +4,7 @@ import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { createCampDtoValidator } from "../middlewares/validators/campValidators";
 import waiverModel from "../models/waiver.model";
+import { runInNewContext } from "vm";
 
 const campRouter: Router = Router();
 
@@ -46,15 +47,25 @@ campRouter.get("/csv/:id", async (req, res) => {
 
 campRouter.post("/waiver", async (req, res) => {
   try {
+    console.log(req.body)
     const waiver = await waiverModel.updateOne(
       {
-        ...req.body,
+        paragraphs: {'$exists': true}
       },
       {
-        ...req.body,
+        $set: {paragraphs: req.body}
       },
-      { upsert: true },
-    );
+      {upsert: true}
+    )
+    // const waiver = await waiverModel.updateOne(
+    //   {
+    //     ...req.body,
+    //   },
+    //   {
+    //     ...req.body,
+    //   },
+    //   { upsert: true },
+    // );
     res.status(200).json(waiver);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
