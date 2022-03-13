@@ -46,7 +46,6 @@ class CampService implements ICampService {
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
           const question = await MgFormQuestion.create({
-            id: formQuestion.id,
             type: formQuestion.type,
             question: formQuestion.question,
             required: formQuestion.required,

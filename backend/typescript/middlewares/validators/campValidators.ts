@@ -47,8 +47,7 @@ export const createCampDtoValidator = async (
     req.body.formQuestions &&
     Array.isArray(req.body.formQuestions) &&
     !req.body.formQuestions.every((formQuestion: any) => {
-      if (!validateFormQuestion(formQuestion)) return false;
-      return true;
+      return validateFormQuestion(formQuestion);
     })
   ) {
     return res
