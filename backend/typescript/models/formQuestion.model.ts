@@ -29,7 +29,7 @@ const FormQuestionSchema: Schema = new Schema({
     type: String,
   },
   options: {
-    type: String,
+    type: [String],
   },
 });
 
