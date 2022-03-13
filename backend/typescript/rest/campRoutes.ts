@@ -44,32 +44,3 @@ campRouter.get("/csv/:id", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
-
-campRouter.post("/waiver", async (req, res) => {
-  try {
-    console.log(req.body)
-    const waiver = await waiverModel.updateOne(
-      {
-        clauses: {'$exists': true}
-      },
-      {
-        $set: {clauses: req.body}
-      },
-      {upsert: true}
-    )
-    res.status(200).json(waiver);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
-
-campRouter.get("/waiver", async (req, res) => {
-  try {
-    const waiver = await waiverModel.findOne();
-    res.status(200).json(waiver);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
-
-export default campRouter;
