@@ -100,3 +100,12 @@ export type NodemailerConfig = {
     refreshToken: string;
   };
 };
+
+export type ClauseDTO = {
+  text: string;
+  required: boolean;
+};
+
+export type WaiverDTO = {
+  clauses: ClauseDTO[];
+}; 

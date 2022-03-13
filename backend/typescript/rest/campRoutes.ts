@@ -50,22 +50,13 @@ campRouter.post("/waiver", async (req, res) => {
     console.log(req.body)
     const waiver = await waiverModel.updateOne(
       {
-        paragraphs: {'$exists': true}
+        clauses: {'$exists': true}
       },
       {
-        $set: {paragraphs: req.body}
+        $set: {clauses: req.body}
       },
       {upsert: true}
     )
-    // const waiver = await waiverModel.updateOne(
-    //   {
-    //     ...req.body,
-    //   },
-    //   {
-    //     ...req.body,
-    //   },
-    //   { upsert: true },
-    // );
     res.status(200).json(waiver);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
