@@ -3,8 +3,6 @@ import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { createCampDtoValidator } from "../middlewares/validators/campValidators";
-import waiverModel from "../models/waiver.model";
-import { runInNewContext } from "vm";
 
 const campRouter: Router = Router();
 

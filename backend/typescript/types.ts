@@ -108,4 +108,4 @@ export type ClauseDTO = {
 
 export type WaiverDTO = {
   clauses: ClauseDTO[];
-}; 
+};
