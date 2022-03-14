@@ -63,32 +63,32 @@ class CampService implements ICampService {
       }
       const campers = camp.campers as Camper[];
 
-      let camperCsvInfo: CamperCSVInfoDTO[] = [];
-
-      for (let camper of campers) {
-        const formResponses = camper.formResponses;
-        let formResponseObject: { [key: string]: string } = {};
-        for (const questionId of Array.from(formResponses.keys())) {
-          const formQuestion = await MgFormQuestion.findById(
-            questionId,
-            "question",
+      return await Promise.all(
+        campers.map(async (camper) => {
+          const { formResponses } = camper;
+          const formResponseObject: { [key: string]: string } = {};
+          const formQuestionsPromise = Array.from(formResponses.keys()).map(
+            (questionId) => {
+              return MgFormQuestion.findById(questionId, "question");
+            },
           );
+          const formQuestions = await Promise.all(formQuestionsPromise);
+          formQuestions.forEach((formQuestion) => {
+            if (formQuestion) {
+              const { id, question } = formQuestion;
+              const answer = formResponses.get(id) as string;
 
-          if (!formQuestion) continue;
-          const { question } = formQuestion;
-          const answer = formResponses.get(questionId) as string;
-
-          formResponseObject[question] = answer;
-
-          camperCsvInfo.push({
+              formResponseObject[question] = answer;
+            }
+          });
+          return {
             formResponses: formResponseObject,
             registrationDate: camper.registrationDate,
             hasPaid: camper.hasPaid,
             chargeId: camper.chargeId,
-          });
-        }
-      }
-      return camperCsvInfo;
+          };
+        }),
+      );
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
