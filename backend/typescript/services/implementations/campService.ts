@@ -3,6 +3,7 @@ import {
   CampDTO,
   CamperCSVInfoDTO,
   GetCampDTO,
+  FormQuestionDTO,
 } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCamp, { Camp } from "../../models/camp.model";
@@ -11,7 +12,7 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
-import MgFormQuestion from "../../models/formQuestion.model";
+import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
 
@@ -22,6 +23,10 @@ class CampService implements ICampService {
       const camps: Camp[] | null = await MgCamp.find({}).populate({
         path: "baseCamp",
         model: MgBaseCamp,
+        populate: {
+          path: "formQuestions",
+          model: MgFormQuestion,
+        },
       });
 
       if (!camps) {
@@ -30,12 +35,36 @@ class CampService implements ICampService {
 
       return camps.map((camp) => {
         const baseCamp = camp.baseCamp as BaseCamp;
+        const formQuestionArr = baseCamp.formQuestions as FormQuestion[];
+        const formQuestions = formQuestionArr.map(
+          (formQuestion: FormQuestion) => {
+            const {
+              id,
+              type,
+              question,
+              required,
+              description,
+              options,
+            } = formQuestion;
+            let result: FormQuestionDTO = { id, type, question, required };
+            if (description) {
+              result = { ...result, description };
+            }
+            if (options) {
+              result = { ...result, options };
+            }
+
+            return result;
+          },
+        );
+
         return {
           id: camp.id,
           name: baseCamp.name,
           description: baseCamp.description,
           location: baseCamp.location,
           fee: baseCamp.fee,
+          formQuestions,
           ageLower: baseCamp.ageLower,
           ageUpper: baseCamp.ageUpper,
           capacity: camp.capacity,

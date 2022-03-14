@@ -86,7 +86,7 @@ export type CampDTO = {
 
 export type GetCampDTO = Omit<
   CampDTO & BaseCampDTO,
-  "baseCamp" | "formQuestions" | "campers" | "waitlist" | "camps"
+  "baseCamp" | "campers" | "waitlist" | "camps"
 >;
 
 export type CreateCampDTO = Omit<
