@@ -1,11 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { FormResponse } from "./formResponse.model";
 import { DropOffType } from "../types";
 
 export interface Camper extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
-  formResponses: FormResponse[] | Schema.Types.ObjectId[];
+  formResponses: Map<string, string>;
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
@@ -18,13 +17,8 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   formResponses: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "FormResponse",
-      },
-    ],
-    default: [],
+    type: Map,
+    of: String,
   },
   registrationDate: {
     type: Date,

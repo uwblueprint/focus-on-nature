@@ -13,7 +13,6 @@ import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
-import MgFormResponse, { FormResponse } from "../../models/formResponse.model";
 
 const Logger = logger(__filename);
 
@@ -58,14 +57,6 @@ class CampService implements ICampService {
       const camp: Camp | null = await MgCamp.findById(campId).populate({
         path: "campers",
         model: MgCamper,
-        populate: {
-          path: "formResponses",
-          model: MgFormResponse,
-          populate: {
-            path: "question",
-            model: MgFormQuestion,
-          },
-        },
       });
 
       if (!camp) {
@@ -74,79 +65,87 @@ class CampService implements ICampService {
 
       const campers = camp.campers as Camper[];
 
-      return campers.map((camper) => {
-        const formResponses = camper.formResponses as FormResponse[];
-        const formResponseObject = formResponses.map((response) => {
-          const questionRef = response.question as FormQuestion;
-          const question = questionRef.question;
-          const answer = response.answer;
-          return {
-            question,
-            answer,
-          };
-        });
-        return {
-          formResponseObject,
-          dropOffType: camper.dropOffType,
-          registrationDate: camper.registrationDate,
-          hasPaid: camper.hasPaid,
-          chargeId: camper.chargeId,
-        };
-      });
+      let camperCsvInfo: CamperCSVInfoDTO[] = [];
+
+      for (let camper of campers) {
+        const formResponses = camper.formResponses;
+        let formResponseObject: { [key: string]: string } = {};
+        for (const questionId of Array.from(formResponses.keys())) {
+          const formQuestion = await MgFormQuestion.findById(
+            questionId,
+            "question",
+          );
+
+          if (!formQuestion) continue;
+          const { question } = formQuestion;
+          const answer = formResponses.get(questionId) as string;
+
+          formResponseObject[question] = answer;
+
+          camperCsvInfo.push({
+            formResponses: formResponseObject,
+            dropOffType: camper.dropOffType,
+            registrationDate: camper.registrationDate,
+            hasPaid: camper.hasPaid,
+            chargeId: camper.chargeId,
+          });
+        }
+      }
+      return camperCsvInfo;
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
-  // async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-  //   const baseCamp = new MgBaseCamp({
-  //     name: camp.name,
-  //     ageLower: camp.ageLower,
-  //     ageUpper: camp.ageUpper,
-  //     description: camp.description,
-  //     location: camp.location,
-  //     fee: camp.fee,
-  //     camperInfo: camp.camperInfo,
-  //   });
-  //   const newCamp = new MgCamp({
-  //     baseCamp,
-  //     campers: [],
-  //     capacity: camp.capacity,
-  //     waitlist: [],
-  //     startTime: camp.startTime,
-  //     endTime: camp.endTime,
-  //     dates: camp.dates,
-  //     active: camp.active,
-  //   });
+  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
+    const baseCamp = new MgBaseCamp({
+      name: camp.name,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      description: camp.description,
+      location: camp.location,
+      fee: camp.fee,
+      camperInfo: camp.camperInfo,
+    });
+    const newCamp = new MgCamp({
+      baseCamp,
+      campers: [],
+      capacity: camp.capacity,
+      waitlist: [],
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      dates: camp.dates,
+      active: camp.active,
+    });
 
-  //   try {
-  //     /* eslint no-underscore-dangle: 0 */
+    try {
+      /* eslint no-underscore-dangle: 0 */
 
-  //     baseCamp.camps.push(newCamp._id);
-  //     await baseCamp.save((err) => {
-  //       if (err) throw err;
-  //     });
-  //     await newCamp.save((err) => {
-  //       if (err) throw err;
-  //     });
-  //   } catch (error: unknown) {
-  //     Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
-  //     throw error;
-  //   }
-  //   return {
-  //     /* eslint no-underscore-dangle: 0 */
-  //     id: newCamp._id,
-  //     baseCamp: baseCamp.id,
-  //     campers: newCamp.campers.map((camper) => camper.toString()),
-  //     capacity: newCamp.capacity,
-  //     dates: newCamp.dates.map((date) => date.toString()),
-  //     waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-  //     startTime: newCamp.startTime.toString(),
-  //     endTime: newCamp.endTime.toString(),
-  //     active: newCamp.active,
-  //   };
-  // }
+      baseCamp.camps.push(newCamp._id);
+      await baseCamp.save((err) => {
+        if (err) throw err;
+      });
+      await newCamp.save((err) => {
+        if (err) throw err;
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+    return {
+      /* eslint no-underscore-dangle: 0 */
+      id: newCamp._id,
+      baseCamp: baseCamp.id,
+      campers: newCamp.campers.map((camper) => camper.toString()),
+      capacity: newCamp.capacity,
+      dates: newCamp.dates.map((date) => date.toString()),
+      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
+      startTime: newCamp.startTime.toString(),
+      endTime: newCamp.endTime.toString(),
+      active: newCamp.active,
+    };
+  }
 
   async generateCampersCSV(campId: string): Promise<string> {
     try {
@@ -158,19 +157,12 @@ class CampService implements ICampService {
       }
 
       const flattenedCampers = campers.map((camper) => {
-        const { formResponseObject, ...camperObj } = camper;
-        let flattenedFormObject: { [key: string]: string } = {};
-
-        formResponseObject.forEach((response) => {
-          flattenedFormObject[response.question] = response.answer;
-        });
-
+        const { formResponses, ...formObj } = camper;
         return {
-          ...flattenedFormObject,
-          ...camperObj,
+          ...formResponses,
+          ...formObj,
         };
       });
-
       // grabbing column names
       const fields = Object.keys(flattenedCampers[0]);
       const csvString = await generateCSV({ data: flattenedCampers, fields });

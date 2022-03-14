@@ -27,11 +27,6 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
-export type FormResponseDTO = {
-  question: string;
-  answer: string;
-};
-
 export type CampLeaderDTO = UserDTO & { camps: string[] };
 
 export type CamperDTO = {
@@ -41,13 +36,13 @@ export type CamperDTO = {
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
-  formResponses: { [key: string]: string };
+  formResponses: Map<string, string>;
 };
 
 export type CamperCSVInfoDTO = Omit<
-  CamperDTO & { formResponseObject: FormResponseDTO[] },
+  CamperDTO,
   "id" | "camp" | "formResponses"
->;
+> & { formResponses: { [key: string]: string } };
 
 export type WaitlistedCamperDTO = {
   id: string;
