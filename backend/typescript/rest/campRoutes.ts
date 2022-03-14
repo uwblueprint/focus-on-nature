@@ -33,7 +33,7 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
       endTime: req.body.endTime,
       dates: req.body.dates,
       fee: req.body.fee,
-      camperInfo: req.body.camperInfo,
+      formQuestions: req.body.formQuestions,
       camps: req.body.camps,
     });
 

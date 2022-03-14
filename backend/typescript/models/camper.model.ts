@@ -1,11 +1,9 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { DropOffType } from "../types";
 
 export interface Camper extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
   formResponses: Map<string, string>;
-  dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;

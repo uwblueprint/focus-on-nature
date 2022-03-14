@@ -22,7 +22,7 @@ interface ICampService {
    */
   getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]>;
 
-  createCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
+  createCamp(user: CreateCampDTO): Promise<CampDTO>;
 
   //  createBaseCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
 
