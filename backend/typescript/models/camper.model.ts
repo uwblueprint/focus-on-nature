@@ -4,7 +4,7 @@ import { DropOffType } from "../types";
 export interface Camper extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
-  formResponses: Map<string, string>; 
+  formResponses: Map<string, string>;
   dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
@@ -18,7 +18,7 @@ const CamperSchema: Schema = new Schema({
   },
   formResponses: {
     type: Map,
-    of: String, 
+    of: String,
   },
   dropOffType: {
     type: String,

@@ -157,7 +157,7 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
-          //camp: camper.camp,
+          // camp: camper.camp,
           formResponses: camper.formResponses,
           dropOffType: camper.dropOffType,
           registrationDate: camper.registrationDate,

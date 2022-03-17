@@ -1,7 +1,10 @@
 import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
-import { createCamperDtoValidator, updateCamperDtoValidator } from "../middlewares/validators/camperValidators";
+import {
+  createCamperDtoValidator,
+  updateCamperDtoValidator,
+} from "../middlewares/validators/camperValidators";
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
@@ -9,7 +12,7 @@ import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO } from "../types";
 
 const camperRouter: Router = Router();
-camperRouter.use(isAuthorizedByRole(new Set(["Admin"])))
+camperRouter.use(isAuthorizedByRole(new Set(["Admin"])));
 
 const camperService: ICamperService = new CamperService();
 
@@ -28,7 +31,7 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
-}); 
+});
 
 /* Get all campers, optionally filter by camp ID */
 camperRouter.get("/", async (req, res) => {
@@ -67,7 +70,7 @@ camperRouter.get("/", async (req, res) => {
       }
     }
   }
-}); 
+});
 
 /* Update the camper with the specified camperId */
 camperRouter.put("/:camperId", updateCamperDtoValidator, async (req, res) => {
