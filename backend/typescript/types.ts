@@ -36,9 +36,7 @@ export type CamperDTO = {
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
-  formResponses: {
-    [key: string]: string;
-  };
+  formResponses: Map<string, string>; 
 };
 
 export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;

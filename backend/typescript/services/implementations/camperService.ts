@@ -23,14 +23,6 @@ class CamperService implements ICamperService {
         const newCamp: Camp | null = await MgCamp.findById(camper.camp);
         const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
 
-        /* if (!newCamp) {
-          throw new Error(`Error: new camp does not exist`);
-        }
-
-        if (!oldCamp) {
-          throw new Error(`Error: old camp does not exist`);
-        } */
-
         if (
           newCamp &&
           oldCamp &&
@@ -46,7 +38,7 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
-          // camp: camper.camp,
+          //camp: camper.camp,
           formResponses: camper.formResponses,
           dropOffType: camper.dropOffType,
           registrationDate: camper.registrationDate,
