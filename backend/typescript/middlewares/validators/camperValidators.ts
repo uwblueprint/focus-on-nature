@@ -55,7 +55,7 @@ export const updateCamperDtoValidator = async (
   ) {
     return res
       .status(400)
-      .send(getApiValidationError("formResponses", "string", true));
+      .send(getApiValidationError("formResponses", "mixed", true));
   }
   if (
     req.body.dropOffType &&

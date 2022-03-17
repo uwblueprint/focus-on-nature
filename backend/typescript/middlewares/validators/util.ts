@@ -2,6 +2,7 @@ type Type =
   | "string"
   | "integer"
   | "boolean"
+  | "mixed"
   | "Date string"
   | "24 hr time string";
 
