@@ -79,7 +79,7 @@ export const validateUserEmail = (userEmail: string): boolean => {
   );
 };
 
-export const validateFormResponses = (
+export const validateMap = (
   formResponses: any,
   keyType: Type,
   valueType: Type,

@@ -3,7 +3,7 @@ import {
   getApiValidationError,
   validatePrimitive,
   validateDate,
-  validateFormResponses,
+  validateMap,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -18,7 +18,7 @@ export const createCamperDtoValidator = async (
   }
   if (
     req.body.formResponses &&
-    !validateFormResponses(req.body.formResponses, "string", "string")
+    !validateMap(req.body.formResponses, "string", "string")
   ) {
     return res
       .status(400)
