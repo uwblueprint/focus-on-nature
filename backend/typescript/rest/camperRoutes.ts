@@ -9,7 +9,7 @@ import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO } from "../types";
 
 const camperRouter: Router = Router();
-// camperRouter.use(isAuthorizedByRole(new Set(["Admin"])))
+camperRouter.use(isAuthorizedByRole(new Set(["Admin"])))
 
 const camperService: ICamperService = new CamperService();
 
