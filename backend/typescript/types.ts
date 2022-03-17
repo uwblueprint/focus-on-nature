@@ -32,7 +32,6 @@ export type CampLeaderDTO = UserDTO & { camps: string[] };
 export type CamperDTO = {
   id: string;
   camp: string;
-  dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
