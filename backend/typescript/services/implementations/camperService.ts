@@ -133,8 +133,14 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
-  async getCampersByCampId(campId: string): Promise<Array<CamperDTO>> {
+  async getCampersByCampId(
+    campId: string,
+  ): Promise<{
+    campers: CamperDTO[];
+    waitlistedCampers: WaitlistedCamperDTO[];
+  }> {
     let camperDtos: Array<CamperDTO> = [];
+    let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
       const existingCamp: Camp | null = await MgCamp.findById(campId).populate({
@@ -168,12 +174,27 @@ class CamperService implements ICamperService {
           chargeId: camper.chargeId,
         };
       });
+
+      const waitlistedCampers = existingCamp.waitlist as WaitlistedCamper[];
+
+      waitlistedCamperDtos = waitlistedCampers.map((camper) => {
+        return {
+          id: camper.id,
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          contactName: camper.contactName,
+          contactEmail: camper.contactEmail,
+          contactNumber: camper.contactNumber,
+          camp: camper.camp ? camper.camp.toString() : "",
+        };
+      });
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
 
-    return camperDtos;
+    return { campers: camperDtos, waitlistedCampers: waitlistedCamperDtos };
   }
 
   async createWaitlistedCamper(

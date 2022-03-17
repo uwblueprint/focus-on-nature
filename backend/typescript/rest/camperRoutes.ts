@@ -5,7 +5,7 @@ import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO } from "../types";
+import { CamperDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
@@ -65,7 +65,10 @@ camperRouter.get("/", async (req, res) => {
     } else {
       try {
         const campers = await camperService.getCampersByCampId(campId);
-        await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
+        await sendResponseByMimeType<{
+          campers: CamperDTO[];
+          waitlistedCampers: WaitlistedCamperDTO[];
+        }>(res, 200, contentType, campers);
       } catch (error: unknown) {
         await sendResponseByMimeType(res, 500, contentType, [
           {

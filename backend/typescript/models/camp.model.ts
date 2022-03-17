@@ -1,12 +1,13 @@
 import { Schema, model } from "mongoose";
 import { BaseCamp } from "./baseCamp.model";
 import { Camper } from "./camper.model";
+import { WaitlistedCamper } from "./waitlistedCamper.model";
 
 export interface Camp extends BaseCamp {
   baseCamp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   capacity: number;
-  waitlist: Schema.Types.ObjectId[];
+  waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
   dates: Date[];
   startTime: string;
   endTime: string;
