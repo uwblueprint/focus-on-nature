@@ -1,8 +1,7 @@
 import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
-// import { createCamperDtoValidator, updateCamperDtoValidator } from "../middlewares/validators/camperValidators";
-import { updateCamperDtoValidator } from "../middlewares/validators/camperValidators";
+import { createCamperDtoValidator, updateCamperDtoValidator } from "../middlewares/validators/camperValidators";
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
@@ -15,7 +14,7 @@ const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
-/* camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
+camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
     const newCamper = await camperService.createCamper({
       firstName: req.body.firstName,
@@ -39,10 +38,10 @@ const camperService: ICamperService = new CamperService();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
-}); */
+}); 
 
 /* Get all campers, optionally filter by camp ID */
-/* camperRouter.get("/", async (req, res) => {
+camperRouter.get("/", async (req, res) => {
   const { campId } = req.query;
   const contentType = req.headers["content-type"];
   if (!campId) {
@@ -78,7 +77,7 @@ const camperService: ICamperService = new CamperService();
       }
     }
   }
-}); */
+}); 
 
 /* Update the camper with the specified camperId */
 camperRouter.put("/:camperId", updateCamperDtoValidator, async (req, res) => {
