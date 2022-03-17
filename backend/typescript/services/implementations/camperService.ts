@@ -14,21 +14,11 @@ class CamperService implements ICamperService {
     let existingCamp: Camp | null;
     try {
       newCamper = await MgCamper.create({
-        firstName: camper.firstName,
-        lastName: camper.lastName,
-        age: camper.age,
-        contactName: camper.contactName,
-        contactEmail: camper.contactEmail,
-        contactNumber: camper.contactNumber,
         camp: camper.camp,
-        hasCamera: camper.hasCamera,
-        hasLaptop: camper.hasLaptop,
-        allergies: camper.allergies,
-        additionalDetails: camper.additionalDetails,
-        dropOffType: camper.dropOffType,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
+        formResponses: camper.formResponses,
       });
 
       try {
@@ -74,21 +64,11 @@ class CamperService implements ICamperService {
 
     return {
       id: newCamper.id,
-      firstName: newCamper.firstName,
-      lastName: newCamper.lastName,
-      age: newCamper.age,
-      contactName: newCamper.contactName,
-      contactEmail: newCamper.contactEmail,
-      contactNumber: newCamper.contactNumber,
       camp: camper.camp,
-      hasCamera: newCamper.hasCamera,
-      hasLaptop: newCamper.hasLaptop,
-      allergies: newCamper.allergies,
-      additionalDetails: newCamper.additionalDetails,
-      dropOffType: newCamper.dropOffType,
       registrationDate: newCamper.registrationDate,
       hasPaid: newCamper.hasPaid,
       chargeId: newCamper.chargeId,
+      formResponses: camper.formResponses,
     };
   }
 
@@ -100,21 +80,11 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          firstName: camper.firstName,
-          lastName: camper.lastName,
-          age: camper.age,
-          contactName: camper.contactName,
-          contactEmail: camper.contactEmail,
-          contactNumber: camper.contactNumber,
           camp: camper.camp ? camper.camp.toString() : "",
-          hasCamera: camper.hasCamera,
-          hasLaptop: camper.hasLaptop,
-          allergies: camper.allergies,
-          additionalDetails: camper.additionalDetails,
-          dropOffType: camper.dropOffType,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          formResponses: camper.formResponses,
         };
       });
     } catch (error: unknown) {
@@ -143,21 +113,11 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          firstName: camper.firstName,
-          lastName: camper.lastName,
-          age: camper.age,
-          contactName: camper.contactName,
-          contactEmail: camper.contactEmail,
-          contactNumber: camper.contactNumber,
           camp: camper.camp ? camper.camp.toString() : "",
-          hasCamera: camper.hasCamera,
-          hasLaptop: camper.hasLaptop,
-          allergies: camper.allergies,
-          additionalDetails: camper.additionalDetails,
-          dropOffType: camper.dropOffType,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          formResponses: camper.formResponses,
         };
       });
     } catch (error: unknown) {
