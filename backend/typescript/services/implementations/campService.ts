@@ -5,7 +5,8 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgBaseCamp from "../../models/baseCamp.model";
+import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
+import MgFormQuestion from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
 
@@ -21,24 +22,13 @@ class CampService implements ICampService {
       if (!camp) {
         throw new Error(`Camp with id ${campId} not found.`);
       }
-
       const campers = camp.campers as Camper[];
 
       return campers.map((camper) => ({
-        firstName: camper.firstName,
-        lastName: camper.lastName,
-        age: camper.age,
-        contactName: camper.contactName,
-        contactEmail: camper.contactEmail,
-        contactNumber: camper.contactNumber,
-        hasCamera: camper.hasCamera,
-        hasLaptop: camper.hasLaptop,
-        allergies: camper.allergies,
-        additionalDetails: camper.additionalDetails,
-        dropOffType: camper.dropOffType,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
+        formResponses: camper.formResponses,
       }));
     } catch (error: unknown) {
       Logger.error(
@@ -48,41 +38,75 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(camp: CreateCampDTO, authId?: string): Promise<CampDTO> {
-    const baseCamp = new MgBaseCamp({
-      name: camp.name,
-      ageLower: camp.ageLower,
-      ageUpper: camp.ageUpper,
-      description: camp.description,
-      location: camp.location,
-      fee: camp.fee,
-      camperInfo: camp.camperInfo,
-    });
-    const newCamp = new MgCamp({
-      baseCamp,
-      campers: [],
-      capacity: camp.capacity,
-      waitlist: [],
-      startTime: camp.startTime,
-      endTime: camp.endTime,
-      dates: camp.dates,
-      active: camp.active,
-    });
-
+  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
+    let baseCamp: BaseCamp;
+    let newCamp: Camp;
+    const formQuestionIDs: string[] = [];
     try {
-      /* eslint no-underscore-dangle: 0 */
+      await Promise.all(
+        camp.formQuestions.map(async (formQuestion, i) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIDs[i] = question._id;
+        }),
+      );
 
-      baseCamp.camps.push(newCamp._id);
-      await baseCamp.save((err) => {
-        if (err) throw err;
+      baseCamp = new MgBaseCamp({
+        name: camp.name,
+        ageLower: camp.ageLower,
+        ageUpper: camp.ageUpper,
+        description: camp.description,
+        location: camp.location,
+        fee: camp.fee,
+        formQuestions: formQuestionIDs,
       });
-      await newCamp.save((err) => {
-        if (err) throw err;
+
+      newCamp = new MgCamp({
+        baseCamp,
+        campers: [],
+        capacity: camp.capacity,
+        waitlist: [],
+        startTime: camp.startTime,
+        endTime: camp.endTime,
+        dates: camp.dates,
+        active: camp.active,
       });
+
+      try {
+        /* eslint no-underscore-dangle: 0 */
+        baseCamp.camps.push(newCamp._id);
+
+        await baseCamp.save((err) => {
+          if (err) throw err;
+        });
+        await newCamp.save((err) => {
+          if (err) throw err;
+        });
+      } catch (error: unknown) {
+        // rollback incomplete camp creation
+        formQuestionIDs.forEach((formQuestionID) =>
+          MgFormQuestion.deleteOne({ _id: formQuestionID }),
+        );
+
+        MgCamp.findByIdAndDelete(baseCamp.id);
+
+        MgBaseCamp.findByIdAndDelete(newCamp.id);
+
+        Logger.error(
+          `Failed to create camp. Reason = ${getErrorMessage(error)}`,
+        );
+        throw error;
+      }
     } catch (error: unknown) {
       Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
+
     return {
       /* eslint no-underscore-dangle: 0 */
       id: newCamp._id,

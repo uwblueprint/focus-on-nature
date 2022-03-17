@@ -40,8 +40,8 @@ const BaseCampSchema: Schema = new Schema({
     type: [
       {
         type: Schema.Types.ObjectId,
-        ref: "FormQuestion"
-      }
+        ref: "FormQuestion",
+      },
     ],
     required: true,
   },
