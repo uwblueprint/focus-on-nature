@@ -34,7 +34,7 @@ export type CamperDTO = {
   camp: string;
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: number;
+  chargeId: string;
   formResponses: Map<string, string>;
 };
 
