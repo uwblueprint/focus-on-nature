@@ -32,8 +32,8 @@ export const createCamperDtoValidator = async (
   if (!validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
   }
-  if (!validatePrimitive(req.body.chargeId, "integer")) {
-    return res.status(400).send(getApiValidationError("chargeId", "integer"));
+  if (!validatePrimitive(req.body.chargeId, "string")) {
+    return res.status(400).send(getApiValidationError("chargeId", "string"));
   }
 
   return next();

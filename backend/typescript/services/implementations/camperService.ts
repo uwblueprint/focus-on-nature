@@ -127,6 +127,76 @@ class CamperService implements ICamperService {
 
     return camperDtos;
   }
+
+  async deleteCampersByChargeId(chargeId: string): Promise<void> {
+    try {
+      const campers: Array<Camper> = await MgCamper.find({
+        chargeId,
+      });
+
+      if (!campers.length) {
+        throw new Error(`Campers with charge ID ${chargeId} not found.`);
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campers[0].camp);
+
+      if (!camp) {
+        throw new Error(
+          `Campers' camp with campId ${campers[0].camp} not found.`,
+        );
+      }
+
+      const today = new Date();
+      const diffInMilliseconds: number = Math.abs(
+        camp.dates[0].getTime() - today.getTime(),
+      );
+      const daysUntilStartOfCamp = Math.ceil(
+        diffInMilliseconds / (1000 * 60 * 60 * 24),
+      );
+
+      if (daysUntilStartOfCamp < 30) {
+        throw new Error(
+          `Campers' camp with campId ${campers[0].camp} has a start date in less than 30 days.`,
+        );
+      }
+
+      const camperIds = campers.map((camper) => camper.id);
+      const oldCamperIds = [...camp.campers]; // clone the full array of campers for rollback
+      camp.campers = camp.campers.filter(
+        (camperId) => !camperIds.includes(camperId.toString()),
+      );
+      await camp.save();
+
+      try {
+        await MgCamper.deleteMany({
+          _id: {
+            $in: camperIds,
+          },
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete users, rollback camp's camper deletions
+        try {
+          camp.campers = oldCamperIds;
+          await camp.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB camp's updated campers field after deleting camper documents failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB campers id that could not be deleted =",
+            camperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
 }
 
 export default CamperService;
