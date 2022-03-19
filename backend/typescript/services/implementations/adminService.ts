@@ -18,7 +18,10 @@ class AdminService implements IAdminService {
         {
           $set: { clauses: waiver.clauses },
         },
-        { upsert: true },
+        { upsert: true,
+          runValidators: true,
+         },
+
       );
       waiverDto = await this.getWaiver();
     } catch (error: unknown) {

@@ -1,3 +1,5 @@
+import { model, Model } from "mongoose";
+
 type Type =
   | "string"
   | "integer"
@@ -12,6 +14,15 @@ const allowableContentTypes = new Set([
   "image/jpeg",
   "image/gif",
 ]);
+
+function getType(coll: Model<any>, props: string): string {
+  return props.split('.').reduce(function (p:any, n:any, index:any, array:any) {
+      if (index < array.length - 1) {
+          return p.schema.paths[n];
+      }
+      return p.schema.paths[n].instance.toLowerCase();
+  }, coll);
+}
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -33,6 +44,25 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
     }
   }
 };
+
+export const validateArrayOfObjects = (value: Array<any>, model: Model<any>): boolean => {
+  let modelKeys: Array<string> = []
+  model.schema.eachPath(function(path) {
+    modelKeys.push(path)
+  });
+  for(const obj of value) {
+    for(const key in obj) {
+      if(obj.hasOwnProperty(key)) {
+        if(modelKeys.includes(key)){
+          if(typeof obj[key]!= getType(model, key)) {
+            return false
+          }
+        }
+      }
+    }
+  }
+  return true
+}
 
 export const validateArray = (value: any, type: Type): boolean => {
   return (
@@ -60,6 +90,10 @@ export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
+
+export const getArrayOfObjectsValidationError = (modelName: string): string => {
+  return `One or more objects in the array does not follow the schema of a ${modelName} object.`;
+}; 
 
 export const validateDate = (value: string): boolean => {
   return !!Date.parse(value);
