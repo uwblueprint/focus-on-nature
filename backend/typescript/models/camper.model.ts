@@ -8,7 +8,7 @@ export interface Camper extends Document {
   };
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: number;
+  chargeId: string;
 }
 
 const CamperSchema: Schema = new Schema({
@@ -17,7 +17,8 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   formResponses: {
-    type: Schema.Types.Mixed,
+    type: Map,
+    of: String,
     required: true,
   },
   registrationDate: {
@@ -29,7 +30,7 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   chargeId: {
-    type: Number,
+    type: String,
     required: true,
   },
 });

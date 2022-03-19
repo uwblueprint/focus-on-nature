@@ -66,4 +66,14 @@ camperRouter.get("/", async (req, res) => {
   }
 });
 
+/* Delete all campers with the chargeId with */
+camperRouter.delete("/cancel/:chargeId", async (req, res) => {
+  try {
+    await camperService.deleteCampersByChargeId(req.params.chargeId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 export default camperRouter;
