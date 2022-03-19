@@ -138,11 +138,13 @@ class CamperService implements ICamperService {
     try {
       oldCamper = await MgCamper.findById(camperId);
 
-      if (oldCamper) {
+      if (camper.camp && oldCamper) {
         const newCamp: Camp | null = await MgCamp.findById(camper.camp);
         const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
 
-        if (
+        if (!newCamp) {
+          throw new Error(`camp ${camper.camp} not found.`);
+        } else if (
           newCamp &&
           oldCamp &&
           newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
@@ -157,14 +159,11 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
-          // camp: camper.camp,
+          camp: camper.camp,
           formResponses: camper.formResponses,
-          dropOffType: camper.dropOffType,
-          registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
-          chargeId: camper.chargeId,
         },
-        { runValidators: true, omitUndefined: true },
+        { runValidators: true },
       );
 
       if (!oldCamper) {
@@ -179,10 +178,9 @@ class CamperService implements ICamperService {
       id: camperId,
       camp: camper.camp,
       formResponses: camper.formResponses,
-      dropOffType: camper.dropOffType,
-      registrationDate: camper.registrationDate,
+      registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,
-      chargeId: camper.chargeId,
+      chargeId: oldCamper.chargeId,
     };
   }
 }

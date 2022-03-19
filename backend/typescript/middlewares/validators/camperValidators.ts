@@ -57,22 +57,8 @@ export const updateCamperDtoValidator = async (
       .status(400)
       .send(getApiValidationError("formResponses", "mixed", true));
   }
-  if (
-    req.body.dropOffType &&
-    !validatePrimitive(req.body.dropOffType, "string")
-  ) {
-    return res.status(400).send(getApiValidationError("dropOffType", "string"));
-  }
-  if (req.body.registrationDate && !validateDate(req.body.registrationDate)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("registrationDate", "Date string"));
-  }
   if (req.body.hasPaid && !validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
-  }
-  if (req.body.chargeId && !validatePrimitive(req.body.chargeId, "integer")) {
-    return res.status(400).send(getApiValidationError("chargeId", "integer"));
   }
   return next();
 };

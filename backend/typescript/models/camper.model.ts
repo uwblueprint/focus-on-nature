@@ -5,7 +5,6 @@ export interface Camper extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
   formResponses: Map<string, string>;
-  dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
@@ -19,11 +18,6 @@ const CamperSchema: Schema = new Schema({
   formResponses: {
     type: Map,
     of: String,
-  },
-  dropOffType: {
-    type: String,
-    required: true,
-    enum: ["EarlyDropOff", "LatePickUp"],
   },
   registrationDate: {
     type: Date,

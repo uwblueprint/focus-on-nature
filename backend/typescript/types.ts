@@ -32,7 +32,6 @@ export type CampLeaderDTO = UserDTO & { camps: string[] };
 export type CamperDTO = {
   id: string;
   camp: string;
-  dropOffType: DropOffType;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
@@ -88,7 +87,7 @@ export type CreateCampDTO = Omit<
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
-export type UpdateCamperDTO = Omit<CamperDTO, "id">;
+export type UpdateCamperDTO = Omit<CamperDTO, "id" | "registrationDate" | "chargeId">;
 
 export type AuthDTO = Token & UserDTO;
 

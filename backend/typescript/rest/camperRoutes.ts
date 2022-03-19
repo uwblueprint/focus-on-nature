@@ -12,7 +12,6 @@ import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO } from "../types";
 
 const camperRouter: Router = Router();
-camperRouter.use(isAuthorizedByRole(new Set(["Admin"])));
 
 const camperService: ICamperService = new CamperService();
 
@@ -73,23 +72,25 @@ camperRouter.get("/", async (req, res) => {
 });
 
 /* Update the camper with the specified camperId */
-camperRouter.put("/:camperId", updateCamperDtoValidator, async (req, res) => {
-  try {
-    const updatedCamper = await camperService.updateCamperById(
-      req.params.camperId,
-      {
-        camp: req.body.camp,
-        formResponses: req.body.formResponses,
-        dropOffType: req.body.dropOffType,
-        registrationDate: req.body.registrationDate,
-        hasPaid: req.body.hasPaid,
-        chargeId: req.body.chargeId,
-      },
-    );
-    res.status(200).json(updatedCamper);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+camperRouter.put(
+  "/:camperId",
+  updateCamperDtoValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const updatedCamper = await camperService.updateCamperById(
+        req.params.camperId,
+        {
+          camp: req.body.camp,
+          formResponses: req.body.formResponses,
+          hasPaid: req.body.hasPaid,
+        },
+      );
+      res.status(200).json(updatedCamper);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 export default camperRouter;
