@@ -80,12 +80,12 @@ export const validateUserEmail = (userEmail: string): boolean => {
 };
 
 export const validateMap = (
-  formResponses: any,
+  map: any,
   keyType: Type,
   valueType: Type,
 ): boolean => {
-  const keys = Object.keys(formResponses);
-  const values = Object.values(formResponses);
+  const keys = Object.keys(map);
+  const values = Object.values(map);
   for (let i = 0; i < keys.length; i += 1) {
     if (
       !validatePrimitive(values[i], valueType) ||
