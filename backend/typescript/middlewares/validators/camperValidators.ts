@@ -13,7 +13,7 @@ export const createCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.camp, "string")) {
+  if (!validatePrimitive(req.body.campSession, "string")) {
     return res.status(400).send(getApiValidationError("camp", "string"));
   }
   if (

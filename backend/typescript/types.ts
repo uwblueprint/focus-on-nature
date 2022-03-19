@@ -26,12 +26,13 @@ export type FormQuestionDTO = {
   description?: string;
   options?: string[];
 };
+let x: FormQuestionDTO;
 
 export type CampLeaderDTO = UserDTO & { camps: string[] };
 
 export type CamperDTO = {
   id: string;
-  camp: string;
+  campSession: string;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: number;
@@ -40,7 +41,7 @@ export type CamperDTO = {
   };
 };
 
-export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
+export type CamperCSVInfoDTO = Omit<CamperDTO, "campSession" | "id">;
 
 export type WaitlistedCamperDTO = {
   id: string;
@@ -50,7 +51,7 @@ export type WaitlistedCamperDTO = {
   contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camp: string;
+  campSession: string;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
@@ -67,8 +68,8 @@ export type BaseCampDTO = {
   description: string;
   location: string;
   fee: number;
-  formQuestions: FormQuestionDTO[];
-  camps: string[];
+  formQuestions: Omit<FormQuestionDTO, "id">[];
+  campSessions: string[];
 };
 
 export type CampDTO = {
@@ -85,7 +86,7 @@ export type CampDTO = {
 
 export type CreateCampDTO = Omit<
   CampDTO & BaseCampDTO,
-  "id" | "baseCamp" | "campers" | "waitlist"
+  "id" | "baseCamp" | "campers" | "waitlist" | "campSessions"
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 

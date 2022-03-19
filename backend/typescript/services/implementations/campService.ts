@@ -1,6 +1,6 @@
 import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
-import MgCamp, { Camp } from "../../models/camp.model";
+import MgCamp, { CampSession } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
@@ -14,7 +14,7 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId).populate({
+      const camp: CampSession | null = await MgCamp.findById(campId).populate({
         path: "campers",
         model: MgCamper,
       });
@@ -40,7 +40,7 @@ class CampService implements ICampService {
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     let baseCamp: BaseCamp;
-    let newCamp: Camp;
+    let newCamp: CampSession;
     const formQuestionIDs: string[] = [];
     try {
       await Promise.all(
@@ -79,7 +79,7 @@ class CampService implements ICampService {
 
       try {
         /* eslint no-underscore-dangle: 0 */
-        baseCamp.camps.push(newCamp._id);
+        baseCamp.campSessions.push(newCamp._id);
 
         await baseCamp.save((err) => {
           if (err) throw err;

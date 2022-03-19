@@ -14,7 +14,7 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
     const newCamper = await camperService.createCamper({
-      camp: req.body.camp,
+      campSession: req.body.campSession,
       registrationDate: req.body.registrationDate,
       hasPaid: req.body.hasPaid,
       chargeId: req.body.chargeId,

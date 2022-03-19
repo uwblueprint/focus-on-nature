@@ -9,7 +9,7 @@ export interface BaseCamp extends Document {
   location: string;
   fee: number;
   formQuestions: Schema.Types.ObjectId[];
-  camps: Schema.Types.ObjectId[];
+  campSessions: Schema.Types.ObjectId[];
 }
 
 const BaseCampSchema: Schema = new Schema({
@@ -45,11 +45,11 @@ const BaseCampSchema: Schema = new Schema({
     ],
     required: true,
   },
-  camps: {
+  campSessions: {
     type: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Camp",
+        ref: "Session",
       },
     ],
   },

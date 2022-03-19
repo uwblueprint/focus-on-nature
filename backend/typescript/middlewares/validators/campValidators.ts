@@ -89,7 +89,7 @@ export const createCampDtoValidator = async (
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   // camps field is filled in automatically
-  if (req.body.camps) {
+  if (req.body.campSessions) {
     return res.status(400).send("camps should be null");
   }
   if (req.body.campers) {

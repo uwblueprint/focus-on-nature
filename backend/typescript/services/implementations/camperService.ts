@@ -1,6 +1,6 @@
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
-import MgCamp, { Camp } from "../../models/camp.model";
+import MgCamp, { CampSession } from "../../models/camp.model";
 import { CreateCamperDTO, CamperDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -11,10 +11,10 @@ class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCamper(camper: CreateCamperDTO): Promise<CamperDTO> {
     let newCamper: Camper;
-    let existingCamp: Camp | null;
+    let existingCamp: CampSession | null;
     try {
       newCamper = await MgCamper.create({
-        camp: camper.camp,
+        campSession: camper.campSession,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
@@ -23,7 +23,7 @@ class CamperService implements ICamperService {
 
       try {
         existingCamp = await MgCamp.findByIdAndUpdate(
-          camper.camp,
+          camper.campSession,
           {
             $push: { campers: newCamper.id },
           },
@@ -31,7 +31,7 @@ class CamperService implements ICamperService {
         );
 
         if (!existingCamp) {
-          throw new Error(`Camp ${camper.camp} not found.`);
+          throw new Error(`Camp ${camper.campSession} not found.`);
         }
       } catch (mongoDbError: unknown) {
         // rollback user creation
@@ -64,7 +64,7 @@ class CamperService implements ICamperService {
 
     return {
       id: newCamper.id,
-      camp: camper.camp,
+      campSession: camper.campSession,
       registrationDate: newCamper.registrationDate,
       hasPaid: newCamper.hasPaid,
       chargeId: newCamper.chargeId,
@@ -80,7 +80,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          camp: camper.camp ? camper.camp.toString() : "",
+          campSession: camper.campSession ? camper.campSession.toString() : "",
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
@@ -99,7 +99,9 @@ class CamperService implements ICamperService {
     let camperDtos: Array<CamperDTO> = [];
 
     try {
-      const existingCamp: Camp | null = await MgCamp.findById(campId).populate({
+      const existingCamp: CampSession | null = await MgCamp.findById(
+        campId,
+      ).populate({
         path: "campers",
         model: MgCamper,
       });
@@ -113,7 +115,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          camp: camper.camp ? camper.camp.toString() : "",
+          campSession: camper.campSession ? camper.campSession.toString() : "",
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,

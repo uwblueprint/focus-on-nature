@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { BaseCamp } from "./baseCamp.model";
 import { Camper } from "./camper.model";
 
-export interface Camp extends BaseCamp {
+export interface CampSession extends BaseCamp {
   baseCamp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   capacity: number;
@@ -13,7 +13,7 @@ export interface Camp extends BaseCamp {
   active: boolean;
 }
 
-const CampSchema: Schema = new Schema({
+const CampSessionSchema: Schema = new Schema({
   baseCamp: {
     type: Schema.Types.ObjectId,
     ref: "BaseCamp",
@@ -59,4 +59,4 @@ const CampSchema: Schema = new Schema({
   },
 });
 
-export default model<Camp>("Camp", CampSchema);
+export default model<CampSession>("CampSession", CampSessionSchema);

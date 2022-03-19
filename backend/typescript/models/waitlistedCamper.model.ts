@@ -8,7 +8,7 @@ export interface WaitlistedCamper extends Document {
   contactName: string;
   contactEmail: string;
   contactNumber: string;
-  camp: Schema.Types.ObjectId;
+  campSession: Schema.Types.ObjectId;
 }
 
 const WaitlistedCamperSchema: Schema = new Schema({
@@ -36,9 +36,9 @@ const WaitlistedCamperSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  camp: {
+  campSession: {
     type: Schema.Types.ObjectId,
-    ref: "Camp",
+    ref: "campSession",
     required: true,
   },
 });
