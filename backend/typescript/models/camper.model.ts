@@ -17,7 +17,8 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   formResponses: {
-    type: Schema.Types.Mixed,
+    type: Map,
+    of: String,
     required: true,
   },
   registrationDate: {
