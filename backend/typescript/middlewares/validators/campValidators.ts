@@ -3,11 +3,13 @@ import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
   getImageTypeValidationError,
+  getImageSizeValidationError,
   validateArray,
   validatePrimitive,
   validateDate,
   validateImageType,
   validateTime,
+  validateImageSize,
 } from "./util";
 import { getErrorMessage } from "../../utilities/errorUtils";
 
@@ -108,6 +110,9 @@ export const createCampDtoValidator = async (
   }
   if (req.file && !validateImageType(req.file.mimetype)) {
     return res.status(400).send(getImageTypeValidationError(req.file.mimetype));
+  }
+  if (req.file && !validateImageSize(req.file.size)) {
+    return res.status(400).send(getImageSizeValidationError(req.file.size));
   }
   return next();
 };

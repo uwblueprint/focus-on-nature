@@ -16,6 +16,8 @@ const allowableContentTypes = new Set([
 
 const allowableImageContentTypes = new Set(["image/png", "image/jpeg"]);
 
+const allowableImageSize = 5;
+
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const validatePrimitive = (value: any, type: Type): boolean => {
@@ -108,4 +110,13 @@ export const validateFormResponses = (
     }
   }
   return true;
+};
+
+export const validateImageSize = (imageSize: number): boolean => {
+  const imageSizeInMb = imageSize / 100000;
+  return imageSizeInMb <= allowableImageSize;
+};
+
+export const getImageSizeValidationError = (imageSize: number): string => {
+  return `Image size must be less than ${allowableImageSize} MB.`;
 };
