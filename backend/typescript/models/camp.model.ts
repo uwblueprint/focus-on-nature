@@ -4,6 +4,7 @@ export interface Camp extends Document {
   id: string;
   ageLower: number;
   ageUpper: number;
+  capacity: number;
   name: string;
   description: string;
   location: string;
@@ -18,6 +19,10 @@ const CampSchema: Schema = new Schema({
     required: true,
   },
   ageUpper: {
+    type: Number,
+    required: true,
+  },
+  capacity: {
     type: Number,
     required: true,
   },

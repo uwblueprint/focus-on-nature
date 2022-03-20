@@ -76,7 +76,6 @@ describe("mongo campService", (): void => {
   it("createCamp", async () => {
     testCamps.forEach(async (testCamp) => {
       const res = await campService.createCamp(testCamp);
-      expect(res.capacity).toEqual(testCamp.capacity);
       expect(res.startTime).toEqual(testCamp.startTime);
       expect(res.endTime).toEqual(testCamp.endTime);
       expect(res.active).toEqual(testCamp.active);

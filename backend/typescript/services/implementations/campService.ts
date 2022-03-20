@@ -62,6 +62,7 @@ class CampService implements ICampService {
         name: camp.name,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
+        capacity: camp.capacity,
         description: camp.description,
         location: camp.location,
         fee: camp.fee,
@@ -71,7 +72,6 @@ class CampService implements ICampService {
       session = new MgCampSession({
         camp: newCamp,
         campers: [],
-        capacity: camp.capacity,
         waitlist: [],
         startTime: camp.startTime,
         endTime: camp.endTime,
@@ -114,7 +114,6 @@ class CampService implements ICampService {
       id: session._id,
       camp: newCamp.id,
       campers: session.campers.map((camper) => camper.toString()),
-      capacity: session.capacity,
       dates: session.dates.map((date) => date.toString()),
       waitlist: session.waitlist.map((camper) => camper.toString()),
       startTime: session.startTime.toString(),

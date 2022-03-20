@@ -5,7 +5,6 @@ import { Camper } from "./camper.model";
 export interface CampSession extends Camp {
   camp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
-  capacity: number;
   waitlist: Schema.Types.ObjectId[];
   dates: Date[];
   startTime: string;
@@ -27,10 +26,6 @@ const CampSessionSchema: Schema = new Schema({
       },
     ],
     default: [],
-  },
-  capacity: {
-    type: Number,
-    required: true,
   },
   waitlist: {
     type: [
