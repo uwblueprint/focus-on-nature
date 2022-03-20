@@ -26,7 +26,6 @@ export type FormQuestionDTO = {
   description?: string;
   options?: string[];
 };
-let x: FormQuestionDTO;
 
 export type CampLeaderDTO = UserDTO & { camps: string[] };
 

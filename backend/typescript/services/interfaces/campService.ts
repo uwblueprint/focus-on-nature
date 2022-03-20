@@ -1,9 +1,4 @@
-import {
-  CampDTO,
-  CamperCSVInfoDTO,
-  CampSessionDTO,
-  CreateCampDTO,
-} from "../../types";
+import { CamperCSVInfoDTO, CampSessionDTO, CreateCampDTO } from "../../types";
 
 interface ICampService {
   /**
