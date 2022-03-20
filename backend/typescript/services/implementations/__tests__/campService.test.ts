@@ -94,10 +94,9 @@ describe("mongo campService", (): void => {
       const formQuestions = await MgFormQuestion.find({
         _id: { $in: res.formQuestions },
       });
-      console.log(campSessions);
-      console.log(formQuestions);
 
-      campSessions.forEach((campSession, i) => {
+      for (let i = 0; i < campSessions.length; i += 1) {
+        const campSession = campSessions[i];
         expect(campSession.camp.toString()).toEqual(res.id);
         expect(campSession.dates.map((date) => new Date(date))).toEqual(
           testCamp.campSessions[i].dates.map((date) => new Date(date)),
@@ -109,9 +108,11 @@ describe("mongo campService", (): void => {
         expect(campSession.active).toEqual(testCamp.campSessions[i].active);
         expect(campSession.campers).toHaveLength(0);
         expect(campSession.waitlist).toHaveLength(0);
-      });
+      }
 
-      formQuestions.forEach((formQuestion, i) => {
+      for (let i = 0; i < formQuestions.length; i += 1) {
+        const formQuestion = formQuestions[i];
+
         expect(formQuestion.type).toEqual(testCamp.formQuestions[i].type);
         expect(formQuestion.question).toEqual(
           testCamp.formQuestions[i].question,
@@ -125,11 +126,14 @@ describe("mongo campService", (): void => {
         const testOptions = testCamp.formQuestions[i].options;
         if (testOptions) {
           expect(formQuestion.options).toHaveLength(testOptions.length);
-          formQuestion?.options?.forEach((option, j) => {
-            if (testOptions) expect(option).toEqual(testOptions[j]);
-          });
+          if (formQuestion.options) {
+            for (let j = 0; j < formQuestion?.options?.length; j += 1) {
+              const option = formQuestion?.options[j];
+              if (testOptions) expect(option).toEqual(testOptions[j]);
+            }
+          }
         }
-      });
+      }
 
       expect(res.ageLower).toEqual(testCamp.ageLower);
       expect(res.ageUpper).toEqual(testCamp.ageUpper);
