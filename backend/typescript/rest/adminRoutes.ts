@@ -3,10 +3,8 @@ import { Router } from "express";
 import AdminService from "../services/implementations/adminService";
 import IAdminService from "../services/interfaces/adminService";
 import { getErrorMessage } from "../utilities/errorUtils";
-import clauseModel from "../models/clause.model";
-import waiverModel from "../models/waiver.model";
-import { validateArrayOfObjects } from "../middlewares/validators/util";
 import { waiverUpdateValidator } from "../middlewares/validators/adminValidators";
+
 const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
 

@@ -1,4 +1,4 @@
-import { model, Model } from "mongoose";
+import { Model } from "mongoose";
 
 type Type =
   | "string"
@@ -15,17 +15,22 @@ const allowableContentTypes = new Set([
   "image/gif",
 ]);
 
-function getType(coll: Model<any>, props: string): string {
-  return props.split('.').reduce(function (p:any, n:any, index:any, array:any) {
-      if (index < array.length - 1) {
-          return p.schema.paths[n];
-      }
-      return p.schema.paths[n].instance.toLowerCase();
-  }, coll);
-}
-
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable func-names */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-prototype-builtins */
+function getType(coll: Model<any>, props: string): string {
+  return props
+    .split(".")
+    .reduce(function (p: any, n: any, index: any, array: any) {
+      if (index < array.length - 1) {
+        return p.schema.paths[n];
+      }
+      return p.schema.paths[n].instance.toLowerCase();
+    }, coll);
+}
+
 export const validatePrimitive = (value: any, type: Type): boolean => {
   if (value === undefined || value === null) return false;
 
@@ -45,24 +50,27 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
   }
 };
 
-export const validateArrayOfObjects = (value: Array<any>, model: Model<any>): boolean => {
-  let modelKeys: Array<string> = []
-  model.schema.eachPath(function(path) {
-    modelKeys.push(path)
+export const validateArrayOfObjects = (
+  value: Array<any>,
+  objectModel: Model<any>,
+): boolean => {
+  const modelKeys: Array<string> = [];
+  objectModel.schema.eachPath(function (path) {
+    modelKeys.push(path);
   });
-  for(const obj of value) {
-    for(const key in obj) {
-      if(obj.hasOwnProperty(key)) {
-        if(modelKeys.includes(key)){
-          if(typeof obj[key]!= getType(model, key)) {
-            return false
+  for (const obj of value) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (modelKeys.includes(key)) {
+          if (typeof obj[key] !== getType(objectModel, key)) {
+            return false;
           }
         }
       }
     }
   }
-  return true
-}
+  return true;
+};
 
 export const validateArray = (value: any, type: Type): boolean => {
   return (
@@ -93,7 +101,7 @@ export const getFileTypeValidationError = (mimetype: string): string => {
 
 export const getArrayOfObjectsValidationError = (modelName: string): string => {
   return `One or more objects in the array does not follow the schema of a ${modelName} object.`;
-}; 
+};
 
 export const validateDate = (value: string): boolean => {
   return !!Date.parse(value);
