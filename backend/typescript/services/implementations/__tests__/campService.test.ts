@@ -73,7 +73,7 @@ describe("mongo campService", (): void => {
     await db.clear();
   });
 
-  it("getUsers", async () => {
+  it("createCamp", async () => {
     testCamps.forEach(async (testCamp, i) => {
       const res = await campService.createCamp(testCamp);
       expect(res.capacity).toEqual(testCamp.capacity);
@@ -81,8 +81,6 @@ describe("mongo campService", (): void => {
       expect(res.endTime).toEqual(testCamp.endTime);
       expect(res.active).toEqual(testCamp.active);
       expect(res.campers).toEqual([]);
-      console.log(res.dates);
-      console.log(testCamp.dates);
       expect(res.dates.map((date) => new Date(date))).toEqual(
         testCamp.dates.map((date) => new Date(date)),
       );

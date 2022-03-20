@@ -1,6 +1,6 @@
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
-import MgCamp, { CampSession } from "../../models/camp.model";
+import MgCamp, { CampSession } from "../../models/campSession.model";
 import { CreateCamperDTO, CamperDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";

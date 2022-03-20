@@ -1,6 +1,6 @@
 import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
-import MgCamp, { CampSession } from "../../models/camp.model";
+import MgCamp, { CampSession } from "../../models/campSession.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
