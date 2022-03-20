@@ -60,7 +60,7 @@ export type UpdateUserDTO = Omit<UserDTO, "id">;
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 
-export type BaseCampDTO = {
+export type CampDTO = {
   id: string;
   ageLower: number;
   ageUpper: number;
@@ -72,9 +72,9 @@ export type BaseCampDTO = {
   campSessions: string[];
 };
 
-export type CampDTO = {
+export type CampSessionDTO = {
   id: string;
-  baseCamp: string;
+  camp: string;
   campers: string[];
   capacity: number;
   waitlist: string[];
@@ -85,8 +85,8 @@ export type CampDTO = {
 };
 
 export type CreateCampDTO = Omit<
-  CampDTO & BaseCampDTO,
-  "id" | "baseCamp" | "campers" | "waitlist" | "campSessions"
+  CampDTO & CampSessionDTO,
+  "id" | "camp" | "campers" | "waitlist" | "campSessions"
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 

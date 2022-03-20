@@ -1,11 +1,16 @@
-import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
+import {
+  CreateCampDTO,
+  CampDTO,
+  CamperCSVInfoDTO,
+  CampSessionDTO,
+} from "../../types";
 import ICampService from "../interfaces/campService";
-import MgCamp, { CampSession } from "../../models/campSession.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
+import MgCamp, { Camp } from "../../models/camp.model";
 import MgFormQuestion from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
@@ -14,7 +19,9 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: CampSession | null = await MgCamp.findById(campId).populate({
+      const camp: CampSession | null = await MgCampSession.findById(
+        campId,
+      ).populate({
         path: "campers",
         model: MgCamper,
       });
@@ -38,9 +45,9 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-    let baseCamp: BaseCamp;
-    let newCamp: CampSession;
+  async createCamp(camp: CreateCampDTO): Promise<CampSessionDTO> {
+    let newCamp: Camp;
+    let session: CampSession;
     const formQuestionIDs: string[] = [];
     try {
       await Promise.all(
@@ -56,7 +63,7 @@ class CampService implements ICampService {
         }),
       );
 
-      baseCamp = new MgBaseCamp({
+      newCamp = new MgCamp({
         name: camp.name,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
@@ -66,8 +73,8 @@ class CampService implements ICampService {
         formQuestions: formQuestionIDs,
       });
 
-      newCamp = new MgCamp({
-        baseCamp,
+      session = new MgCampSession({
+        camp: newCamp,
         campers: [],
         capacity: camp.capacity,
         waitlist: [],
@@ -79,9 +86,9 @@ class CampService implements ICampService {
 
       try {
         /* eslint no-underscore-dangle: 0 */
-        baseCamp.campSessions.push(newCamp._id);
+        newCamp.campSessions.push(session._id);
 
-        await baseCamp.save((err) => {
+        await session.save((err) => {
           if (err) throw err;
         });
         await newCamp.save((err) => {
@@ -93,9 +100,9 @@ class CampService implements ICampService {
           MgFormQuestion.deleteOne({ _id: formQuestionID }),
         );
 
-        MgCamp.findByIdAndDelete(baseCamp.id);
+        MgCampSession.findByIdAndDelete(session.id);
 
-        MgBaseCamp.findByIdAndDelete(newCamp.id);
+        MgCamp.findByIdAndDelete(newCamp.id);
 
         Logger.error(
           `Failed to create camp. Reason = ${getErrorMessage(error)}`,
@@ -109,15 +116,15 @@ class CampService implements ICampService {
 
     return {
       /* eslint no-underscore-dangle: 0 */
-      id: newCamp._id,
-      baseCamp: baseCamp.id,
-      campers: newCamp.campers.map((camper) => camper.toString()),
-      capacity: newCamp.capacity,
-      dates: newCamp.dates.map((date) => date.toString()),
-      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startTime: newCamp.startTime.toString(),
-      endTime: newCamp.endTime.toString(),
-      active: newCamp.active,
+      id: session._id,
+      camp: newCamp.id,
+      campers: session.campers.map((camper) => camper.toString()),
+      capacity: session.capacity,
+      dates: session.dates.map((date) => date.toString()),
+      waitlist: session.waitlist.map((camper) => camper.toString()),
+      startTime: session.startTime.toString(),
+      endTime: session.endTime.toString(),
+      active: session.active,
     };
   }
 

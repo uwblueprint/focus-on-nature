@@ -1,6 +1,6 @@
 import { Schema, Document, model } from "mongoose";
 
-export interface BaseCamp extends Document {
+export interface Camp extends Document {
   id: string;
   ageLower: number;
   ageUpper: number;
@@ -12,7 +12,7 @@ export interface BaseCamp extends Document {
   campSessions: Schema.Types.ObjectId[];
 }
 
-const BaseCampSchema: Schema = new Schema({
+const CampSchema: Schema = new Schema({
   ageLower: {
     type: Number,
     required: true,
@@ -49,10 +49,10 @@ const BaseCampSchema: Schema = new Schema({
     type: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Session",
+        ref: "CampSession",
       },
     ],
   },
 });
 
-export default model<BaseCamp>("BaseCamp", BaseCampSchema);
+export default model<Camp>("Camp", CampSchema);
