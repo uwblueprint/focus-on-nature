@@ -2,11 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
+  getImageTypeValidationError,
   validateArray,
   validatePrimitive,
   validateDate,
+  validateImageType,
   validateTime,
 } from "./util";
+import { getErrorMessage } from "../../utilities/errorUtils";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
@@ -15,38 +18,43 @@ export const createCampDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.name, "string")) {
+  let body;
+  try {
+    console.log(req.body);
+    body = JSON.parse(req.body.body);
+  } catch (e: unknown) {
+    console.log(e);
+    return res.status(400).send(getErrorMessage(e));
+  }
+  if (!validatePrimitive(body.name, "string")) {
     return res.status(400).send(getApiValidationError("name", "string"));
   }
-  if (
-    req.body.description &&
-    !validatePrimitive(req.body.description, "string")
-  ) {
+  if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (!validatePrimitive(req.body.location, "string")) {
+  if (!validatePrimitive(body.location, "string")) {
     return res.status(400).send(getApiValidationError("location", "string"));
   }
-  if (!validatePrimitive(req.body.ageLower, "integer")) {
+  if (!validatePrimitive(body.ageLower, "integer")) {
     return res.status(400).send(getApiValidationError("ageLower", "integer"));
   }
-  if (!validatePrimitive(req.body.ageUpper, "integer")) {
+  if (!validatePrimitive(body.ageUpper, "integer")) {
     return res.status(400).send(getApiValidationError("ageUpper", "integer"));
   }
-  if (req.body.ageUpper < req.body.ageLower) {
+  if (body.ageUpper < body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
-  if (!validatePrimitive(req.body.capacity, "integer")) {
+  if (!validatePrimitive(body.capacity, "integer")) {
     return res.status(400).send(getApiValidationError("capacity", "integer"));
   }
-  if (!validatePrimitive(req.body.fee, "integer")) {
+  if (!validatePrimitive(body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
 
   if (
-    req.body.formQuestions &&
-    Array.isArray(req.body.formQuestions) &&
-    !req.body.formQuestions.every((formQuestion: any) => {
+    body.formQuestions &&
+    Array.isArray(body.formQuestions) &&
+    !body.formQuestions.every((formQuestion: any) => {
       return validateFormQuestion(formQuestion);
     })
   ) {
@@ -55,11 +63,11 @@ export const createCampDtoValidator = async (
       .send(getApiValidationError("formQuestion", "string", true));
   }
 
-  if (req.body.dates && !validateArray(req.body.dates, "string")) {
+  if (body.dates && !validateArray(body.dates, "string")) {
     return res.status(400).send(getApiValidationError("dates", "string", true));
   }
   if (
-    !req.body.dates.every((date: string) => {
+    !body.dates.every((date: string) => {
       if (!validateDate(date)) return false;
       return true;
     })
@@ -67,36 +75,39 @@ export const createCampDtoValidator = async (
     return res.status(400).send(getApiValidationError("dates", "Date string"));
   }
 
-  if (!validatePrimitive(req.body.startTime, "string")) {
+  if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
   }
-  if (!validateTime(req.body.startTime)) {
+  if (!validateTime(body.startTime)) {
     return res
       .status(400)
       .send(getApiValidationError("startTime", "24 hr time string"));
   }
 
-  if (!validatePrimitive(req.body.endTime, "string")) {
+  if (!validatePrimitive(body.endTime, "string")) {
     return res.status(400).send(getApiValidationError("endTime", "string"));
   }
-  if (!validateTime(req.body.endTime)) {
+  if (!validateTime(body.endTime)) {
     return res
       .status(400)
       .send(getApiValidationError("endTime", "24 hr time string"));
   }
 
-  if (!validatePrimitive(req.body.active, "boolean")) {
+  if (!validatePrimitive(body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   // camps field is filled in automatically
-  if (req.body.camps) {
+  if (body.camps) {
     return res.status(400).send("camps should be null");
   }
-  if (req.body.campers) {
+  if (body.campers) {
     return res.status(400).send("campers should be empty");
   }
-  if (req.body.waitlist) {
+  if (body.waitlist) {
     return res.status(400).send("waitlist should be empty");
+  }
+  if (req.file && !validateImageType(req.file.mimetype)) {
+    return res.status(400).send(getImageTypeValidationError(req.file.mimetype));
   }
   return next();
 };

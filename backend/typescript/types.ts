@@ -81,12 +81,14 @@ export type CampDTO = {
   startTime: string;
   endTime: string;
   active: boolean;
+  fileName?: string;
 };
 
 export type CreateCampDTO = Omit<
   CampDTO & BaseCampDTO,
   "id" | "baseCamp" | "campers" | "waitlist"
->;
+> & { filePath?: string; fileContentType?: string };
+
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type AuthDTO = Token & UserDTO;

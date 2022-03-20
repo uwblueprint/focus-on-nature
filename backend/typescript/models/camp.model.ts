@@ -11,6 +11,7 @@ export interface Camp extends BaseCamp {
   startTime: string;
   endTime: string;
   active: boolean;
+  fileName?: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -56,6 +57,10 @@ const CampSchema: Schema = new Schema({
   active: {
     type: Boolean,
     required: true,
+  },
+  fileName: {
+    type: String,
+    required: false,
   },
 });
 

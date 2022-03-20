@@ -1,5 +1,7 @@
+import { v4 as uuidv4 } from "uuid";
 import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
+import IFileStorageService from "../interfaces/fileStorageService";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
@@ -11,6 +13,12 @@ import MgFormQuestion from "../../models/formQuestion.model";
 const Logger = logger(__filename);
 
 class CampService implements ICampService {
+  storageService: IFileStorageService;
+
+  constructor(storageService: IFileStorageService) {
+    this.storageService = storageService;
+  }
+
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
@@ -43,6 +51,14 @@ class CampService implements ICampService {
     let newCamp: Camp;
     const formQuestionIDs: string[] = [];
     try {
+      const fileName = camp.filePath ? uuidv4() : "";
+      if (camp.filePath) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      }
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
           const question = await MgFormQuestion.create({
@@ -65,8 +81,7 @@ class CampService implements ICampService {
         fee: camp.fee,
         formQuestions: formQuestionIDs,
       });
-
-      newCamp = new MgCamp({
+      const newCampObj = {
         baseCamp,
         campers: [],
         capacity: camp.capacity,
@@ -75,6 +90,11 @@ class CampService implements ICampService {
         endTime: camp.endTime,
         dates: camp.dates,
         active: camp.active,
+      };
+
+      newCamp = new MgCamp({
+        ...newCampObj,
+        ...(camp.filePath && { fileName }),
       });
 
       try {
@@ -118,6 +138,7 @@ class CampService implements ICampService {
       startTime: newCamp.startTime.toString(),
       endTime: newCamp.endTime.toString(),
       active: newCamp.active,
+      fileName: newCamp.fileName,
     };
   }
 
