@@ -68,7 +68,7 @@ export type CampDTO = {
   description: string;
   location: string;
   fee: number;
-  formQuestions: Omit<FormQuestionDTO, "id">[];
+  formQuestions: string[];
   campSessions: string[];
 };
 
@@ -84,9 +84,13 @@ export type CampSessionDTO = {
 };
 
 export type CreateCampDTO = Omit<
-  CampDTO & CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist" | "campSessions"
->;
+  CampDTO,
+  "id" | "formQuestions" | "campSessions"
+> & {
+  formQuestions: Omit<FormQuestionDTO, "id">[];
+  campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
+};
+
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type AuthDTO = Token & UserDTO;

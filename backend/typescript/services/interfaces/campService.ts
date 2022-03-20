@@ -1,4 +1,4 @@
-import { CamperCSVInfoDTO, CampSessionDTO, CreateCampDTO } from "../../types";
+import { CampDTO, CamperCSVInfoDTO, CreateCampDTO } from "../../types";
 
 interface ICampService {
   /**
@@ -9,7 +9,7 @@ interface ICampService {
    */
   getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]>;
 
-  createCamp(user: CreateCampDTO): Promise<CampSessionDTO>;
+  createCamp(user: CreateCampDTO): Promise<CampDTO>;
 
   //  createBaseCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
 

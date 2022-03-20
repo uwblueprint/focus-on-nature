@@ -1,20 +1,26 @@
 import db from "../../../testUtils/testDb";
 import CampService from "../campService";
-import { QuestionType } from "../../../types";
+import { CreateCampDTO, QuestionType } from "../../../types";
+import MgCampSession from "../../../models/campSession.model";
+import MgFormQuestion from "../../../models/formQuestion.model";
 
-const testCamps = [
+const testCamps: CreateCampDTO[] = [
   {
-    active: true,
     ageLower: 15,
     ageUpper: 30,
     name: "test camp",
     description: "description",
     location: "canada",
     capacity: 20,
-    startTime: "12:00",
-    endTime: "17:00",
-    dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
     fee: 25,
+    campSessions: [
+      {
+        active: true,
+        startTime: "12:00",
+        endTime: "17:00",
+        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
+      },
+    ],
     formQuestions: [
       {
         question: "Q1",
@@ -25,17 +31,21 @@ const testCamps = [
     ],
   },
   {
-    active: true,
     ageLower: 30,
     ageUpper: 50,
     name: "test camp2",
     description: "description2",
     location: "canada",
     capacity: 500,
-    startTime: "1:00",
-    endTime: "2:00",
-    dates: [new Date().toString()],
     fee: 24,
+    campSessions: [
+      {
+        active: true,
+        startTime: "1:00",
+        endTime: "2:00",
+        dates: [new Date().toString()],
+      },
+    ],
     formQuestions: [
       {
         question: "Q1",
@@ -74,15 +84,60 @@ describe("mongo campService", (): void => {
   });
 
   it("createCamp", async () => {
-    testCamps.forEach(async (testCamp) => {
+    /* eslint-disable no-restricted-syntax */
+    for (const testCamp of testCamps) {
+      /* eslint-disable no-await-in-loop */
       const res = await campService.createCamp(testCamp);
-      expect(res.startTime).toEqual(testCamp.startTime);
-      expect(res.endTime).toEqual(testCamp.endTime);
-      expect(res.active).toEqual(testCamp.active);
-      expect(res.campers).toEqual([]);
-      expect(res.dates.map((date) => new Date(date))).toEqual(
-        testCamp.dates.map((date) => new Date(date)),
-      );
-    });
+      const campSessions = await MgCampSession.find({
+        _id: { $in: res.campSessions },
+      });
+      const formQuestions = await MgFormQuestion.find({
+        _id: { $in: res.formQuestions },
+      });
+      console.log(campSessions);
+      console.log(formQuestions);
+
+      campSessions.forEach((campSession, i) => {
+        expect(campSession.camp.toString()).toEqual(res.id);
+        expect(campSession.dates.map((date) => new Date(date))).toEqual(
+          testCamp.campSessions[i].dates.map((date) => new Date(date)),
+        );
+        expect(campSession.startTime).toEqual(
+          testCamp.campSessions[i].startTime,
+        );
+        expect(campSession.endTime).toEqual(testCamp.campSessions[i].endTime);
+        expect(campSession.active).toEqual(testCamp.campSessions[i].active);
+        expect(campSession.campers).toHaveLength(0);
+        expect(campSession.waitlist).toHaveLength(0);
+      });
+
+      formQuestions.forEach((formQuestion, i) => {
+        expect(formQuestion.type).toEqual(testCamp.formQuestions[i].type);
+        expect(formQuestion.question).toEqual(
+          testCamp.formQuestions[i].question,
+        );
+        expect(formQuestion.required).toEqual(
+          testCamp.formQuestions[i].required,
+        );
+        expect(formQuestion.description).toEqual(
+          testCamp.formQuestions[i].description,
+        );
+        const testOptions = testCamp.formQuestions[i].options;
+        if (testOptions) {
+          expect(formQuestion.options).toHaveLength(testOptions.length);
+          formQuestion?.options?.forEach((option, j) => {
+            if (testOptions) expect(option).toEqual(testOptions[j]);
+          });
+        }
+      });
+
+      expect(res.ageLower).toEqual(testCamp.ageLower);
+      expect(res.ageUpper).toEqual(testCamp.ageUpper);
+      expect(res.capacity).toEqual(testCamp.capacity);
+      expect(res.name).toEqual(testCamp.name);
+      expect(res.description).toEqual(testCamp.description);
+      expect(res.location).toEqual(testCamp.location);
+      expect(res.fee).toEqual(testCamp.fee);
+    }
   });
 });
