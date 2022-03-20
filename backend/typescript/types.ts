@@ -87,7 +87,7 @@ export type CreateCampDTO = Omit<
   CampDTO & BaseCampDTO,
   "id" | "baseCamp" | "campers" | "waitlist"
 >;
-export type CreateCamperDTO = Omit<CamperDTO, "id">;
+export type CreateCamperDTO = Array<Omit<CamperDTO, "id">>;
 
 export type AuthDTO = Token & UserDTO;
 

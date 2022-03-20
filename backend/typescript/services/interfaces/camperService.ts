@@ -3,11 +3,11 @@ import { CreateCamperDTO, CamperDTO } from "../../types";
 interface ICamperService {
   /**
    * Create a camper
-   * @param camper the camper to be created
-   * @returns a CamperDTO with the created camper's information
+   * @param campers the campers to be created
+   * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails
    */
-  createCamper(camper: CreateCamperDTO): Promise<CamperDTO>;
+  createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>>;
 
   /**
    * Get all campers and their information

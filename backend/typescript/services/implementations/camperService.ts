@@ -9,67 +9,72 @@ const Logger = logger(__filename);
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCamper(camper: CreateCamperDTO): Promise<CamperDTO> {
-    let newCamper: Camper;
-    let existingCamp: Camp | null;
-    try {
-      newCamper = await MgCamper.create({
-        camp: camper.camp,
-        registrationDate: camper.registrationDate,
-        hasPaid: camper.hasPaid,
-        chargeId: camper.chargeId,
-        formResponses: camper.formResponses,
-      });
-
+  async createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>> {
+    let newCamperDTOs: Array<CamperDTO> = [];
+    /* eslint-disable no-await-in-loop */
+    for (let i = 0; i < campers.length; i += 1) {
+      const camper = campers[i];
+      let newCamper: Camper;
+      let existingCamp: Camp | null;
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
-          camper.camp,
-          {
-            $push: { campers: newCamper.id },
-          },
-          { runValidators: true },
-        );
+        newCamper = await MgCamper.create({
+          camp: camper.camp,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          formResponses: camper.formResponses,
+        });
 
-        if (!existingCamp) {
-          throw new Error(`Camp ${camper.camp} not found.`);
-        }
-      } catch (mongoDbError: unknown) {
-        // rollback user creation
         try {
-          const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-            newCamper.id,
+          existingCamp = await MgCamp.findByIdAndUpdate(
+            camper.camp,
+            {
+              $push: { campers: newCamper.id },
+            },
+            { runValidators: true },
           );
 
-          if (!deletedCamper) {
-            throw new Error(`Camper ${newCamper.id} not found.`);
+          if (!existingCamp) {
+            throw new Error(`Camp ${camper.camp} not found.`);
           }
-        } catch (rollbackDbError) {
-          const errorMessage = [
-            "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
-            getErrorMessage(rollbackDbError),
-            "MongoDB camper id that could not be deleted =",
-            newCamper.id,
-          ];
-          Logger.error(errorMessage.join(" "));
+        } catch (mongoDbError: unknown) {
+          // rollback user creation
+          try {
+            const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
+              newCamper.id,
+            );
+
+            if (!deletedCamper) {
+              throw new Error(`Camper ${newCamper.id} not found.`);
+            }
+          } catch (rollbackDbError) {
+            const errorMessage = [
+              "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
+              getErrorMessage(rollbackDbError),
+              "MongoDB camper id that could not be deleted =",
+              newCamper.id,
+            ];
+            Logger.error(errorMessage.join(" "));
+          }
+
+          throw mongoDbError;
         }
-
-        throw mongoDbError;
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+        );
+        throw error;
       }
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
-      );
-      throw error;
+      newCamperDTOs.push({
+        id: newCamper.id,
+        camp: camper.camp,
+        registrationDate: newCamper.registrationDate,
+        hasPaid: newCamper.hasPaid,
+        chargeId: newCamper.chargeId,
+        formResponses: camper.formResponses,
+      });
     }
-
-    return {
-      id: newCamper.id,
-      camp: camper.camp,
-      registrationDate: newCamper.registrationDate,
-      hasPaid: newCamper.hasPaid,
-      chargeId: newCamper.chargeId,
-      formResponses: camper.formResponses,
-    };
+    return newCamperDTOs;
   }
 
   async getAllCampers(): Promise<Array<CamperDTO>> {

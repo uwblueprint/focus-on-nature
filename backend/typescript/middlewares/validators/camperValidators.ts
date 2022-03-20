@@ -13,28 +13,42 @@ export const createCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.camp, "string")) {
-    return res.status(400).send(getApiValidationError("camp", "string"));
-  }
-  if (
-    req.body.formResponses &&
-    !validateMap(req.body.formResponses, "string", "string")
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("formResponses", "mixed", true));
-  }
-  if (!validateDate(req.body.registrationDate)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("registrationDate", "Date string"));
-  }
-  if (!validatePrimitive(req.body.hasPaid, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
-  }
-  if (!validatePrimitive(req.body.chargeId, "string")) {
-    return res.status(400).send(getApiValidationError("chargeId", "string"));
-  }
-
+  req.body.forEach(
+    (camper: {
+      camp: string;
+      formResponses: Map<string, string>;
+      registrationDate: string;
+      hasPaid: boolean;
+      chargeId: number;
+    }) => {
+      if (!validatePrimitive(camper.camp, "string")) {
+        return res.status(400).send(getApiValidationError("camp", "string"));
+      }
+      if (
+        camper.formResponses &&
+        !validateMap(camper.formResponses, "string", "string")
+      ) {
+        return res
+          .status(400)
+          .send(getApiValidationError("formResponses", "mixed", true));
+      }
+      if (!validateDate(camper.registrationDate)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("registrationDate", "Date string"));
+      }
+      if (!validatePrimitive(camper.hasPaid, "boolean")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("hasPaid", "boolean"));
+      }
+      if (!validatePrimitive(camper.chargeId, "integer")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("chargeId", "integer"));
+      }
+      return true;
+    },
+  );
   return next();
 };

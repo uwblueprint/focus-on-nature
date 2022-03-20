@@ -5,7 +5,7 @@ import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO } from "../types";
+import { CamperDTO, CreateCamperDTO } from "../types";
 
 const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
@@ -13,15 +13,9 @@ const camperService: ICamperService = new CamperService();
 /* Create a camper */
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
-    const newCamper = await camperService.createCamper({
-      camp: req.body.camp,
-      registrationDate: req.body.registrationDate,
-      hasPaid: req.body.hasPaid,
-      chargeId: req.body.chargeId,
-      formResponses: req.body.formResponses,
-    });
-
-    res.status(201).json(newCamper);
+    const campers = req.body as CreateCamperDTO;
+    const newCampers = await camperService.createCamper(campers);
+    res.status(201).json(newCampers);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
