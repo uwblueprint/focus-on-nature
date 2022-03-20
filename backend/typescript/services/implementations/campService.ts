@@ -1,9 +1,4 @@
-import {
-  CreateCampDTO,
-  CampDTO,
-  CamperCSVInfoDTO,
-  CampSessionDTO,
-} from "../../types";
+import { CreateCampDTO, CamperCSVInfoDTO, CampSessionDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgCamper, { Camper } from "../../models/camper.model";
