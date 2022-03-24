@@ -20,17 +20,6 @@ const allowableContentTypes = new Set([
 /* eslint-disable func-names */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-prototype-builtins */
-function getType(coll: Model<any>, props: string): string {
-  return props
-    .split(".")
-    .reduce(function (p: any, n: any, index: any, array: any) {
-      if (index < array.length - 1) {
-        return p.schema.paths[n];
-      }
-      return p.schema.paths[n].instance.toLowerCase();
-    }, coll);
-}
-
 export const validatePrimitive = (value: any, type: Type): boolean => {
   if (value === undefined || value === null) return false;
 
