@@ -13,7 +13,7 @@ export const waiverUpdateValidator = async (
   next: NextFunction,
 ) => {
   const valid = await validateArrayOfObjects(req.body, waiverModel)
-  if (!validateArrayOfObjects(req.body, waiverModel)) {
+  if (!valid) {
     return res.status(400).send(getArrayOfObjectsValidationError("Clause"));
   }
   return next();
