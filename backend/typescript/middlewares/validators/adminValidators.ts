@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import clauseModel from "../../models/clause.model";
+import waiverModel from "../../models/waiver.model";
 import {
   getArrayOfObjectsValidationError,
   validateArrayOfObjects,
@@ -12,7 +12,8 @@ export const waiverUpdateValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validateArrayOfObjects(req.body, clauseModel)) {
+  const valid = await validateArrayOfObjects(req.body, waiverModel)
+  if (!valid) {
     return res.status(400).send(getArrayOfObjectsValidationError("Clause"));
   }
   return next();

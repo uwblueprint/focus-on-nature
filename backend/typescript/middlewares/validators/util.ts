@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 type Type =
   | "string"
@@ -50,23 +50,24 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
   }
 };
 
-export const validateArrayOfObjects = (
-  value: Array<any>,
+export const validateModel = async(obj: Object, model:Model<any>): Promise<boolean> => {
+  try {
+    await Model.validate(obj);
+  } catch (err) {
+    return false;
+  }
+  return true;
+}
+
+export const validateArrayOfObjects = async(
+  objArr: Array<any>,
   objectModel: Model<any>,
-): boolean => {
-  const modelKeys: Array<string> = [];
-  objectModel.schema.eachPath(function (path) {
-    modelKeys.push(path);
-  });
-  for (const obj of value) {
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        if (modelKeys.includes(key)) {
-          if (typeof obj[key] !== getType(objectModel, key)) {
-            return false;
-          }
-        }
-      }
+): Promise<boolean> => {
+  for(const obj of objArr) {
+    const valid = await validateModel(obj, objectModel)
+    if(!valid) {
+      console.log("about to return false")
+      return false
     }
   }
   return true;
