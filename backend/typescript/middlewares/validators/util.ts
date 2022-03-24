@@ -20,6 +20,7 @@ const allowableContentTypes = new Set([
 /* eslint-disable func-names */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-prototype-builtins */
+
 export const validatePrimitive = (value: any, type: Type): boolean => {
   if (value === undefined || value === null) return false;
 
@@ -52,12 +53,9 @@ export const validateArrayOfObjects = async(
   objArr: Array<any>,
   objectModel: Model<any>,
 ): Promise<boolean> => {
-  for(const obj of objArr) {
-    const valid = await validateModel(obj, objectModel)
-    if(!valid) {
-      console.log("about to return false")
-      return false
-    }
+  const valid = await validateModel(objArr, objectModel)
+  if(!valid) {
+    return false
   }
   return true;
 };
