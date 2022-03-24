@@ -27,7 +27,7 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
-export type CampLeaderDTO = UserDTO & { camps: string[] };
+export type CampLeaderDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
   id: string;
