@@ -32,14 +32,14 @@ class AdminService implements IAdminService {
 
   async getWaiver(): Promise<WaiverDTO> {
     let waiverDto: WaiverDTO | null;
-    let waiverClauses: Waiver | null;
+    let waiver: Waiver | null;
     try {
-      waiverClauses = await waiverModel.findOne();
-      if (!waiverClauses) {
+      waiver = await waiverModel.findOne();
+      if (!waiver) {
         throw new Error(`Waiver not found.`);
       }
       waiverDto = {
-        clauses: waiverClauses.clauses,
+        clauses: waiver.clauses,
       };
     } catch (error: unknown) {
       Logger.error(`Failed to get waiver. Reason = ${getErrorMessage(error)}`);

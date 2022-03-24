@@ -7,7 +7,6 @@ import { waiverUpdateValidator } from "../middlewares/validators/adminValidators
 
 const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
-
 adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
   try {
     const waiver = await adminService.updateWaiver({
