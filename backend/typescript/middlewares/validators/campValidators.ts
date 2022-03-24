@@ -22,10 +22,8 @@ export const createCampDtoValidator = async (
 ) => {
   let body;
   try {
-    console.log(req.body);
     body = JSON.parse(req.body.body);
   } catch (e: unknown) {
-    console.log(e);
     return res.status(400).send(getErrorMessage(e));
   }
   if (!validatePrimitive(body.name, "string")) {
@@ -112,7 +110,7 @@ export const createCampDtoValidator = async (
     return res.status(400).send(getImageTypeValidationError(req.file.mimetype));
   }
   if (req.file && !validateImageSize(req.file.size)) {
-    return res.status(400).send(getImageSizeValidationError(req.file.size));
+    return res.status(400).send(getImageSizeValidationError());
   }
   return next();
 };

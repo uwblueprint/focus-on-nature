@@ -117,6 +117,6 @@ export const validateImageSize = (imageSize: number): boolean => {
   return imageSizeInMb <= allowableImageSize;
 };
 
-export const getImageSizeValidationError = (imageSize: number): string => {
+export const getImageSizeValidationError = (): string => {
   return `Image size must be less than ${allowableImageSize} MB.`;
 };
