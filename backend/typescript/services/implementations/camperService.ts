@@ -197,7 +197,7 @@ class CamperService implements ICamperService {
         existingCamp = await MgCamp.findByIdAndUpdate(
           waitlistedCamper.camp,
           {
-            $push: { waitlistedCampers: newWaitlistedCamper.id },
+            $push: { waitlist: newWaitlistedCamper.id },
           },
           { runValidators: true },
         );
