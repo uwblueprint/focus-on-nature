@@ -15,6 +15,7 @@ const CamperSchema: Schema = new Schema({
   campSession: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "CampSession",
   },
   formResponses: {
     type: Schema.Types.Mixed,
