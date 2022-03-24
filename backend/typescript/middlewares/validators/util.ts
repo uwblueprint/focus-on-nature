@@ -2,6 +2,7 @@ type Type =
   | "string"
   | "integer"
   | "boolean"
+  | "mixed"
   | "Date string"
   | "24 hr time string";
 
@@ -76,4 +77,22 @@ export const validateUserEmail = (userEmail: string): boolean => {
     userEmail.split("@")[1] === "focusonnature.ca" ||
     userEmail.split("@")[1] === "uwblueprint.org"
   );
+};
+
+export const validateMap = (
+  map: any,
+  keyType: Type,
+  valueType: Type,
+): boolean => {
+  const keys = Object.keys(map);
+  const values = Object.values(map);
+  for (let i = 0; i < keys.length; i += 1) {
+    if (
+      !validatePrimitive(values[i], valueType) ||
+      !validatePrimitive(keys[i], keyType)
+    ) {
+      return false;
+    }
+  }
+  return true;
 };
