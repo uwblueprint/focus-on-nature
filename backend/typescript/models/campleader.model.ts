@@ -9,7 +9,7 @@ const CampLeaderModel: Model<User> = UserSchema.discriminator(
   "CampLeader",
   new Schema({
     campSessions: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Camp" }],
+      type: [{ type: Schema.Types.ObjectId, ref: "CampSession" }],
       default: [],
     },
   }),
