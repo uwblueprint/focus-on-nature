@@ -10,70 +10,58 @@ const Logger = logger(__filename);
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>> {
-    let newCamperDTOs: Array<CamperDTO> = [];
-    /* eslint-disable no-await-in-loop */
-    for (let i = 0; i < campers.length; i += 1) {
-      const camper = campers[i];
-      let newCamper: Camper;
-      let existingCamp: Camp | null;
+    let newCamperDTOs: Array<CamperDTO> = []; // still need to an array of DTOs, map this
+    let newCampers: Array<Camper> = [];
+    let existingCamp: Camp | null;
+    try {
+      newCampers = await MgCamper.insertMany(campers);
+      newCamperDTOs = newCampers.map((newCamper) => {
+        return {
+          id: newCamper.id,
+          camp: newCamper.camp ? newCamper.camp.toString() : "",
+          registrationDate: newCamper.registrationDate,
+          hasPaid: newCamper.hasPaid,
+          chargeId: newCamper.chargeId,
+          formResponses: newCamper.formResponses,
+        };
+      });
       try {
-        newCamper = await MgCamper.create({
-          camp: camper.camp,
-          registrationDate: camper.registrationDate,
-          hasPaid: camper.hasPaid,
-          chargeId: camper.chargeId,
-          formResponses: camper.formResponses,
+        existingCamp = await MgCamp.findByIdAndUpdate(campers[0].camp, {
+          runValidators: true,
         });
 
-        try {
-          existingCamp = await MgCamp.findByIdAndUpdate(
-            camper.camp,
-            {
-              $push: { campers: newCamper.id },
-            },
-            { runValidators: true },
-          );
-
-          if (!existingCamp) {
-            throw new Error(`Camp ${camper.camp} not found.`);
-          }
-        } catch (mongoDbError: unknown) {
-          // rollback camper creation
+        if (!existingCamp) {
+          throw new Error(`Camp ${campers[0].camp} not found.`);
+        }
+      } catch (mongoDbError: unknown) {
+        // rollback camper creation
+        for (let i = 0; i < newCampers.length; i += 1) {
           try {
             const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-              newCamper.id,
+              newCampers[i].id,
             );
-
             if (!deletedCamper) {
-              throw new Error(`Camper ${newCamper.id} not found.`);
+              throw new Error(`Camper ${newCampers[i].id} not found.`);
             }
           } catch (rollbackDbError) {
             const errorMessage = [
               "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
               getErrorMessage(rollbackDbError),
               "MongoDB camper id that could not be deleted =",
-              newCamper.id,
+              newCampers[i].id,
             ];
             Logger.error(errorMessage.join(" "));
           }
-
-          throw mongoDbError;
         }
-      } catch (error: unknown) {
-        Logger.error(
-          `Failed to create camper. Reason: ${getErrorMessage(error)}`,
-        );
-        throw error;
+        throw mongoDbError;
       }
-      newCamperDTOs.push({
-        id: newCamper.id,
-        camp: camper.camp,
-        registrationDate: newCamper.registrationDate,
-        hasPaid: newCamper.hasPaid,
-        chargeId: newCamper.chargeId,
-        formResponses: camper.formResponses,
-      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+      );
+      throw error;
     }
+
     return newCamperDTOs;
   }
 
