@@ -109,5 +109,4 @@ camperRouter.delete("/:camperId", async (req, res) => {
   }
 });
 
-
 export default camperRouter;

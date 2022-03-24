@@ -38,7 +38,7 @@ interface ICamperService {
   createWaitlistedCamper(
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO>;
-  
+
   /**
    * Delete all campers associated with the charge ID
    * @param chargeId the charge ID for the payment
@@ -52,7 +52,6 @@ interface ICamperService {
    * @throws Error if camper cancellation fails
    */
   deleteCamperById(camperId: string): void;
-
 }
 
 export default ICamperService;
