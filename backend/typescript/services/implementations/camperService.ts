@@ -140,11 +140,13 @@ class CamperService implements ICamperService {
         throw new Error(`Campers with charge ID ${chargeId} not found.`);
       }
 
-      const camp: Camp | null = await MgCamp.findById(campers[0].camp);
+      const camp: CampSession | null = await MgCamp.findById(
+        campers[0].campSession,
+      );
 
       if (!camp) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].camp} not found.`,
+          `Campers' camp with campId ${campers[0].campSession} not found.`,
         );
       }
 
@@ -158,7 +160,7 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].camp} has a start date in less than 30 days.`,
+          `Campers' camp with campId ${campers[0].campSession} has a start date in less than 30 days.`,
         );
       }
 
@@ -208,10 +210,14 @@ class CamperService implements ICamperService {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
-      const camp: Camp | null = await MgCamp.findById(camper.camp);
+      const camp: CampSession | null = await MgCamp.findById(
+        camper.campSession,
+      );
 
       if (!camp) {
-        throw new Error(`Camper's camp with campId ${camper.camp} not found.`);
+        throw new Error(
+          `Camper's camp with campId ${camper.campSession} not found.`,
+        );
       }
 
       // delete the camper from the camp's list of campers
