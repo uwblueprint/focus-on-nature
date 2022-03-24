@@ -93,10 +93,20 @@ camperRouter.put(
   },
 );
 
-/* Delete all campers with the chargeId with */
+/* Delete all campers with the chargeId */
 camperRouter.delete("/cancel/:chargeId", async (req, res) => {
   try {
     await camperService.deleteCampersByChargeId(req.params.chargeId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+/* Delete a camper */
+camperRouter.delete("/:camperId", async (req, res) => {
+  try {
+    await camperService.deleteCamperById(req.params.camperId);
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });

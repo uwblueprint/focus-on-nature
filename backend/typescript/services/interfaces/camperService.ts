@@ -41,6 +41,13 @@ interface ICamperService {
    * @throws Error if camper cancellation fails
    */
   deleteCampersByChargeId(chargeId: string): void;
+
+  /**
+   * Delete camper associated with the camper ID
+   * @param camperId camper's Id
+   * @throws Error if camper cancellation fails
+   */
+  deleteCamperById(camperId: string): void;
 }
 
 export default ICamperService;

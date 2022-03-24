@@ -253,6 +253,56 @@ class CamperService implements ICamperService {
       throw error;
     }
   }
+
+  async deleteCamperById(camperId: string): Promise<void> {
+    try {
+      const camper: Camper | null = await MgCamper.findById(camperId);
+
+      if (!camper) {
+        throw new Error(`Camper with camper ID ${camperId} not found.`);
+      }
+
+      const camp: Camp | null = await MgCamp.findById(camper.camp);
+
+      if (!camp) {
+        throw new Error(`Camper's camp with campId ${camper.camp} not found.`);
+      }
+
+      // delete the camper from the camp's list of campers
+      const oldCamperIds = [...camp.campers];
+      camp.campers = camp.campers.filter((id) => id.toString() !== camperId);
+      await camp.save();
+
+      try {
+        await MgCamper.deleteOne({
+          _id: camperId,
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's campers deletion
+        try {
+          camp.campers = oldCamperIds;
+          await camp.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB camp's updated campers field after deleting camper document failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper id that could not be deleted =",
+            camperId,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete camper with camper ID ${camperId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
 }
 
 export default CamperService;
