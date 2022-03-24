@@ -38,7 +38,7 @@ const WaitlistedCamperSchema: Schema = new Schema({
   },
   campSession: {
     type: Schema.Types.ObjectId,
-    ref: "campSession",
+    ref: "CampSession",
     required: true,
   },
 });
