@@ -38,7 +38,7 @@ class CamperService implements ICamperService {
             throw new Error(`Camp ${camper.camp} not found.`);
           }
         } catch (mongoDbError: unknown) {
-          // rollback user creation
+          // rollback camper creation
           try {
             const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
               newCamper.id,
