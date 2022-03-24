@@ -13,16 +13,23 @@ export const createCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
+  let camp: string;
+  if (req.body.length > 0) {
+    camp = req.body[0].camp;
+  }
   req.body.forEach(
     (camper: {
       camp: string;
       formResponses: Map<string, string>;
       registrationDate: string;
       hasPaid: boolean;
-      chargeId: number;
+      chargeId: string;
     }) => {
       if (!validatePrimitive(camper.camp, "string")) {
         return res.status(400).send(getApiValidationError("camp", "string"));
+      }
+      if (camper.camp !== camp) {
+        return res.status(400).send("Campers must have the same camp.");
       }
       if (
         camper.formResponses &&
@@ -42,10 +49,10 @@ export const createCamperDtoValidator = async (
           .status(400)
           .send(getApiValidationError("hasPaid", "boolean"));
       }
-      if (!validatePrimitive(camper.chargeId, "integer")) {
+      if (!validatePrimitive(camper.chargeId, "string")) {
         return res
           .status(400)
-          .send(getApiValidationError("chargeId", "integer"));
+          .send(getApiValidationError("chargeId", "string"));
       }
       return true;
     },

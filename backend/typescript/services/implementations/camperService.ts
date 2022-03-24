@@ -10,50 +10,42 @@ const Logger = logger(__filename);
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>> {
-    let newCamperDTOs: Array<CamperDTO> = []; // still need to an array of DTOs, map this
+    let newCamperDTOs: Array<CamperDTO> = [];
     let newCampers: Array<Camper> = [];
     let existingCamp: Camp | null;
     try {
       newCampers = await MgCamper.insertMany(campers);
-      newCamperDTOs = newCampers.map((newCamper) => {
-        return {
-          id: newCamper.id,
-          camp: newCamper.camp ? newCamper.camp.toString() : "",
-          registrationDate: newCamper.registrationDate,
-          hasPaid: newCamper.hasPaid,
-          chargeId: newCamper.chargeId,
-          formResponses: newCamper.formResponses,
-        };
-      });
-      try {
-        existingCamp = await MgCamp.findByIdAndUpdate(campers[0].camp, {
-          runValidators: true,
-        });
-
-        if (!existingCamp) {
-          throw new Error(`Camp ${campers[0].camp} not found.`);
-        }
-      } catch (mongoDbError: unknown) {
-        // rollback camper creation
-        for (let i = 0; i < newCampers.length; i += 1) {
-          try {
-            const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-              newCampers[i].id,
-            );
-            if (!deletedCamper) {
-              throw new Error(`Camper ${newCampers[i].id} not found.`);
-            }
-          } catch (rollbackDbError) {
-            const errorMessage = [
-              "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
-              getErrorMessage(rollbackDbError),
-              "MongoDB camper id that could not be deleted =",
-              newCampers[i].id,
-            ];
-            Logger.error(errorMessage.join(" "));
+      if (campers.length > 0) {
+        try {
+          existingCamp = await MgCamp.findByIdAndUpdate(campers[0].camp, {
+            runValidators: true,
+          });
+          if (!existingCamp) {
+            throw new Error(`Camp ${campers[0].camp} not found.`);
           }
+        } catch (mongoDbError: unknown) {
+          // rollback camper creation
+          /* eslint-disable no-await-in-loop */
+          for (let i = 0; i < newCampers.length; i += 1) {
+            try {
+              const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
+                newCampers[i].id,
+              );
+              if (!deletedCamper) {
+                throw new Error(`Camper ${newCampers[i].id} not found.`);
+              }
+            } catch (rollbackDbError) {
+              const errorMessage = [
+                "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
+                getErrorMessage(rollbackDbError),
+                "MongoDB camper id that could not be deleted =",
+                newCampers[i].id,
+              ];
+              Logger.error(errorMessage.join(" "));
+            }
+          }
+          throw mongoDbError;
         }
-        throw mongoDbError;
       }
     } catch (error: unknown) {
       Logger.error(
@@ -61,7 +53,16 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
-
+    newCamperDTOs = newCampers.map((newCamper) => {
+      return {
+        id: newCamper.id,
+        camp: newCamper.camp ? newCamper.camp.toString() : "",
+        registrationDate: newCamper.registrationDate,
+        hasPaid: newCamper.hasPaid,
+        chargeId: newCamper.chargeId,
+        formResponses: newCamper.formResponses,
+      };
+    });
     return newCamperDTOs;
   }
 
