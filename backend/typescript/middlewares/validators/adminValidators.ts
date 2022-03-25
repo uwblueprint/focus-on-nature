@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import waiverModel from "../../models/waiver.model";
 import {
-  getArrayOfObjectsValidationError,
-  validateArrayOfObjects,
+  getApiValidationError,
+  validatePrimitive
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -12,9 +11,18 @@ export const waiverUpdateValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const valid = await validateArrayOfObjects(req.body, waiverModel)
-  if (!validateArrayOfObjects(req.body, waiverModel)) {
-    return res.status(400).send(getArrayOfObjectsValidationError("Clause"));
+  let objArr: Array<Object> = req.body
+  let obj: any;
+  for(obj in objArr) {
+    if (
+      obj.text &&
+      !validatePrimitive(obj.text, "string")
+    ) {
+      return res.status(400).send(getApiValidationError("text", "string"));
+    }
+    if (!validatePrimitive(obj.required, "boolean")) {
+      return res.status(400).send(getApiValidationError("required", "boolean"));
+    }
   }
   return next();
 };
