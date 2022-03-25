@@ -11,14 +11,8 @@ export const waiverUpdateValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-<<<<<<< HEAD
-  const valid = await validateArrayOfObjects(req.body, waiverModel)
-  if (!valid) {
-    return res.status(400).send(getArrayOfObjectsValidationError("Clause"));
-=======
-  let objArr: Array<Object> = req.body
-  let obj: any;
-  for(obj in objArr) {
+  let objArr: Array<any> = req.body
+  objArr.forEach(obj => {
     if (
       obj.text &&
       !validatePrimitive(obj.text, "string")
@@ -28,7 +22,6 @@ export const waiverUpdateValidator = async (
     if (!validatePrimitive(obj.required, "boolean")) {
       return res.status(400).send(getApiValidationError("required", "boolean"));
     }
->>>>>>> a792a0c9b53e6ec08107e9f928d5b73962cbe38a
-  }
+  })
   return next();
 };

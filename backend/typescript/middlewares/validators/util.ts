@@ -17,13 +17,8 @@ const allowableContentTypes = new Set([
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable func-names */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-prototype-builtins */
-
 export const validatePrimitive = (value: any, type: Type): boolean => {
   if (value === undefined || value === null) return false;
-
   switch (type) {
     case "string": {
       return typeof value === "string";
