@@ -40,26 +40,6 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
   }
 };
 
-export const validateModel = async(obj: Object, model:Model<any>): Promise<boolean> => {
-  try {
-    await Model.validate(obj);
-  } catch (err) {
-    return false;
-  }
-  return true;
-}
-
-export const validateArrayOfObjects = async(
-  objArr: Array<any>,
-  objectModel: Model<any>,
-): Promise<boolean> => {
-  const valid = await validateModel(objArr, objectModel)
-  if(!valid) {
-    return false
-  }
-  return true;
-};
-
 export const validateArray = (value: any, type: Type): boolean => {
   return (
     value !== undefined &&
