@@ -62,10 +62,6 @@ export const getFileTypeValidationError = (mimetype: string): string => {
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
 
-export const getArrayOfObjectsValidationError = (modelName: string): string => {
-  return `One or more objects in the array does not follow the schema of a ${modelName} object.`;
-};
-
 export const validateDate = (value: string): boolean => {
   return !!Date.parse(value);
 };
