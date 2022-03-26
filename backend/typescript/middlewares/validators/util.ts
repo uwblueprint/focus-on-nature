@@ -1,5 +1,3 @@
-import mongoose, { Model } from "mongoose";
-
 type Type =
   | "string"
   | "integer"
@@ -19,6 +17,7 @@ const allowableContentTypes = new Set([
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const validatePrimitive = (value: any, type: Type): boolean => {
   if (value === undefined || value === null) return false;
+
   switch (type) {
     case "string": {
       return typeof value === "string";

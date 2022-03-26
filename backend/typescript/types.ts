@@ -101,11 +101,6 @@ export type NodemailerConfig = {
   };
 };
 
-export type ClauseDTO = {
-  text: string;
-  required: boolean;
-};
-
 export type WaiverDTO = {
   clauses: {
     text: string;
