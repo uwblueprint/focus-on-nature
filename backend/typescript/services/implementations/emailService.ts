@@ -20,16 +20,37 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendConfirmationEmail(to: string): Promise<void> {
+  async sendConfirmationEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, campFees: string, earlyDropOffAndPickupFees: string, totalPayment: string): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature: Confirmation Email",
-      "dummy body",
+      `Hi =${registrantName}<br>Thank you for registering for a Focus on Nature Camp! We are very excited to have your young photographer join us. We will be emailing you closer to the start of the camp with additional information for you and your camper. <br> Please find your registration information below, and if you need to edit any of the fields, reach out to camps@focusonnature.ca.
+      <br>
+      <ul>
+        <li><b>Camp name:</b> =${registrantName}
+        <li><b>Session dates:</b> ${sessionDates} </li>
+        <li><b>Name of camper:</b> ${camperName} </li>
+        <li><b>Camper's age:</b> ${camperAge}n</li>
+        <li><b>Your name:</b> ${registrantName}</li>
+        <li><b>Your email:</b> ${registrantEmail}</li>
+        <li><b>Your phone number:</b> ${registrantPhoneNumber}</li>
+      </ul>
+      <br> This is the total amount we have received from you.
+      <ul>
+        <li><b>Camp name:</b> =${campFees}
+        <li><b>Session dates:</b> ${earlyDropOffAndPickupFees} </li>
+        <li> Name of camper:</b> ${totalPayment} </li>
+      </ul>
+
+      <br>Refund Policy<br>
+      If you would like to cancel the registration, please use the following ${link}. We will refund your camp fee up to 30 days before your camp date. After that, we can still make a refund if we have another camper on our waitlist.
+      <br>Thanks, <br> Focus on Nature.
+      `,
     );
   }
 
   async sendWaitlistEmail(to: string): Promise<void> {
-    await this.sendEmail(to, "Focus on Nature: Waitlist Email", "dummy body");
+    await this.sendEmail(to, "Focus on Nature Camp Registration - Confirmation", "dummy body");
   }
 
   async sendWaitlistAdminEmail(to: string): Promise<void> {
