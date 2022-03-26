@@ -94,7 +94,6 @@ camperRouter.post(
   },
 );
 
-
 /* Update the camper with the specified camperId */
 camperRouter.put(
   "/:camperId",

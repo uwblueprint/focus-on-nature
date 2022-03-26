@@ -196,7 +196,7 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
-    
+
     return {
       id: newWaitlistedCamper.id,
       firstName: waitlistedCamper.firstName,
@@ -208,7 +208,7 @@ class CamperService implements ICamperService {
       camp: waitlistedCamper.camp,
     };
   }
-  
+
   /* eslint-disable class-methods-use-this */
   async updateCamperById(
     camperId: string,
