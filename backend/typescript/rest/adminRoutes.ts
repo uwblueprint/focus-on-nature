@@ -10,7 +10,7 @@ const adminService: IAdminService = new AdminService();
 adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
   try {
     const waiver = await adminService.updateWaiver({
-      clauses: req.body,
+      clauses: req.body.clauses,
     });
     res.status(200).json(waiver);
   } catch (error: unknown) {

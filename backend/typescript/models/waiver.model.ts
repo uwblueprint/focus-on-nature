@@ -1,11 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface Clause extends Document {
-  text: string;
-  required: boolean;
-}
 export interface Waiver extends Document {
-  clauses: Clause[];
+  clauses: {
+    text: string;
+    required: boolean;
+ }[]
 }
 
 const WaiverSchema: Schema = new Schema({
