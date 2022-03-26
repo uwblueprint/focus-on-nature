@@ -14,21 +14,11 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
     const newCamper = await camperService.createCamper({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      age: req.body.age,
-      contactName: req.body.contactName,
-      contactEmail: req.body.contactEmail,
-      contactNumber: req.body.contactNumber,
       camp: req.body.camp,
-      hasCamera: req.body.hasCamera,
-      hasLaptop: req.body.hasLaptop,
-      allergies: req.body.allergies,
-      additionalDetails: req.body.additionalDetails,
-      dropOffType: req.body.dropOffType,
       registrationDate: req.body.registrationDate,
       hasPaid: req.body.hasPaid,
       chargeId: req.body.chargeId,
+      formResponses: req.body.formResponses,
     });
 
     res.status(201).json(newCamper);
@@ -73,6 +63,26 @@ camperRouter.get("/", async (req, res) => {
         ]);
       }
     }
+  }
+});
+
+/* Delete all campers with the chargeId */
+camperRouter.delete("/cancel/:chargeId", async (req, res) => {
+  try {
+    await camperService.deleteCampersByChargeId(req.params.chargeId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+/* Delete a camper */
+camperRouter.delete("/:camperId", async (req, res) => {
+  try {
+    await camperService.deleteCamperById(req.params.camperId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
   }
 });
 
