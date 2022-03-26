@@ -4,7 +4,7 @@ import { NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
-const Logger = logger(__filename);
+//const Logger = logger(__filename);
 
 class EmailService implements IEmailService {
   transporter: Transporter;
@@ -49,18 +49,6 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendWaitlistEmail(to: string): Promise<void> {
-    await this.sendEmail(to, "Focus on Nature Camp Registration - Confirmation", "dummy body");
-  }
-
-  async sendWaitlistAdminEmail(to: string): Promise<void> {
-    await this.sendEmail(
-      to,
-      "Focus on Nature: Waitlist Admin Email",
-      "dummy body",
-    );
-  }
-
   async sendCancellationEmail(to: string, registrantName:string): Promise<void> {
     await this.sendEmail(
       to,
@@ -72,7 +60,38 @@ class EmailService implements IEmailService {
     );
   }
 
-  async fullCamp(to: string, campName:string): Promise<void> {
+  async registrationInviteEmail(to: string, campName:string, waitlistName:string, sessionDates: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Focus on Nature Camp Registration - Invitation to Register",
+      `Hi ${waitlistName}<br>
+      A spot opened up in ${campName} for the following session dates ${sessionDates}. To register your camper, please use the following <a href=${link}>link></a> Please complete this registration within 24 hours to confirm your spot.<br>
+      Thanks,<br>
+      Focus on Nature  
+      `,
+    );
+  }
+
+  async specialNeedsEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, specialNeeds: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Special Needs Camper Registration Notice",
+      `This following email is to notify you of a special needs camper registration. The camper listed below checked the special needs box on their registration form: <br>
+      <ul>
+        <li><b>Name of camper:</b> ${camperName} </li>
+        <li><b>Camp name:</b> =${registrantName}
+        <li><b>Session dates:</b> ${sessionDates} </li>
+        <li><b>Camper's age:</b> ${camperAge}n</li>
+        <li><b>Parent's name:</b> ${registrantName}</li>
+        <li><b>Parent's email:</b> ${registrantEmail}</li>
+        <li><b>Parent's phone number:</b> ${registrantPhoneNumber}</li>
+        <li><b>Special needs:</b> ${specialNeeds}</li>
+      </ul>
+      `,
+    );
+  }
+
+  async fullCamp(to: string, campName:string, sessionDates: string): Promise<void> {
     await this.sendEmail(
       to,
       "Camp Registration Notice - FULL CAPACITY",
