@@ -3,9 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface Camper extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
-  formResponses: {
-    [key: string]: string;
-  };
+  formResponses: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
