@@ -4,7 +4,7 @@ import { NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
-//const Logger = logger(__filename);
+const Logger = logger(__filename);
 
 class EmailService implements IEmailService {
   transporter: Transporter;
@@ -20,7 +20,7 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendConfirmationEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, campFees: string, earlyDropOffAndPickupFees: string, totalPayment: string): Promise<void> {
+  async sendConfirmationEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, campFees: string, earlyDropOffAndPickupFees: string, totalPayment: string, link:string): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature: Confirmation Email",
@@ -60,7 +60,7 @@ class EmailService implements IEmailService {
     );
   }
 
-  async registrationInviteEmail(to: string, campName:string, waitlistName:string, sessionDates: string): Promise<void> {
+  async registrationInviteEmail(to: string, campName:string, waitlistName:string, sessionDates: string, link: string): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature Camp Registration - Invitation to Register",
