@@ -61,11 +61,30 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendCancellationEmail(to: string): Promise<void> {
+  async sendCancellationEmail(to: string, registrantName:string): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature: Cancellation Email",
-      "dummy body",
+      `Hi ${registrantName},<br> Your Focus on Nature camp registration has been successfully canceled. You can expect any fees paid to be refunded within the next 4-5 business days. If this cancellation was a mistake or you have any further concerns, please do not hesitate to contact camps@focusonnature.ca.<br>
+      Thanks,<br>
+      Focus on Nature
+      `,
+    );
+  }
+
+  async fullCamp(to: string, campName:string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Camp Registration Notice - FULL CAPACITY",
+      `This following email is to notify you that ${campName} is full for the following session dates ${sessionDates}`,
+    );
+  }
+
+  async camperCancellationNoticeEmail(to: string, camperName:string, campName: string, sessionDates: string): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Camper Cancellation Notice",
+      `This following email is to notify you that ${camperName} has canceled their camp registration. A spot has now opened up in ${campName} for the following session dates ${sessionDates}`,
     );
   }
 
