@@ -11,6 +11,7 @@ import entityRouter from "./rest/entityRoutes";
 import userRouter from "./rest/userRoutes";
 import campRouter from "./rest/campRoutes";
 import camperRouter from "./rest/camperRoutes";
+import adminRouter from "./rest/adminRoutes";
 
 const CORS_ALLOW_LIST = [
   "http://localhost:3000",
@@ -37,6 +38,7 @@ app.use("/entities", entityRouter);
 app.use("/users", userRouter);
 app.use("/camp", campRouter);
 app.use("/camper", camperRouter);
+app.use("/admin", adminRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 mongo.connect();
