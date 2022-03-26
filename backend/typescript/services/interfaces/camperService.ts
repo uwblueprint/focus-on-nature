@@ -1,4 +1,10 @@
-import { CreateCamperDTO, UpdateCamperDTO, CamperDTO } from "../../types";
+import {
+  CreateCamperDTO,
+  CamperDTO,
+  CreateWaitlistedCamperDTO,
+  WaitlistedCamperDTO,
+  UpdateCamperDTO,
+} from "../../types";
 
 interface ICamperService {
   /**
@@ -25,6 +31,17 @@ interface ICamperService {
   getCampersByCampId(campId: string): Promise<Array<CamperDTO>>;
 
   /**
+   * Create a waitlisted camper
+   * @param waitlistedCamper the waitlisted camper to be created
+   * @returns a WaitlistedCamperDTO with the created waitlisted camper's information
+   * @throws Error if waitlisted camper creation fails
+   */
+  createWaitlistedCamper(
+    waitlistedCamper: CreateWaitlistedCamperDTO,
+  ): Promise<WaitlistedCamperDTO>;
+
+  /**
+   * Update a camper
    * @param camperId camper's id
    * @param camper the camper to be updated
    * @returns a CamperDTO with the updated camper's information

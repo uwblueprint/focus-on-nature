@@ -87,6 +87,8 @@ export type CreateCampDTO = Omit<
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
+export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
+
 export type UpdateCamperDTO = Omit<
   CamperDTO,
   "id" | "registrationDate" | "chargeId"

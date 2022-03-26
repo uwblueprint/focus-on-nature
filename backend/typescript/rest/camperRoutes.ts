@@ -10,6 +10,7 @@ import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO } from "../types";
+import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
 
@@ -70,6 +71,28 @@ camperRouter.get("/", async (req, res) => {
     }
   }
 });
+
+camperRouter.post(
+  "/waitlist",
+  createWaitlistedCamperDtoValidator,
+  async (req, res) => {
+    try {
+      const newWaitlistedCamper = await camperService.createWaitlistedCamper({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        age: req.body.age,
+        contactName: req.body.contactName,
+        contactEmail: req.body.contactEmail,
+        contactNumber: req.body.contactNumber,
+        camp: req.body.camp,
+      });
+
+      res.status(201).json(newWaitlistedCamper);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Update the camper with the specified camperId */
 camperRouter.put(
