@@ -14,8 +14,10 @@ export const createCamperDtoValidator = async (
   next: NextFunction,
 ) => {
   let camp = "";
+  let chargeId = "";
   if (req.body.length > 0) {
     camp = req.body[0].camp;
+    chargeId = req.body[0].chargeId;
   }
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
@@ -46,6 +48,9 @@ export const createCamperDtoValidator = async (
     }
     if (!validatePrimitive(camper.chargeId, "string")) {
       return res.status(400).send(getApiValidationError("chargeId", "string"));
+    }
+    if (camper.chargeId !== chargeId) {
+      return res.status(400).send("Campers must have the same chargeId.");
     }
   }
   return next();
