@@ -18,7 +18,7 @@ export const waiverUpdateValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.body.clauses.length === 0 || !req.body.clauses.every(validateClause)) {
+  if (!req.body.clauses || req.body.clauses.length === 0 || !req.body.clauses.every(validateClause)) {
     return res
       .status(400)
       .send(
