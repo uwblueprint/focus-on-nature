@@ -105,5 +105,5 @@ export type WaiverDTO = {
   clauses: {
     text: string;
     required: boolean;
- }[]
+  }[];
 };

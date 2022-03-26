@@ -4,7 +4,7 @@ export interface Waiver extends Document {
   clauses: {
     text: string;
     required: boolean;
- }[]
+  }[];
 }
 
 const WaiverSchema: Schema = new Schema({
