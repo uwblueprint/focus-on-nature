@@ -4,7 +4,7 @@ import { validatePrimitive } from "./util";
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
 const validateClause = (obj: any): boolean => {
-  if (obj.text && !validatePrimitive(obj.text, "string")) {
+  if (!validatePrimitive(obj.text, "string")) {
     return false;
   }
   if (!validatePrimitive(obj.required, "boolean")) {
