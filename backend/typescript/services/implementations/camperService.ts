@@ -190,6 +190,7 @@ class CamperService implements ICamperService {
         throw mongoDbError;
       }
     } catch (error: unknown) {
+      Logger.error(
         `Failed to create waitlisted camper. Reason: ${getErrorMessage(error)}`,
       );
       throw error;
