@@ -35,9 +35,7 @@ export type CamperDTO = {
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
-  formResponses: {
-    [key: string]: string;
-  };
+  formResponses: Map<string, string>;
 };
 
 export type CamperCSVInfoDTO = Omit<CamperDTO, "camp" | "id">;
@@ -88,6 +86,11 @@ export type CreateCampDTO = Omit<
   "id" | "baseCamp" | "campers" | "waitlist"
 >;
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
+
+export type UpdateCamperDTO = Omit<
+  CamperDTO,
+  "id" | "registrationDate" | "chargeId"
+>;
 
 export type AuthDTO = Token & UserDTO;
 

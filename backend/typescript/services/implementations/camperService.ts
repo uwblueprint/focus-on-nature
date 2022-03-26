@@ -1,7 +1,7 @@
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgCamp, { Camp } from "../../models/camp.model";
-import { CreateCamperDTO, CamperDTO } from "../../types";
+import { CreateCamperDTO, UpdateCamperDTO, CamperDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
@@ -142,6 +142,62 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
+  /* eslint-disable class-methods-use-this */
+  async updateCamperById(
+    camperId: string,
+    camper: UpdateCamperDTO,
+  ): Promise<CamperDTO> {
+    let oldCamper: Camper | null;
+
+    try {
+      oldCamper = await MgCamper.findById(camperId);
+
+      if (camper.camp && oldCamper) {
+        const newCamp: Camp | null = await MgCamp.findById(camper.camp);
+        const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
+
+        if (!newCamp) {
+          throw new Error(`camp ${camper.camp} not found.`);
+        } else if (
+          newCamp &&
+          oldCamp &&
+          newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
+        ) {
+          throw new Error(
+            `Error: can only change sessions between the same camp`,
+          );
+        }
+      }
+
+      // must explicitly specify runValidators when updating through findByIdAndUpdate
+      oldCamper = await MgCamper.findByIdAndUpdate(
+        camperId,
+        {
+          camp: camper.camp,
+          formResponses: camper.formResponses,
+          hasPaid: camper.hasPaid,
+        },
+        { runValidators: true },
+      );
+
+      if (!oldCamper) {
+        throw new Error(`camperId ${camperId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to update user. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: camperId,
+      camp: camper.camp,
+      formResponses: camper.formResponses,
+      registrationDate: oldCamper.registrationDate,
+      hasPaid: camper.hasPaid,
+      chargeId: oldCamper.chargeId,
+    };
+  }
+
   async deleteCampersByChargeId(chargeId: string): Promise<void> {
     try {
       const campers: Array<Camper> = await MgCamper.find({
@@ -207,6 +263,56 @@ class CamperService implements ICamperService {
     } catch (error: unknown) {
       Logger.error(
         `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async deleteCamperById(camperId: string): Promise<void> {
+    try {
+      const camper: Camper | null = await MgCamper.findById(camperId);
+
+      if (!camper) {
+        throw new Error(`Camper with camper ID ${camperId} not found.`);
+      }
+
+      const camp: Camp | null = await MgCamp.findById(camper.camp);
+
+      if (!camp) {
+        throw new Error(`Camper's camp with campId ${camper.camp} not found.`);
+      }
+
+      // delete the camper from the camp's list of campers
+      const oldCamperIds = [...camp.campers];
+      camp.campers = camp.campers.filter((id) => id.toString() !== camperId);
+      await camp.save();
+
+      try {
+        await MgCamper.deleteOne({
+          _id: camperId,
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's campers deletion
+        try {
+          camp.campers = oldCamperIds;
+          await camp.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB camp's updated campers field after deleting camper document failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper id that could not be deleted =",
+            camperId,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete camper with camper ID ${camperId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
       );
       throw error;
     }
