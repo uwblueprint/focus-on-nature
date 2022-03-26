@@ -24,7 +24,7 @@ class EmailService implements IEmailService {
     await this.sendEmail(
       to,
       "Focus on Nature: Confirmation Email",
-      `Hi ${registrantName}<br><br>Thank you for registering for a Focus on Nature Camp! We are very excited to have your young photographer join us. We will be emailing you closer to the start of the camp with additional information for you and your camper. <br><br>Please find your registration information below, and if you need to edit any of the fields, reach out to camps@focusonnature.ca.
+      `Hi ${registrantName},<br><br>Thank you for registering for a Focus on Nature Camp! We are very excited to have your young photographer join us. We will be emailing you closer to the start of the camp with additional information for you and your camper. <br><br>Please find your registration information below, and if you need to edit any of the fields, reach out to camps@focusonnature.ca.
       <br>
       <ul>
         <li><b>Camp name:</b> ${registrantName}
@@ -64,7 +64,7 @@ class EmailService implements IEmailService {
     await this.sendEmail(
       to,
       "Focus on Nature Camp Registration - Invitation to Register",
-      `Hi ${waitlistName}<br><br>
+      `Hi ${waitlistName},<br><br>
       A spot opened up in ${campName} for the following session dates ${sessionDates}. To register your camper, please use the following <a href=${link}>link</a> Please complete this registration within 24 hours to confirm your spot.<br><br>
       Thanks,<br><br>
       Focus on Nature  
