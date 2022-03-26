@@ -9,6 +9,7 @@ import {
   CamperDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
+  UpdateCamperDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -195,7 +196,7 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
-
+    
     return {
       id: newWaitlistedCamper.id,
       firstName: waitlistedCamper.firstName,
@@ -205,6 +206,62 @@ class CamperService implements ICamperService {
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
       camp: waitlistedCamper.camp,
+    };
+  }
+  
+  /* eslint-disable class-methods-use-this */
+  async updateCamperById(
+    camperId: string,
+    camper: UpdateCamperDTO,
+  ): Promise<CamperDTO> {
+    let oldCamper: Camper | null;
+
+    try {
+      oldCamper = await MgCamper.findById(camperId);
+
+      if (camper.camp && oldCamper) {
+        const newCamp: Camp | null = await MgCamp.findById(camper.camp);
+        const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
+
+        if (!newCamp) {
+          throw new Error(`camp ${camper.camp} not found.`);
+        } else if (
+          newCamp &&
+          oldCamp &&
+          newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
+        ) {
+          throw new Error(
+            `Error: can only change sessions between the same camp`,
+          );
+        }
+      }
+
+      // must explicitly specify runValidators when updating through findByIdAndUpdate
+      oldCamper = await MgCamper.findByIdAndUpdate(
+        camperId,
+        {
+          camp: camper.camp,
+          formResponses: camper.formResponses,
+          hasPaid: camper.hasPaid,
+        },
+        { runValidators: true },
+      );
+
+      if (!oldCamper) {
+        throw new Error(`camperId ${camperId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to update user. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: camperId,
+      camp: camper.camp,
+      formResponses: camper.formResponses,
+      registrationDate: oldCamper.registrationDate,
+      hasPaid: camper.hasPaid,
+      chargeId: oldCamper.chargeId,
     };
   }
 

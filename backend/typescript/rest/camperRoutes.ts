@@ -1,6 +1,10 @@
 import { Router } from "express";
 
-import { createCamperDtoValidator } from "../middlewares/validators/camperValidators";
+import { isAuthorizedByRole } from "../middlewares/auth";
+import {
+  createCamperDtoValidator,
+  updateCamperDtoValidator,
+} from "../middlewares/validators/camperValidators";
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
@@ -9,6 +13,7 @@ import { CamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
+
 const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
@@ -83,6 +88,29 @@ camperRouter.post(
       });
 
       res.status(201).json(newWaitlistedCamper);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+
+/* Update the camper with the specified camperId */
+camperRouter.put(
+  "/:camperId",
+  updateCamperDtoValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const updatedCamper = await camperService.updateCamperById(
+        req.params.camperId,
+        {
+          camp: req.body.camp,
+          formResponses: req.body.formResponses,
+          hasPaid: req.body.hasPaid,
+        },
+      );
+      res.status(200).json(updatedCamper);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }
