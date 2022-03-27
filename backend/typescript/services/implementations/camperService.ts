@@ -143,7 +143,7 @@ class CamperService implements ICamperService {
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO> {
     let newWaitlistedCamper: WaitlistedCamper;
-    let existingCamp: Camp | null;
+    let existingCamp: CampSession | null;
 
     try {
       newWaitlistedCamper = await MgWaitlistedCamper.create({
@@ -153,12 +153,12 @@ class CamperService implements ICamperService {
         contactName: waitlistedCamper.contactName,
         contactEmail: waitlistedCamper.contactEmail,
         contactNumber: waitlistedCamper.contactNumber,
-        camp: waitlistedCamper.camp,
+        campSession: waitlistedCamper.campSession,
       });
 
       try {
         existingCamp = await MgCamp.findByIdAndUpdate(
-          waitlistedCamper.camp,
+          waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
           },
@@ -166,7 +166,7 @@ class CamperService implements ICamperService {
         );
 
         if (!existingCamp) {
-          throw new Error(`Camp ${waitlistedCamper.camp} not found.`);
+          throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
       } catch (mongoDbError: unknown) {
         // rollback user creation
@@ -207,7 +207,7 @@ class CamperService implements ICamperService {
       contactName: waitlistedCamper.contactName,
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
-      camp: waitlistedCamper.camp,
+      campSession: waitlistedCamper.campSession,
     };
   }
 
@@ -221,16 +221,20 @@ class CamperService implements ICamperService {
     try {
       oldCamper = await MgCamper.findById(camperId);
 
-      if (camper.camp && oldCamper) {
-        const newCamp: Camp | null = await MgCamp.findById(camper.camp);
-        const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
+      if (camper.campSession && oldCamper) {
+        const newCamp: CampSession | null = await MgCamp.findById(
+          camper.campSession,
+        );
+        const oldCamp: CampSession | null = await MgCamp.findById(
+          oldCamper.campSession,
+        );
 
         if (!newCamp) {
-          throw new Error(`camp ${camper.camp} not found.`);
+          throw new Error(`camp ${camper.campSession} not found.`);
         } else if (
           newCamp &&
           oldCamp &&
-          newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
+          newCamp.camp.toString() !== oldCamp.camp.toString()
         ) {
           throw new Error(
             `Error: can only change sessions between the same camp`,
@@ -242,7 +246,7 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
-          camp: camper.camp,
+          campSession: camper.campSession,
           formResponses: camper.formResponses,
           hasPaid: camper.hasPaid,
         },
@@ -259,7 +263,7 @@ class CamperService implements ICamperService {
 
     return {
       id: camperId,
-      camp: camper.camp,
+      campSession: camper.campSession,
       formResponses: camper.formResponses,
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,

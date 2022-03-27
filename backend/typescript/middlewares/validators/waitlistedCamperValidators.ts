@@ -30,8 +30,8 @@ export const createWaitlistedCamperDtoValidator = async (
       .status(400)
       .send(getApiValidationError("contactNumber", "string"));
   }
-  if (!validatePrimitive(req.body.camp, "string")) {
-    return res.status(400).send(getApiValidationError("camp", "string"));
+  if (!validatePrimitive(req.body.campSession, "string")) {
+    return res.status(400).send(getApiValidationError("campSession", "string"));
   }
 
   return next();
