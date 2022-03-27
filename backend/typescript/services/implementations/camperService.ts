@@ -16,11 +16,9 @@ class CamperService implements ICamperService {
       existingCamp = await MgCamp.findById(camper.camp);
 
       if (existingCamp) {
-        const existingCampObj = existingCamp.toObject();
-
-        if (existingCamp.campers.length >= existingCampObj.capacity) {
+        if (existingCamp.campers.length >= existingCamp.capacity) {
           throw new Error(
-            `Error: camp is full. Current number of campers in camp: ${existingCamp.campers.length}. Camp capacity: ${existingCampObj.capacity}.`,
+            `Error: camp is full. Current number of campers in camp: ${existingCamp.campers.length}. Camp capacity: ${existingCamp.capacity}.`,
           );
         }
       } else {
