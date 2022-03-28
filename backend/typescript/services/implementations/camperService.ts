@@ -143,10 +143,15 @@ class CamperService implements ICamperService {
     let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
-      const existingCamp: Camp | null = await MgCamp.findById(campId).populate({
-        path: "campers",
-        model: MgCamper,
-      });
+      const existingCamp: Camp | null = await MgCamp.findById(campId)
+        .populate({
+          path: "campers",
+          model: MgCamper,
+        })
+        .populate({
+          path: "waitlist",
+          model: MgWaitlistedCamper,
+        });
 
       if (!existingCamp) {
         throw new Error(`Camp ${existingCamp} not found.`);
