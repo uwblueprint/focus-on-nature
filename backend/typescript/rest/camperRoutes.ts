@@ -2,14 +2,14 @@ import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
 import {
-  createCamperDtoValidator,
+  createCampersDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO, CreateCamperDTO } from "../types";
+import { CamperDTO, CreateCampersDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
@@ -17,10 +17,10 @@ const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
-camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
+camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
-    const campers = req.body as CreateCamperDTO;
-    const newCampers = await camperService.createCamper(campers);
+    const campers = req.body as CreateCampersDTO;
+    const newCampers = await camperService.createCampers(campers);
     res.status(201).json(newCampers);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });

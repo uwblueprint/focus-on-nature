@@ -1,5 +1,5 @@
 import {
-  CreateCamperDTO,
+  CreateCampersDTO,
   CamperDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
@@ -13,7 +13,7 @@ interface ICamperService {
    * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails
    */
-  createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>>;
+  createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>>;
 
   /**
    * Get all campers and their information

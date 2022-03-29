@@ -8,7 +8,7 @@ import {
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
-export const createCamperDtoValidator = async (
+export const createCampersDtoValidator = async (
   req: Request,
   res: Response,
   next: NextFunction,

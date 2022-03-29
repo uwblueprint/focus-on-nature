@@ -5,7 +5,7 @@ import MgWaitlistedCamper, {
 } from "../../models/waitlistedCamper.model";
 import MgCamp, { Camp } from "../../models/camp.model";
 import {
-  CreateCamperDTO,
+  CreateCampersDTO,
   CamperDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
@@ -18,7 +18,7 @@ const Logger = logger(__filename);
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCamper(campers: CreateCamperDTO): Promise<Array<CamperDTO>> {
+  async createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>> {
     let newCamperDTOs: Array<CamperDTO> = [];
     let newCampers: Array<Camper> = [];
     let existingCamp: Camp | null;
