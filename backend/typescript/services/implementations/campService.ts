@@ -1,11 +1,11 @@
-import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
+import { CreateCampDTO, CamperCSVInfoDTO, CampDTO } from "../../types";
 import ICampService from "../interfaces/campService";
-import MgCamp, { Camp } from "../../models/camp.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
+import MgCamp, { Camp } from "../../models/camp.model";
 import MgFormQuestion from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
@@ -14,7 +14,9 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId).populate({
+      const camp: CampSession | null = await MgCampSession.findById(
+        campId,
+      ).populate({
         path: "campers",
         model: MgCamper,
       });
@@ -39,10 +41,20 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-    let baseCamp: BaseCamp;
     let newCamp: Camp;
-    const formQuestionIDs: string[] = [];
+
     try {
+      newCamp = new MgCamp({
+        name: camp.name,
+        ageLower: camp.ageLower,
+        ageUpper: camp.ageUpper,
+        capacity: camp.capacity,
+        description: camp.description,
+        location: camp.location,
+        fee: camp.fee,
+        formQuestions: [],
+      });
+      /* eslint no-underscore-dangle: 0 */
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
           const question = await MgFormQuestion.create({
@@ -52,50 +64,48 @@ class CampService implements ICampService {
             description: formQuestion.description,
             options: formQuestion.options,
           });
-          formQuestionIDs[i] = question._id;
+          newCamp.formQuestions[i] = question._id;
         }),
       );
 
-      baseCamp = new MgBaseCamp({
-        name: camp.name,
-        ageLower: camp.ageLower,
-        ageUpper: camp.ageUpper,
-        description: camp.description,
-        location: camp.location,
-        fee: camp.fee,
-        formQuestions: formQuestionIDs,
-      });
-
-      newCamp = new MgCamp({
-        baseCamp,
-        campers: [],
-        capacity: camp.capacity,
-        waitlist: [],
-        startTime: camp.startTime,
-        endTime: camp.endTime,
-        dates: camp.dates,
-        active: camp.active,
-      });
+      await Promise.all(
+        camp.campSessions.map(async (campSession, i) => {
+          const session = await MgCampSession.create({
+            camp: newCamp,
+            campers: [],
+            waitlist: [],
+            startTime: campSession.startTime,
+            endTime: campSession.endTime,
+            dates: campSession.dates,
+            active: campSession.active,
+          });
+          newCamp.campSessions[i] = session._id;
+        }),
+      );
 
       try {
-        /* eslint no-underscore-dangle: 0 */
-        baseCamp.camps.push(newCamp._id);
-
-        await baseCamp.save((err) => {
-          if (err) throw err;
-        });
         await newCamp.save((err) => {
           if (err) throw err;
         });
       } catch (error: unknown) {
         // rollback incomplete camp creation
-        formQuestionIDs.forEach((formQuestionID) =>
-          MgFormQuestion.deleteOne({ _id: formQuestionID }),
-        );
 
-        MgCamp.findByIdAndDelete(baseCamp.id);
+        try {
+          newCamp.formQuestions.forEach((formQuestionID) =>
+            MgFormQuestion.findByIdAndDelete(formQuestionID),
+          );
+          newCamp.campSessions.forEach((campSessionID) =>
+            MgCampSession.findByIdAndDelete(campSessionID),
+          );
 
-        MgBaseCamp.findByIdAndDelete(newCamp.id);
+          MgCamp.findByIdAndDelete(newCamp.id);
+        } catch (rollbackError: unknown) {
+          Logger.error(
+            `Failed to rollback camp creation error. Reason = ${getErrorMessage(
+              rollbackError,
+            )}`,
+          );
+        }
 
         Logger.error(
           `Failed to create camp. Reason = ${getErrorMessage(error)}`,
@@ -108,16 +118,18 @@ class CampService implements ICampService {
     }
 
     return {
-      /* eslint no-underscore-dangle: 0 */
-      id: newCamp._id,
-      baseCamp: baseCamp.id,
-      campers: newCamp.campers.map((camper) => camper.toString()),
+      id: newCamp.id,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
+      campSessions: newCamp.campSessions.map((session) => session.toString()),
       capacity: newCamp.capacity,
-      dates: newCamp.dates.map((date) => date.toString()),
-      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startTime: newCamp.startTime.toString(),
-      endTime: newCamp.endTime.toString(),
-      active: newCamp.active,
+      name: newCamp.name,
+      description: newCamp.description,
+      location: newCamp.location,
+      fee: newCamp.fee,
+      formQuestions: newCamp.formQuestions.map((formQuestion) =>
+        formQuestion.toString(),
+      ),
     };
   }
 
