@@ -64,12 +64,7 @@ export const createCampDtoValidator = async (
           .status(400)
           .send(getApiValidationError("dates", "string", true));
       }
-      if (
-        !campSession.dates.every((date: string) => {
-          if (!validateDate(date)) return false;
-          return true;
-        })
-      ) {
+      if (!campSession.dates.every(validateDate)) {
         return res
           .status(400)
           .send(getApiValidationError("dates", "Date string"));
