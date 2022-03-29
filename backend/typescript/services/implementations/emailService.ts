@@ -20,7 +20,19 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendConfirmationEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, campFees: string, earlyDropOffAndPickupFees: string, totalPayment: string, link:string): Promise<void> {
+  async sendConfirmationEmail(
+    to: string,
+    registrantName: string,
+    sessionDates: string,
+    camperName: string,
+    camperAge: string,
+    registrantEmail: string,
+    registrantPhoneNumber: string,
+    campFees: string,
+    earlyDropOffAndPickupFees: string,
+    totalPayment: string,
+    link: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature: Confirmation Email",
@@ -49,7 +61,10 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendCancellationEmail(to: string, registrantName:string): Promise<void> {
+  async sendCancellationEmail(
+    to: string,
+    registrantName: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature: Cancellation Email",
@@ -60,7 +75,13 @@ class EmailService implements IEmailService {
     );
   }
 
-  async registrationInviteEmail(to: string, campName:string, waitlistName:string, sessionDates: string, link: string): Promise<void> {
+  async registrationInviteEmail(
+    to: string,
+    campName: string,
+    waitlistName: string,
+    sessionDates: string,
+    link: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Focus on Nature Camp Registration - Invitation to Register",
@@ -72,7 +93,16 @@ class EmailService implements IEmailService {
     );
   }
 
-  async specialNeedsEmail(to: string, registrantName: string, sessionDates: string, camperName: string, camperAge: string, registrantEmail: string, registrantPhoneNumber: string, specialNeeds: string): Promise<void> {
+  async specialNeedsEmail(
+    to: string,
+    registrantName: string,
+    sessionDates: string,
+    camperName: string,
+    camperAge: string,
+    registrantEmail: string,
+    registrantPhoneNumber: string,
+    specialNeeds: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Special Needs Camper Registration Notice",
@@ -91,7 +121,11 @@ class EmailService implements IEmailService {
     );
   }
 
-  async fullCamp(to: string, campName:string, sessionDates: string): Promise<void> {
+  async fullCamp(
+    to: string,
+    campName: string,
+    sessionDates: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Camp Registration Notice - FULL CAPACITY",
@@ -99,7 +133,12 @@ class EmailService implements IEmailService {
     );
   }
 
-  async camperCancellationNoticeEmail(to: string, camperName:string, campName: string, sessionDates: string): Promise<void> {
+  async camperCancellationNoticeEmail(
+    to: string,
+    camperName: string,
+    campName: string,
+    sessionDates: string,
+  ): Promise<void> {
     await this.sendEmail(
       to,
       "Camper Cancellation Notice",
