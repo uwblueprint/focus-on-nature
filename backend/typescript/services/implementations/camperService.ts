@@ -22,7 +22,7 @@ class CamperService implements ICamperService {
     let newCamper: Camper;
     let existingCamp: CampSession | null;
     try {
-      existingCamp = await MgCamp.findById(camper.camp);
+      existingCamp = await MgCamp.findById(camper.campSession);
 
       if (existingCamp) {
         if (existingCamp.campers.length >= existingCamp.capacity) {
@@ -31,7 +31,7 @@ class CamperService implements ICamperService {
           );
         }
       } else {
-        throw new Error(`Camp ${camper.camp} not found.`);
+        throw new Error(`Camp ${camper.campSession} not found.`);
       }
 
       newCamper = await MgCamper.create({
@@ -52,7 +52,7 @@ class CamperService implements ICamperService {
         );
 
         if (!existingCamp) {
-          throw new Error(`Camp ${camper.campSession} not found.`);
+          throw new Error(`CampSession ${camper.campSession} not found.`);
         }
       } catch (mongoDbError: unknown) {
         // rollback user creation
