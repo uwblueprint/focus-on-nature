@@ -203,20 +203,26 @@ class UserService implements IUserService {
     user: UpdateUserDTO,
   ): Promise<UserDTO | CampLeaderDTO> {
     let oldUser: User | CampLeader | null;
-    let updatedFirebaseUser: firebaseAdmin.auth.UserRecord;
+
+    oldUser = await MgUser.findById(userId); // getting the user in case a role isn't passed
+
+    if (!oldUser) {
+      throw new Error(`userId ${userId} not found.`);
+    }
 
     try {
       // must explicitly specify runValidators when updating through findByIdAndUpdate
 
-      if (user.role === "CampLeader") {
+      if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
         oldUser = await MgCampLeader.findByIdAndUpdate(
           { _id: userId, __t: "CampLeader" },
           {
             firstName: user.firstName,
             lastName: user.lastName,
+            email: user.email,
             role: user.role,
             active: user.active,
-            camps: user.camps,
+            campSessions: user.campSessions,
           },
           { runValidators: true },
         );
@@ -226,6 +232,7 @@ class UserService implements IUserService {
           {
             firstName: user.firstName,
             lastName: user.lastName,
+            email: user.email,
             role: user.role,
             active: user.active,
           },
@@ -234,26 +241,28 @@ class UserService implements IUserService {
       }
 
       if (!oldUser) {
+        // check after re-assigning oldUser
         throw new Error(`userId ${userId} not found.`);
       }
 
       if (user.email) {
         try {
-          updatedFirebaseUser = await firebaseAdmin
+          await firebaseAdmin
             .auth()
             .updateUser(oldUser.authId, { email: user.email });
         } catch (error) {
           // rollback MongoDB user updates
           try {
-            if (user.role === "CampLeader") {
+            if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
               await MgCampLeader.findByIdAndUpdate(
                 { _id: userId, __t: "CampLeader" },
                 {
                   firstName: oldUser.firstName,
                   lastName: oldUser.lastName,
+                  email: oldUser.email,
                   role: oldUser.role,
                   active: oldUser.active,
-                  camps: (oldUser as CampLeader).camps,
+                  campSessions: (oldUser as CampLeader).campSessions,
                 },
                 { runValidators: true },
               );
@@ -263,6 +272,7 @@ class UserService implements IUserService {
                 {
                   firstName: oldUser.firstName,
                   lastName: oldUser.lastName,
+                  email: oldUser.email,
                   role: oldUser.role,
                   active: oldUser.active,
                 },
@@ -287,7 +297,7 @@ class UserService implements IUserService {
       throw error;
     }
 
-    if (user.role === "CampLeader") {
+    if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
       return {
         id: userId,
         firstName: user.firstName,
@@ -295,7 +305,7 @@ class UserService implements IUserService {
         email: user.email,
         role: user.role,
         active: user.active,
-        camps: user.camps,
+        campSessions: user.campSessions,
       };
     }
     return {
