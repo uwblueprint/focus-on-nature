@@ -1,8 +1,10 @@
 import IAdminService from "../interfaces/adminService";
 import waiverModel, { Waiver } from "../../models/waiver.model";
-import { WaiverDTO } from "../../types";
+import { FormQuestionDTO, FormTemplateDTO, WaiverDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
+import formTemplateModel from "../../models/formTemplate.model";
+import formQuestionModel from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
 
@@ -46,6 +48,61 @@ class AdminService implements IAdminService {
       throw error;
     }
     return waiverDto;
+  }
+
+  async updateFormTemplate(form: FormTemplateDTO): Promise<FormTemplateDTO> {
+    let formTemplateDTO: FormTemplateDTO | null;
+    try {
+      /* eslint no-underscore-dangle: 0 */
+      const formQuestions: Array<FormQuestionDTO> = [];
+      await Promise.all(
+        form.formQuestions.map(async (formQuestion, i) => {
+          const question = await formQuestionModel.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestions[i] = question._id;
+        }),
+      );
+      await formTemplateModel.updateOne(
+        {
+          formQuestions: { $exists: true },
+        },
+        {
+          $set: { formQuestions },
+        },
+        { upsert: true, runValidators: true },
+      );
+      formTemplateDTO = await this.getFormTemplate();
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to update waiver. Reason: ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+    return formTemplateDTO;
+  }
+
+  async getFormTemplate(): Promise<FormTemplateDTO> {
+    let formTemplateDTO: FormTemplateDTO | null;
+    let form: FormTemplateDTO | null;
+    try {
+      form = await formTemplateModel.findOne();
+      console.log(form?.formQuestions);
+      if (!form) {
+        throw new Error(`Form not found.`);
+      }
+      formTemplateDTO = {
+        formQuestions: form.formQuestions,
+      };
+    } catch (error: unknown) {
+      Logger.error(`Failed to get waiver. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+    return formTemplateDTO;
   }
 }
 

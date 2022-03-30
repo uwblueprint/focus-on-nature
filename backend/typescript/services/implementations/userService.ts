@@ -253,7 +253,7 @@ class UserService implements IUserService {
                   lastName: oldUser.lastName,
                   role: oldUser.role,
                   active: oldUser.active,
-                  camps: (oldUser as CampLeader).camps,
+                  camps: (oldUser as CampLeader).campSessions,
                 },
                 { runValidators: true },
               );
@@ -295,7 +295,7 @@ class UserService implements IUserService {
         email: user.email,
         role: user.role,
         active: user.active,
-        camps: user.camps,
+        campSessions: user.camps,
       };
     }
     return {

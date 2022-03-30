@@ -6,7 +6,7 @@ export interface FormTemplate extends Document {
 }
 
 const FormTemplateSchema: Schema = new Schema({
-  questions: {
+  formQuestions: {
     type: [
       {
         type: Schema.Types.ObjectId,
