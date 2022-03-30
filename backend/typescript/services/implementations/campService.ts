@@ -210,7 +210,6 @@ class CampService implements ICampService {
   async generateCampersCSV(campId: string): Promise<string> {
     try {
       const campers = await this.getCampersByCampId(campId);
-
       if (campers.length === 0) {
         // if there are no campers, we return an empty string
         return "";
@@ -224,7 +223,12 @@ class CampService implements ICampService {
         };
       });
       // grabbing column names
-      const fields = Object.keys(flattenedCampers[0]);
+      const campersField = Object.keys(flattenedCampers[0]);
+      const formQuestions = await MgFormQuestion.find({});
+      const formQuestionArr = formQuestions.map(
+        (formQuestion: FormQuestion) => formQuestion.question,
+      );
+      const fields = [...new Set([...campersField, ...formQuestionArr])];
       const csvString = await generateCSV({ data: flattenedCampers, fields });
       return csvString;
     } catch (error: unknown) {
