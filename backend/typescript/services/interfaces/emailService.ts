@@ -1,23 +1,23 @@
 interface IEmailService {
   /**
-   * Send confirmation email.
+   * Send camp registration confirmation email.
    * @throws Error if email was not sent successfully
    */
   sendConfirmationEmail(
     to: string,
     registrantName: string,
+    campName: string,
     sessionDates: string,
-    camperName: string,
-    camperAge: string,
-    registrantEmail: string,
+    campers: { name: string; age: number }[],
     registrantPhoneNumber: string,
-    campFees: string,
-    earlyDropOffAndPickupFees: string,
-    totalPayment: string,
+    campFee: number,
+    totalCampFees: number,
+    dropOffAndPickupFees: number,
+    totalPayment: number,
     link: string,
   ): Promise<void>;
   /**
-   * Send cancellation email.
+   * Send camp registration cancellation confirmation email.
    * @throws Error if email was not sent successfully
    */
   sendCancellationEmail(to: string, registrantName: string): Promise<void>;
@@ -25,7 +25,7 @@ interface IEmailService {
    * Send registration invite email.
    * @throws Error if email was not sent successfully
    */
-  registrationInviteEmail(
+  sendRegistrationInviteEmail(
     to: string,
     campName: string,
     waitlistName: string,
@@ -33,29 +33,34 @@ interface IEmailService {
     link: string,
   ): Promise<void>;
   /**
-   * Send special needs email.
+   * Send special needs notice email.
    * @throws Error if email was not sent successfully
    */
-  specialNeedsEmail(
+  sendSpecialNeedsNoticeEmail(
     to: string,
     registrantName: string,
+    campName: string,
     sessionDates: string,
     camperName: string,
-    camperAge: string,
+    camperAge: number,
     registrantEmail: string,
     registrantPhoneNumber: string,
     specialNeeds: string,
   ): Promise<void>;
   /**
-   * Send full camp email.
+   * Send full camp notice email.
    * @throws Error if email was not sent successfully
    */
-  fullCamp(to: string, campName: string, sessionDates: string): Promise<void>;
+  sendFullCampNoticeEmail(
+    to: string,
+    campName: string,
+    sessionDates: string,
+  ): Promise<void>;
   /**
    * Send camper cancellation notice email.
    * @throws Error if email was not sent successfully
    */
-  camperCancellationNoticeEmail(
+  sendCamperCancellationNoticeEmail(
     to: string,
     camperName: string,
     campName: string,
