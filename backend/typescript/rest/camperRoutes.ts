@@ -78,7 +78,7 @@ camperRouter.post(
         contactName: req.body.contactName,
         contactEmail: req.body.contactEmail,
         contactNumber: req.body.contactNumber,
-        camp: req.body.camp,
+        campSession: req.body.campSession,
       });
 
       res.status(201).json(newWaitlistedCamper);
@@ -98,7 +98,7 @@ camperRouter.put(
       const updatedCamper = await camperService.updateCamperById(
         req.params.camperId,
         {
-          camp: req.body.camp,
+          campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
         },

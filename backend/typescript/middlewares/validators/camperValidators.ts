@@ -13,18 +13,20 @@ export const createCampersDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let camp = "";
+  let campSession = "";
   let chargeId = "";
   if (req.body.length > 0) {
-    camp = req.body[0].camp;
+    campSession = req.body[0].campSession;
     chargeId = req.body[0].chargeId;
   }
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
-    if (!validatePrimitive(camper.camp, "string")) {
-      return res.status(400).send(getApiValidationError("camp", "string"));
+    if (!validatePrimitive(camper.campSession, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("campSession", "string"));
     }
-    if (camper.camp !== camp) {
+    if (camper.campSession !== campSession) {
       return res.status(400).send("Campers must have the same camp.");
     }
     if (

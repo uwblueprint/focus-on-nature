@@ -3,7 +3,7 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import MgCamp, { Camp } from "../../models/camp.model";
+import MgCamp, { CampSession } from "../../models/campSession.model";
 import {
   CreateCampersDTO,
   CamperDTO,
@@ -21,16 +21,19 @@ class CamperService implements ICamperService {
   async createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>> {
     let newCamperDTOs: Array<CamperDTO> = [];
     let newCampers: Array<Camper> = [];
-    let existingCamp: Camp | null;
+    let existingCamp: CampSession | null;
     try {
       newCampers = await MgCamper.insertMany(campers);
       if (campers.length > 0) {
         try {
-          existingCamp = await MgCamp.findByIdAndUpdate(campers[0].camp, {
-            runValidators: true,
-          });
+          existingCamp = await MgCamp.findByIdAndUpdate(
+            campers[0].campSession,
+            {
+              runValidators: true,
+            },
+          );
           if (!existingCamp) {
-            throw new Error(`Camp ${campers[0].camp} not found.`);
+            throw new Error(`Camp ${campers[0].campSession} not found.`);
           }
         } catch (mongoDbError: unknown) {
           // rollback camper creation
@@ -65,7 +68,9 @@ class CamperService implements ICamperService {
     newCamperDTOs = newCampers.map((newCamper) => {
       return {
         id: newCamper.id,
-        camp: newCamper.camp ? newCamper.camp.toString() : "",
+        campSession: newCamper.campSession
+          ? newCamper.campSession.toString()
+          : "",
         registrationDate: newCamper.registrationDate,
         hasPaid: newCamper.hasPaid,
         chargeId: newCamper.chargeId,
@@ -83,7 +88,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          camp: camper.camp ? camper.camp.toString() : "",
+          campSession: camper.campSession ? camper.campSession.toString() : "",
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
@@ -102,7 +107,9 @@ class CamperService implements ICamperService {
     let camperDtos: Array<CamperDTO> = [];
 
     try {
-      const existingCamp: Camp | null = await MgCamp.findById(campId).populate({
+      const existingCamp: CampSession | null = await MgCamp.findById(
+        campId,
+      ).populate({
         path: "campers",
         model: MgCamper,
       });
@@ -116,7 +123,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          camp: camper.camp ? camper.camp.toString() : "",
+          campSession: camper.campSession ? camper.campSession.toString() : "",
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
@@ -135,7 +142,7 @@ class CamperService implements ICamperService {
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO> {
     let newWaitlistedCamper: WaitlistedCamper;
-    let existingCamp: Camp | null;
+    let existingCamp: CampSession | null;
 
     try {
       newWaitlistedCamper = await MgWaitlistedCamper.create({
@@ -145,12 +152,12 @@ class CamperService implements ICamperService {
         contactName: waitlistedCamper.contactName,
         contactEmail: waitlistedCamper.contactEmail,
         contactNumber: waitlistedCamper.contactNumber,
-        camp: waitlistedCamper.camp,
+        campSession: waitlistedCamper.campSession,
       });
 
       try {
         existingCamp = await MgCamp.findByIdAndUpdate(
-          waitlistedCamper.camp,
+          waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
           },
@@ -158,7 +165,7 @@ class CamperService implements ICamperService {
         );
 
         if (!existingCamp) {
-          throw new Error(`Camp ${waitlistedCamper.camp} not found.`);
+          throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
       } catch (mongoDbError: unknown) {
         // rollback user creation
@@ -199,7 +206,7 @@ class CamperService implements ICamperService {
       contactName: waitlistedCamper.contactName,
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
-      camp: waitlistedCamper.camp,
+      campSession: waitlistedCamper.campSession,
     };
   }
 
@@ -213,16 +220,20 @@ class CamperService implements ICamperService {
     try {
       oldCamper = await MgCamper.findById(camperId);
 
-      if (camper.camp && oldCamper) {
-        const newCamp: Camp | null = await MgCamp.findById(camper.camp);
-        const oldCamp: Camp | null = await MgCamp.findById(oldCamper.camp);
+      if (camper.campSession && oldCamper) {
+        const newCamp: CampSession | null = await MgCamp.findById(
+          camper.campSession,
+        );
+        const oldCamp: CampSession | null = await MgCamp.findById(
+          oldCamper.campSession,
+        );
 
         if (!newCamp) {
-          throw new Error(`camp ${camper.camp} not found.`);
+          throw new Error(`camp ${camper.campSession} not found.`);
         } else if (
           newCamp &&
           oldCamp &&
-          newCamp.baseCamp.toString() !== oldCamp.baseCamp.toString()
+          newCamp.camp.toString() !== oldCamp.camp.toString()
         ) {
           throw new Error(
             `Error: can only change sessions between the same camp`,
@@ -234,7 +245,7 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
-          camp: camper.camp,
+          campSession: camper.campSession,
           formResponses: camper.formResponses,
           hasPaid: camper.hasPaid,
         },
@@ -251,7 +262,7 @@ class CamperService implements ICamperService {
 
     return {
       id: camperId,
-      camp: camper.camp,
+      campSession: camper.campSession,
       formResponses: camper.formResponses,
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,
@@ -269,11 +280,13 @@ class CamperService implements ICamperService {
         throw new Error(`Campers with charge ID ${chargeId} not found.`);
       }
 
-      const camp: Camp | null = await MgCamp.findById(campers[0].camp);
+      const camp: CampSession | null = await MgCamp.findById(
+        campers[0].campSession,
+      );
 
       if (!camp) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].camp} not found.`,
+          `Campers' camp with campId ${campers[0].campSession} not found.`,
         );
       }
 
@@ -287,7 +300,7 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].camp} has a start date in less than 30 days.`,
+          `Campers' camp with campId ${campers[0].campSession} has a start date in less than 30 days.`,
         );
       }
 
@@ -337,10 +350,14 @@ class CamperService implements ICamperService {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
-      const camp: Camp | null = await MgCamp.findById(camper.camp);
+      const camp: CampSession | null = await MgCamp.findById(
+        camper.campSession,
+      );
 
       if (!camp) {
-        throw new Error(`Camper's camp with campId ${camper.camp} not found.`);
+        throw new Error(
+          `Camper's camp with campId ${camper.campSession} not found.`,
+        );
       }
 
       // delete the camper from the camp's list of campers

@@ -111,6 +111,7 @@ userRouter.put("/:userId", updateUserDtoValidator, async (req, res) => {
       email: req.body.email,
       role: req.body.role,
       active: req.body.active,
+      camps: req.body.camps,
     });
     res.status(200).json(updatedUser);
   } catch (error: unknown) {
