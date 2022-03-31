@@ -151,23 +151,25 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
-  async getCamperByChargeId(chargeId: string): Promise<CamperDTO> {
+  async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const camper: Camper | null = await MgCamper.findOne({ "chargeId": chargeId });
+      const campers: Camper[] = await MgCamper.find({ "chargeId": chargeId });
 
-      if (!camper) {
-        throw new Error(`Camper with Charge Id ${chargeId} not found.`);
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Charge Id ${chargeId} not found.`);
       }
 
-      const camperDTO: CamperDTO = {
-        id: camper.id,
-        campSession: camper.campSession ? camper.campSession.toString() : "",
-        formResponses: camper.formResponses,
-        registrationDate: camper.registrationDate,
-        hasPaid: camper.hasPaid,
-        chargeId: camper.chargeId,
-      };
+      const camperDTO: CamperDTO[] = campers.map((camper) => {
+        return {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          formResponses: camper.formResponses,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+        };
+      });
 
       return camperDTO;
     } catch (error: unknown) {
