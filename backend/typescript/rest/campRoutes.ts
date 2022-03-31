@@ -22,19 +22,15 @@ campRouter.get("/", async (req, res) => {
 campRouter.post("/", createCampDtoValidator, async (req, res) => {
   try {
     const newCamp = await campService.createCamp({
-      active: req.body.active,
       ageLower: req.body.ageLower,
       ageUpper: req.body.ageUpper,
       name: req.body.name,
       description: req.body.description,
       location: req.body.location,
       capacity: req.body.capacity,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
-      dates: req.body.dates,
       fee: req.body.fee,
       formQuestions: req.body.formQuestions,
-      camps: req.body.camps,
+      campSessions: req.body.campSessions,
     });
 
     res.status(201).json(newCamp);

@@ -1,61 +1,64 @@
-import { Schema, model } from "mongoose";
-import { BaseCamp } from "./baseCamp.model";
-import { Camper } from "./camper.model";
+import { Schema, Document, model } from "mongoose";
+import { CampSession } from "./campSession.model";
+import { FormQuestion } from "./formQuestion.model";
 
-export interface Camp extends BaseCamp {
-  baseCamp: BaseCamp | Schema.Types.ObjectId;
-  campers: (Camper | Schema.Types.ObjectId)[];
+export interface Camp extends Document {
+  id: string;
+  ageLower: number;
+  ageUpper: number;
   capacity: number;
-  waitlist: Schema.Types.ObjectId[];
-  dates: Date[];
-  startTime: string;
-  endTime: string;
-  active: boolean;
+  name: string;
+  description: string;
+  location: string;
+  fee: number;
+  formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
+  campSessions: (Schema.Types.ObjectId | CampSession)[];
 }
 
 const CampSchema: Schema = new Schema({
-  baseCamp: {
-    type: Schema.Types.ObjectId,
-    ref: "BaseCamp",
+  ageLower: {
+    type: Number,
     required: true,
   },
-  campers: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Camper",
-      },
-    ],
-    default: [],
+  ageUpper: {
+    type: Number,
+    required: true,
   },
   capacity: {
     type: Number,
     required: true,
   },
-  waitlist: {
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  fee: {
+    type: Number,
+    required: true,
+  },
+  formQuestions: {
     type: [
       {
         type: Schema.Types.ObjectId,
-        ref: "WaitlistedCamper",
+        ref: "FormQuestion",
       },
     ],
-    default: [],
-  },
-  dates: {
-    type: [Date],
     required: true,
   },
-  startTime: {
-    type: String,
-    required: true,
-  },
-  endTime: {
-    type: String,
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    required: true,
+  campSessions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "CampSession",
+      },
+    ],
   },
 });
 

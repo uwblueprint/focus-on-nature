@@ -7,7 +7,7 @@ const mongo = new MongoMemoryServer();
 const mongoTest = {
   connect: async (): Promise<void> => {
     await mongo.start();
-    const uri = mongo.getUri();
+    const uri = await mongo.getUri("fon-test");
     await mongoose.connect(uri);
   },
 

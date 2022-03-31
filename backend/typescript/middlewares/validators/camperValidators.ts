@@ -3,7 +3,7 @@ import {
   getApiValidationError,
   validatePrimitive,
   validateDate,
-  validateFormResponses,
+  validateMap,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -13,12 +13,12 @@ export const createCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.camp, "string")) {
-    return res.status(400).send(getApiValidationError("camp", "string"));
+  if (!validatePrimitive(req.body.campSession, "string")) {
+    return res.status(400).send(getApiValidationError("campSession", "string"));
   }
   if (
     req.body.formResponses &&
-    !validateFormResponses(req.body.formResponses, "string", "string")
+    !validateMap(req.body.formResponses, "string", "string")
   ) {
     return res
       .status(400)
@@ -32,9 +32,33 @@ export const createCamperDtoValidator = async (
   if (!validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
   }
-  if (!validatePrimitive(req.body.chargeId, "integer")) {
-    return res.status(400).send(getApiValidationError("chargeId", "integer"));
+  if (!validatePrimitive(req.body.chargeId, "string")) {
+    return res.status(400).send(getApiValidationError("chargeId", "string"));
   }
 
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const updateCamperDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.body.camp && !validatePrimitive(req.body.camp, "string")) {
+    return res.status(400).send(getApiValidationError("camp", "string"));
+  }
+  if (
+    req.body.formResponses &&
+    !validateMap(req.body.formResponses, "string", "string")
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formResponses", "mixed", true));
+  }
+  if (req.body.hasPaid && !validatePrimitive(req.body.hasPaid, "boolean")) {
+    return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
+  }
   return next();
 };
