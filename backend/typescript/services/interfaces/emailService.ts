@@ -42,7 +42,6 @@ interface IEmailService {
     campName: string,
     sessionDates: string,
     camperName: string,
-    camperAge: number,
     registrantEmail: string,
     registrantPhoneNumber: string,
     specialNeeds: string,
