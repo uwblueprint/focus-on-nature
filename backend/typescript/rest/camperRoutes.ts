@@ -67,7 +67,7 @@ camperRouter.get("/", async (req, res) => {
         const campers = await camperService.getCampersByCampId(campId);
         await sendResponseByMimeType<{
           campers: CamperDTO[];
-          waitlistedCampers: WaitlistedCamperDTO[];
+          waitlist: WaitlistedCamperDTO[];
         }>(res, 200, contentType, campers);
       } catch (error: unknown) {
         await sendResponseByMimeType(res, 500, contentType, [
