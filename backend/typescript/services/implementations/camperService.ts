@@ -137,7 +137,7 @@ class CamperService implements ICamperService {
     campId: string,
   ): Promise<{
     campers: CamperDTO[];
-    waitlistedCampers: WaitlistedCamperDTO[];
+    waitlist: WaitlistedCamperDTO[];
   }> {
     let camperDtos: Array<CamperDTO> = [];
     let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
