@@ -24,6 +24,7 @@ class EmailService implements IEmailService {
     to: string,
     registrantName: string,
     campName: string,
+    campLocation: string,
     sessionDates: string,
     campers: { name: string; age: number }[],
     registrantPhoneNumber: string,
@@ -46,14 +47,15 @@ class EmailService implements IEmailService {
 
       <ul>
         <li><b>Camp name:</b> ${campName} </li>
+        <li><b>Camp location:</b> ${campLocation} </li>
         <li><b>Session dates:</b> ${sessionDates} </li>
         <li><b>Your phone number:</b> ${registrantPhoneNumber}</li>
         <li><b>Campers:</b></li>
         ${campers
           .map((camper) => {
             return `<ul>
-              <li><b>Camper:</b> ${camper.name} </li>
-              <ul><li><b>Camper's age:</b> ${camper.age}</li></ul>
+              <li><b>Name:</b> ${camper.name} </li>
+              <ul><li><b>Age:</b> ${camper.age}</li></ul>
             </ul>`;
           })
           .join("")}
@@ -76,7 +78,7 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendCancellationEmail(
+  async sendCancellationConfirmationEmail(
     to: string,
     registrantName: string,
   ): Promise<void> {
@@ -90,6 +92,44 @@ class EmailService implements IEmailService {
       please do not hesitate to contact camps@focusonnature.ca.<br><br>
       Thanks,<br><br>
       Focus on Nature`,
+    );
+  }
+
+  async sendWaitlistConfirmationEmail(
+    to: string,
+    registrantName: string,
+    campName: string,
+    campLocation: string,
+    sessionDates: string,
+    campers: { name: string; age: string }[],
+    registrantPhoneNumber: string,
+  ): Promise<void> {
+    await this.sendEmail(
+      to,
+      "Focus on Nature Camp Waitlist - Confirmation",
+      `Hi ${registrantName},<br><br>
+      Thank you for joining the waitlist for a Focus on Nature Camp! We will 
+      reach out to you if a spot opens up. <br>
+      Please find your waitlist information below, and if you need to edit any 
+      of the fields, reach out to camps@focusonnature.ca. <br>
+      <ul>
+        <li><b>Camp name:</b> ${campName}</li>
+        <li><b>Camp location:</b> ${campLocation}</li>
+        <li><b>Session dates:</b> ${sessionDates}</li>
+        <li><b>Campers:</b></li>
+        ${campers
+          .map((camper) => {
+            return `<ul>
+              <li><b>Name:</b> ${camper.name} </li>
+              <ul><li><b>Age:</b> ${camper.age}</li></ul>
+            </ul>`;
+          })
+          .join("")}
+        <li><b>Your phone number:</b> ${registrantPhoneNumber}</li>
+      </ul>
+      Thanks, <br><br>
+      Focus on Nature
+      `,
     );
   }
 
