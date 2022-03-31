@@ -33,7 +33,9 @@ class CamperService implements ICamperService {
             },
           );
           if (!existingCamp) {
-            throw new Error(`Camp ${campers[0].campSession} not found.`);
+            throw new Error(
+              `Camp session ${campers[0].campSession} not found.`,
+            );
           }
         } catch (mongoDbError: unknown) {
           // rollback camper creation
