@@ -2,7 +2,14 @@ import * as firebaseAdmin from "firebase-admin";
 
 import IUserService from "../interfaces/userService";
 import MgUser, { User } from "../../models/user.model";
-import { CreateUserDTO, Role, UpdateUserDTO, UserDTO } from "../../types";
+import MgCampLeader, { CampLeader } from "../../models/campleader.model";
+import {
+  CreateUserDTO,
+  Role,
+  UpdateUserDTO,
+  UserDTO,
+  CampLeaderDTO,
+} from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
@@ -191,66 +198,121 @@ class UserService implements IUserService {
     };
   }
 
-  async updateUserById(userId: string, user: UpdateUserDTO): Promise<UserDTO> {
-    let oldUser: User | null;
-    let updatedFirebaseUser: firebaseAdmin.auth.UserRecord;
+  async updateUserById(
+    userId: string,
+    user: UpdateUserDTO,
+  ): Promise<UserDTO | CampLeaderDTO> {
+    let oldUser: User | CampLeader | null;
+
+    oldUser = await MgUser.findById(userId); // getting the user to check their role
+
+    if (!oldUser) {
+      throw new Error(`userId ${userId} not found.`);
+    }
 
     try {
       // must explicitly specify runValidators when updating through findByIdAndUpdate
-      oldUser = await MgUser.findByIdAndUpdate(
-        userId,
-        {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-          active: user.active,
-        },
-        { runValidators: true },
-      );
+
+      if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
+        oldUser = await MgCampLeader.findByIdAndUpdate(
+          { _id: userId, __t: "CampLeader" },
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            active: user.active,
+            campSessions: user.campSessions,
+          },
+          { runValidators: true },
+        );
+      } else {
+        oldUser = await MgUser.findByIdAndUpdate(
+          userId,
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            active: user.active,
+          },
+          { runValidators: true },
+        );
+      }
 
       if (!oldUser) {
+        // check after re-assigning oldUser
         throw new Error(`userId ${userId} not found.`);
       }
 
-      try {
-        updatedFirebaseUser = await firebaseAdmin
-          .auth()
-          .updateUser(oldUser.authId, { email: user.email });
-      } catch (error) {
-        // rollback MongoDB user updates
+      if (user.email) {
         try {
-          await MgUser.findByIdAndUpdate(
-            userId,
-            {
-              firstName: oldUser.firstName,
-              lastName: oldUser.lastName,
-              role: oldUser.role,
-              active: oldUser.active,
-            },
-            { runValidators: true },
-          );
-        } catch (mongoDbError: unknown) {
-          const errorMessage = [
-            "Failed to rollback MongoDB user update after Firebase user update failure. Reason =",
-            getErrorMessage(mongoDbError),
-            "MongoDB user id with possibly inconsistent data =",
-            oldUser.id,
-          ];
-          Logger.error(errorMessage.join(" "));
-        }
+          await firebaseAdmin
+            .auth()
+            .updateUser(oldUser.authId, { email: user.email });
+        } catch (error) {
+          // rollback MongoDB user updates
+          try {
+            if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
+              await MgCampLeader.findByIdAndUpdate(
+                { _id: userId, __t: "CampLeader" },
+                {
+                  firstName: oldUser.firstName,
+                  lastName: oldUser.lastName,
+                  email: oldUser.email,
+                  role: oldUser.role,
+                  active: oldUser.active,
+                  campSessions: (oldUser as CampLeader).campSessions,
+                },
+                { runValidators: true },
+              );
+            } else {
+              await MgUser.findByIdAndUpdate(
+                userId,
+                {
+                  firstName: oldUser.firstName,
+                  lastName: oldUser.lastName,
+                  email: oldUser.email,
+                  role: oldUser.role,
+                  active: oldUser.active,
+                },
+                { runValidators: true },
+              );
+            }
+          } catch (mongoDbError: unknown) {
+            const errorMessage = [
+              "Failed to rollback MongoDB user update after Firebase user update failure. Reason =",
+              getErrorMessage(mongoDbError),
+              "MongoDB user id with possibly inconsistent data =",
+              oldUser.id,
+            ];
+            Logger.error(errorMessage.join(" "));
+          }
 
-        throw error;
+          throw error;
+        }
       }
     } catch (error: unknown) {
       Logger.error(`Failed to update user. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
 
+    if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
+      return {
+        id: userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        active: user.active,
+        campSessions: user.campSessions,
+      };
+    }
     return {
       id: userId,
       firstName: user.firstName,
       lastName: user.lastName,
-      email: updatedFirebaseUser.email ?? "",
+      email: user.email,
       role: user.role,
       active: user.active,
     };

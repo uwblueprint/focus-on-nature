@@ -1,71 +1,24 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { DropOffType } from "../types";
 
 export interface Camper extends Document {
   id: string;
-  firstName: string;
-  lastName: string;
-  age: number;
-  contactName: string;
-  contactEmail: string;
-  contactNumber: string;
-  camp: Schema.Types.ObjectId;
-  hasCamera: boolean;
-  hasLaptop: boolean;
-  allergies: string;
-  additionalDetails: string;
-  dropOffType: DropOffType;
+  campSession: Schema.Types.ObjectId;
+  formResponses: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: number;
+  chargeId: string;
 }
 
 const CamperSchema: Schema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-  },
-  contactName: {
-    type: String,
-    required: true,
-  },
-  contactEmail: {
-    type: String,
-    required: true,
-  },
-  contactNumber: {
-    type: String,
-    required: true,
-  },
-  camp: {
+  campSession: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "CampSession",
   },
-  hasCamera: {
-    type: Boolean,
+  formResponses: {
+    type: Map,
+    of: String,
     required: true,
-  },
-  hasLaptop: {
-    type: Boolean,
-    required: true,
-  },
-  allergies: {
-    type: String,
-  },
-  additionalDetails: {
-    type: String,
-  },
-  dropOffType: {
-    type: String,
-    enum: ["EarlyDropOff", "LatePickUp"],
   },
   registrationDate: {
     type: Date,
@@ -76,7 +29,7 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   chargeId: {
-    type: Number,
+    type: String,
     required: true,
   },
 });

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
   validateArray,
@@ -41,48 +42,55 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
-  if (req.body.camperInfo && !validateArray(req.body.camperInfo, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("camperInfo", "string", true));
-  }
 
-  if (req.body.dates && !validateArray(req.body.dates, "string")) {
-    return res.status(400).send(getApiValidationError("dates", "string", true));
-  }
   if (
-    !req.body.dates.every((date: string) => {
-      if (!validateDate(date)) return false;
-      return true;
+    req.body.formQuestions &&
+    Array.isArray(req.body.formQuestions) &&
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    !req.body.formQuestions.every((formQuestion: { [key: string]: any }) => {
+      return validateFormQuestion(formQuestion);
     })
   ) {
-    return res.status(400).send(getApiValidationError("dates", "Date string"));
-  }
-
-  if (!validatePrimitive(req.body.startTime, "string")) {
-    return res.status(400).send(getApiValidationError("startTime", "string"));
-  }
-  if (!validateTime(req.body.startTime)) {
     return res
       .status(400)
-      .send(getApiValidationError("startTime", "24 hr time string"));
+      .send(getApiValidationError("formQuestion", "string", true));
   }
 
-  if (!validatePrimitive(req.body.endTime, "string")) {
-    return res.status(400).send(getApiValidationError("endTime", "string"));
-  }
-  if (!validateTime(req.body.endTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("endTime", "24 hr time string"));
-  }
-
-  if (!validatePrimitive(req.body.active, "boolean")) {
-    return res.status(400).send(getApiValidationError("active", "boolean"));
-  }
-  // camps field is filled in automatically
-  if (req.body.camps) {
-    return res.status(400).send("camps should be null");
+  if (req.body.campSessions) {
+    for (let i = 0; i < req.body.campSessions.length; i += 1) {
+      const campSession = req.body.campSessions[i];
+      if (campSession.dates && !validateArray(campSession.dates, "string")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "string", true));
+      }
+      if (!campSession.dates.every(validateDate)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "Date string"));
+      }
+      if (!validatePrimitive(campSession.startTime, "string")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("startTime", "string"));
+      }
+      if (!validateTime(campSession.startTime)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("startTime", "24 hr time string"));
+      }
+      if (!validatePrimitive(campSession.endTime, "string")) {
+        return res.status(400).send(getApiValidationError("endTime", "string"));
+      }
+      if (!validateTime(campSession.endTime)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("endTime", "24 hr time string"));
+      }
+      if (!validatePrimitive(campSession.active, "boolean")) {
+        return res.status(400).send(getApiValidationError("active", "boolean"));
+      }
+    }
   }
   if (req.body.campers) {
     return res.status(400).send("campers should be empty");
