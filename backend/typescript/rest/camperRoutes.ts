@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
 import {
+  cancelCamperDtoValidator,
   createCamperDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
@@ -153,10 +154,13 @@ camperRouter.put(
   },
 );
 
-/* Delete all campers with the chargeId */
-camperRouter.delete("/cancel/:chargeId", async (req, res) => {
+/* Delete list of campers with the chargeId */
+camperRouter.delete("/cancel", cancelCamperDtoValidator, async (req, res) => {
   try {
-    await camperService.deleteCampersByChargeId(req.params.chargeId);
+    await camperService.deleteCampersByChargeId(
+      req.body.chargeId,
+      req.body.camperIds,
+    );
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
