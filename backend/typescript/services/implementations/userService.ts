@@ -204,7 +204,7 @@ class UserService implements IUserService {
   ): Promise<UserDTO | CampLeaderDTO> {
     let oldUser: User | CampLeader | null;
 
-    oldUser = await MgUser.findById(userId); // getting the user in case a role isn't passed
+    oldUser = await MgUser.findById(userId); // getting the user to check their role
 
     if (!oldUser) {
       throw new Error(`userId ${userId} not found.`);
