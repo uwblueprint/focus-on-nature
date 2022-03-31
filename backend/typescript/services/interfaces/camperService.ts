@@ -3,6 +3,7 @@ import {
   CamperDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
+  UpdateCamperDTO,
 } from "../../types";
 
 interface ICamperService {
@@ -31,7 +32,7 @@ interface ICamperService {
     campId: string,
   ): Promise<{
     campers: CamperDTO[];
-    waitlistedCampers: WaitlistedCamperDTO[];
+    waitlist: WaitlistedCamperDTO[];
   }>;
 
   /**
@@ -43,6 +44,32 @@ interface ICamperService {
   createWaitlistedCamper(
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO>;
+
+  /**
+   * Update a camper
+   * @param camperId camper's id
+   * @param camper the camper to be updated
+   * @returns a CamperDTO with the updated camper's information
+   * @throws Error if camper update fails
+   */
+  updateCamperById(
+    camperId: string,
+    camper: UpdateCamperDTO,
+  ): Promise<CamperDTO>;
+
+  /**
+   * Delete all campers associated with the charge ID
+   * @param chargeId the charge ID for the payment
+   * @throws Error if camper cancellation fails
+   */
+  deleteCampersByChargeId(chargeId: string): void;
+
+  /**
+   * Delete camper associated with the camper ID
+   * @param camperId camper's Id
+   * @throws Error if camper cancellation fails
+   */
+  deleteCamperById(camperId: string): void;
 }
 
 export default ICamperService;
