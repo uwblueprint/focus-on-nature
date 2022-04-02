@@ -5,6 +5,7 @@ import {
   createCamperDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
+// eslint-disable-next-line import/no-named-as-default
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
@@ -69,6 +70,18 @@ camperRouter.get("/", async (req, res) => {
         ]);
       }
     }
+  }
+});
+
+camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const camper = await camperService.getCampersByChargeId(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
   }
 });
 
