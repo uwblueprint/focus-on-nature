@@ -86,7 +86,10 @@ export type CampDTO = {
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   formQuestions: FormQuestionDTO[];
-  campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
+  campSessions: (Omit<
+    CampSessionDTO,
+    "id" | "camp" | "campers" | "waitlist"
+  > & { registerations: number; waitlists: number })[];
 };
 
 export type CreateCampDTO = Omit<

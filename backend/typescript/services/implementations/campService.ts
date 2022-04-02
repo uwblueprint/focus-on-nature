@@ -39,35 +39,22 @@ class CampService implements ICampService {
       }
 
       return camps.map((camp) => {
-        const formQuestionArr = camp.formQuestions as FormQuestion[];
-        const formQuestions = formQuestionArr.map(
+        const formQuestions = (camp.formQuestions as FormQuestion[]).map(
           (formQuestion: FormQuestion) => {
-            const {
-              id,
-              type,
-              question,
-              required,
-              description,
-              options,
-            } = formQuestion;
-            let result: FormQuestionDTO = { id, type, question, required };
-            if (description) {
-              result = { ...result, description };
-            }
-            if (options) {
-              result = { ...result, options };
-            }
-
-            return result;
+            return { ...(formQuestion as FormQuestionDTO) };
           },
         );
-        const campSessionsArr = camp.campSessions as CampSession[];
-        const campSessions = campSessionsArr.map((campSession) => ({
-          dates: campSession.dates.map((date) => date.toString()),
-          startTime: campSession.startTime,
-          endTime: campSession.endTime,
-          active: campSession.active,
-        }));
+
+        const campSessions = (camp.campSessions as CampSession[]).map(
+          (campSession) => ({
+            dates: campSession.dates.map((date) => date.toString()),
+            startTime: campSession.startTime,
+            endTime: campSession.endTime,
+            registerations: campSession.campers.length,
+            waitlists: campSession.waitlist.length,
+            active: campSession.active,
+          }),
+        );
 
         return {
           id: camp.id,
@@ -88,38 +75,52 @@ class CampService implements ICampService {
     }
   }
 
-  async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
+  async getCampersByCampId(campSessionId: string): Promise<CamperCSVInfoDTO[]> {
     try {
-      const camp: CampSession | null = await MgCampSession.findById(
-        campId,
+      const campSession: CampSession | null = await MgCampSession.findById(
+        campSessionId,
       ).populate({
         path: "campers",
         model: MgCamper,
       });
 
-      if (!camp) {
-        throw new Error(`Camp with id ${campId} not found.`);
+      if (!campSession) {
+        throw new Error(`Camp with id ${campSessionId} not found.`);
       }
-      const campers = camp.campers as Camper[];
+      const campers = campSession.campers as Camper[];
+
+      const questionIds = new Set(
+        campers.length > 0
+          ? campers.reduce((prevCamper, currCamper) => {
+              return [
+                ...prevCamper,
+                ...Array.from(currCamper.formResponses.keys()),
+              ];
+            }, Array.from(campers[0].formResponses.keys()))
+          : [],
+      );
+
+      const formQuestions = await MgFormQuestion.find({
+        _id: Array.from(questionIds),
+      });
+
+      const formQuestionMap: { [id: string]: string } = {};
+
+      formQuestions.forEach((formQuestion) => {
+        formQuestionMap[formQuestion._id] = formQuestion.question;
+      });
 
       return await Promise.all(
         campers.map(async (camper) => {
           const { formResponses } = camper;
           const formResponseObject: { [key: string]: string } = {};
-          const formQuestionsPromise = Array.from(formResponses.keys()).map(
-            (questionId) => {
-              return MgFormQuestion.findById(questionId, "question");
-            },
-          );
-          const formQuestions = await Promise.all(formQuestionsPromise);
-          formQuestions.forEach((formQuestion) => {
-            if (formQuestion) {
-              const { id, question } = formQuestion;
-              const answer = formResponses.get(id) as string;
 
-              formResponseObject[question] = answer;
-            }
+          Array.from(formResponses.keys()).forEach((questionId) => {
+            const question = formQuestionMap[questionId];
+            const answer = formResponses.get(questionId);
+            formResponseObject[question] = answer as string;
           });
+
           return {
             formResponses: formResponseObject,
             registrationDate: camper.registrationDate,
