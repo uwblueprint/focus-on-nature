@@ -4,7 +4,7 @@ import { Camper } from "./camper.model";
 import { WaitlistedCamper } from "./waitlistedCamper.model";
 
 export interface CampSession extends Camp {
-  camp: Camp | Schema.Types.ObjectId;
+  camp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
   dates: Date[];
