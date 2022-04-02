@@ -3,7 +3,7 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import MgCamp, { CampSession } from "../../models/campSession.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import {
   CreateCamperDTO,
   CamperDTO,
@@ -22,7 +22,7 @@ class CamperService implements ICamperService {
     let newCamper: Camper;
     let existingCamp: CampSession | null;
     try {
-      existingCamp = await MgCamp.findById(camper.campSession);
+      existingCamp = await MgCampSession.findById(camper.campSession);
 
       if (existingCamp) {
         if (existingCamp.campers.length >= existingCamp.capacity) {
@@ -43,7 +43,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           camper.campSession,
           {
             $push: { campers: newCamper.id },
@@ -120,7 +120,7 @@ class CamperService implements ICamperService {
     let camperDtos: Array<CamperDTO> = [];
 
     try {
-      const existingCamp: CampSession | null = await MgCamp.findById(
+      const existingCamp: CampSession | null = await MgCampSession.findById(
         campId,
       ).populate({
         path: "campers",
@@ -169,7 +169,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
@@ -224,188 +224,196 @@ class CamperService implements ICamperService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async updateCamperById(
-    camperId: string,
-    camper: UpdateCamperDTO,
-  ): Promise<CamperDTO> {
-    let oldCamper: Camper | null;
+  async updateCampersById(
+    // need to revisit and work on
+    campers: Array<UpdateCamperDTO>,
+  ): Promise<Array<CamperDTO>> {
+    let updatedCamperDTOs: Array<CamperDTO> = [];
+    let oldCampers: Array<Camper> = []; // for rollback strategy....but what do i even do?
+    let updatedCampers: Array<Camper> = [];
 
     try {
-      oldCamper = await MgCamper.findById(camperId);
+      const camperIds = campers.map((camper) => camper.id);
+      oldCampers = await MgCamper.find({
+        _id: {
+          $in: camperIds,
+        },
+      });
 
-      if (camper.campSession && oldCamper) {
-        const newCamp: CampSession | null = await MgCamp.findById(
-          camper.campSession,
-        );
-        const oldCamp: CampSession | null = await MgCamp.findById(
-          oldCamper.campSession,
-        );
+      if (oldCampers.length !== campers.length) {
+        throw new Error(`Not all campers in [${campers}] are found.`);
+      }
 
-        if (!newCamp) {
-          throw new Error(`camp ${camper.campSession} not found.`);
-        } else if (
-          newCamp &&
-          oldCamp &&
-          newCamp.camp.toString() !== oldCamp.camp.toString()
-        ) {
-          throw new Error(
-            `Error: can only change sessions between the same camp`,
+      for (let i = 0; i < campers.length; i += 1) {
+        let camper = campers[i];
+        if (camper.campSession && oldCampers[i]) {
+          const newCamp: CampSession | null = await MgCampSession.findById(
+            camper.campSession,
           );
+          const oldCamp: CampSession | null = await MgCampSession.findById(
+            oldCampers[i].campSession,
+          );
+
+          if (!newCamp) {
+            throw new Error(
+              `Camp ${camper.campSession} not found for camper ${camper.id}.`,
+            );
+          } else if (
+            newCamp &&
+            oldCamp &&
+            newCamp.camp.toString() !== oldCamp.camp.toString()
+          ) {
+            throw new Error(
+              `Error: for camper ${camper.id}, can only change sessions between the same camp`,
+            );
+          }
         }
       }
 
-      // must explicitly specify runValidators when updating through findByIdAndUpdate
-      oldCamper = await MgCamper.findByIdAndUpdate(
-        camperId,
-        {
-          campSession: camper.campSession,
-          formResponses: camper.formResponses,
-          hasPaid: camper.hasPaid,
-        },
-        { runValidators: true },
-      );
+      updatedCampers = await MgCamper.updateMany(campers);
 
-      if (!oldCamper) {
-        throw new Error(`camperId ${camperId} not found.`);
+      if (!updatedCampers) {
+        throw new Error(`Campers with camperIds [${camperIds}] not found.`);
       }
     } catch (error: unknown) {
-      Logger.error(`Failed to update user. Reason = ${getErrorMessage(error)}`);
+      Logger.error(
+        `Failed to update campers. Reason = ${getErrorMessage(error)}`,
+      );
       throw error;
     }
+    updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
+      return {
+        id: updatedCamper.id,
+        campSession: updatedCamper.campSession
+          ? updatedCamper.campSession.toString()
+          : "",
+        registrationDate: updatedCamper.registrationDate,
+        hasPaid: updatedCamper.hasPaid,
+        chargeId: updatedCamper.chargeId,
+        formResponses: updatedCamper.formResponses,
+      };
+    });
 
-    return {
-      id: camperId,
-      campSession: camper.campSession,
-      formResponses: camper.formResponses,
-      registrationDate: oldCamper.registrationDate,
-      hasPaid: camper.hasPaid,
-      chargeId: oldCamper.chargeId,
-    };
+    return updatedCamperDTOs;
   }
 
-  async deleteCampersByChargeId(chargeId: string): Promise<void> {
-    try {
-      const campers: Array<Camper> = await MgCamper.find({
-        chargeId,
-      });
-
-      if (!campers.length) {
-        throw new Error(`Campers with charge ID ${chargeId} not found.`);
-      }
-
-      const camp: CampSession | null = await MgCamp.findById(
-        campers[0].campSession,
-      );
-
-      if (!camp) {
-        throw new Error(
-          `Campers' camp with campId ${campers[0].campSession} not found.`,
-        );
-      }
-
-      const today = new Date();
-      const diffInMilliseconds: number = Math.abs(
-        camp.dates[0].getTime() - today.getTime(),
-      );
-      const daysUntilStartOfCamp = Math.ceil(
-        diffInMilliseconds / (1000 * 60 * 60 * 24),
-      );
-
-      if (daysUntilStartOfCamp < 30) {
-        throw new Error(
-          `Campers' camp with campId ${campers[0].campSession} has a start date in less than 30 days.`,
-        );
-      }
-
-      const camperIds = campers.map((camper) => camper.id);
-      const oldCamperIds = [...camp.campers]; // clone the full array of campers for rollback
-      camp.campers = camp.campers.filter(
-        (camperId) => !camperIds.includes(camperId.toString()),
-      );
-      await camp.save();
-
+  async cancelRegistration(camperIds: Array<string>): Promise<void> {
+    if (camperIds.length > 0) {
       try {
-        await MgCamper.deleteMany({
+        const campers: Array<Camper> | null = await MgCamper.find({
           _id: {
             $in: camperIds,
           },
         });
-      } catch (mongoDbError: unknown) {
-        // could not delete users, rollback camp's camper deletions
-        try {
-          camp.campers = oldCamperIds;
-          await camp.save();
-        } catch (rollbackDbError: unknown) {
-          const errorMessage = [
-            "Failed to rollback MongoDB camp's updated campers field after deleting camper documents failure. Reason =",
-            getErrorMessage(rollbackDbError),
-            "MongoDB campers id that could not be deleted =",
-            camperIds,
-          ];
-          Logger.error(errorMessage.join(" "));
+
+        if (campers === null || campers.length !== camperIds.length) {
+          throw new Error(
+            `Not all campers with camper IDs [${camperIds}] are found.`,
+          );
         }
 
-        throw mongoDbError;
+        const oneCampSessionId = campers[0].campSession;
+
+        const campSession: CampSession | null = await MgCampSession.findById(
+          oneCampSessionId,
+        );
+
+        if (!campSession) {
+          throw new Error(
+            `Campers' camp session with campSessionId ${oneCampSessionId} not found.`,
+          );
+        }
+
+        for (let i = 0; i < campers.length; i += 1) {
+          if (
+            campers[i].campSession.toString() !== oneCampSessionId.toString()
+          ) {
+            throw new Error(
+              `All campers must be registered for the same camp session.`,
+            );
+          }
+        }
+
+        const today = new Date();
+        const diffInMilliseconds: number = Math.abs(
+          campSession.dates[0].getTime() - today.getTime(),
+        );
+        const daysUntilStartOfCamp = Math.ceil(
+          diffInMilliseconds / (1000 * 60 * 60 * 24),
+        );
+
+        if (daysUntilStartOfCamp < 30 && campSession.waitlist.length === 0) {
+          throw new Error(
+            `Campers' camp with campId ${oneCampSessionId} has a start date in less than 30 days and the waitlist is empty.`,
+          );
+        }
+        // call delete campers function
+        await this.deleteCampersById(camperIds);
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
+        );
+        throw error;
       }
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
-      );
-      throw error;
     }
   }
 
-  async deleteCamperById(camperId: string): Promise<void> {
-    try {
-      const camper: Camper | null = await MgCamper.findById(camperId);
-
-      if (!camper) {
-        throw new Error(`Camper with camper ID ${camperId} not found.`);
-      }
-
-      const camp: CampSession | null = await MgCamp.findById(
-        camper.campSession,
-      );
-
-      if (!camp) {
-        throw new Error(
-          `Camper's camp with campId ${camper.campSession} not found.`,
-        );
-      }
-
-      // delete the camper from the camp's list of campers
-      const oldCamperIds = [...camp.campers];
-      camp.campers = camp.campers.filter((id) => id.toString() !== camperId);
-      await camp.save();
-
+  async deleteCampersById(camperIds: Array<string>): Promise<void> {
+    if (camperIds.length > 0) {
       try {
-        await MgCamper.deleteOne({
-          _id: camperId,
+        const campers: Array<Camper> | null = await MgCamper.find({
+          _id: {
+            $in: camperIds,
+          },
         });
-      } catch (mongoDbError: unknown) {
-        // could not delete camper, rollback camp's campers deletion
-        try {
-          camp.campers = oldCamperIds;
-          await camp.save();
-        } catch (rollbackDbError: unknown) {
-          const errorMessage = [
-            "Failed to rollback MongoDB camp's updated campers field after deleting camper document failure. Reason =",
-            getErrorMessage(rollbackDbError),
-            "MongoDB camper id that could not be deleted =",
-            camperId,
-          ];
-          Logger.error(errorMessage.join(" "));
+
+        if (campers === null || campers.length !== camperIds.length) {
+          throw new Error(
+            `Not all campers with camper IDs [${camperIds}] are found.`,
+          );
         }
 
-        throw mongoDbError;
+        const chargeIds = campers.map((camper) => camper.chargeId);
+
+        const oneChargeId = campers[0].chargeId;
+        for (let i = 0; i < chargeIds.length; i += 1) {
+          if (chargeIds[i] !== oneChargeId) {
+            throw new Error(
+              `ChargeIds in [${chargeIds}] must all be the same.`,
+            );
+          }
+        }
+
+        try {
+          await MgCamper.deleteMany({
+            _id: {
+              $in: camperIds,
+            },
+          });
+        } catch (mongoDbError: unknown) {
+          // could not delete camper, rollback camp's campers deletion
+          try {
+            await MgCamper.create(campers);
+          } catch (rollbackDbError: unknown) {
+            const errorMessage = [
+              "Failed to rollback MongoDB campers' creation after deleting campers failure. Reason =",
+              getErrorMessage(rollbackDbError),
+              "MongoDB camper ids that could not be deleted =",
+              camperIds,
+            ];
+            Logger.error(errorMessage.join(" "));
+          }
+
+          throw mongoDbError;
+        }
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to delete campers with camper IDs [${camperIds}]. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
       }
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to delete camper with camper ID ${camperId}. Reason = ${getErrorMessage(
-          error,
-        )}`,
-      );
-      throw error;
     }
   }
 }

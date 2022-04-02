@@ -98,5 +98,5 @@ export const validateMap = (
 };
 
 export const checkDuplicatesInArray = (value: Array<any>): boolean => {
-  return new Set(value).size !== value.length;
+  return new Set(value).size !== value.length; // returns true if there are duplicates
 };

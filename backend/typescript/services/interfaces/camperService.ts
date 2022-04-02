@@ -41,30 +41,26 @@ interface ICamperService {
   ): Promise<WaitlistedCamperDTO>;
 
   /**
-   * Update a camper
-   * @param camperId camper's id
-   * @param camper the camper to be updated
-   * @returns a CamperDTO with the updated camper's information
-   * @throws Error if camper update fails
+   * Update an array of campers
+   * @param campers the campers to be updated
+   * @returns an array of CamperDTOs with the updated campers' information
+   * @throws Error if campers' update fails
    */
-  updateCamperById(
-    camperId: string,
-    camper: UpdateCamperDTO,
-  ): Promise<CamperDTO>;
+  updateCampersById(campers: Array<UpdateCamperDTO>): Promise<Array<CamperDTO>>;
 
   /**
-   * Delete all campers associated with the charge ID
-   * @param chargeId the charge ID for the payment
+   * Delete all campers associated with the camper IDs if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request
+   * @param camperIds array of camper Ids
    * @throws Error if camper cancellation fails
    */
-  deleteCampersByChargeId(chargeId: string): void;
+  cancelRegistration(camperIds: Array<string>): void;
 
   /**
-   * Delete camper associated with the camper ID
-   * @param camperId camper's Id
-   * @throws Error if camper cancellation fails
+   * Delete campers associated with the camper IDs
+   * @param camperIds array of camper Ids
+   * @throws Error if camper deletion fails
    */
-  deleteCamperById(camperId: string): void;
+  deleteCampersById(camperIds: Array<string>): void;
 }
 
 export default ICamperService;

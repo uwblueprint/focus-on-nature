@@ -93,10 +93,7 @@ export type CreateCamperDTO = Omit<CamperDTO, "id">;
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
-export type UpdateCamperDTO = Omit<
-  CamperDTO,
-  "id" | "registrationDate" | "chargeId"
->;
+export type UpdateCamperDTO = Omit<CamperDTO, "registrationDate">;
 
 export type AuthDTO = Token & UserDTO;
 
