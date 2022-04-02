@@ -23,10 +23,6 @@ class CampService implements ICampService {
         .populate({
           path: "campSessions",
           model: MgCampSession,
-          populate: {
-            path: "campers",
-            model: MgCamper,
-          },
         })
         .populate({
           path: "formQuestions",
@@ -56,8 +52,8 @@ class CampService implements ICampService {
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
-            registerations: campSession.campers.length,
-            waitlists: campSession.waitlist.length,
+            registrations: campSession.campers.length,
+            waitlist: campSession.waitlist.length,
             active: campSession.active,
           }),
         );
