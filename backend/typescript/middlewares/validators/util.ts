@@ -96,3 +96,7 @@ export const validateMap = (
   }
   return true;
 };
+
+export const checkDuplicatesInArray = (value: Array<any>): boolean => {
+  return new Set(value).size !== value.length;
+};

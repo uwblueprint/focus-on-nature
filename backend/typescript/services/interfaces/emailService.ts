@@ -7,6 +7,7 @@ interface IEmailService {
     to: string,
     registrantName: string,
     campName: string,
+    campLocation: string,
     sessionDates: string,
     campers: { name: string; age: number }[],
     registrantPhoneNumber: string,
@@ -20,7 +21,23 @@ interface IEmailService {
    * Send camp registration cancellation confirmation email.
    * @throws Error if email was not sent successfully
    */
-  sendCancellationEmail(to: string, registrantName: string): Promise<void>;
+  sendCancellationConfirmationEmail(
+    to: string,
+    registrantName: string,
+  ): Promise<void>;
+  /**
+   * Send camp waitlist confirmation email.
+   * @throws Error if email was not sent successfully
+   */
+  sendWaitlistConfirmationEmail(
+    to: string,
+    registrantName: string,
+    campName: string,
+    campLocation: string,
+    sessionDates: string,
+    campers: { name: string; age: string }[],
+    registrantPhoneNumber: string,
+  ): Promise<void>;
   /**
    * Send registration invite email.
    * @throws Error if email was not sent successfully
@@ -42,7 +59,6 @@ interface IEmailService {
     campName: string,
     sessionDates: string,
     camperName: string,
-    camperAge: number,
     registrantEmail: string,
     registrantPhoneNumber: string,
     specialNeeds: string,
