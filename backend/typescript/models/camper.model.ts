@@ -2,19 +2,18 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface Camper extends Document {
   id: string;
-  camp: Schema.Types.ObjectId;
-  formResponses: {
-    [key: string]: string;
-  };
+  campSession: Schema.Types.ObjectId;
+  formResponses: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
 }
 
 const CamperSchema: Schema = new Schema({
-  camp: {
+  campSession: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "CampSession",
   },
   formResponses: {
     type: Map,
