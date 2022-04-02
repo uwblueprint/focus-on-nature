@@ -34,7 +34,7 @@ export type CamperDTO = {
   campSession: string;
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: number;
+  chargeId: string;
   formResponses: Map<string, string>;
 };
 
@@ -89,7 +89,7 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   campSessions: (Omit<
     CampSessionDTO,
     "id" | "camp" | "campers" | "waitlist"
-  > & { registerations: number; waitlists: number })[];
+  > & { registrations: number; waitlist: number })[];
 };
 
 export type CreateCampDTO = Omit<
