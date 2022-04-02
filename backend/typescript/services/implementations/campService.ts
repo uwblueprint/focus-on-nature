@@ -3,7 +3,6 @@ import {
   CampDTO,
   CamperCSVInfoDTO,
   GetCampDTO,
-  FormQuestionDTO,
 } from "../../types";
 import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
@@ -41,7 +40,14 @@ class CampService implements ICampService {
       return camps.map((camp) => {
         const formQuestions = (camp.formQuestions as FormQuestion[]).map(
           (formQuestion: FormQuestion) => {
-            return { ...(formQuestion as FormQuestionDTO) };
+            return {
+              id: formQuestion.id,
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            };
           },
         );
 
@@ -75,7 +81,9 @@ class CampService implements ICampService {
     }
   }
 
-  async getCampersByCampId(campSessionId: string): Promise<CamperCSVInfoDTO[]> {
+  async getCampersByCampSessionId(
+    campSessionId: string,
+  ): Promise<CamperCSVInfoDTO[]> {
     try {
       const campSession: CampSession | null = await MgCampSession.findById(
         campSessionId,
@@ -228,9 +236,9 @@ class CampService implements ICampService {
     };
   }
 
-  async generateCampersCSV(campId: string): Promise<string> {
+  async generateCampersCSV(campSessionId: string): Promise<string> {
     try {
-      const campers = await this.getCampersByCampId(campId);
+      const campers = await this.getCampersByCampSessionId(campSessionId);
       if (campers.length === 0) {
         // if there are no campers, we return an empty string
         return "";

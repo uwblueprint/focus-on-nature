@@ -20,7 +20,7 @@ interface ICampService {
    * @returns array of CamperCSVInfoDTO object containing campers information
    * @throws Error if camper retrieval fails
    */
-  getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]>;
+  getCampersByCampSessionId(campId: string): Promise<CamperCSVInfoDTO[]>;
 
   createCamp(user: CreateCampDTO): Promise<CampDTO>;
 
