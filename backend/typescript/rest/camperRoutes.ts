@@ -9,7 +9,7 @@ import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO, UpdateCamperDTO } from "../types";
+import { CamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
@@ -98,7 +98,7 @@ camperRouter.post(
 camperRouter.put(
   "/update",
   updateCamperDtoValidator,
-  // isAuthorizedByRole(new Set(["Admin"])),
+  isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
       const camperIds = req.body.ids as Array<string>;
@@ -106,7 +106,6 @@ camperRouter.put(
         campSession: req.body.campSession,
         formResponses: req.body.formResponses,
         hasPaid: req.body.hasPaid,
-        chargeId: req.body.chargeId,
       });
       res.status(200).json(updatedCampers);
     } catch (error: unknown) {

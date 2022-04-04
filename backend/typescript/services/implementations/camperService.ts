@@ -223,8 +223,6 @@ class CamperService implements ICamperService {
     };
   }
 
-  // this needs to be tested!!!!
-
   /* eslint-disable class-methods-use-this */
   async updateCampersById(
     camperIds: Array<string>,
@@ -235,44 +233,41 @@ class CamperService implements ICamperService {
     let oldCampers: Array<Camper> = [];
 
     try {
-      console.log("camperIds");
-      console.log(camperIds);
-      console.log("updatedFields");
-      console.log(updatedFields);
-
       oldCampers = await MgCamper.find({
         _id: {
           $in: camperIds,
         },
       });
 
-      console.log("oldCampers");
-      console.log(oldCampers);
-
       if (oldCampers.length !== camperIds.length) {
         throw new Error(`Not all campers in [${camperIds}] are found.`);
       }
 
-      for (let i = 0; i < camperIds.length; i += 1) {
-        if (updatedFields.campSession && oldCampers[i]) {
-          const newCampSession: CampSession | null = await MgCampSession.findById(
-            updatedFields.campSession,
-          );
+      if (camperIds.length > 0) {
+        const { chargeId } = oldCampers[0];
+        for (let i = 0; i < oldCampers.length; i += 1) {
+          if (oldCampers[i].chargeId !== chargeId) {
+            throw new Error(`All campers must have the same chargeId.`);
+          }
+        }
+      }
+
+      if (updatedFields.campSession) {
+        const newCampSession: CampSession | null = await MgCampSession.findById(
+          updatedFields.campSession,
+        );
+
+        if (!newCampSession) {
+          throw new Error(`Camp ${updatedFields.campSession} not found.`);
+        }
+
+        /* eslint-disable no-await-in-loop */
+        for (let i = 0; i < camperIds.length; i += 1) {
           const oldCampSession: CampSession | null = await MgCampSession.findById(
             oldCampers[i].campSession,
           );
 
-          console.log("oldCampSession");
-          console.log(oldCampSession);
-          console.log("newCampSession");
-          console.log(newCampSession);
-
-          if (!newCampSession) {
-            throw new Error(
-              `Camp ${updatedFields.campSession} not found for camper ${oldCampers[i].id}.`,
-            );
-          } else if (
-            newCampSession &&
+          if (
             oldCampSession &&
             newCampSession.camp.toString() !== oldCampSession.camp.toString()
           ) {
@@ -293,21 +288,17 @@ class CamperService implements ICamperService {
           {
             $set: updatedFields,
           },
+          { runValidators: true },
         );
 
-        console.log("updatedResult");
-        console.log(updatedResult);
-
-        if (
-          updatedResult.acknowledged === false ||
-          updatedResult.modifiedCount !== camperIds.length
-        ) {
+        if (updatedResult.acknowledged === false) {
           throw new Error(
-            `Not all of the campers with camperIds [${camperIds}] were able to be updated.`,
+            `Some or none of the campers with camperIds [${camperIds}] were able to be updated.`,
           );
         }
       } catch (mongoDbError: unknown) {
-        // rollback camper update
+        // rollback camper updates
+        /* eslint-disable no-await-in-loop */
         for (let i = 0; i < oldCampers.length; i += 1) {
           try {
             const rollBackCamper = await MgCamper.findByIdAndUpdate(
@@ -325,9 +316,9 @@ class CamperService implements ICamperService {
             }
           } catch (rollbackDbError) {
             const errorMessage = [
-              "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
+              "Failed to rollback MongoDB camper creation after update camper failure. Reason =",
               getErrorMessage(rollbackDbError),
-              "MongoDB camper id that could not be deleted =",
+              "MongoDB camper id that could not be updated =",
               oldCampers[i].id,
             ];
             Logger.error(errorMessage.join(" "));
@@ -451,6 +442,7 @@ class CamperService implements ICamperService {
           }
         }
 
+        /* eslint-disable no-await-in-loop */
         for (let i = 0; i < campers.length; i += 1) {
           const campSession: CampSession | null = await MgCampSession.findById(
             campers[i].campSession,
