@@ -28,7 +28,20 @@ interface ICamperService {
    * @returns array of CamperDTOs
    * @throws Error if camper retrieval fails
    */
-  getCampersByCampId(campId: string): Promise<Array<CamperDTO>>;
+  getCampersByCampId(
+    campId: string,
+  ): Promise<{
+    campers: CamperDTO[];
+    waitlist: WaitlistedCamperDTO[];
+  }>;
+
+  /**
+   * Get campers associated with charge id
+   * @param chargeId camper's charge id for refunds
+   * @returns CamperDTO
+   * @throws Error if camper retrieval fails
+   */
+  getCampersByChargeId(chargeId: string): Promise<Array<CamperDTO>>;
 
   /**
    * Create a waitlisted camper
