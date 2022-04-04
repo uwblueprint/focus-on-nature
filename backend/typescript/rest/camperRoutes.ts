@@ -98,11 +98,16 @@ camperRouter.post(
 camperRouter.put(
   "/update",
   updateCamperDtoValidator,
-  isAuthorizedByRole(new Set(["Admin"])),
+  // isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
-      const campers = req.body as Array<UpdateCamperDTO>;
-      const updatedCampers = await camperService.updateCampersById(campers);
+      const camperIds = req.body.ids as Array<string>;
+      const updatedCampers = await camperService.updateCampersById(camperIds, {
+        campSession: req.body.campSession,
+        formResponses: req.body.formResponses,
+        hasPaid: req.body.hasPaid,
+        chargeId: req.body.chargeId,
+      });
       res.status(200).json(updatedCampers);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });

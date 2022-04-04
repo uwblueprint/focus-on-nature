@@ -42,11 +42,15 @@ interface ICamperService {
 
   /**
    * Update an array of campers
-   * @param campers the campers to be updated
+   * @param camperIds the campers to be updated
+   * @param updatedFields camper fields to be updated
    * @returns an array of CamperDTOs with the updated campers' information
    * @throws Error if campers' update fails
    */
-  updateCampersById(campers: Array<UpdateCamperDTO>): Promise<Array<CamperDTO>>;
+  updateCampersById(
+    camperIds: Array<string>,
+    updatedFields: UpdateCamperDTO,
+  ): Promise<Array<CamperDTO>>;
 
   /**
    * Delete all campers associated with the camper IDs if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request

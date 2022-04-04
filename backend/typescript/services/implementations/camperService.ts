@@ -223,57 +223,117 @@ class CamperService implements ICamperService {
     };
   }
 
+  // this needs to be tested!!!!
+
   /* eslint-disable class-methods-use-this */
   async updateCampersById(
-    // need to revisit and work on
-    campers: Array<UpdateCamperDTO>,
+    camperIds: Array<string>,
+    updatedFields: UpdateCamperDTO,
   ): Promise<Array<CamperDTO>> {
     let updatedCamperDTOs: Array<CamperDTO> = [];
-    let oldCampers: Array<Camper> = []; // for rollback strategy....but what do i even do?
     let updatedCampers: Array<Camper> = [];
+    let oldCampers: Array<Camper> = [];
 
     try {
-      const camperIds = campers.map((camper) => camper.id);
+      console.log("camperIds");
+      console.log(camperIds);
+      console.log("updatedFields");
+      console.log(updatedFields);
+
       oldCampers = await MgCamper.find({
         _id: {
           $in: camperIds,
         },
       });
 
-      if (oldCampers.length !== campers.length) {
-        throw new Error(`Not all campers in [${campers}] are found.`);
+      console.log("oldCampers");
+      console.log(oldCampers);
+
+      if (oldCampers.length !== camperIds.length) {
+        throw new Error(`Not all campers in [${camperIds}] are found.`);
       }
 
-      for (let i = 0; i < campers.length; i += 1) {
-        let camper = campers[i];
-        if (camper.campSession && oldCampers[i]) {
-          const newCamp: CampSession | null = await MgCampSession.findById(
-            camper.campSession,
+      for (let i = 0; i < camperIds.length; i += 1) {
+        if (updatedFields.campSession && oldCampers[i]) {
+          const newCampSession: CampSession | null = await MgCampSession.findById(
+            updatedFields.campSession,
           );
-          const oldCamp: CampSession | null = await MgCampSession.findById(
+          const oldCampSession: CampSession | null = await MgCampSession.findById(
             oldCampers[i].campSession,
           );
 
-          if (!newCamp) {
+          console.log("oldCampSession");
+          console.log(oldCampSession);
+          console.log("newCampSession");
+          console.log(newCampSession);
+
+          if (!newCampSession) {
             throw new Error(
-              `Camp ${camper.campSession} not found for camper ${camper.id}.`,
+              `Camp ${updatedFields.campSession} not found for camper ${oldCampers[i].id}.`,
             );
           } else if (
-            newCamp &&
-            oldCamp &&
-            newCamp.camp.toString() !== oldCamp.camp.toString()
+            newCampSession &&
+            oldCampSession &&
+            newCampSession.camp.toString() !== oldCampSession.camp.toString()
           ) {
             throw new Error(
-              `Error: for camper ${camper.id}, can only change sessions between the same camp`,
+              `Error: for camper ${oldCampers[i].id}, can only change sessions between the same camp`,
             );
           }
         }
       }
 
-      updatedCampers = await MgCamper.updateMany(campers);
+      try {
+        const updatedResult = await MgCamper.updateMany(
+          {
+            _id: {
+              $in: camperIds,
+            },
+          },
+          {
+            $set: updatedFields,
+          },
+        );
 
-      if (!updatedCampers) {
-        throw new Error(`Campers with camperIds [${camperIds}] not found.`);
+        console.log("updatedResult");
+        console.log(updatedResult);
+
+        if (
+          updatedResult.acknowledged === false ||
+          updatedResult.modifiedCount !== camperIds.length
+        ) {
+          throw new Error(
+            `Not all of the campers with camperIds [${camperIds}] were able to be updated.`,
+          );
+        }
+      } catch (mongoDbError: unknown) {
+        // rollback camper update
+        for (let i = 0; i < oldCampers.length; i += 1) {
+          try {
+            const rollBackCamper = await MgCamper.findByIdAndUpdate(
+              oldCampers[i].id,
+              {
+                campSession: oldCampers[i].campSession,
+                formResponses: oldCampers[i].formResponses,
+                hasPaid: oldCampers[i].hasPaid,
+                chargeId: oldCampers[i].chargeId,
+              },
+              { runValidators: true },
+            );
+            if (!rollBackCamper) {
+              throw new Error(`Camper ${oldCampers[i].id} not found.`);
+            }
+          } catch (rollbackDbError) {
+            const errorMessage = [
+              "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
+              getErrorMessage(rollbackDbError),
+              "MongoDB camper id that could not be deleted =",
+              oldCampers[i].id,
+            ];
+            Logger.error(errorMessage.join(" "));
+          }
+        }
+        throw mongoDbError;
       }
     } catch (error: unknown) {
       Logger.error(
@@ -281,6 +341,13 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
+
+    updatedCampers = await MgCamper.find({
+      _id: {
+        $in: camperIds,
+      },
+    });
+
     updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
       return {
         id: updatedCamper.id,
@@ -380,6 +447,17 @@ class CamperService implements ICamperService {
           if (chargeIds[i] !== oneChargeId) {
             throw new Error(
               `ChargeIds in [${chargeIds}] must all be the same.`,
+            );
+          }
+        }
+
+        for (let i = 0; i < campers.length; i += 1) {
+          const campSession: CampSession | null = await MgCampSession.findById(
+            campers[i].campSession,
+          );
+          if (!campSession) {
+            throw new Error(
+              `Campers' camp session with campSessionId ${campers[i].campSession} not found.`,
             );
           }
         }
