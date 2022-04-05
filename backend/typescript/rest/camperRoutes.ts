@@ -5,11 +5,12 @@ import {
   createCampersDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
+// eslint-disable-next-line import/no-named-as-default
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO, CreateCampersDTO } from "../types";
+import { CamperDTO, CreateCampersDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
@@ -54,7 +55,10 @@ camperRouter.get("/", async (req, res) => {
     } else {
       try {
         const campers = await camperService.getCampersByCampId(campId);
-        await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
+        await sendResponseByMimeType<{
+          campers: CamperDTO[];
+          waitlist: WaitlistedCamperDTO[];
+        }>(res, 200, contentType, campers);
       } catch (error: unknown) {
         await sendResponseByMimeType(res, 500, contentType, [
           {
@@ -63,6 +67,18 @@ camperRouter.get("/", async (req, res) => {
         ]);
       }
     }
+  }
+});
+
+camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const camper = await camperService.getCampersByChargeId(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
   }
 });
 

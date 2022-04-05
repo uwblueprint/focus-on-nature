@@ -105,16 +105,27 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
-  async getCampersByCampId(campId: string): Promise<Array<CamperDTO>> {
+  async getCampersByCampId(
+    campId: string,
+  ): Promise<{
+    campers: CamperDTO[];
+    waitlist: WaitlistedCamperDTO[];
+  }> {
     let camperDtos: Array<CamperDTO> = [];
+    let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
       const existingCamp: CampSession | null = await MgCampSession.findById(
         campId,
-      ).populate({
-        path: "campers",
-        model: MgCamper,
-      });
+      )
+        .populate({
+          path: "campers",
+          model: MgCamper,
+        })
+        .populate({
+          path: "waitlist",
+          model: MgWaitlistedCamper,
+        });
 
       if (!existingCamp) {
         throw new Error(`Camp ${existingCamp} not found.`);
@@ -132,12 +143,54 @@ class CamperService implements ICamperService {
           formResponses: camper.formResponses,
         };
       });
+
+      const waitlistedCampers = existingCamp.waitlist as WaitlistedCamper[];
+
+      waitlistedCamperDtos = waitlistedCampers.map((camper) => {
+        return {
+          id: camper.id,
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          contactName: camper.contactName,
+          contactEmail: camper.contactEmail,
+          contactNumber: camper.contactNumber,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+        };
+      });
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
 
-    return camperDtos;
+    return { campers: camperDtos, waitlist: waitlistedCamperDtos };
+  }
+
+  async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
+    try {
+      // eslint-disable-next-line prettier/prettier
+      const campers: Camper[] = await MgCamper.find({ chargeId: chargeId });
+
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Charge Id ${chargeId} not found.`);
+      }
+
+      const camperDTO: CamperDTO[] = campers.map((camper) => {
+        return {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          formResponses: camper.formResponses,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+        };
+      });
+
+      return camperDTO;
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
   }
 
   async createWaitlistedCamper(
