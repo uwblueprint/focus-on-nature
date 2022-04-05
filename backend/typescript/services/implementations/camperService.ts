@@ -126,7 +126,9 @@ class CamperService implements ICamperService {
     let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
-      const existingCamp: CampSession | null = await MgCamp.findById(campId)
+      const existingCamp: CampSession | null = await MgCampSession.findById(
+        campId,
+      )
         .populate({
           path: "campers",
           model: MgCamper,
@@ -482,14 +484,10 @@ class CamperService implements ICamperService {
           );
         }
 
-        const chargeIds = campers.map((camper) => camper.chargeId);
-
         const oneChargeId = campers[0].chargeId;
-        for (let i = 0; i < chargeIds.length; i += 1) {
-          if (chargeIds[i] !== oneChargeId) {
-            throw new Error(
-              `ChargeIds in [${chargeIds}] must all be the same.`,
-            );
+        for (let i = 0; i < campers.length; i += 1) {
+          if (campers[i].chargeId !== oneChargeId) {
+            throw new Error(`ChargeIds must all be the same.`);
           }
         }
 
