@@ -169,7 +169,7 @@ class CamperService implements ICamperService {
   async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ chargeId: chargeId });
+      const campers: Camper[] = await MgCamper.find({ chargeId });
 
       if (!campers || campers.length === 0) {
         throw new Error(`Campers with Charge Id ${chargeId} not found.`);
