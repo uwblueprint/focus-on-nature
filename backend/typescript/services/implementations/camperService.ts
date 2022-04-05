@@ -3,7 +3,7 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import MgCamp, { CampSession } from "../../models/campSession.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import {
   CreateCampersDTO,
   CamperDTO,
@@ -26,7 +26,7 @@ class CamperService implements ICamperService {
       newCampers = await MgCamper.insertMany(campers);
       if (campers.length > 0) {
         try {
-          existingCamp = await MgCamp.findByIdAndUpdate(
+          existingCamp = await MgCampSession.findByIdAndUpdate(
             campers[0].campSession,
             {
               runValidators: true,
@@ -109,7 +109,7 @@ class CamperService implements ICamperService {
     let camperDtos: Array<CamperDTO> = [];
 
     try {
-      const existingCamp: CampSession | null = await MgCamp.findById(
+      const existingCamp: CampSession | null = await MgCampSession.findById(
         campId,
       ).populate({
         path: "campers",
@@ -158,7 +158,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
@@ -223,10 +223,10 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findById(camperId);
 
       if (camper.campSession && oldCamper) {
-        const newCamp: CampSession | null = await MgCamp.findById(
+        const newCamp: CampSession | null = await MgCampSession.findById(
           camper.campSession,
         );
-        const oldCamp: CampSession | null = await MgCamp.findById(
+        const oldCamp: CampSession | null = await MgCampSession.findById(
           oldCamper.campSession,
         );
 
@@ -282,7 +282,7 @@ class CamperService implements ICamperService {
         throw new Error(`Campers with charge ID ${chargeId} not found.`);
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
+      const camp: CampSession | null = await MgCampSession.findById(
         campers[0].campSession,
       );
 
@@ -352,7 +352,7 @@ class CamperService implements ICamperService {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
+      const camp: CampSession | null = await MgCampSession.findById(
         camper.campSession,
       );
 
