@@ -39,6 +39,17 @@ campRouter.post("/", createCampDtoValidator, async (req, res) => {
   }
 });
 
+/* Delete a camp session */
+campRouter.delete("/session/:campId", async (req, res) => {
+  console.log(req.params.campId);
+  try {
+    await campService.deleteCampSessionById(req.params.campId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
   try {

@@ -24,7 +24,7 @@ interface ICampService {
 
   createCamp(user: CreateCampDTO): Promise<CampDTO>;
 
-  //  createBaseCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
+  deleteCampSessionById(campSessionId: string): Promise<void>;
 
   /**
    * Generates CSV string containg all the campers associated with a camp

@@ -242,6 +242,27 @@ class CampService implements ICampService {
     };
   }
 
+  async deleteCampSessionById(campSessionId: string): Promise<void> {
+    console.log("ay");
+    try {
+      const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
+      if (!campSession) {
+        throw new Error(
+          `CampSession' with campSessionID ${campSessionId} not found.`,
+        );
+      }
+      console.log(campSession.camp);
+      await MgCamp.findByIdAndUpdate(campSession.camp, {
+        $pullAll: { campSessions: [campSession.id] },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
   async generateCampersCSV(campSessionId: string): Promise<string> {
     try {
       const campers = await this.getCampersByCampSessionId(campSessionId);
