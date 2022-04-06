@@ -239,17 +239,25 @@ class CampService implements ICampService {
         // if there are no campers, we return an empty string
         return "";
       }
-
+      let csvHeaders: string[] = [];
       const flattenedCampers = campers.map((camper) => {
         const { formResponses, ...formObj } = camper;
+        // grabbing column names
+        csvHeaders = [
+          ...csvHeaders,
+          ...Object.keys(formResponses),
+          ...Object.keys(formObj),
+        ];
         return {
           ...formResponses,
           ...formObj,
         };
       });
-      // grabbing column names
-      const fields = Object.keys(flattenedCampers[0]);
-      const csvString = await generateCSV({ data: flattenedCampers, fields });
+      csvHeaders = Array.from(new Set(csvHeaders));
+      const csvString = await generateCSV({
+        data: flattenedCampers,
+        fields: csvHeaders,
+      });
       return csvString;
     } catch (error: unknown) {
       Logger.error(
