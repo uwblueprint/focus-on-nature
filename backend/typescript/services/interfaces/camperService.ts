@@ -70,14 +70,14 @@ interface ICamperService {
    * @param camperIds array of camper Ids
    * @throws Error if camper cancellation fails
    */
-  cancelRegistration(camperIds: Array<string>): void;
+  cancelRegistration(camperIds: Array<string>): Promise<void>;
 
   /**
    * Delete campers associated with the camper IDs
    * @param camperIds array of camper Ids
    * @throws Error if camper deletion fails
    */
-  deleteCampersById(camperIds: Array<string>): void;
+  deleteCampersById(camperIds: Array<string>): Promise<void>;
 }
 
 export default ICamperService;
