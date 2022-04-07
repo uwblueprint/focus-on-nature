@@ -70,9 +70,7 @@ class CamperService implements ICamperService {
     newCamperDTOs = newCampers.map((newCamper) => {
       return {
         id: newCamper.id,
-        campSession: newCamper.campSession
-          ? newCamper.campSession.toString()
-          : "",
+        campSession: newCamper.campSession.toString(),
         registrationDate: newCamper.registrationDate,
         hasPaid: newCamper.hasPaid,
         chargeId: newCamper.chargeId,
