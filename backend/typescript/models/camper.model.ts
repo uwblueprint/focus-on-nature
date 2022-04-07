@@ -3,6 +3,21 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface Camper extends Document {
   id: string;
   campSession: Schema.Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  age: number;
+  allergies: string;
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  earlyDropoff: string;
+  latePickup: string;
+  specialNeeds: string;
+  contacts: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  }[];
   formResponses: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
@@ -15,10 +30,62 @@ const CamperSchema: Schema = new Schema({
     required: true,
     ref: "CampSession",
   },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  allergies: {
+    type: String,
+  },
+  hasCamera: {
+    type: Boolean,
+  },
+  hasLaptop: {
+    type: Boolean,
+  },
+  earlyDropoff: {
+    type: String,
+  },
+  latePickup: {
+    type: String,
+  },
+  specialNeeds: {
+    type: String,
+  },
+  contacts: {
+    type: [
+      {
+        firstName: {
+          type: String,
+          required: true,
+        },
+        lastName: {
+          type: String,
+          required: true,
+        },
+        email: {
+          type: String,
+          required: true,
+        },
+        phoneNumber: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    required: true,
+  },
   formResponses: {
     type: Map,
     of: String,
-    required: true,
   },
   registrationDate: {
     type: Date,

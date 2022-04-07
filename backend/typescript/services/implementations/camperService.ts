@@ -1,3 +1,4 @@
+import { stringify } from "querystring";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -36,6 +37,16 @@ class CamperService implements ICamperService {
 
       newCamper = await MgCamper.create({
         campSession: camper.campSession,
+        firstName: camper.firstName,
+        lastName: camper.lastName,
+        age: camper.age,
+        allergies: camper.allergies,
+        hasCamera: camper.hasCamera,
+        hasLaptop: camper.hasLaptop,
+        earlyDropoff: camper.earlyDropoff,
+        latePickup: camper.latePickup,
+        specialNeeds: camper.specialNeeds,
+        contacts: camper.contacts,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
@@ -86,6 +97,16 @@ class CamperService implements ICamperService {
     return {
       id: newCamper.id,
       campSession: camper.campSession,
+      firstName: newCamper.firstName,
+      lastName: newCamper.lastName,
+      age: newCamper.age,
+      allergies: newCamper.allergies,
+      hasCamera: newCamper.hasCamera,
+      hasLaptop: newCamper.hasLaptop,
+      earlyDropoff: newCamper.earlyDropoff,
+      latePickup: newCamper.latePickup,
+      specialNeeds: newCamper.specialNeeds,
+      contacts: camper.contacts,
       registrationDate: newCamper.registrationDate,
       hasPaid: newCamper.hasPaid,
       chargeId: newCamper.chargeId,
@@ -102,6 +123,16 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
@@ -146,6 +177,16 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
@@ -178,7 +219,7 @@ class CamperService implements ICamperService {
   async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ "chargeId": chargeId });
+      const campers: Camper[] = await MgCamper.find({ chargeId });
 
       if (!campers || campers.length === 0) {
         throw new Error(`Campers with Charge Id ${chargeId} not found.`);
@@ -188,6 +229,16 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           formResponses: camper.formResponses,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
@@ -309,6 +360,16 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           campSession: camper.campSession,
           formResponses: camper.formResponses,
           hasPaid: camper.hasPaid,
@@ -327,6 +388,16 @@ class CamperService implements ICamperService {
     return {
       id: camperId,
       campSession: camper.campSession,
+      firstName: camper.firstName,
+      lastName: camper.lastName,
+      age: camper.age,
+      allergies: camper.allergies,
+      hasCamera: camper.hasCamera,
+      hasLaptop: camper.hasLaptop,
+      earlyDropoff: camper.earlyDropoff,
+      latePickup: camper.latePickup,
+      specialNeeds: camper.specialNeeds,
+      contacts: camper.contacts,
       formResponses: camper.formResponses,
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,

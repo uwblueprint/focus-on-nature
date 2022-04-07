@@ -32,6 +32,21 @@ export type CampLeaderDTO = UserDTO & { campSessions: string[] };
 export type CamperDTO = {
   id: string;
   campSession: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  allergies: string;
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  earlyDropoff: string;
+  latePickup: string;
+  specialNeeds: string;
+  contacts: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  }[];
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
