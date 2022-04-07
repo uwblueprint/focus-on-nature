@@ -6,7 +6,10 @@ import IFileStorageService from "../services/interfaces/fileStorageService";
 import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
-import { createCampDtoValidator } from "../middlewares/validators/campValidators";
+import {
+  createCampDtoValidator,
+  updateCampSessionDtoValidator,
+} from "../middlewares/validators/campValidators";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -69,6 +72,30 @@ campRouter.delete("/session/:campId", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+/* Update a camp session */
+campRouter.put(
+  "/session/:campId",
+  updateCampSessionDtoValidator,
+  async (req, res) => {
+    try {
+      const campSession = await campService.editCampSessionById(
+        req.params.campId,
+        {
+          campers: req.body.campers,
+          waitlist: req.body.waitlist,
+          dates: req.body.dates,
+          startTime: req.body.startTime,
+          endTime: req.body.endTime,
+          active: req.body.active,
+        },
+      );
+      res.status(200).json(campSession);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
