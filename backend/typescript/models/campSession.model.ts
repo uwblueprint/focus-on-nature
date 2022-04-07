@@ -1,5 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { Camper } from "./camper.model";
+import { CampSessionStatus } from "../types";
 
 export interface CampSession extends Document {
   id: string;
@@ -9,7 +10,7 @@ export interface CampSession extends Document {
   dates: Date[];
   startTime: string;
   endTime: string;
-  active: boolean;
+  status: CampSessionStatus;
 }
 
 const CampSessionSchema: Schema = new Schema({
@@ -48,9 +49,10 @@ const CampSessionSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  active: {
-    type: Boolean,
+  status: {
+    type: String,
     required: true,
+    enum: ["Active", "Published", "Draft", "Archived"],
   },
 });
 
