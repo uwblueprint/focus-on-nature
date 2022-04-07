@@ -12,7 +12,7 @@ interface ICampService {
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
-  getCamps(): Promise<GetCampDTO[]>;
+  getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]>;
 
   /**
    * Get all campers associated with camps of id campId

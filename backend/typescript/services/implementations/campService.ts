@@ -3,7 +3,6 @@ import {
   CampDTO,
   CamperCSVInfoDTO,
   GetCampDTO,
-  FormQuestionDTO,
 } from "../../types";
 import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
@@ -18,16 +17,31 @@ const Logger = logger(__filename);
 
 class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
-  async getCamps(): Promise<GetCampDTO[]> {
+  async getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]> {
     try {
-      const camps: Camp[] | null = await MgCamp.find({})
+      let mgMatchQuery: {
+        [key: string]: (
+          | { status?: string }
+          | { dates?: { $gte: Date; $lte: Date } }
+        )[];
+      } = { $and: [] };
+
+      if (campStatus) {
+        mgMatchQuery.$and.push({ status: campStatus });
+      }
+      if (campYear) {
+        const startCampYear = new Date(campYear, 0, 1);
+        const endCampYear = new Date(campYear, 11, 31);
+        mgMatchQuery.$and.push({
+          dates: { $gte: startCampYear, $lte: endCampYear },
+        });
+      }
+
+      let camps: Camp[] | null = await MgCamp.find()
         .populate({
           path: "campSessions",
           model: MgCampSession,
-          populate: {
-            path: "campers",
-            model: MgCamper,
-          },
+          match: mgMatchQuery.$and.length > 0 && mgMatchQuery,
         })
         .populate({
           path: "formQuestions",
@@ -38,10 +52,29 @@ class CampService implements ICampService {
         return [];
       }
 
+      if (campYear) {
+        // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
+        // Thus, additional filtering is required to remove additional dates
+        camps = camps.filter((camp) => {
+          camp.campSessions = (camp.campSessions as CampSession[]).filter(
+            (campSession) => {
+              campSession.dates = campSession.dates.filter((campDate) => {
+                return (
+                  campDate.getTime() >= new Date(campYear, 0, 1).getTime() &&
+                  campDate.getTime() <= new Date(campYear, 11, 31).getTime()
+                );
+              });
+              return campSession;
+            },
+          );
+          return camp.campSessions.length > 0;
+        });
+      }
+
       return camps.map((camp) => {
         const formQuestions = (camp.formQuestions as FormQuestion[]).map(
           (formQuestion: FormQuestion) => {
-            return { ...(formQuestion as FormQuestionDTO) };
+            return formQuestion;
           },
         );
 
@@ -52,7 +85,7 @@ class CampService implements ICampService {
             endTime: campSession.endTime,
             registerations: campSession.campers.length,
             waitlists: campSession.waitlist.length,
-            active: campSession.active,
+            status: campSession.status,
           }),
         );
 
@@ -70,6 +103,7 @@ class CampService implements ICampService {
         };
       });
     } catch (error: unknown) {
+      console.log(error);
       Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
@@ -172,7 +206,7 @@ class CampService implements ICampService {
             startTime: campSession.startTime,
             endTime: campSession.endTime,
             dates: campSession.dates,
-            active: campSession.active,
+            status: campSession.status,
           });
           newCamp.campSessions[i] = session._id;
         }),

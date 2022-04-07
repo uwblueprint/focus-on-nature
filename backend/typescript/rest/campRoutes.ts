@@ -2,16 +2,23 @@ import { Router } from "express";
 import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
-import { createCampDtoValidator } from "../middlewares/validators/campValidators";
+import {
+  createCampDtoValidator,
+  getCampDtoValidator,
+} from "../middlewares/validators/campValidators";
 
 const campRouter: Router = Router();
 
 const campService: ICampService = new CampService();
 
 /* Get all camps */
-campRouter.get("/", async (req, res) => {
+campRouter.get("/", getCampDtoValidator, async (req, res) => {
   try {
-    const camps = await campService.getCamps();
+    const { campStatus, campYear } = req.query;
+    const camps = await campService.getCamps(
+      campStatus as string,
+      parseInt(campYear as string),
+    );
     res.status(200).json(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
