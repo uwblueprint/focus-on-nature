@@ -6,6 +6,8 @@ import {
   validatePrimitive,
   validateDate,
   validateTime,
+  validateCampYear,
+  validateCampStatus,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -87,8 +89,8 @@ export const createCampDtoValidator = async (
           .status(400)
           .send(getApiValidationError("endTime", "24 hr time string"));
       }
-      if (!validatePrimitive(campSession.active, "boolean")) {
-        return res.status(400).send(getApiValidationError("active", "boolean"));
+      if (!validateCampStatus(campSession.status)) {
+        return res.status(400).send(getApiValidationError("status", "string"));
       }
     }
   }
@@ -97,6 +99,23 @@ export const createCampDtoValidator = async (
   }
   if (req.body.waitlist) {
     return res.status(400).send("waitlist should be empty");
+  }
+  return next();
+};
+
+export const getCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    req.query.campStatus &&
+    !validateCampStatus(req.query.campStatus as string)
+  ) {
+    return res.status(400).send(getApiValidationError("campStatus", "string"));
+  }
+  if (req.query.campYear && !validateCampYear(req.query.campYear as string)) {
+    return res.status(400).send(getApiValidationError("campYear", "string"));
   }
   return next();
 };

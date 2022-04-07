@@ -96,3 +96,11 @@ export const validateMap = (
   }
   return true;
 };
+
+export const validateCampYear = (campYear: string) => {
+  return parseInt(campYear).toString() === campYear && campYear.length === 4;
+};
+
+export const validateCampStatus = (campStatus: string) => {
+  return ["Active", "Published", "Draft", "Archived"].includes(campStatus);
+};
