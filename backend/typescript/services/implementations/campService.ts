@@ -261,7 +261,6 @@ class CampService implements ICampService {
   }
 
   async deleteCampSessionById(campSessionId: string): Promise<void> {
-    console.log("ay");
     try {
       const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
       if (!campSession) {
@@ -269,7 +268,6 @@ class CampService implements ICampService {
           `CampSession' with campSessionID ${campSessionId} not found.`,
         );
       }
-      console.log(campSession.camp);
       await MgCamp.findByIdAndUpdate(campSession.camp, {
         $pullAll: { campSessions: [campSession.id] },
       });
