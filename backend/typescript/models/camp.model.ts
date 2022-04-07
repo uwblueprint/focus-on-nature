@@ -1,4 +1,6 @@
 import { Schema, Document, model } from "mongoose";
+import { CampSession } from "./campSession.model";
+import { FormQuestion } from "./formQuestion.model";
 
 export interface Camp extends Document {
   id: string;
@@ -9,8 +11,8 @@ export interface Camp extends Document {
   description: string;
   location: string;
   fee: number;
-  formQuestions: Schema.Types.ObjectId[];
-  campSessions: Schema.Types.ObjectId[];
+  formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
+  campSessions: (Schema.Types.ObjectId | CampSession)[];
 }
 
 const CampSchema: Schema = new Schema({

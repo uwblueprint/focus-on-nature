@@ -22,18 +22,6 @@ class CamperService implements ICamperService {
     let newCamper: Camper;
     let existingCamp: CampSession | null;
     try {
-      existingCamp = await MgCamp.findById(camper.campSession);
-
-      if (existingCamp) {
-        if (existingCamp.campers.length >= existingCamp.capacity) {
-          throw new Error(
-            `Error: camp is full. Current number of campers in camp: ${existingCamp.campers.length}. Camp capacity: ${existingCamp.capacity}.`,
-          );
-        }
-      } else {
-        throw new Error(`Camp ${camper.campSession} not found.`);
-      }
-
       newCamper = await MgCamper.create({
         campSession: camper.campSession,
         registrationDate: camper.registrationDate,
@@ -178,7 +166,7 @@ class CamperService implements ICamperService {
   async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ "chargeId": chargeId });
+      const campers: Camper[] = await MgCamper.find({ chargeId });
 
       if (!campers || campers.length === 0) {
         throw new Error(`Campers with Charge Id ${chargeId} not found.`);
