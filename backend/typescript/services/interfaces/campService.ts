@@ -1,7 +1,9 @@
 import {
   CampDTO,
   CamperCSVInfoDTO,
+  CampSessionDTO,
   CreateCampDTO,
+  UpdateCampSessionDTO,
   GetCampDTO,
 } from "../../types";
 
@@ -25,6 +27,11 @@ interface ICampService {
   createCamp(user: CreateCampDTO): Promise<CampDTO>;
 
   deleteCampSessionById(campSessionId: string): Promise<void>;
+
+  editCampSessionById(
+    campSessionId: string,
+    campSession: UpdateCampSessionDTO,
+  ): Promise<CampSessionDTO>;
 
   /**
    * Generates CSV string containg all the campers associated with a camp

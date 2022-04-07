@@ -1,7 +1,9 @@
 import {
   CreateCampDTO,
-  CampDTO,
   CamperCSVInfoDTO,
+  CampDTO,
+  CampSessionDTO,
+  UpdateCampSessionDTO,
   GetCampDTO,
 } from "../../types";
 import ICampService from "../interfaces/campService";
@@ -256,6 +258,64 @@ class CampService implements ICampService {
     } catch (error: unknown) {
       Logger.error(
         `Failed to delete CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async editCampSessionById(
+    campSessionId: string,
+    campSession: UpdateCampSessionDTO,
+  ): Promise<CampSessionDTO> {
+    try {
+      const oldCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
+        campSessionId,
+        {
+          campers: campSession.campers,
+          waitlist: campSession.waitlist,
+          dates: campSession.dates,
+          startTime: campSession.startTime,
+          endTime: campSession.endTime,
+          active: campSession.active,
+        },
+        { runValidators: true },
+      );
+
+      if (!oldCamp) {
+        throw new Error(
+          `CampSession with campSessionId ${campSessionId} not found.`,
+        );
+      }
+
+      // check all dereferenced campers and delete them (what about refunds ?? should guard against this)
+      // should not be able to change campers
+
+      // console.log(oldCamp.campers); returns new ObjectId
+      // console.log(oldCamp);
+
+      return {
+        id: campSessionId,
+        camp: oldCamp.camp.toString(),
+        campers: campSession.campers,
+        waitlist: campSession.waitlist,
+        dates: campSession.dates,
+        startTime: campSession.startTime,
+        endTime: campSession.endTime,
+        active: campSession.active,
+      };
+      // return {
+      //   id:
+      //   camp:
+      //   campers:
+      //   waitlist:
+      //   dates:
+      //   startTime:
+      //   endTime:
+      //   active:
+      // }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit CampSession. Reason = ${getErrorMessage(error)}`,
       );
       throw error;
     }

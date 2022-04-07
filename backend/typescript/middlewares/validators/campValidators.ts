@@ -100,3 +100,49 @@ export const createCampDtoValidator = async (
   }
   return next();
 };
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const updateCampSessionDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const campSession = req.body;
+  if (campSession.dates && !validateArray(campSession.dates, "string")) {
+    return res.status(400).send(getApiValidationError("dates", "string", true));
+  }
+  if (!campSession.dates.every(validateDate)) {
+    return res.status(400).send(getApiValidationError("dates", "Date string"));
+  }
+  if (!validatePrimitive(campSession.startTime, "string")) {
+    return res.status(400).send(getApiValidationError("startTime", "string"));
+  }
+  if (!validateTime(campSession.startTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("startTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(campSession.endTime, "string")) {
+    return res.status(400).send(getApiValidationError("endTime", "string"));
+  }
+  if (!validateTime(campSession.endTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("endTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(campSession.active, "boolean")) {
+    return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
+  if (campSession.campers && !validateArray(campSession.campers, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campers", "string", true));
+  }
+  if (campSession.waitlist && !validateArray(campSession.waitlist, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("waitlist", "string", true));
+  }
+  return next();
+};
