@@ -4,6 +4,8 @@ export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
+export type CampSessionStatus = "Active" | "Published" | "Draft" | "Archived";
+
 export type Token = {
   accessToken: string;
   refreshToken: string;
@@ -68,7 +70,7 @@ export type CampSessionDTO = {
   dates: string[];
   startTime: string;
   endTime: string;
-  active: boolean;
+  status: CampSessionStatus;
 };
 
 export type CampDTO = {
