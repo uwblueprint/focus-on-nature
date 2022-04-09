@@ -23,18 +23,6 @@ class CamperService implements ICamperService {
     let newCamper: Camper;
     let existingCamp: CampSession | null;
     try {
-      existingCamp = await MgCamp.findById(camper.campSession);
-
-      if (existingCamp) {
-        if (existingCamp.campers.length >= existingCamp.capacity) {
-          throw new Error(
-            `Error: camp is full. Current number of campers in camp: ${existingCamp.campers.length}. Camp capacity: ${existingCamp.capacity}.`,
-          );
-        }
-      } else {
-        throw new Error(`Camp ${camper.campSession} not found.`);
-      }
-
       newCamper = await MgCamper.create({
         campSession: camper.campSession,
         firstName: camper.firstName,
