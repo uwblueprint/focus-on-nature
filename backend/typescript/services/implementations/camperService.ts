@@ -1,3 +1,5 @@
+import Stripe from "stripe"; 
+
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -15,6 +17,9 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
 const Logger = logger(__filename);
+const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
+  apiVersion: "2020-08-27",
+});
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
