@@ -21,11 +21,22 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
   try {
     const newCamper = await camperService.createCamper({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      age: req.body.age,
+      allergies: req.body.allergies,
+      hasCamera: req.body.hasCamera,
+      hasLaptop: req.body.hasLaptop,
+      earlyDropoff: req.body.earlyDropoff,
+      latePickup: req.body.latePickup,
+      specialNeeds: req.body.specialNeeds,
+      contacts: req.body.contacts,
       campSession: req.body.campSession,
       registrationDate: req.body.registrationDate,
       hasPaid: req.body.hasPaid,
       chargeId: req.body.chargeId,
       formResponses: req.body.formResponses,
+      charges: req.body.charges,
     });
 
     res.status(201).json(newCamper);
@@ -120,6 +131,16 @@ camperRouter.put(
       const updatedCamper = await camperService.updateCamperById(
         req.params.camperId,
         {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          age: req.body.age,
+          allergies: req.body.allergies,
+          hasCamera: req.body.hasCamera,
+          hasLaptop: req.body.hasLaptop,
+          earlyDropoff: req.body.earlyDropoff,
+          latePickup: req.body.latePickup,
+          specialNeeds: req.body.specialNeeds,
+          contacts: req.body.contacts,
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,

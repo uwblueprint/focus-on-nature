@@ -1,3 +1,4 @@
+import { stringify } from "querystring";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -24,10 +25,21 @@ class CamperService implements ICamperService {
     try {
       newCamper = await MgCamper.create({
         campSession: camper.campSession,
+        firstName: camper.firstName,
+        lastName: camper.lastName,
+        age: camper.age,
+        allergies: camper.allergies,
+        hasCamera: camper.hasCamera,
+        hasLaptop: camper.hasLaptop,
+        earlyDropoff: camper.earlyDropoff,
+        latePickup: camper.latePickup,
+        specialNeeds: camper.specialNeeds,
+        contacts: camper.contacts,
         registrationDate: camper.registrationDate,
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
         formResponses: camper.formResponses,
+        charges: camper.charges,
       });
 
       try {
@@ -74,10 +86,21 @@ class CamperService implements ICamperService {
     return {
       id: newCamper.id,
       campSession: camper.campSession,
+      firstName: newCamper.firstName,
+      lastName: newCamper.lastName,
+      age: newCamper.age,
+      allergies: newCamper.allergies,
+      hasCamera: newCamper.hasCamera,
+      hasLaptop: newCamper.hasLaptop,
+      earlyDropoff: newCamper.earlyDropoff,
+      latePickup: newCamper.latePickup,
+      specialNeeds: newCamper.specialNeeds,
+      contacts: newCamper.contacts,
       registrationDate: newCamper.registrationDate,
       hasPaid: newCamper.hasPaid,
       chargeId: newCamper.chargeId,
       formResponses: camper.formResponses,
+      charges: newCamper.charges,
     };
   }
 
@@ -90,10 +113,21 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
         };
       });
     } catch (error: unknown) {
@@ -134,10 +168,21 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
         };
       });
 
@@ -176,10 +221,21 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           formResponses: camper.formResponses,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          charges: camper.charges,
         };
       });
 
@@ -297,6 +353,16 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           campSession: camper.campSession,
           formResponses: camper.formResponses,
           hasPaid: camper.hasPaid,
@@ -315,10 +381,21 @@ class CamperService implements ICamperService {
     return {
       id: camperId,
       campSession: camper.campSession,
+      firstName: camper.firstName,
+      lastName: camper.lastName,
+      age: camper.age,
+      allergies: camper.allergies,
+      hasCamera: camper.hasCamera,
+      hasLaptop: camper.hasLaptop,
+      earlyDropoff: camper.earlyDropoff,
+      latePickup: camper.latePickup,
+      specialNeeds: camper.specialNeeds,
+      contacts: camper.contacts,
       formResponses: camper.formResponses,
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,
       chargeId: oldCamper.chargeId,
+      charges: oldCamper.charges,
     };
   }
 

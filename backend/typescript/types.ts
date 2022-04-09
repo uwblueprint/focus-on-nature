@@ -32,15 +32,35 @@ export type CampLeaderDTO = UserDTO & { campSessions: string[] };
 export type CamperDTO = {
   id: string;
   campSession: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  allergies: string;
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  earlyDropoff: string;
+  latePickup: string;
+  specialNeeds: string;
+  contacts: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  }[];
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: string;
   formResponses: Map<string, string>;
+  chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
 };
 
 export type CamperCSVInfoDTO = Omit<
   CamperDTO,
-  "id" | "campSession" | "formResponses"
+  "id" | "campSession" | "charges" | "formResponses"
 > & { formResponses: { [key: string]: string } };
 
 export type WaitlistedCamperDTO = {
@@ -106,7 +126,7 @@ export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
-  "id" | "registrationDate" | "chargeId"
+  "id" | "registrationDate" | "chargeId" | "charges"
 >;
 
 export type AuthDTO = Token & UserDTO;
