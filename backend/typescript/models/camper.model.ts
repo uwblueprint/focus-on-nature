@@ -22,6 +22,11 @@ export interface Camper extends Document {
   registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
 }
 
 const CamperSchema: Schema = new Schema({
@@ -98,6 +103,20 @@ const CamperSchema: Schema = new Schema({
   chargeId: {
     type: String,
     required: true,
+  },
+  charges: {
+    camp: {
+      type: Number,
+      required: true,
+    },
+    earlyDropoff: {
+      type: Number,
+      required: true,
+    },
+    latePickup: {
+      type: Number,
+      required: true,
+    },
   },
 });
 

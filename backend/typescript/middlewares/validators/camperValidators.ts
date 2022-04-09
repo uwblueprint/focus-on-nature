@@ -108,7 +108,25 @@ export const createCamperDtoValidator = async (
   if (!validatePrimitive(req.body.chargeId, "string")) {
     return res.status(400).send(getApiValidationError("chargeId", "string"));
   }
-
+  if (req.body.charges) {
+    if (!validatePrimitive(req.body.charges.camp, "integer")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("charges.camp", "integer"));
+    }
+    if (!validatePrimitive(req.body.charges.earlyDropoff, "integer")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("charges.earlyDropoff", "integer"));
+    }
+    if (!validatePrimitive(req.body.charges.latePickup, "integer")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("charges.latePickup", "integer"));
+    }
+  } else {
+    return res.status(400).send(getApiValidationError("charges", "mixed"));
+  }
   return next();
 };
 

@@ -49,11 +49,19 @@ export type CamperDTO = {
   }[];
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: string;
   formResponses: Map<string, string>;
+  chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
 };
 
-export type CamperCSVInfoDTO = Omit<CamperDTO, "campSession" | "id">;
+export type CamperCSVInfoDTO = Omit<
+  CamperDTO,
+  "campSession" | "id" | "charges"
+>;
 
 export type WaitlistedCamperDTO = {
   id: string;
@@ -110,7 +118,7 @@ export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
-  "id" | "registrationDate" | "chargeId"
+  "id" | "registrationDate" | "chargeId" | "charges"
 >;
 
 export type AuthDTO = Token & UserDTO;

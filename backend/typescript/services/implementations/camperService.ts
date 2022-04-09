@@ -51,6 +51,7 @@ class CamperService implements ICamperService {
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
         formResponses: camper.formResponses,
+        charges: camper.charges,
       });
 
       try {
@@ -106,11 +107,12 @@ class CamperService implements ICamperService {
       earlyDropoff: newCamper.earlyDropoff,
       latePickup: newCamper.latePickup,
       specialNeeds: newCamper.specialNeeds,
-      contacts: camper.contacts,
+      contacts: newCamper.contacts,
       registrationDate: newCamper.registrationDate,
       hasPaid: newCamper.hasPaid,
       chargeId: newCamper.chargeId,
       formResponses: camper.formResponses,
+      charges: newCamper.charges,
     };
   }
 
@@ -137,6 +139,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
         };
       });
     } catch (error: unknown) {
@@ -191,6 +194,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
         };
       });
 
@@ -243,6 +247,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          charges: camper.charges,
         };
       });
 
@@ -402,6 +407,7 @@ class CamperService implements ICamperService {
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,
       chargeId: oldCamper.chargeId,
+      charges: oldCamper.charges,
     };
   }
 

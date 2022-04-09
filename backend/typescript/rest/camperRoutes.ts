@@ -36,6 +36,7 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
       hasPaid: req.body.hasPaid,
       chargeId: req.body.chargeId,
       formResponses: req.body.formResponses,
+      charges: req.body.charges,
     });
 
     res.status(201).json(newCamper);
