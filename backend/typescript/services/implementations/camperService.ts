@@ -21,6 +21,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const YOUR_DOMAIN = 'http://localhost:4242';
+
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCamper(camper: CreateCamperDTO): Promise<CamperDTO> {
@@ -33,6 +35,19 @@ class CamperService implements ICamperService {
         hasPaid: camper.hasPaid,
         chargeId: camper.chargeId,
         formResponses: camper.formResponses,
+      });
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+            price: 'price_1KhfmWJBIcYylc2BSzfUaFyC',
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${YOUR_DOMAIN}/success.html`,
+        cancel_url: `${YOUR_DOMAIN}/cancel.html`,
       });
 
       try {
