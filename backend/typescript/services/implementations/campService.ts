@@ -126,6 +126,16 @@ class CampService implements ICampService {
           });
 
           return {
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            allergies: camper.allergies,
+            hasCamera: camper.hasCamera,
+            hasLaptop: camper.hasLaptop,
+            earlyDropoff: camper.earlyDropoff,
+            latePickup: camper.latePickup,
+            specialNeeds: camper.specialNeeds,
+            contacts: camper.contacts,
             formResponses: formResponseObject,
             registrationDate: camper.registrationDate,
             hasPaid: camper.hasPaid,
