@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
-import { Camp } from "./camp.model";
+import { Schema, model, Document } from "mongoose";
 import { Camper } from "./camper.model";
 import { WaitlistedCamper } from "./waitlistedCamper.model";
 
-export interface CampSession extends Camp {
+export interface CampSession extends Document {
+  id: string;
   camp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
   waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
