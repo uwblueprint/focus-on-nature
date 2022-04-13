@@ -12,7 +12,6 @@ const campRouter: Router = Router();
 const campService: ICampService = new CampService();
 
 /* Get all camps */
-<<<<<<< HEAD
 campRouter.get("/", getCampDtoValidator, async (req, res) => {
   try {
     const { campStatus, campYear } = req.query;
@@ -20,11 +19,6 @@ campRouter.get("/", getCampDtoValidator, async (req, res) => {
       campStatus as string,
       parseInt(campYear as string),
     );
-=======
-campRouter.get("/", async (req, res) => {
-  try {
-    const camps = await campService.getCamps();
->>>>>>> eb50d02dab047c225f665a590b0bf364c7bb375f
     res.status(200).json(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });

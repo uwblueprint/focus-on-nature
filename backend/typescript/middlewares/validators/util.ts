@@ -14,6 +14,13 @@ const allowableContentTypes = new Set([
   "image/gif",
 ]);
 
+const allowableCampStatus = new Set([
+  "Active",
+  "Published",
+  "Draft",
+  "Archived",
+]);
+
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const validatePrimitive = (value: any, type: Type): boolean => {
@@ -62,6 +69,18 @@ export const getFileTypeValidationError = (mimetype: string): string => {
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
 
+export const getCampStatusValidationError = (campStatus: string): string => {
+  const allowableCampStatusString = [...allowableCampStatus].join(", ");
+  return `The camp status ${campStatus} is not one of ${allowableCampStatusString}`;
+};
+
+export const getCampYearValidationError = (campYear: string): string => {
+  if (parseInt(campYear).toString() !== campYear) {
+    return getApiValidationError("Camp Year", "string");
+  }
+  return `camp year ${campYear} should be of a valid year format (YYYY)`;
+};
+
 export const validateDate = (value: string): boolean => {
   return !!Date.parse(value);
 };
@@ -102,7 +121,7 @@ export const validateCampYear = (campYear: string) => {
 };
 
 export const validateCampStatus = (campStatus: string) => {
-  return ["Active", "Published", "Draft", "Archived"].includes(campStatus);
+  return allowableCampStatus.has(campStatus);
 };
 
 export const checkDuplicatesInArray = (value: Array<any>): boolean => {

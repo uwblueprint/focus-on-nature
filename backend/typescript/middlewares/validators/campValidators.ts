@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
+  getCampStatusValidationError,
+  getCampYearValidationError,
   validateArray,
   validatePrimitive,
   validateDate,
@@ -90,7 +92,9 @@ export const createCampDtoValidator = async (
           .send(getApiValidationError("endTime", "24 hr time string"));
       }
       if (!validateCampStatus(campSession.status)) {
-        return res.status(400).send(getApiValidationError("status", "string"));
+        return res
+          .status(400)
+          .send(getCampStatusValidationError(campSession.status as string));
       }
     }
   }
@@ -112,10 +116,14 @@ export const getCampDtoValidator = async (
     req.query.campStatus &&
     !validateCampStatus(req.query.campStatus as string)
   ) {
-    return res.status(400).send(getApiValidationError("campStatus", "string"));
+    return res
+      .status(400)
+      .send(getCampStatusValidationError(req.query.campStatus as string));
   }
   if (req.query.campYear && !validateCampYear(req.query.campYear as string)) {
-    return res.status(400).send(getApiValidationError("campYear", "string"));
+    return res
+      .status(400)
+      .send(getCampYearValidationError(req.query.campYear as string));
   }
   return next();
 };
