@@ -12,7 +12,11 @@ interface ICampService {
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
+<<<<<<< HEAD
   getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]>;
+=======
+  getCamps(): Promise<GetCampDTO[]>;
+>>>>>>> eb50d02dab047c225f665a590b0bf364c7bb375f
 
   /**
    * Get all campers associated with camps of id campId
@@ -20,7 +24,7 @@ interface ICampService {
    * @returns array of CamperCSVInfoDTO object containing campers information
    * @throws Error if camper retrieval fails
    */
-  getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]>;
+  getCampersByCampSessionId(campId: string): Promise<CamperCSVInfoDTO[]>;
 
   createCamp(user: CreateCampDTO): Promise<CampDTO>;
 

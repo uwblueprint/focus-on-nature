@@ -1,12 +1,13 @@
 import { Schema, model, Document } from "mongoose";
 import { Camper } from "./camper.model";
 import { CampSessionStatus } from "../types";
+import { WaitlistedCamper } from "./waitlistedCamper.model";
 
 export interface CampSession extends Document {
   id: string;
   camp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
-  waitlist: Schema.Types.ObjectId[];
+  waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
   dates: Date[];
   startTime: string;
   endTime: string;

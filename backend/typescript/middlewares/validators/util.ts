@@ -104,3 +104,7 @@ export const validateCampYear = (campYear: string) => {
 export const validateCampStatus = (campStatus: string) => {
   return ["Active", "Published", "Draft", "Archived"].includes(campStatus);
 };
+
+export const checkDuplicatesInArray = (value: Array<any>): boolean => {
+  return new Set(value).size !== value.length;
+};

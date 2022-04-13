@@ -76,7 +76,14 @@ class CampService implements ICampService {
       return camps.map((camp) => {
         const formQuestions = (camp.formQuestions as FormQuestion[]).map(
           (formQuestion: FormQuestion) => {
-            return formQuestion;
+            return {
+              id: formQuestion.id,
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            };
           },
         );
 
@@ -85,8 +92,8 @@ class CampService implements ICampService {
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
-            registerations: campSession.campers.length,
-            waitlists: campSession.waitlist.length,
+            registrations: campSession.campers.length,
+            waitlist: campSession.waitlist.length,
             status: campSession.status,
           }),
         );
@@ -105,13 +112,14 @@ class CampService implements ICampService {
         };
       });
     } catch (error: unknown) {
-      console.log(error);
       Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
-  async getCampersByCampId(campSessionId: string): Promise<CamperCSVInfoDTO[]> {
+  async getCampersByCampSessionId(
+    campSessionId: string,
+  ): Promise<CamperCSVInfoDTO[]> {
     try {
       const campSession: CampSession | null = await MgCampSession.findById(
         campSessionId,
@@ -158,6 +166,16 @@ class CampService implements ICampService {
           });
 
           return {
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            allergies: camper.allergies,
+            hasCamera: camper.hasCamera,
+            hasLaptop: camper.hasLaptop,
+            earlyDropoff: camper.earlyDropoff,
+            latePickup: camper.latePickup,
+            specialNeeds: camper.specialNeeds,
+            contacts: camper.contacts,
             formResponses: formResponseObject,
             registrationDate: camper.registrationDate,
             hasPaid: camper.hasPaid,
@@ -264,24 +282,32 @@ class CampService implements ICampService {
     };
   }
 
-  async generateCampersCSV(campId: string): Promise<string> {
+  async generateCampersCSV(campSessionId: string): Promise<string> {
     try {
-      const campers = await this.getCampersByCampId(campId);
+      const campers = await this.getCampersByCampSessionId(campSessionId);
       if (campers.length === 0) {
         // if there are no campers, we return an empty string
         return "";
       }
-
+      let csvHeaders: string[] = [];
       const flattenedCampers = campers.map((camper) => {
         const { formResponses, ...formObj } = camper;
+        // grabbing column names
+        csvHeaders = [
+          ...csvHeaders,
+          ...Object.keys(formResponses),
+          ...Object.keys(formObj),
+        ];
         return {
           ...formResponses,
           ...formObj,
         };
       });
-      // grabbing column names
-      const fields = Object.keys(flattenedCampers[0]);
-      const csvString = await generateCSV({ data: flattenedCampers, fields });
+      csvHeaders = Array.from(new Set(csvHeaders));
+      const csvString = await generateCSV({
+        data: flattenedCampers,
+        fields: csvHeaders,
+      });
       return csvString;
     } catch (error: unknown) {
       Logger.error(
