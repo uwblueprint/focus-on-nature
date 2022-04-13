@@ -1,14 +1,19 @@
 import { v4 as uuidv4 } from "uuid";
-import { CreateCampDTO, CampDTO, CamperCSVInfoDTO } from "../../types";
 import ICampService from "../interfaces/campService";
 import IFileStorageService from "../interfaces/fileStorageService";
-import MgCamp, { Camp } from "../../models/camp.model";
-import MgCamper, { Camper } from "../../models/camper.model";
+import {
+  CreateCampDTO,
+  CampDTO,
+  CamperCSVInfoDTO,
+  GetCampDTO,
+} from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
-import MgBaseCamp, { BaseCamp } from "../../models/baseCamp.model";
-import MgFormQuestion from "../../models/formQuestion.model";
+import MgCamp, { Camp } from "../../models/camp.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
+import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
+import MgCamper, { Camper } from "../../models/camper.model";
 
 const Logger = logger(__filename);
 
@@ -20,36 +25,141 @@ class CampService implements ICampService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async getCampersByCampId(campId: string): Promise<CamperCSVInfoDTO[]> {
+  async getCamps(): Promise<GetCampDTO[]> {
     try {
-      const camp: Camp | null = await MgCamp.findById(campId).populate({
+      const camps: Camp[] | null = await MgCamp.find({})
+        .populate({
+          path: "campSessions",
+          model: MgCampSession,
+        })
+        .populate({
+          path: "formQuestions",
+          model: MgFormQuestion,
+        });
+
+      if (!camps) {
+        return [];
+      }
+
+      return camps.map((camp) => {
+        const formQuestions = (camp.formQuestions as FormQuestion[]).map(
+          (formQuestion: FormQuestion) => {
+            return {
+              id: formQuestion.id,
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            };
+          },
+        );
+
+        const campSessions = (camp.campSessions as CampSession[]).map(
+          (campSession) => ({
+            dates: campSession.dates.map((date) => date.toString()),
+            startTime: campSession.startTime,
+            endTime: campSession.endTime,
+            registrations: campSession.campers.length,
+            waitlist: campSession.waitlist.length,
+            active: campSession.active,
+          }),
+        );
+
+        return {
+          id: camp.id,
+          ageLower: camp.ageLower,
+          ageUpper: camp.ageUpper,
+          capacity: camp.capacity,
+          name: camp.name,
+          description: camp.description,
+          location: camp.location,
+          fee: camp.fee,
+          formQuestions,
+          campSessions,
+        };
+      });
+    } catch (error: unknown) {
+      Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+  }
+
+  async getCampersByCampSessionId(
+    campSessionId: string,
+  ): Promise<CamperCSVInfoDTO[]> {
+    try {
+      const campSession: CampSession | null = await MgCampSession.findById(
+        campSessionId,
+      ).populate({
         path: "campers",
         model: MgCamper,
       });
 
-      if (!camp) {
-        throw new Error(`Camp with id ${campId} not found.`);
+      if (!campSession) {
+        throw new Error(`Camp with id ${campSessionId} not found.`);
       }
-      const campers = camp.campers as Camper[];
+      const campers = campSession.campers as Camper[];
 
-      return campers.map((camper) => ({
-        registrationDate: camper.registrationDate,
-        hasPaid: camper.hasPaid,
-        chargeId: camper.chargeId,
-        formResponses: camper.formResponses,
-      }));
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to get entities. Reason = ${getErrorMessage(error)}`,
+      const questionIds = new Set(
+        campers.length > 0
+          ? campers.reduce((prevCamper, currCamper) => {
+              return [
+                ...prevCamper,
+                ...Array.from(currCamper.formResponses.keys()),
+              ];
+            }, Array.from(campers[0].formResponses.keys()))
+          : [],
       );
+
+      const formQuestions = await MgFormQuestion.find({
+        _id: Array.from(questionIds),
+      });
+
+      const formQuestionMap: { [id: string]: string } = {};
+
+      formQuestions.forEach((formQuestion) => {
+        formQuestionMap[formQuestion._id] = formQuestion.question;
+      });
+
+      return await Promise.all(
+        campers.map(async (camper) => {
+          const { formResponses } = camper;
+          const formResponseObject: { [key: string]: string } = {};
+
+          Array.from(formResponses.keys()).forEach((questionId) => {
+            const question = formQuestionMap[questionId];
+            const answer = formResponses.get(questionId);
+            formResponseObject[question] = answer as string;
+          });
+
+          return {
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            allergies: camper.allergies,
+            hasCamera: camper.hasCamera,
+            hasLaptop: camper.hasLaptop,
+            earlyDropoff: camper.earlyDropoff,
+            latePickup: camper.latePickup,
+            specialNeeds: camper.specialNeeds,
+            contacts: camper.contacts,
+            formResponses: formResponseObject,
+            registrationDate: camper.registrationDate,
+            hasPaid: camper.hasPaid,
+            chargeId: camper.chargeId,
+          };
+        }),
+      );
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-    let baseCamp: BaseCamp;
     let newCamp: Camp;
-    const formQuestionIDs: string[] = [];
+
     try {
       const fileName = camp.filePath ? uuidv4() : "";
       if (camp.filePath) {
@@ -59,6 +169,18 @@ class CampService implements ICampService {
           camp.fileContentType,
         );
       }
+      newCamp = new MgCamp({
+        name: camp.name,
+        ageLower: camp.ageLower,
+        ageUpper: camp.ageUpper,
+        capacity: camp.capacity,
+        description: camp.description,
+        location: camp.location,
+        fee: camp.fee,
+        formQuestions: [],
+        ...(camp.filePath && { fileName }),
+      });
+      /* eslint no-underscore-dangle: 0 */
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
           const question = await MgFormQuestion.create({
@@ -68,54 +190,48 @@ class CampService implements ICampService {
             description: formQuestion.description,
             options: formQuestion.options,
           });
-          formQuestionIDs[i] = question._id;
+          newCamp.formQuestions[i] = question._id;
         }),
       );
 
-      baseCamp = new MgBaseCamp({
-        name: camp.name,
-        ageLower: camp.ageLower,
-        ageUpper: camp.ageUpper,
-        description: camp.description,
-        location: camp.location,
-        fee: camp.fee,
-        formQuestions: formQuestionIDs,
-      });
-      const newCampObj = {
-        baseCamp,
-        campers: [],
-        capacity: camp.capacity,
-        waitlist: [],
-        startTime: camp.startTime,
-        endTime: camp.endTime,
-        dates: camp.dates,
-        active: camp.active,
-      };
-
-      newCamp = new MgCamp({
-        ...newCampObj,
-        ...(camp.filePath && { fileName }),
-      });
+      await Promise.all(
+        camp.campSessions.map(async (campSession, i) => {
+          const session = await MgCampSession.create({
+            camp: newCamp,
+            campers: [],
+            waitlist: [],
+            startTime: campSession.startTime,
+            endTime: campSession.endTime,
+            dates: campSession.dates,
+            active: campSession.active,
+          });
+          newCamp.campSessions[i] = session._id;
+        }),
+      );
 
       try {
-        /* eslint no-underscore-dangle: 0 */
-        baseCamp.camps.push(newCamp._id);
-
-        await baseCamp.save((err) => {
-          if (err) throw err;
-        });
         await newCamp.save((err) => {
           if (err) throw err;
         });
       } catch (error: unknown) {
         // rollback incomplete camp creation
-        formQuestionIDs.forEach((formQuestionID) =>
-          MgFormQuestion.deleteOne({ _id: formQuestionID }),
-        );
 
-        MgCamp.findByIdAndDelete(baseCamp.id);
+        try {
+          newCamp.formQuestions.forEach((formQuestionID) =>
+            MgFormQuestion.findByIdAndDelete(formQuestionID),
+          );
+          newCamp.campSessions.forEach((campSessionID) =>
+            MgCampSession.findByIdAndDelete(campSessionID),
+          );
 
-        MgBaseCamp.findByIdAndDelete(newCamp.id);
+          MgCamp.findByIdAndDelete(newCamp.id);
+        } catch (rollbackError: unknown) {
+          Logger.error(
+            `Failed to rollback camp creation error. Reason = ${getErrorMessage(
+              rollbackError,
+            )}`,
+          );
+        }
 
         Logger.error(
           `Failed to create camp. Reason = ${getErrorMessage(error)}`,
@@ -128,30 +244,48 @@ class CampService implements ICampService {
     }
 
     return {
-      /* eslint no-underscore-dangle: 0 */
-      id: newCamp._id,
-      baseCamp: baseCamp.id,
-      campers: newCamp.campers.map((camper) => camper.toString()),
+      id: newCamp.id,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
+      campSessions: newCamp.campSessions.map((session) => session.toString()),
       capacity: newCamp.capacity,
-      dates: newCamp.dates.map((date) => date.toString()),
-      waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-      startTime: newCamp.startTime.toString(),
-      endTime: newCamp.endTime.toString(),
-      active: newCamp.active,
+      name: newCamp.name,
+      description: newCamp.description,
+      location: newCamp.location,
+      fee: newCamp.fee,
+      formQuestions: newCamp.formQuestions.map((formQuestion) =>
+        formQuestion.toString(),
+      ),
       fileName: newCamp.fileName,
     };
   }
 
-  async generateCampersCSV(campId: string): Promise<string> {
+  async generateCampersCSV(campSessionId: string): Promise<string> {
     try {
-      const campers = await this.getCampersByCampId(campId);
+      const campers = await this.getCampersByCampSessionId(campSessionId);
       if (campers.length === 0) {
         // if there are no campers, we return an empty string
         return "";
       }
-      // grabbing column names
-      const fields = Object.keys(campers[0]);
-      const csvString = await generateCSV({ data: campers, fields });
+      let csvHeaders: string[] = [];
+      const flattenedCampers = campers.map((camper) => {
+        const { formResponses, ...formObj } = camper;
+        // grabbing column names
+        csvHeaders = [
+          ...csvHeaders,
+          ...Object.keys(formResponses),
+          ...Object.keys(formObj),
+        ];
+        return {
+          ...formResponses,
+          ...formObj,
+        };
+      });
+      csvHeaders = Array.from(new Set(csvHeaders));
+      const csvString = await generateCSV({
+        data: flattenedCampers,
+        fields: csvHeaders,
+      });
       return csvString;
     } catch (error: unknown) {
       Logger.error(

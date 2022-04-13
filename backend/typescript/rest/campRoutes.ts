@@ -18,6 +18,15 @@ const fileStorageService: IFileStorageService = new FileStorageService(
 );
 
 const campService: ICampService = new CampService(fileStorageService);
+/* Get all camps */
+campRouter.get("/", async (req, res) => {
+  try {
+    const camps = await campService.getCamps();
+    res.status(200).json(camps);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
 
 /* Create a camp */
 campRouter.post(
@@ -28,19 +37,15 @@ campRouter.post(
     try {
       const body = JSON.parse(req.body.body);
       const newCamp = await campService.createCamp({
-        active: body.active,
         ageLower: body.ageLower,
         ageUpper: body.ageUpper,
         name: body.name,
         description: body.description,
         location: body.location,
         capacity: body.capacity,
-        startTime: body.startTime,
-        endTime: body.endTime,
-        dates: body.dates,
         fee: body.fee,
         formQuestions: body.formQuestions,
-        camps: body.camps,
+        campSessions: body.campSessions,
         filePath: req.file?.path,
         fileContentType: req.file?.mimetype,
       });

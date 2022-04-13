@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { getApiValidationError, validatePrimitive } from "./util";
+import {
+  getApiValidationError,
+  validatePrimitive,
+  validateArray,
+  checkDuplicatesInArray,
+} from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export const createUserDtoValidator = async (
@@ -31,20 +36,35 @@ export const updateUserDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!validatePrimitive(req.body.firstName, "string")) {
+  if (req.body.firstName && !validatePrimitive(req.body.firstName, "string")) {
     return res.status(400).send(getApiValidationError("firstName", "string"));
   }
-  if (!validatePrimitive(req.body.lastName, "string")) {
+  if (req.body.lastName && !validatePrimitive(req.body.lastName, "string")) {
     return res.status(400).send(getApiValidationError("lastName", "string"));
   }
-  if (!validatePrimitive(req.body.email, "string")) {
+  if (req.body.email && !validatePrimitive(req.body.email, "string")) {
     return res.status(400).send(getApiValidationError("email", "string"));
   }
-  if (!validatePrimitive(req.body.role, "string")) {
+  if (req.body.role && !validatePrimitive(req.body.role, "string")) {
     return res.status(400).send(getApiValidationError("role", "string"));
   }
-  if (!validatePrimitive(req.body.active, "boolean")) {
+  if (req.body.active && !validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
+  if (
+    req.body.role === "CampLeader" &&
+    req.body.campSessions &&
+    !validateArray(req.body.campSessions, "string")
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campSessions", "string", true));
+  }
+  if (
+    req.body.campSessions &&
+    checkDuplicatesInArray(req.body.campSessions) === true
+  ) {
+    return res.status(400).send("All camp sessions should be unique.");
   }
   return next();
 };
