@@ -59,9 +59,11 @@ class CampService implements ICampService {
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
               campSession.dates = campSession.dates.filter((campDate) => {
+                const startCampYearTime = new Date(campYear, 0, 1).getTime();
+                const endCampYearTime = new Date(campYear, 11, 31).getTime();
                 return (
-                  campDate.getTime() >= new Date(campYear, 0, 1).getTime() &&
-                  campDate.getTime() <= new Date(campYear, 11, 31).getTime()
+                  campDate.getTime() >= startCampYearTime &&
+                  campDate.getTime() <= endCampYearTime
                 );
               });
               return campSession;
