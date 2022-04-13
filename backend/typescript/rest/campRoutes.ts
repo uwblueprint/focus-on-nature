@@ -17,7 +17,7 @@ campRouter.get("/", getCampDtoValidator, async (req, res) => {
     const { campStatus, campYear } = req.query;
     const camps = await campService.getCamps(
       campStatus as string,
-      parseInt(campYear as string),
+      parseInt(campYear as string, 10),
     );
     res.status(200).json(camps);
   } catch (error: unknown) {

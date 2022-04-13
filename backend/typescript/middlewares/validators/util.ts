@@ -75,7 +75,7 @@ export const getCampStatusValidationError = (campStatus: string): string => {
 };
 
 export const getCampYearValidationError = (campYear: string): string => {
-  if (parseInt(campYear).toString() !== campYear) {
+  if (parseInt(campYear, 10).toString() !== campYear) {
     return getApiValidationError("Camp Year", "string");
   }
   return `camp year ${campYear} should be of a valid year format (YYYY)`;
@@ -117,7 +117,9 @@ export const validateMap = (
 };
 
 export const validateCampYear = (campYear: string) => {
-  return parseInt(campYear).toString() === campYear && campYear.length === 4;
+  return (
+    parseInt(campYear, 10).toString() === campYear && campYear.length === 4
+  );
 };
 
 export const validateCampStatus = (campStatus: string) => {

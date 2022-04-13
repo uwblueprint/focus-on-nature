@@ -19,7 +19,7 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]> {
     try {
-      let mgMatchQuery: {
+      const mgMatchQuery: {
         [key: string]: (
           | { status?: string }
           | { dates?: { $gte: Date; $lte: Date } }
@@ -55,7 +55,9 @@ class CampService implements ICampService {
       if (campYear) {
         // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
         // Thus, additional filtering is required to remove additional dates
+        /* eslint-disable no-param-reassign */
         camps = camps.filter((camp) => {
+          /* eslint-disable no-param-reassign */
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
               campSession.dates = campSession.dates.filter((campDate) => {
