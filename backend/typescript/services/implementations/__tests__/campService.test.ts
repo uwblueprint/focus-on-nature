@@ -3,7 +3,7 @@ import CampService from "../campService";
 import { CreateCampDTO, QuestionType } from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
 import MgFormQuestion from "../../../models/formQuestion.model";
-import FileStorageService from "../../implementations/fileStorageService";
+import FileStorageService from "../fileStorageService";
 import IFileStorageService from "../../interfaces/fileStorageService";
 
 const defaultBucket = process.env.FIREBASE_STORAGE_DEFAULT_BUCKET || "";
