@@ -15,7 +15,7 @@ const testCamps: CreateCampDTO[] = [
     fee: 25,
     campSessions: [
       {
-        active: true,
+        status: "Active",
         startTime: "12:00",
         endTime: "17:00",
         dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
@@ -40,7 +40,7 @@ const testCamps: CreateCampDTO[] = [
     fee: 24,
     campSessions: [
       {
-        active: true,
+        status: "Active",
         startTime: "1:00",
         endTime: "2:00",
         dates: [new Date().toString()],
@@ -105,7 +105,7 @@ describe("mongo campService", (): void => {
           testCamp.campSessions[i].startTime,
         );
         expect(campSession.endTime).toEqual(testCamp.campSessions[i].endTime);
-        expect(campSession.active).toEqual(testCamp.campSessions[i].active);
+        expect(campSession.status).toEqual(testCamp.campSessions[i].status);
         expect(campSession.campers).toHaveLength(0);
         expect(campSession.waitlist).toHaveLength(0);
       }
