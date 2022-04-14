@@ -13,8 +13,12 @@ import {
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
+import IEmailService from "../interfaces/emailService";
+import nodemailerConfig from "../../nodemailer.config";
+import EmailService from "./emailService";
 
 const Logger = logger(__filename);
+const emailService: IEmailService = new EmailService(nodemailerConfig);
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
@@ -54,6 +58,15 @@ class CamperService implements ICamperService {
         if (!existingCamp) {
           throw new Error(`CampSession ${camper.campSession} not found.`);
         }
+        let currentCamp: CampSession | null;
+        currentCamp = await MgCamp.findById(camper.campSession);
+        if(currentCamp) {
+          if(currentCamp.campers.length == currentCamp.capacity) {
+            await emailService.sendFullCampNoticeEmail("admin@focusonnature.ca", currentCamp.name, "SESSION DATES FUNCTION")
+          }
+        }
+
+        await emailService.sendConfirmationEmail("ADD TO MODEL", "ADD TO MODEL", existingCamp.name, existingCamp.location, "SESSION DATES FUNC", [{name: "ADD TO MODEL", age: "ADD TO MODEL"}], "ADD TO MODEL", existingCamp.fee, "ADD TO MODEL", "ADD TO MODEL", "ADD TO MODEL", "REFUND LINK")
       } catch (mongoDbError: unknown) {
         // rollback user creation
         try {
@@ -180,6 +193,8 @@ class CamperService implements ICamperService {
         if (!existingCamp) {
           throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
+
+        await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, waitlistedCamper.campSession, existingCamp.location, existingCamp.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
       } catch (mongoDbError: unknown) {
         // rollback user creation
         try {
@@ -322,7 +337,6 @@ class CamperService implements ICamperService {
       camp.campers = camp.campers.filter(
         (camperId) => !camperIds.includes(camperId.toString()),
       );
-      await camp.save();
 
       try {
         await MgCamper.deleteMany({
@@ -330,6 +344,8 @@ class CamperService implements ICamperService {
             $in: camperIds,
           },
         });
+        let deletedCamper = await MgCamper.findById(chargeId);
+        await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.name, camp.name, "SESSION DATES FUNC")
       } catch (mongoDbError: unknown) {
         // could not delete users, rollback camp's camper deletions
         try {
@@ -382,11 +398,12 @@ class CamperService implements ICamperService {
         await MgCamper.deleteOne({
           _id: camperId,
         });
+        let deletedCamper = await MgCamper.findById(camperId);
+        await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.name, camp.name, "SESSION DATES FUNC")
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {
-          camp.campers = oldCamperIds;
-          await camp.save();
+          
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB camp's updated campers field after deleting camper document failure. Reason =",
