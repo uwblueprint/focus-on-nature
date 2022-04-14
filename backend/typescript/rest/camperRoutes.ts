@@ -114,6 +114,16 @@ camperRouter.put(
       const updatedCamper = await camperService.updateCamperById(
         req.params.camperId,
         {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          age: req.body.age,
+          allergies: req.body.allergies,
+          hasCamera: req.body.hasCamera,
+          hasLaptop: req.body.hasLaptop,
+          earlyDropoff: req.body.earlyDropoff,
+          latePickup: req.body.latePickup,
+          specialNeeds: req.body.specialNeeds,
+          contacts: req.body.contacts,
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
