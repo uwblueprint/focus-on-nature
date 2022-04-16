@@ -117,7 +117,10 @@ campRouter.patch(
 /* Delete a camp session */
 campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   try {
-    await campService.deleteCampSessionById(req.params.campSessionId);
+    await campService.deleteCampSessionById(
+      req.params.campId,
+      req.params.campSessionId,
+    );
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
