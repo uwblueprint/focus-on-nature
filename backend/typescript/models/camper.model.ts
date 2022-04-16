@@ -101,7 +101,7 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   chargeId: {
-    type: Number,
+    type: String,
     required: true,
   },
   charges: {

@@ -19,12 +19,7 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]> {
     try {
-      const mgMatchQuery: {
-        [key: string]: (
-          | { status?: string }
-          | { dates?: { $gte: Date; $lte: Date } }
-        )[];
-      } = { $and: [] };
+      const mgMatchQuery: { [key: string]: Object[] } = { $and: [] };
 
       if (campStatus) {
         mgMatchQuery.$and.push({ status: campStatus });
@@ -56,7 +51,7 @@ class CampService implements ICampService {
         // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
         // Thus, additional filtering is required to remove additional dates
         /* eslint-disable no-param-reassign */
-        camps = camps.filter((camp) => {
+        camps = camps.map((camp) => {
           /* eslint-disable no-param-reassign */
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
@@ -71,7 +66,7 @@ class CampService implements ICampService {
               return campSession;
             },
           );
-          return camp.campSessions.length > 0;
+          return camp;
         });
       }
 
@@ -91,12 +86,14 @@ class CampService implements ICampService {
 
         const campSessions = (camp.campSessions as CampSession[]).map(
           (campSession) => ({
+            id: campSession.id,
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
             registrations: campSession.campers.length,
             waitlist: campSession.waitlist.length,
             status: campSession.status,
+            camp: String(campSession.camp),
           }),
         );
 

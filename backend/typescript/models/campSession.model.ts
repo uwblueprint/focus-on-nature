@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { Camper } from "./camper.model";
-import { CampSessionStatus } from "../types";
+import { CampSessionStatusType } from "../types";
 import { WaitlistedCamper } from "./waitlistedCamper.model";
 
 export interface CampSession extends Document {
@@ -11,7 +11,7 @@ export interface CampSession extends Document {
   dates: Date[];
   startTime: string;
   endTime: string;
-  status: CampSessionStatus;
+  status: CampSessionStatusType;
 }
 
 const CampSessionSchema: Schema = new Schema({

@@ -4,7 +4,11 @@ export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
-export type CampSessionStatus = "Active" | "Published" | "Draft" | "Archived";
+export type CampSessionStatusType =
+  | "Active"
+  | "Published"
+  | "Draft"
+  | "Archived";
 
 export type Token = {
   accessToken: string;
@@ -90,7 +94,7 @@ export type CampSessionDTO = {
   dates: string[];
   startTime: string;
   endTime: string;
-  status: CampSessionStatus;
+  status: CampSessionStatusType;
 };
 
 export type CampDTO = {
@@ -108,10 +112,10 @@ export type CampDTO = {
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   formQuestions: FormQuestionDTO[];
-  campSessions: (Omit<
-    CampSessionDTO,
-    "id" | "camp" | "campers" | "waitlist"
-  > & { registrations: number; waitlist: number })[];
+  campSessions: (Omit<CampSessionDTO, "campers" | "waitlist"> & {
+    registrations: number;
+    waitlist: number;
+  })[];
 };
 
 export type CreateCampDTO = Omit<
