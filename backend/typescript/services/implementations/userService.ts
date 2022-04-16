@@ -205,13 +205,12 @@ class UserService implements IUserService {
     userId: string,
     user: UpdateUserDTO,
   ): Promise<UserDTO | CampCoordinatorDTO> {
-    let oldUser: User | CampCoordinator | null;
     let updatedUser: User | CampCoordinator | null;
 
-    oldUser = await MgUser.findById(userId); // getting the user to check their role
+    const oldUser = await MgUser.findById(userId); // getting the user to check their role
 
     if (!oldUser) {
-      throw new Error(`userId ${userId} not found.`);
+      throw new Error(`userId ${userId} not found before update.`);
     }
 
     try {
@@ -273,7 +272,7 @@ class UserService implements IUserService {
       }
 
       if (!updatedUser) {
-        throw new Error(`userId ${userId} not found.`);
+        throw new Error(`userId ${userId} not found after update.`);
       }
 
       if (user.email) {
@@ -287,14 +286,14 @@ class UserService implements IUserService {
             // revert role updates
             if (user.role && user.role !== oldUser.role) {
               if (user.role === "CampCoordinator") {
-                await MgUser.findByIdAndUpdate(userId, {
+                await MgCampCoordinator.findByIdAndUpdate(userId, {
                   $unset: {
                     __t: "CampCoordinator",
                     campSessions: user.campSessions,
                   },
                 });
               } else {
-                await MgCampCoordinator.findByIdAndUpdate(userId, {
+                await MgUser.findByIdAndUpdate(userId, {
                   $set: {
                     __t: "CampCoordinator",
                   },
