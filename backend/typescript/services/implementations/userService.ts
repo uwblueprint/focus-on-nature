@@ -168,6 +168,7 @@ class UserService implements IUserService {
           email: firebaseUser.email,
           role: user.role,
           active: user.active,
+          __t: "CampCoordinator",
         });
       } catch (mongoDbError) {
         // rollback user creation in Firebase
@@ -205,6 +206,7 @@ class UserService implements IUserService {
     user: UpdateUserDTO,
   ): Promise<UserDTO | CampCoordinatorDTO> {
     let oldUser: User | CampCoordinator | null;
+    let updatedUser: User | CampCoordinator | null;
 
     oldUser = await MgUser.findById(userId); // getting the user to check their role
 
@@ -213,13 +215,33 @@ class UserService implements IUserService {
     }
 
     try {
+      // update roles
+      if (user.role && user.role !== oldUser.role) {
+        if (user.role === "CampCoordinator") {
+          await MgUser.findByIdAndUpdate(userId, {
+            $set: {
+              __t: "CampCoordinator",
+            },
+          });
+        } else if (user.role === "Admin") {
+          await MgCampCoordinator.findByIdAndUpdate(userId, {
+            $unset: {
+              __t: "CampCoordinator",
+              campSessions: (oldUser as CampCoordinator).campSessions,
+            },
+          });
+        } else {
+          throw new Error(`${user.role} is not a valid role.`);
+        }
+      }
+
       // must explicitly specify runValidators when updating through findByIdAndUpdate
 
       if (
-        user.role === "CampCoordinator" ||
-        oldUser.role === "CampCoordinator"
+        (user.role && user.role === "CampCoordinator") ||
+        (!user.role && oldUser.role === "CampCoordinator")
       ) {
-        oldUser = await MgCampCoordinator.findByIdAndUpdate(
+        updatedUser = await MgCampCoordinator.findByIdAndUpdate(
           { _id: userId, __t: "CampCoordinator" },
           {
             firstName: user.firstName,
@@ -231,8 +253,11 @@ class UserService implements IUserService {
           },
           { runValidators: true },
         );
-      } else {
-        oldUser = await MgUser.findByIdAndUpdate(
+      } else if (
+        (user.role && user.role === "Admin") ||
+        (!user.role && oldUser.role === "Admin")
+      ) {
+        updatedUser = await MgUser.findByIdAndUpdate(
           userId,
           {
             firstName: user.firstName,
@@ -243,10 +268,11 @@ class UserService implements IUserService {
           },
           { runValidators: true },
         );
+      } else {
+        throw new Error(`userId ${userId} does not have a valid role.`);
       }
 
-      if (!oldUser) {
-        // check after re-assigning oldUser
+      if (!updatedUser) {
         throw new Error(`userId ${userId} not found.`);
       }
 
@@ -258,10 +284,25 @@ class UserService implements IUserService {
         } catch (error) {
           // rollback MongoDB user updates
           try {
-            if (
-              user.role === "CampCoordinator" ||
-              oldUser.role === "CampCoordinator"
-            ) {
+            // revert role updates
+            if (user.role && user.role !== oldUser.role) {
+              if (user.role === "CampCoordinator") {
+                await MgUser.findByIdAndUpdate(userId, {
+                  $unset: {
+                    __t: "CampCoordinator",
+                    campSessions: user.campSessions,
+                  },
+                });
+              } else {
+                await MgCampCoordinator.findByIdAndUpdate(userId, {
+                  $set: {
+                    __t: "CampCoordinator",
+                  },
+                });
+              }
+            }
+            // revert other updates
+            if (oldUser.role === "CampCoordinator") {
               await MgCampCoordinator.findByIdAndUpdate(
                 { _id: userId, __t: "CampCoordinator" },
                 {
@@ -305,7 +346,10 @@ class UserService implements IUserService {
       throw error;
     }
 
-    if (user.role === "CampCoordinator" || oldUser.role === "CampCoordinator") {
+    if (
+      (user.role && user.role === "CampCoordinator") ||
+      (!user.role && oldUser.role === "CampCoordinator")
+    ) {
       return {
         id: userId,
         firstName: user.firstName,

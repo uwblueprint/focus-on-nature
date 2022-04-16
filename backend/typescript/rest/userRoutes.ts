@@ -17,7 +17,7 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 
 const userRouter: Router = Router();
-userRouter.use(isAuthorizedByRole(new Set(["Admin"])));
+// userRouter.use(isAuthorizedByRole(new Set(["Admin"])));
 
 const userService: IUserService = new UserService();
 const emailService: IEmailService = new EmailService(nodemailerConfig);
