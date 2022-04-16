@@ -19,7 +19,7 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCamps(campStatus: string, campYear: number): Promise<GetCampDTO[]> {
     try {
-      const mgMatchQuery: { [key: string]: Object[] } = { $and: [] };
+      const mgMatchQuery: Record<string, unknown[]> = { $and: [] };
 
       if (campStatus) {
         mgMatchQuery.$and.push({ status: campStatus });
