@@ -52,7 +52,7 @@ export const updateUserDtoValidator = async (
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   if (
-    req.body.role === "CampLeader" &&
+    req.body.role === "CampCoordinator" &&
     req.body.campSessions &&
     !validateArray(req.body.campSessions, "string")
   ) {
