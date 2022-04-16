@@ -175,7 +175,7 @@ describe("mongo campService", (): void => {
       expect(campSession.waitlist).toHaveLength(0);
     }
 
-    // Step 3: Add form questions :eyes
+    // TODO: Step 3: Add form questions :eyes
   });
 
   it("updateCamp", async () => {
@@ -198,7 +198,7 @@ describe("mongo campService", (): void => {
       active: true,
     };
 
-    const newTestCampSession: UpdateCampSessionDTO = {
+    const updatedTestCampSession: UpdateCampSessionDTO = {
       dates: [
         new Date(2023, 1, 2),
         new Date(2023, 1, 3),
@@ -223,18 +223,18 @@ describe("mongo campService", (): void => {
     await campService.updateCampSessionById(
       res.id,
       resCampSession.id,
-      newTestCampSession,
+      updatedTestCampSession,
     );
 
     const campSession = await MgCampSession.findById(resCampSession.id);
 
     expect(campSession?.camp.toString()).toEqual(res.id);
     expect(campSession?.dates.map((date) => new Date(date))).toEqual(
-      newTestCampSession.dates.map((date) => new Date(date)),
+      updatedTestCampSession.dates.map((date) => new Date(date)),
     );
-    expect(campSession?.startTime).toEqual(newTestCampSession.startTime);
-    expect(campSession?.endTime).toEqual(newTestCampSession.endTime);
-    expect(campSession?.active).toEqual(newTestCampSession.active);
+    expect(campSession?.startTime).toEqual(updatedTestCampSession.startTime);
+    expect(campSession?.endTime).toEqual(updatedTestCampSession.endTime);
+    expect(campSession?.active).toEqual(updatedTestCampSession.active);
     expect(campSession?.campers).toHaveLength(0);
     expect(campSession?.waitlist).toHaveLength(0);
   });
