@@ -272,7 +272,7 @@ class CamperService implements ICamperService {
           throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
 
-        await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, waitlistedCamper.campSession, existingCamp.location, existingCamp.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
+        await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, waitlistedCamper.campSession, existingCamp.camp.location, existingCamp.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
       } catch (mongoDbError: unknown) {
         // rollback user creation
         try {
@@ -399,7 +399,7 @@ class CamperService implements ICamperService {
 
   async deleteCampersByChargeId(chargeId: string): Promise<void> {
     try {
-      const campers: Array<Camper> = await MgCamper.find({
+      const campers: Array<Camper> = await MgCafimper.find({
         chargeId,
       });
 
@@ -445,6 +445,7 @@ class CamperService implements ICamperService {
         });
         let deletedCamper = await MgCamper.findById(chargeId);
         await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.name, camp.name, "SESSION DATES FUNC")
+        await emailService.sendCancellationConfirmationEmail(deletedCamper.contacts[0].email, deletedCamper.contacts[0].firstName + " " + deletedCamper.contacts[0].lastName)
       } catch (mongoDbError: unknown) {
         // could not delete users, rollback camp's camper deletions
         try {
