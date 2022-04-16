@@ -1,12 +1,12 @@
 import { Schema, Model } from "mongoose";
 import UserSchema, { User } from "./user.model";
 
-export interface CampLeader extends User {
+export interface CampCoordinator extends User {
   campSessions: Schema.Types.ObjectId;
 }
 
-const CampLeaderModel: Model<User> = UserSchema.discriminator(
-  "CampLeader",
+const CampCoordinatorModel: Model<User> = UserSchema.discriminator(
+  "CampCoordinator",
   new Schema({
     campSessions: {
       type: [{ type: Schema.Types.ObjectId, ref: "CampSession" }],
@@ -15,4 +15,4 @@ const CampLeaderModel: Model<User> = UserSchema.discriminator(
   }),
 );
 
-export default CampLeaderModel;
+export default CampCoordinatorModel;
