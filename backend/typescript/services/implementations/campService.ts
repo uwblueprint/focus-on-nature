@@ -92,36 +92,41 @@ class CampService implements ICampService {
       location: camp.location,
       fee: camp.fee,
       formQuestions: [],
+      campSessions: [],
     });
     try {
       /* eslint no-underscore-dangle: 0 */
-      await Promise.all(
-        camp.formQuestions.map(async (formQuestion, i) => {
-          const question = await MgFormQuestion.create({
-            type: formQuestion.type,
-            question: formQuestion.question,
-            required: formQuestion.required,
-            description: formQuestion.description,
-            options: formQuestion.options,
-          });
-          newCamp.formQuestions[i] = question._id;
-        }),
-      );
+      if (camp.formQuestions) {
+        await Promise.all(
+          camp.formQuestions.map(async (formQuestion, i) => {
+            const question = await MgFormQuestion.create({
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            });
+            newCamp.formQuestions[i] = question._id;
+          }),
+        );
+      }
 
-      await Promise.all(
-        camp.campSessions.map(async (campSession, i) => {
-          const session = await MgCampSession.create({
-            camp: newCamp,
-            campers: [],
-            waitlist: [],
-            startTime: campSession.startTime,
-            endTime: campSession.endTime,
-            dates: campSession.dates,
-            active: campSession.active,
-          });
-          newCamp.campSessions[i] = session._id;
-        }),
-      );
+      if (camp.campSessions) {
+        await Promise.all(
+          camp.campSessions.map(async (campSession, i) => {
+            const session = await MgCampSession.create({
+              camp: newCamp,
+              campers: [],
+              waitlist: [],
+              startTime: campSession.startTime,
+              endTime: campSession.endTime,
+              dates: campSession.dates,
+              active: campSession.active,
+            });
+            newCamp.campSessions[i] = session._id;
+          }),
+        );
+      }
 
       await newCamp.save((err) => {
         if (err) throw err;
@@ -206,10 +211,11 @@ class CampService implements ICampService {
   }
 
   async createCampSession(
+    campId: string,
     campSession: CreateCampSessionDTO,
   ): Promise<CampSessionDTO> {
-    const camp: CampSession = new MgCampSession({
-      camp: campSession.camp,
+    const newCampSession: CampSession = new MgCampSession({
+      camp: campId,
       campers: [],
       waitlist: [],
       dates: campSession.dates,
@@ -219,20 +225,20 @@ class CampService implements ICampService {
     });
 
     try {
-      await camp.save((err) => {
+      await newCampSession.save((err) => {
         if (err) throw err;
       });
 
       await MgCamp.findByIdAndUpdate(
-        camp.camp,
+        campId,
         {
-          $push: { campSessions: camp.id },
+          $push: { campSessions: newCampSession.id },
         },
         { runValidators: true },
       );
 
       return {
-        id: camp.id,
+        id: newCampSession.id,
         camp: campSession.camp,
         campers: [],
         waitlist: [],
@@ -243,7 +249,7 @@ class CampService implements ICampService {
       };
     } catch (error: unknown) {
       try {
-        await MgCampSession.findByIdAndDelete(camp.id);
+        await MgCampSession.findByIdAndDelete(newCampSession.id);
       } catch (rollbackError: unknown) {
         Logger.error(
           `Failed to rollback camp session creation error. Reason = ${getErrorMessage(
