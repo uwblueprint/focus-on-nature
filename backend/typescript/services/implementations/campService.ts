@@ -324,16 +324,30 @@ class CampService implements ICampService {
     }
   }
 
-  async deleteCampSessionById(campSessionId: string): Promise<void> {
+  async deleteCampSessionById(
+    campId: string,
+    campSessionId: string,
+  ): Promise<void> {
     try {
+      const oldCamp: Camp | null = await MgCamp.findById(campId);
+      if (!oldCamp) {
+        throw new Error(`Camp with campId ${campId} not found.`);
+      }
+      const oldSessions = oldCamp.campSessions as Schema.Types.ObjectId[];
+      if (
+        !oldSessions.find((session) => session.toString() === campSessionId)
+      ) {
+        throw new Error(
+          `CampSession with campSessionId ${campSessionId} not found for Camp with id ${campId}.`,
+        );
+      }
       const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
       if (!campSession) {
         throw new Error(
           `CampSession' with campSessionID ${campSessionId} not found.`,
         );
       }
-
-      await MgCamp.findByIdAndUpdate(campSession.camp, {
+      await MgCamp.findByIdAndUpdate(campId, {
         $pullAll: { campSessions: [campSession.id] },
       });
     } catch (error: unknown) {
