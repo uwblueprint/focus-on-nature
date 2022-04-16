@@ -36,6 +36,7 @@ campRouter.get("/", async (req, res) => {
 // Required checks:
 // sort campSession by date
 // dates for campSessions cannot overlap
+// fee cannot change after any campSession is published (?)
 
 /* Create a camp */
 campRouter.post(
@@ -91,17 +92,20 @@ campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
 
 /* Create a camp session */
 campRouter.post(
-  "/session/",
+  "/:campId/session/",
   createCampSessionDtoValidator,
   async (req, res) => {
     try {
-      const campSession = await campService.createCampSession({
-        camp: req.body.camp,
-        dates: req.body.dates,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
-        active: req.body.active,
-      });
+      const campSession = await campService.createCampSession(
+        req.params.campId,
+        {
+          camp: req.body.camp,
+          dates: req.body.dates,
+          startTime: req.body.startTime,
+          endTime: req.body.endTime,
+          active: req.body.active,
+        },
+      );
       res.status(200).json(campSession);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
