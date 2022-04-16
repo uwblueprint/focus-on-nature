@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import ICampService from "../interfaces/campService";
 import IFileStorageService from "../interfaces/fileStorageService";
+import { Schema } from "mongoose";
 import {
   CreateCampDTO,
   CamperCSVInfoDTO,
@@ -11,7 +11,6 @@ import {
   UpdateCampDTO,
   CreateCampSessionDTO,
 } from "../../types";
-import { Schema, Document, model } from "mongoose";
 
 import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
@@ -93,8 +92,7 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-    let newCamp: Camp;
-    newCamp = new MgCamp({
+    const newCamp: Camp = new MgCamp({
       name: camp.name,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,

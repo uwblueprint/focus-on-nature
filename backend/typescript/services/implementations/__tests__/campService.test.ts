@@ -150,14 +150,17 @@ describe("mongo campService", (): void => {
     expect(camp?.fee).toEqual(testCamp.fee);
 
     // Step 2: Add Camp Sessions
-    const campSessionIds = [];
-    for (const testCampSession of testCampSessions) {
-      const session = await campService.createCampSession(
-        res.id,
-        testCampSession,
-      );
-      campSessionIds.push(session.id);
-    }
+    const campSessionIds: string[] = [];
+    await Promise.all(
+      testCampSessions.map(async (testCampSession) => {
+        const session = await campService.createCampSession(
+          res.id,
+          testCampSession,
+        );
+        campSessionIds.push(session.id);
+      }),
+    );
+
     const campSessions = await MgCampSession.find({
       _id: { $in: campSessionIds },
     });
