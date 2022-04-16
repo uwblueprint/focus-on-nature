@@ -3,9 +3,9 @@ import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import MgCamp, { CampSession } from "../../models/campSession.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import {
-  CreateCamperDTO,
+  CreateCampersDTO,
   CamperDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
@@ -22,72 +22,51 @@ const emailService: IEmailService = new EmailService(nodemailerConfig);
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCamper(camper: CreateCamperDTO): Promise<CamperDTO> {
-    let newCamper: Camper;
+  async createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>> {
+    let newCamperDTOs: Array<CamperDTO> = [];
+    let newCampers: Array<Camper> = [];
     let existingCamp: CampSession | null;
     try {
-      existingCamp = await MgCamp.findById(camper.campSession);
-
-      if (existingCamp) {
-        if (existingCamp.campers.length >= existingCamp.capacity) {
-          throw new Error(
-            `Error: camp is full. Current number of campers in camp: ${existingCamp.campers.length}. Camp capacity: ${existingCamp.capacity}.`,
-          );
-        }
-      } else {
-        throw new Error(`Camp ${camper.campSession} not found.`);
-      }
-
-      newCamper = await MgCamper.create({
-        campSession: camper.campSession,
-        registrationDate: camper.registrationDate,
-        hasPaid: camper.hasPaid,
-        chargeId: camper.chargeId,
-        formResponses: camper.formResponses,
-      });
-
-      try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
-          camper.campSession,
-          {
-            $push: { campers: newCamper.id },
-          },
-          { runValidators: true },
-        );
-
-        if (!existingCamp) {
-          throw new Error(`CampSession ${camper.campSession} not found.`);
-        }
-        let currentCamp: CampSession | null;
-        currentCamp = await MgCamp.findById(camper.campSession);
-        if(currentCamp) {
-          if(currentCamp.campers.length == currentCamp.capacity) {
-            await emailService.sendFullCampNoticeEmail("admin@focusonnature.ca", currentCamp.name, "SESSION DATES FUNCTION")
-          }
-        }
-
-        await emailService.sendConfirmationEmail("ADD TO MODEL", "ADD TO MODEL", existingCamp.name, existingCamp.location, "SESSION DATES FUNC", [{name: "ADD TO MODEL", age: "ADD TO MODEL"}], "ADD TO MODEL", existingCamp.fee, "ADD TO MODEL", "ADD TO MODEL", "ADD TO MODEL", "REFUND LINK")
-      } catch (mongoDbError: unknown) {
-        // rollback user creation
+      newCampers = await MgCamper.insertMany(campers);
+      if (campers.length > 0) {
         try {
-          const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-            newCamper.id,
+          existingCamp = await MgCampSession.findByIdAndUpdate(
+            campers[0].campSession,
+            {
+              $push: { campers: newCampers[0].id },
+            },
+            {
+              runValidators: true,
+            },
           );
-
-          if (!deletedCamper) {
-            throw new Error(`Camper ${newCamper.id} not found.`);
+          if (!existingCamp) {
+            throw new Error(
+              `Camp session ${campers[0].campSession} not found.`,
+            );
           }
-        } catch (rollbackDbError) {
-          const errorMessage = [
-            "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
-            getErrorMessage(rollbackDbError),
-            "MongoDB camper id that could not be deleted =",
-            newCamper.id,
-          ];
-          Logger.error(errorMessage.join(" "));
+        } catch (mongoDbError: unknown) {
+          // rollback camper creation
+          /* eslint-disable no-await-in-loop */
+          for (let i = 0; i < newCampers.length; i += 1) {
+            try {
+              const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
+                newCampers[i].id,
+              );
+              if (!deletedCamper) {
+                throw new Error(`Camper ${newCampers[i].id} not found.`);
+              }
+            } catch (rollbackDbError) {
+              const errorMessage = [
+                "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
+                getErrorMessage(rollbackDbError),
+                "MongoDB camper id that could not be deleted =",
+                newCampers[i].id,
+              ];
+              Logger.error(errorMessage.join(" "));
+            }
+          }
+          throw mongoDbError;
         }
-
-        throw mongoDbError;
       }
     } catch (error: unknown) {
       Logger.error(
@@ -95,15 +74,28 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
-
-    return {
-      id: newCamper.id,
-      campSession: camper.campSession,
-      registrationDate: newCamper.registrationDate,
-      hasPaid: newCamper.hasPaid,
-      chargeId: newCamper.chargeId,
-      formResponses: camper.formResponses,
-    };
+    newCamperDTOs = newCampers.map((newCamper) => {
+      return {
+        id: newCamper.id,
+        campSession: newCamper.campSession.toString(),
+        firstName: newCamper.firstName,
+        lastName: newCamper.lastName,
+        age: newCamper.age,
+        allergies: newCamper.allergies,
+        hasCamera: newCamper.hasCamera,
+        hasLaptop: newCamper.hasLaptop,
+        earlyDropoff: newCamper.earlyDropoff,
+        latePickup: newCamper.latePickup,
+        specialNeeds: newCamper.specialNeeds,
+        contacts: newCamper.contacts,
+        registrationDate: newCamper.registrationDate,
+        hasPaid: newCamper.hasPaid,
+        chargeId: newCamper.chargeId,
+        formResponses: newCamper.formResponses,
+        charges: newCamper.charges,
+      };
+    });
+    return newCamperDTOs;
   }
 
   async getAllCampers(): Promise<Array<CamperDTO>> {
@@ -115,10 +107,21 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
         };
       });
     } catch (error: unknown) {
@@ -129,16 +132,27 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
-  async getCampersByCampId(campId: string): Promise<Array<CamperDTO>> {
+  async getCampersByCampId(
+    campId: string,
+  ): Promise<{
+    campers: CamperDTO[];
+    waitlist: WaitlistedCamperDTO[];
+  }> {
     let camperDtos: Array<CamperDTO> = [];
+    let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
-      const existingCamp: CampSession | null = await MgCamp.findById(
+      const existingCamp: CampSession | null = await MgCampSession.findById(
         campId,
-      ).populate({
-        path: "campers",
-        model: MgCamper,
-      });
+      )
+        .populate({
+          path: "campers",
+          model: MgCamper,
+        })
+        .populate({
+          path: "waitlist",
+          model: MgWaitlistedCamper,
+        });
 
       if (!existingCamp) {
         throw new Error(`Camp ${existingCamp} not found.`);
@@ -150,10 +164,36 @@ class CamperService implements ICamperService {
         return {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate,
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
+          charges: camper.charges,
+        };
+      });
+
+      const waitlistedCampers = existingCamp.waitlist as WaitlistedCamper[];
+
+      waitlistedCamperDtos = waitlistedCampers.map((camper) => {
+        return {
+          id: camper.id,
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          contactName: camper.contactName,
+          contactEmail: camper.contactEmail,
+          contactNumber: camper.contactNumber,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
         };
       });
     } catch (error: unknown) {
@@ -161,7 +201,45 @@ class CamperService implements ICamperService {
       throw error;
     }
 
-    return camperDtos;
+    return { campers: camperDtos, waitlist: waitlistedCamperDtos };
+  }
+
+  async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
+    try {
+      // eslint-disable-next-line prettier/prettier
+      const campers: Camper[] = await MgCamper.find({ chargeId });
+
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Charge Id ${chargeId} not found.`);
+      }
+
+      const camperDTO: CamperDTO[] = campers.map((camper) => {
+        return {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
+          formResponses: camper.formResponses,
+          registrationDate: camper.registrationDate,
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          charges: camper.charges,
+        };
+      });
+
+      return camperDTO;
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
   }
 
   async createWaitlistedCamper(
@@ -182,7 +260,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
@@ -249,10 +327,10 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findById(camperId);
 
       if (camper.campSession && oldCamper) {
-        const newCamp: CampSession | null = await MgCamp.findById(
+        const newCamp: CampSession | null = await MgCampSession.findById(
           camper.campSession,
         );
-        const oldCamp: CampSession | null = await MgCamp.findById(
+        const oldCamp: CampSession | null = await MgCampSession.findById(
           oldCamper.campSession,
         );
 
@@ -273,6 +351,16 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findByIdAndUpdate(
         camperId,
         {
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          hasCamera: camper.hasCamera,
+          hasLaptop: camper.hasLaptop,
+          earlyDropoff: camper.earlyDropoff,
+          latePickup: camper.latePickup,
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           campSession: camper.campSession,
           formResponses: camper.formResponses,
           hasPaid: camper.hasPaid,
@@ -291,10 +379,21 @@ class CamperService implements ICamperService {
     return {
       id: camperId,
       campSession: camper.campSession,
+      firstName: camper.firstName,
+      lastName: camper.lastName,
+      age: camper.age,
+      allergies: camper.allergies,
+      hasCamera: camper.hasCamera,
+      hasLaptop: camper.hasLaptop,
+      earlyDropoff: camper.earlyDropoff,
+      latePickup: camper.latePickup,
+      specialNeeds: camper.specialNeeds,
+      contacts: camper.contacts,
       formResponses: camper.formResponses,
       registrationDate: oldCamper.registrationDate,
       hasPaid: camper.hasPaid,
       chargeId: oldCamper.chargeId,
+      charges: oldCamper.charges,
     };
   }
 
@@ -308,7 +407,7 @@ class CamperService implements ICamperService {
         throw new Error(`Campers with charge ID ${chargeId} not found.`);
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
+      const camp: CampSession | null = await MgCampSession.findById(
         campers[0].campSession,
       );
 
@@ -379,7 +478,7 @@ class CamperService implements ICamperService {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
+      const camp: CampSession | null = await MgCampSession.findById(
         camper.campSession,
       );
 
