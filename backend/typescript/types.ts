@@ -127,12 +127,12 @@ export type UpdateCampDTO = Omit<
 
 export type CreateCampSessionDTO = Omit<
   CampSessionDTO,
-  "id" | "campers" | "waitlist"
+  "id" | "camp" | "campers" | "waitlist"
 >;
 
 export type UpdateCampSessionDTO = Omit<
   CampSessionDTO,
-  "id" | "camp" | "campers"
+  "id" | "camp" | "campers" | "waitlist"
 >;
 
 export type CreateCamperDTO = Omit<CamperDTO, "id">;

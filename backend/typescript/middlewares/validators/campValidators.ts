@@ -42,6 +42,9 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
+  if (req.body.fee < 0) {
+    return res.status(400).send("fee cannot be negative");
+  }
 
   if (
     req.body.formQuestions &&
@@ -134,6 +137,9 @@ export const updateCampDtoValidator = async (
   }
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
+  }
+  if (req.body.fee < 0) {
+    return res.status(400).send("fee cannot be negative");
   }
 
   if (req.body.formQuestions) {

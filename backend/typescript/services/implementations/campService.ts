@@ -8,6 +8,8 @@ import {
   UpdateCampDTO,
   CreateCampSessionDTO,
 } from "../../types";
+import { Schema, Document, model } from "mongoose";
+
 import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
@@ -128,9 +130,12 @@ class CampService implements ICampService {
         );
       }
 
-      await newCamp.save((err) => {
-        if (err) throw err;
-      });
+      await newCamp.save();
+
+      // const cam2p = await MgCamp.findById(newCamp.id.toString());
+      // console.log("aaa");
+      // console.log(newCamp._id);
+      // console.log(cam2p);
     } catch (error: unknown) {
       // rollback incomplete camp creation
 
@@ -225,9 +230,7 @@ class CampService implements ICampService {
     });
 
     try {
-      await newCampSession.save((err) => {
-        if (err) throw err;
-      });
+      await newCampSession.save();
 
       await MgCamp.findByIdAndUpdate(
         campId,
@@ -239,13 +242,13 @@ class CampService implements ICampService {
 
       return {
         id: newCampSession.id,
-        camp: campSession.camp,
+        camp: campId,
         campers: [],
         waitlist: [],
-        dates: campSession.dates,
-        startTime: campSession.startTime,
-        endTime: campSession.endTime,
-        active: campSession.active,
+        dates: newCampSession.dates.map((date) => date.toString()),
+        startTime: newCampSession.startTime,
+        endTime: newCampSession.endTime,
+        active: newCampSession.active,
       };
     } catch (error: unknown) {
       try {
@@ -266,14 +269,27 @@ class CampService implements ICampService {
   }
 
   async updateCampSessionById(
+    campId: string,
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO> {
     try {
-      const oldCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
+      const oldCamp: Camp | null = await MgCamp.findById(campId);
+      if (!oldCamp) {
+        throw new Error(`Camp with campId ${campId} not found.`);
+      }
+      const oldSessions = oldCamp.campSessions as Schema.Types.ObjectId[];
+      if (
+        !oldSessions.find((session) => session.toString() === campSessionId)
+      ) {
+        throw new Error(
+          `CampSession with campSessionId ${campSessionId} not found for Camp with id ${campId}.`,
+        );
+      }
+
+      const oldCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
-          waitlist: campSession.waitlist,
           dates: campSession.dates,
           startTime: campSession.startTime,
           endTime: campSession.endTime,
@@ -282,7 +298,7 @@ class CampService implements ICampService {
         { runValidators: true },
       );
 
-      if (!oldCamp) {
+      if (!oldCampSession) {
         throw new Error(
           `CampSession with campSessionId ${campSessionId} not found.`,
         );
@@ -290,9 +306,9 @@ class CampService implements ICampService {
 
       return {
         id: campSessionId,
-        camp: oldCamp.camp.toString(),
-        campers: oldCamp.campers.map((camper) => camper.toString()),
-        waitlist: campSession.waitlist,
+        camp: oldCampSession.camp.toString(),
+        campers: oldCampSession.campers.map((camper) => camper.toString()),
+        waitlist: oldCampSession.waitlist.map((camper) => camper.toString()),
         dates: campSession.dates,
         startTime: campSession.startTime,
         endTime: campSession.endTime,

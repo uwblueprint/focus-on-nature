@@ -30,6 +30,7 @@ interface ICampService {
   ): Promise<CampSessionDTO>;
 
   updateCampSessionById(
+    campId: string,
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO>;

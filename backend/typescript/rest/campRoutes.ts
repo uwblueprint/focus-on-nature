@@ -78,7 +78,6 @@ campRouter.post(
       const campSession = await campService.createCampSession(
         req.params.campId,
         {
-          camp: req.body.camp,
           dates: req.body.dates,
           startTime: req.body.startTime,
           endTime: req.body.endTime,
@@ -94,14 +93,14 @@ campRouter.post(
 
 /* Update a camp session */
 campRouter.patch(
-  "/session/:campSessionId",
+  "/:campId/session/:campSessionId",
   updateCampSessionDtoValidator,
   async (req, res) => {
     try {
       const campSession = await campService.updateCampSessionById(
+        req.params.campId,
         req.params.campSessionId,
         {
-          waitlist: req.body.waitlist,
           dates: req.body.dates,
           startTime: req.body.startTime,
           endTime: req.body.endTime,
@@ -116,7 +115,7 @@ campRouter.patch(
 );
 
 /* Delete a camp session */
-campRouter.delete("/session/:campSessionId", async (req, res) => {
+campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   try {
     await campService.deleteCampSessionById(req.params.campSessionId);
     res.status(204).send();
