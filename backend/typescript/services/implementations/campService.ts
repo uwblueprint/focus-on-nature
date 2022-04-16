@@ -140,11 +140,6 @@ class CampService implements ICampService {
       }
 
       await newCamp.save();
-
-      // const cam2p = await MgCamp.findById(newCamp.id.toString());
-      // console.log("aaa");
-      // console.log(newCamp._id);
-      // console.log(cam2p);
     } catch (error: unknown) {
       // rollback incomplete camp creation
 
@@ -340,7 +335,6 @@ class CampService implements ICampService {
         );
       }
 
-      console.log(campSession.camp);
       await MgCamp.findByIdAndUpdate(campSession.camp, {
         $pullAll: { campSessions: [campSession.id] },
       });
