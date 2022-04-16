@@ -37,6 +37,7 @@ const CampSchema: Schema = new Schema({
         ref: "CampSession",
       },
     ],
+    default: [],
   },
   description: {
     type: String,

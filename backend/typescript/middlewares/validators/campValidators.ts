@@ -120,6 +120,26 @@ export const createCampDtoValidator = async (
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
+export const updateCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const createCampSessionDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
 export const updateCampSessionDtoValidator = async (
   req: Request,
   res: Response,
@@ -151,15 +171,11 @@ export const updateCampSessionDtoValidator = async (
   if (!validatePrimitive(campSession.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
-  if (campSession.campers && !validateArray(campSession.campers, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("campers", "string", true));
+  if (req.body.campers) {
+    return res.status(400).send("campers should be empty");
   }
-  if (campSession.waitlist && !validateArray(campSession.waitlist, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("waitlist", "string", true));
+  if (req.body.waitlist) {
+    return res.status(400).send("waitlist should be empty");
   }
   return next();
 };

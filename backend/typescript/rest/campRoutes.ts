@@ -8,6 +8,8 @@ import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import {
   createCampDtoValidator,
+  createCampSessionDtoValidator,
+  updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
 
@@ -31,12 +33,18 @@ campRouter.get("/", async (req, res) => {
   }
 });
 
+// Required checks:
+// sort campSession by date
+// dates for campSessions cannot overlap
+
 /* Create a camp */
 campRouter.post(
   "/",
   upload.single("file"),
   createCampDtoValidator,
   async (req, res) => {
+    // TODO: remove formQuestions and campSessions field
+
     try {
       const body = JSON.parse(req.body.data);
       const newCamp = await campService.createCamp({
@@ -62,27 +70,54 @@ campRouter.post(
   },
 );
 
-/* Delete a camp session */
-campRouter.delete("/session/:campId", async (req, res) => {
-  console.log(req.params.campId);
+/* Update a camp */
+campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
   try {
-    await campService.deleteCampSessionById(req.params.campId);
-    res.status(204).send();
+    const newCamp = await campService.updateCamp(req.params.campId, {
+      ageLower: req.body.ageLower,
+      ageUpper: req.body.ageUpper,
+      name: req.body.name,
+      description: req.body.description,
+      location: req.body.location,
+      capacity: req.body.capacity,
+      fee: req.body.fee,
+    });
+
+    res.status(200).json(newCamp);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
 
+/* Create a camp session */
+campRouter.post(
+  "/session/",
+  createCampSessionDtoValidator,
+  async (req, res) => {
+    try {
+      const campSession = await campService.createCampSession({
+        camp: req.body.camp,
+        dates: req.body.dates,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        active: req.body.active,
+      });
+      res.status(200).json(campSession);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
 /* Update a camp session */
-campRouter.put(
-  "/session/:campId",
+campRouter.patch(
+  "/session/:campSessionId",
   updateCampSessionDtoValidator,
   async (req, res) => {
     try {
-      const campSession = await campService.editCampSessionById(
-        req.params.campId,
+      const campSession = await campService.updateCampSessionById(
+        req.params.campSessionId,
         {
-          campers: req.body.campers,
           waitlist: req.body.waitlist,
           dates: req.body.dates,
           startTime: req.body.startTime,
@@ -96,6 +131,16 @@ campRouter.put(
     }
   },
 );
+
+/* Delete a camp session */
+campRouter.delete("/session/:campSessionId", async (req, res) => {
+  try {
+    await campService.deleteCampSessionById(req.params.campSessionId);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
 
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {

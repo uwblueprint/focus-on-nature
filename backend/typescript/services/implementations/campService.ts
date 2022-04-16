@@ -8,6 +8,8 @@ import {
   CampSessionDTO,
   UpdateCampSessionDTO,
   GetCampDTO,
+  UpdateCampDTO,
+  CreateCampSessionDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
@@ -83,6 +85,246 @@ class CampService implements ICampService {
       });
     } catch (error: unknown) {
       Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+  }
+
+  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
+    let newCamp: Camp;
+    newCamp = new MgCamp({
+      name: camp.name,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      capacity: camp.capacity,
+      description: camp.description,
+      location: camp.location,
+      fee: camp.fee,
+      formQuestions: [],
+    });
+    try {
+      /* eslint no-underscore-dangle: 0 */
+      await Promise.all(
+        camp.formQuestions.map(async (formQuestion, i) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          newCamp.formQuestions[i] = question._id;
+        }),
+      );
+
+      await Promise.all(
+        camp.campSessions.map(async (campSession, i) => {
+          const session = await MgCampSession.create({
+            camp: newCamp,
+            campers: [],
+            waitlist: [],
+            startTime: campSession.startTime,
+            endTime: campSession.endTime,
+            dates: campSession.dates,
+            active: campSession.active,
+          });
+          newCamp.campSessions[i] = session._id;
+        }),
+      );
+
+      await newCamp.save((err) => {
+        if (err) throw err;
+      });
+    } catch (error: unknown) {
+      // rollback incomplete camp creation
+
+      try {
+        newCamp.formQuestions.forEach((formQuestionID) =>
+          MgFormQuestion.findByIdAndDelete(formQuestionID),
+        );
+        newCamp.campSessions.forEach((campSessionID) =>
+          MgCampSession.findByIdAndDelete(campSessionID),
+        );
+
+        MgCamp.findByIdAndDelete(newCamp.id);
+      } catch (rollbackError: unknown) {
+        Logger.error(
+          `Failed to rollback camp creation error. Reason = ${getErrorMessage(
+            rollbackError,
+          )}`,
+        );
+      }
+
+      Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: newCamp.id,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
+      campSessions: newCamp.campSessions.map((session) => session.toString()),
+      capacity: newCamp.capacity,
+      name: newCamp.name,
+      description: newCamp.description,
+      location: newCamp.location,
+      fee: newCamp.fee,
+      formQuestions: newCamp.formQuestions.map((formQuestion) =>
+        formQuestion.toString(),
+      ),
+    };
+  }
+
+  async updateCamp(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
+    let oldCamp: Camp | null;
+
+    try {
+      oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+        $set: {
+          name: camp.name,
+          ageLower: camp.ageLower,
+          ageUpper: camp.ageUpper,
+          capacity: camp.capacity,
+          description: camp.description,
+          location: camp.location,
+          fee: camp.fee,
+        },
+      });
+      if (!oldCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: campId,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campSessions: oldCamp.campSessions.map((session) => session.toString()),
+      capacity: camp.capacity,
+      name: camp.name,
+      description: camp.description,
+      location: camp.location,
+      fee: camp.fee,
+      formQuestions: oldCamp.formQuestions.map((formQuestion) =>
+        formQuestion.toString(),
+      ),
+    };
+  }
+
+  async createCampSession(
+    campSession: CreateCampSessionDTO,
+  ): Promise<CampSessionDTO> {
+    const camp: CampSession = new MgCampSession({
+      camp: campSession.camp,
+      campers: [],
+      waitlist: [],
+      dates: campSession.dates,
+      startTime: campSession.startTime,
+      endTime: campSession.endTime,
+      active: campSession.active,
+    });
+
+    try {
+      await camp.save((err) => {
+        if (err) throw err;
+      });
+
+      await MgCamp.findByIdAndUpdate(
+        camp.camp,
+        {
+          $push: { campSessions: camp.id },
+        },
+        { runValidators: true },
+      );
+
+      return {
+        id: camp.id,
+        camp: campSession.camp,
+        campers: [],
+        waitlist: [],
+        dates: campSession.dates,
+        startTime: campSession.startTime,
+        endTime: campSession.endTime,
+        active: campSession.active,
+      };
+    } catch (error: unknown) {
+      try {
+        await MgCampSession.findByIdAndDelete(camp.id);
+      } catch (rollbackError: unknown) {
+        Logger.error(
+          `Failed to rollback camp session creation error. Reason = ${getErrorMessage(
+            rollbackError,
+          )}`,
+        );
+      }
+
+      Logger.error(
+        `Failed to create CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async updateCampSessionById(
+    campSessionId: string,
+    campSession: UpdateCampSessionDTO,
+  ): Promise<CampSessionDTO> {
+    try {
+      const oldCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
+        campSessionId,
+        {
+          waitlist: campSession.waitlist,
+          dates: campSession.dates,
+          startTime: campSession.startTime,
+          endTime: campSession.endTime,
+          active: campSession.active,
+        },
+        { runValidators: true },
+      );
+
+      if (!oldCamp) {
+        throw new Error(
+          `CampSession with campSessionId ${campSessionId} not found.`,
+        );
+      }
+
+      return {
+        id: campSessionId,
+        camp: oldCamp.camp.toString(),
+        campers: oldCamp.campers.map((camper) => camper.toString()),
+        waitlist: campSession.waitlist,
+        dates: campSession.dates,
+        startTime: campSession.startTime,
+        endTime: campSession.endTime,
+        active: campSession.active,
+      };
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async deleteCampSessionById(campSessionId: string): Promise<void> {
+    try {
+      const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
+      if (!campSession) {
+        throw new Error(
+          `CampSession' with campSessionID ${campSessionId} not found.`,
+        );
+      }
+
+      console.log(campSession.camp);
+      await MgCamp.findByIdAndUpdate(campSession.camp, {
+        $pullAll: { campSessions: [campSession.id] },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete CampSession. Reason = ${getErrorMessage(error)}`,
+      );
       throw error;
     }
   }
