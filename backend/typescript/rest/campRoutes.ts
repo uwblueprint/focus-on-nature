@@ -23,7 +23,7 @@ campRouter.get("/", async (req, res) => {
   }
 });
 
-// Required checks:
+// TODO: Required checks:
 // sort campSession by date
 // dates for campSessions cannot overlap
 // fee cannot change after any campSession is published (?)
