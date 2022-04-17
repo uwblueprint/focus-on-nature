@@ -1,3 +1,4 @@
+import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import {
@@ -22,7 +23,7 @@ export const createCampDtoValidator = async (
 ) => {
   let body;
   try {
-    body = JSON.parse(req.body.body);
+    body = JSON.parse(req.body.data);
   } catch (e: unknown) {
     return res.status(400).send(getErrorMessage(e));
   }
@@ -107,9 +108,11 @@ export const createCampDtoValidator = async (
     return res.status(400).send("waitlist should be empty");
   }
   if (req.file && !validateImageType(req.file.mimetype)) {
+    fs.unlinkSync(req.file.path);
     return res.status(400).send(getImageTypeValidationError(req.file.mimetype));
   }
   if (req.file && !validateImageSize(req.file.size)) {
+    fs.unlinkSync(req.file.path);
     return res.status(400).send(getImageSizeValidationError());
   }
   return next();
