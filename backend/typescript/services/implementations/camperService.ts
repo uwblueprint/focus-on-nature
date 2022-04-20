@@ -1,5 +1,4 @@
 import Stripe from "stripe";
-
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {

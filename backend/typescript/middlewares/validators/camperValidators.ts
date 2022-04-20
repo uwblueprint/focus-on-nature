@@ -241,22 +241,19 @@ export const cancelCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.body.chargeId && !validatePrimitive(req.body.chargeId, "string")) {
+  if (!validatePrimitive(req.body.chargeId, "string")) {
     return res.status(400).send(getApiValidationError("chargeId", "string"));
   }
-  if (req.body.camperIds) {
-    if (req.body.camperIds.length === 0) {
-      return res
-        .status(400)
-        .send("There must be at least one camperId specified.");
-    }
-    for (let i = 0; i < req.body.camperIds.length; i += 1) {
-      if (!validatePrimitive(req.body.camperIds[i], "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("camperIds", "string"));
-      }
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+  for (let i = 0; i < req.body.camperIds.length; i += 1) {
+    if (!validatePrimitive(req.body.camperIds[i], "string")) {
+      return res.status(400).send(getApiValidationError("camperIds", "string"));
     }
   }
+
   return next();
 };
