@@ -1,9 +1,10 @@
+import Stripe from "stripe";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import MgCamp, { CampSession } from "../../models/campSession.model";
+import MgCampSession, { CampSession } from "../../models/campSession.model";
 import {
   CreateCamperDTO,
   CamperDTO,
@@ -15,6 +16,9 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
 const Logger = logger(__filename);
+const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
+  apiVersion: "2020-08-27",
+});
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
@@ -42,7 +46,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           camper.campSession,
           {
             $push: { campers: newCamper.id },
@@ -147,7 +151,9 @@ class CamperService implements ICamperService {
     let waitlistedCamperDtos: Array<WaitlistedCamperDTO> = [];
 
     try {
-      const existingCamp: CampSession | null = await MgCamp.findById(campId)
+      const existingCamp: CampSession | null = await MgCampSession.findById(
+        campId,
+      )
         .populate({
           path: "campers",
           model: MgCamper,
@@ -263,7 +269,7 @@ class CamperService implements ICamperService {
       });
 
       try {
-        existingCamp = await MgCamp.findByIdAndUpdate(
+        existingCamp = await MgCampSession.findByIdAndUpdate(
           waitlistedCamper.campSession,
           {
             $push: { waitlist: newWaitlistedCamper.id },
@@ -328,10 +334,10 @@ class CamperService implements ICamperService {
       oldCamper = await MgCamper.findById(camperId);
 
       if (camper.campSession && oldCamper) {
-        const newCamp: CampSession | null = await MgCamp.findById(
+        const newCamp: CampSession | null = await MgCampSession.findById(
           camper.campSession,
         );
-        const oldCamp: CampSession | null = await MgCamp.findById(
+        const oldCamp: CampSession | null = await MgCampSession.findById(
           oldCamper.campSession,
         );
 
@@ -398,23 +404,46 @@ class CamperService implements ICamperService {
     };
   }
 
-  async deleteCampersByChargeId(chargeId: string): Promise<void> {
+  async deleteCampersByChargeId(
+    chargeId: string,
+    camperIds: string[],
+  ): Promise<void> {
     try {
-      const campers: Array<Camper> = await MgCamper.find({
+      const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
+      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+        camperIds.includes(camper.id),
+      );
+      const camperIdsToBeDeleted = campersToBeDeleted.map(
+        (camper) => camper.id,
+      );
 
-      if (!campers.length) {
-        throw new Error(`Campers with charge ID ${chargeId} not found.`);
+      if (!campersToBeDeleted.length) {
+        throw new Error(
+          `Campers with specified camperIds and charge ID ${chargeId} not found.`,
+        );
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
-        campers[0].campSession,
+      // check if there are any campers that need to be removed but were not found
+      const remainingCamperIds = camperIds.filter(
+        (camperId) => !camperIdsToBeDeleted.includes(camperId),
+      );
+      if (remainingCamperIds.length) {
+        throw new Error(
+          `Failed to find these camper IDs to delete: ${JSON.stringify(
+            remainingCamperIds,
+          )}`,
+        );
+      }
+
+      const camp: CampSession | null = await MgCampSession.findById(
+        campersToBeDeleted[0].campSession,
       );
 
       if (!camp) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].campSession} not found.`,
+          `Campers' camp with campId ${campersToBeDeleted[0].campSession} not found.`,
         );
       }
 
@@ -428,21 +457,35 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30) {
         throw new Error(
-          `Campers' camp with campId ${campers[0].campSession} has a start date in less than 30 days.`,
+          `Campers' camp with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days.`,
         );
       }
 
-      const camperIds = campers.map((camper) => camper.id);
       const oldCamperIds = [...camp.campers]; // clone the full array of campers for rollback
+      // delete camper IDs from the camp
       camp.campers = camp.campers.filter(
-        (camperId) => !camperIds.includes(camperId.toString()),
+        (camperId) => !camperIdsToBeDeleted.includes(camperId.toString()),
       );
       await camp.save();
+
+      // refund before db deletion - a camper should not be deleted if the refund doesn't go through
+      // calculate amount to be refunded
+      let refundAmount = 0;
+      campersToBeDeleted.forEach((camper) => {
+        const { charges } = camper;
+        refundAmount +=
+          charges.camp + charges.earlyDropoff + charges.latePickup;
+      });
+
+      await stripe.refunds.create({
+        charge: chargeId,
+        amount: refundAmount,
+      });
 
       try {
         await MgCamper.deleteMany({
           _id: {
-            $in: camperIds,
+            $in: camperIdsToBeDeleted,
           },
         });
       } catch (mongoDbError: unknown) {
@@ -455,7 +498,7 @@ class CamperService implements ICamperService {
             "Failed to rollback MongoDB camp's updated campers field after deleting camper documents failure. Reason =",
             getErrorMessage(rollbackDbError),
             "MongoDB campers id that could not be deleted =",
-            camperIds,
+            camperIdsToBeDeleted,
           ];
           Logger.error(errorMessage.join(" "));
         }
@@ -478,7 +521,7 @@ class CamperService implements ICamperService {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
-      const camp: CampSession | null = await MgCamp.findById(
+      const camp: CampSession | null = await MgCampSession.findById(
         camper.campSession,
       );
 

@@ -66,18 +66,19 @@ interface ICamperService {
   ): Promise<CamperDTO>;
 
   /**
-   * Delete all campers associated with the charge ID
+   * Delete all campers in camperIds associated with the charge ID
    * @param chargeId the charge ID for the payment
+   * @param camperIds the camper IDs to be deleted
    * @throws Error if camper cancellation fails
    */
-  deleteCampersByChargeId(chargeId: string): void;
+  deleteCampersByChargeId(chargeId: string, camperIds: string[]): Promise<void>;
 
   /**
-   * Delete camper associated with the camper ID
+   * Delete camper associated with the camper ID, without issuing refund
    * @param camperId camper's Id
    * @throws Error if camper cancellation fails
    */
-  deleteCamperById(camperId: string): void;
+  deleteCamperById(camperId: string): Promise<void>;
 }
 
 export default ICamperService;
