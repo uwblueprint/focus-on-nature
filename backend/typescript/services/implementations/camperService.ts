@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -15,6 +16,9 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
 const Logger = logger(__filename);
+const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
+  apiVersion: "2020-08-27",
+});
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
@@ -393,23 +397,46 @@ class CamperService implements ICamperService {
     };
   }
 
-  async deleteCampersByChargeId(chargeId: string): Promise<void> {
+  async deleteCampersByChargeId(
+    chargeId: string,
+    camperIds: string[],
+  ): Promise<void> {
     try {
-      const campers: Array<Camper> = await MgCamper.find({
+      const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
+      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+        camperIds.includes(camper.id),
+      );
+      const camperIdsToBeDeleted = campersToBeDeleted.map(
+        (camper) => camper.id,
+      );
 
-      if (!campers.length) {
-        throw new Error(`Campers with charge ID ${chargeId} not found.`);
+      if (!campersToBeDeleted.length) {
+        throw new Error(
+          `Campers with specified camperIds and charge ID ${chargeId} not found.`,
+        );
+      }
+
+      // check if there are any campers that need to be removed but were not found
+      const remainingCamperIds = camperIds.filter(
+        (camperId) => !camperIdsToBeDeleted.includes(camperId),
+      );
+      if (remainingCamperIds.length) {
+        throw new Error(
+          `Failed to find these camper IDs to delete: ${JSON.stringify(
+            remainingCamperIds,
+          )}`,
+        );
       }
 
       const campSession: CampSession | null = await MgCampSession.findById(
-        campers[0].campSession,
+        campersToBeDeleted[0].campSession,
       );
 
       if (!campSession) {
         throw new Error(
-          `Campers' camp session with campId ${campers[0].campSession} not found.`,
+          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} not found.`,
         );
       }
 
@@ -423,21 +450,35 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30) {
         throw new Error(
-          `Campers' camp session with campSessionId ${campers[0].campSession} has a start date in less than 30 days.`,
+          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days.`,
         );
       }
 
-      const camperIds = campers.map((camper) => camper.id);
       const oldCamperIds = [...campSession.campers]; // clone the full array of campers for rollback
+      // delete camper IDs from the camp
       campSession.campers = campSession.campers.filter(
-        (camperId) => !camperIds.includes(camperId.toString()),
+        (camperId) => !camperIdsToBeDeleted.includes(camperId.toString()),
       );
       await campSession.save();
+
+      // refund before db deletion - a camper should not be deleted if the refund doesn't go through
+      // calculate amount to be refunded
+      let refundAmount = 0;
+      campersToBeDeleted.forEach((camper) => {
+        const { charges } = camper;
+        refundAmount +=
+          charges.camp + charges.earlyDropoff + charges.latePickup;
+      });
+
+      await stripe.refunds.create({
+        charge: chargeId,
+        amount: refundAmount,
+      });
 
       try {
         await MgCamper.deleteMany({
           _id: {
-            $in: camperIds,
+            $in: camperIdsToBeDeleted,
           },
         });
       } catch (mongoDbError: unknown) {
@@ -450,7 +491,7 @@ class CamperService implements ICamperService {
             "Failed to rollback MongoDB camp's updated campers field after deleting camper documents failure. Reason =",
             getErrorMessage(rollbackDbError),
             "MongoDB campers id that could not be deleted =",
-            camperIds,
+            camperIdsToBeDeleted,
           ];
           Logger.error(errorMessage.join(" "));
         }

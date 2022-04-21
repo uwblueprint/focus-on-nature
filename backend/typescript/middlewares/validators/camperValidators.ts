@@ -258,3 +258,27 @@ export const updateCamperDtoValidator = async (
   }
   return next();
 };
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const cancelCamperDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!validatePrimitive(req.body.chargeId, "string")) {
+    return res.status(400).send(getApiValidationError("chargeId", "string"));
+  }
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+  for (let i = 0; i < req.body.camperIds.length; i += 1) {
+    if (!validatePrimitive(req.body.camperIds[i], "string")) {
+      return res.status(400).send(getApiValidationError("camperIds", "string"));
+    }
+  }
+
+  return next();
+};
