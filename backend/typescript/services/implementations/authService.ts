@@ -75,7 +75,7 @@ class AuthService implements IAuthService {
           firstName: googleUser.firstName,
           lastName: googleUser.lastName,
           email: googleUser.email,
-          role: "CampLeader",
+          role: "CampCoordinator",
           active: true,
         },
         googleUser.localId,
