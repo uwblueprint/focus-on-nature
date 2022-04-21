@@ -2,13 +2,15 @@ import * as firebaseAdmin from "firebase-admin";
 
 import IUserService from "../interfaces/userService";
 import MgUser, { User } from "../../models/user.model";
-import MgCampLeader, { CampLeader } from "../../models/campleader.model";
+import MgCampCoordinator, {
+  CampCoordinator,
+} from "../../models/campcoordinator.model";
 import {
   CreateUserDTO,
   Role,
   UpdateUserDTO,
   UserDTO,
-  CampLeaderDTO,
+  CampCoordinatorDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -201,8 +203,8 @@ class UserService implements IUserService {
   async updateUserById(
     userId: string,
     user: UpdateUserDTO,
-  ): Promise<UserDTO | CampLeaderDTO> {
-    let oldUser: User | CampLeader | null;
+  ): Promise<UserDTO | CampCoordinatorDTO> {
+    let oldUser: User | CampCoordinator | null;
 
     oldUser = await MgUser.findById(userId); // getting the user to check their role
 
@@ -213,9 +215,12 @@ class UserService implements IUserService {
     try {
       // must explicitly specify runValidators when updating through findByIdAndUpdate
 
-      if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
-        oldUser = await MgCampLeader.findByIdAndUpdate(
-          { _id: userId, __t: "CampLeader" },
+      if (
+        user.role === "CampCoordinator" ||
+        oldUser.role === "CampCoordinator"
+      ) {
+        oldUser = await MgCampCoordinator.findByIdAndUpdate(
+          { _id: userId, __t: "CampCoordinator" },
           {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -253,16 +258,19 @@ class UserService implements IUserService {
         } catch (error) {
           // rollback MongoDB user updates
           try {
-            if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
-              await MgCampLeader.findByIdAndUpdate(
-                { _id: userId, __t: "CampLeader" },
+            if (
+              user.role === "CampCoordinator" ||
+              oldUser.role === "CampCoordinator"
+            ) {
+              await MgCampCoordinator.findByIdAndUpdate(
+                { _id: userId, __t: "CampCoordinator" },
                 {
                   firstName: oldUser.firstName,
                   lastName: oldUser.lastName,
                   email: oldUser.email,
                   role: oldUser.role,
                   active: oldUser.active,
-                  campSessions: (oldUser as CampLeader).campSessions,
+                  campSessions: (oldUser as CampCoordinator).campSessions,
                 },
                 { runValidators: true },
               );
@@ -297,7 +305,7 @@ class UserService implements IUserService {
       throw error;
     }
 
-    if (user.role === "CampLeader" || oldUser.role === "CampLeader") {
+    if (user.role === "CampCoordinator" || oldUser.role === "CampCoordinator") {
       return {
         id: userId,
         firstName: user.firstName,
