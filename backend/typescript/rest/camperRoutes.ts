@@ -12,6 +12,7 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
+import StripeClient from "../utilities/stripeClient";
 
 const camperRouter: Router = Router();
 
@@ -19,6 +20,8 @@ const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
+  console.log("hi register has been reached");
+
   try {
     const newCamper = await camperService.createCamper({
       firstName: req.body.firstName,
@@ -38,7 +41,24 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
       formResponses: req.body.formResponses,
       charges: req.body.charges,
     });
+    // res.status(201).json(newCamper);
 
+    // let productID: string = "prod_" + req.body.campSession.camp;
+    // let quantity: number = req.body.length;
+
+    let productID: string = "prod_LWKFMHoXWTlJVk";
+    let quantity: number = 2;
+
+    let checkoutSession = await StripeClient.createCheckoutSession(
+      productID,
+      quantity,
+    );
+
+    console.log(checkoutSession.url);
+
+    // if (checkoutSession.url !== null) {
+    //   res.redirect(303, checkoutSession.url);
+    // }
     res.status(201).json(newCamper);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });

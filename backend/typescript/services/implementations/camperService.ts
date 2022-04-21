@@ -1,5 +1,3 @@
-import Stripe from "stripe"; 
-
 import { stringify } from "querystring";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
@@ -18,11 +16,6 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
 const Logger = logger(__filename);
-const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
-  apiVersion: "2020-08-27",
-});
-
-const YOUR_DOMAIN = 'http://localhost:4242';
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
@@ -47,19 +40,6 @@ class CamperService implements ICamperService {
         chargeId: camper.chargeId,
         formResponses: camper.formResponses,
         charges: camper.charges,
-      });
-
-      const session = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-            price: 'price_1KhfmWJBIcYylc2BSzfUaFyC',
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${YOUR_DOMAIN}/success.html`,
-        cancel_url: `${YOUR_DOMAIN}/cancel.html`,
       });
 
       try {
