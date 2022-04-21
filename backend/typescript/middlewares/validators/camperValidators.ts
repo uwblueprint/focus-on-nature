@@ -14,15 +14,15 @@ export const createCampersDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let campSession: string;
-  let chargeId: string;
   if (req.body.length === 0) {
     return res
       .status(400)
-      .send("No campers sent - there must be at least one camper in the request.");
+      .send(
+        "No campers sent - there must be at least one camper in the request.",
+      );
   }
-  campSession = req.body[0].campSession;
-  chargeId = req.body[0].chargeId;
+  const { campSession } = req.body[0];
+  const { chargeId } = req.body[0];
 
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
