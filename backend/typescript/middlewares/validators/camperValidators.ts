@@ -14,8 +14,8 @@ export const createCampersDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let campSession = "";
-  let chargeId = "";
+  let campSession: string;
+  let chargeId: string;
   if (req.body.length > 0) {
     campSession = req.body[0].campSession;
     chargeId = req.body[0].chargeId;
