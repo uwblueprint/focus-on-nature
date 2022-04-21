@@ -1,4 +1,7 @@
 import { Schema } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+import ICampService from "../interfaces/campService";
+import IFileStorageService from "../interfaces/fileStorageService";
 import {
   CreateCampDTO,
   CamperCSVInfoDTO,
@@ -10,7 +13,6 @@ import {
   CreateCampSessionDTO,
 } from "../../types";
 
-import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
@@ -22,6 +24,12 @@ import MgCamper, { Camper } from "../../models/camper.model";
 const Logger = logger(__filename);
 
 class CampService implements ICampService {
+  storageService: IFileStorageService;
+
+  constructor(storageService: IFileStorageService) {
+    this.storageService = storageService;
+  }
+
   /* eslint-disable class-methods-use-this */
   async getCamps(): Promise<GetCampDTO[]> {
     try {
@@ -84,6 +92,21 @@ class CampService implements ICampService {
   }
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
+    const fileName = camp.filePath ? uuidv4() : "";
+    try {
+      if (camp.filePath) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      }
+    } catch (error) {
+      Logger.error(
+        `Failed to create image. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
     const newCamp: Camp = new MgCamp({
       name: camp.name,
       ageLower: camp.ageLower,
@@ -94,7 +117,9 @@ class CampService implements ICampService {
       fee: camp.fee,
       formQuestions: [],
       campSessions: [],
+      ...(camp.filePath && { fileName }),
     });
+
     try {
       /* eslint no-underscore-dangle: 0 */
       if (camp.formQuestions) {
@@ -128,11 +153,8 @@ class CampService implements ICampService {
           }),
         );
       }
-
       await newCamp.save();
     } catch (error: unknown) {
-      // rollback incomplete camp creation
-
       try {
         newCamp.formQuestions.forEach((formQuestionID) =>
           MgFormQuestion.findByIdAndDelete(formQuestionID),
@@ -149,7 +171,6 @@ class CampService implements ICampService {
           )}`,
         );
       }
-
       Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
@@ -167,6 +188,7 @@ class CampService implements ICampService {
       formQuestions: newCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
+      fileName: newCamp.fileName,
     };
   }
 

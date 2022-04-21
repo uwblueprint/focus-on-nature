@@ -1,4 +1,8 @@
+import fs from "fs";
+import multer from "multer";
 import { Router } from "express";
+import FileStorageService from "../services/implementations/fileStorageService";
+import IFileStorageService from "../services/interfaces/fileStorageService";
 import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
@@ -9,10 +13,16 @@ import {
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
 
+const upload = multer({ dest: "uploads/" });
+
 const campRouter: Router = Router();
 
-const campService: ICampService = new CampService();
+const defaultBucket = process.env.FIREBASE_STORAGE_DEFAULT_BUCKET || "";
+const fileStorageService: IFileStorageService = new FileStorageService(
+  defaultBucket,
+);
 
+const campService: ICampService = new CampService(fileStorageService);
 /* Get all camps */
 campRouter.get("/", async (req, res) => {
   try {
@@ -29,26 +39,35 @@ campRouter.get("/", async (req, res) => {
 // fee cannot change after any campSession is published (?)
 
 /* Create a camp */
-campRouter.post("/", createCampDtoValidator, async (req, res) => {
-  // TODO: remove formQuestions and campSessions field
-  try {
-    const newCamp = await campService.createCamp({
-      ageLower: req.body.ageLower,
-      ageUpper: req.body.ageUpper,
-      name: req.body.name,
-      description: req.body.description,
-      location: req.body.location,
-      capacity: req.body.capacity,
-      fee: req.body.fee,
-      formQuestions: req.body.formQuestions,
-      campSessions: req.body.campSessions,
-    });
-
-    res.status(200).json(newCamp);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+campRouter.post(
+  "/",
+  upload.single("file"),
+  createCampDtoValidator,
+  async (req, res) => {
+    try {
+      const body = JSON.parse(req.body.data);
+      const newCamp = await campService.createCamp({
+        ageLower: body.ageLower,
+        ageUpper: body.ageUpper,
+        name: body.name,
+        description: body.description,
+        location: body.location,
+        capacity: body.capacity,
+        fee: body.fee,
+        formQuestions: body.formQuestions,
+        campSessions: body.campSessions,
+        filePath: req.file?.path,
+        fileContentType: req.file?.mimetype,
+      });
+      if (req.file?.path) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(201).json(newCamp);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Update a camp */
 campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {

@@ -13,6 +13,7 @@ export interface Camp extends Document {
   fee: number;
   formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
   campSessions: (Schema.Types.ObjectId | CampSession)[];
+  fileName?: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -60,6 +61,10 @@ const CampSchema: Schema = new Schema({
       },
     ],
     default: [],
+  },
+  fileName: {
+    type: String,
+    required: false,
   },
 });
 
