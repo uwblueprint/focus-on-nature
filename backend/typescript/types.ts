@@ -102,6 +102,7 @@ export type CampDTO = {
   fee: number;
   formQuestions: string[];
   campSessions: string[];
+  fileName?: string;
 };
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
@@ -118,6 +119,8 @@ export type CreateCampDTO = Omit<
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
   campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
+  filePath?: string;
+  fileContentType?: string;
 };
 
 export type CreateCamperDTO = Omit<CamperDTO, "id">;
