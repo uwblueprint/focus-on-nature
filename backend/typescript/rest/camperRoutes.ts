@@ -128,18 +128,15 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
     const campers = req.body as CreateCampersDTO;
     const newCampers = await camperService.createCampers(campers);
 
-    // temp
     let campSession: CampSession | null = await MgCampSession.findById(
-      req.body.campSession,
+      req.body[0].campSession,
     );
+
     let priceId: string;
     campSession ? (priceId = campSession.priceId) : (priceId = "");
-    let quantity: number = 1;
 
-    // ** proper values with multiple children registration **
-    // let priceID: string = "price_" + req.body[0].campSession.priceId
-    // let quantity: number = Object.keys(req.body).length;
-    // console.log(quantity);
+    let quantity: number = Object.keys(req.body).length;
+    console.log(quantity);
 
     let checkoutSession = await StripeClient.createCheckoutSession(
       priceId,
