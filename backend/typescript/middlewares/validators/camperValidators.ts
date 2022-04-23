@@ -21,8 +21,7 @@ export const createCampersDtoValidator = async (
         "No campers sent - there must be at least one camper in the request.",
       );
   }
-  const { campSession } = req.body[0];
-  const { chargeId } = req.body[0];
+  const { campSession, chargeId } = req.body[0];
 
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
