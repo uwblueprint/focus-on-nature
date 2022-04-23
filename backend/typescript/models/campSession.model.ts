@@ -11,6 +11,7 @@ export interface CampSession extends Document {
   startTime: string;
   endTime: string;
   active: boolean;
+  priceId: string; 
 }
 
 const CampSessionSchema: Schema = new Schema({
@@ -53,6 +54,10 @@ const CampSessionSchema: Schema = new Schema({
     type: Boolean,
     required: true,
   },
+  priceId: {
+    type: String,
+    required: true, 
+  }
 });
 
 export default model<CampSession>("CampSession", CampSessionSchema);
