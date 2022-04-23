@@ -75,6 +75,12 @@ const CampSchema: Schema = new Schema({
   productId: {
     type: String,
   },
+  dropOffProductId: {
+    type: String,
+  },
+  pickUpProductId: {
+    type: String,
+  },
 });
 
 export default model<Camp>("Camp", CampSchema);
