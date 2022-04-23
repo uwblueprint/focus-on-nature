@@ -123,7 +123,7 @@ export type CreateCampDTO = Omit<
   fileContentType?: string;
 };
 
-export type CreateCamperDTO = Omit<CamperDTO, "id">;
+export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 

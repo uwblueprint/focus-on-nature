@@ -2,7 +2,8 @@ import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
 import {
-  createCamperDtoValidator,
+  cancelCamperDtoValidator,
+  createCampersDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
 // eslint-disable-next-line import/no-named-as-default
@@ -10,7 +11,7 @@ import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO, WaitlistedCamperDTO } from "../types";
+import { CamperDTO, CreateCampersDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 import StripeClient from "../utilities/stripeClient";
 
@@ -122,26 +123,10 @@ camperRouter.post(
 );
 
 /* Create a camper */
-camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
+camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
-    const newCamper = await camperService.createCamper({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      age: req.body.age,
-      allergies: req.body.allergies,
-      hasCamera: req.body.hasCamera,
-      hasLaptop: req.body.hasLaptop,
-      earlyDropoff: req.body.earlyDropoff,
-      latePickup: req.body.latePickup,
-      specialNeeds: req.body.specialNeeds,
-      contacts: req.body.contacts,
-      campSession: req.body.campSession,
-      registrationDate: req.body.registrationDate,
-      hasPaid: req.body.hasPaid,
-      chargeId: req.body.chargeId,
-      formResponses: req.body.formResponses,
-      charges: req.body.charges,
-    });
+    const campers = req.body as CreateCampersDTO;
+    const newCampers = await camperService.createCampers(campers);
 
     // temp
     let campSession: CampSession | null = await MgCampSession.findById(
@@ -168,7 +153,7 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
     //   res.redirect(303, checkoutSession.url);
     // }
 
-    res.status(201).json(newCamper);
+    res.status(201).json(newCampers);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
@@ -282,10 +267,13 @@ camperRouter.put(
   },
 );
 
-/* Delete all campers with the chargeId */
-camperRouter.delete("/cancel/:chargeId", async (req, res) => {
+/* Delete list of campers with the chargeId */
+camperRouter.delete("/cancel", cancelCamperDtoValidator, async (req, res) => {
   try {
-    await camperService.deleteCampersByChargeId(req.params.chargeId);
+    await camperService.deleteCampersByChargeId(
+      req.body.chargeId,
+      req.body.camperIds,
+    );
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
