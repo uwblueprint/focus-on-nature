@@ -10,11 +10,14 @@ export interface Camp extends Document {
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
   fee: number;
+  dropOffAndPickUpFee: number;
   fileName?: string;
   formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
   location: string;
   name: string;
   productId: string;
+  dropOffProductId: string;
+  pickUpProductId: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -42,6 +45,10 @@ const CampSchema: Schema = new Schema({
     type: String,
   },
   fee: {
+    type: Number,
+    required: true,
+  },
+  dropOffAndPickUpFee: {
     type: Number,
     required: true,
   },
