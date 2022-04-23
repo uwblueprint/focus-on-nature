@@ -37,7 +37,7 @@ app.use("/auth", authRouter);
 app.use("/entities", entityRouter);
 app.use("/users", userRouter);
 app.use("/camp", campRouter);
-app.use("/camper", camperRouter);
+app.use("/campers", camperRouter);
 app.use("/admin", adminRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
