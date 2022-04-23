@@ -14,14 +14,115 @@ import { CamperDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 import StripeClient from "../utilities/stripeClient";
 
-const camperRouter: Router = Router();
+import MgCampSession, { CampSession } from "../models/campSession.model";
 
+import Stripe from "stripe";
+
+const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
+  apiVersion: "2020-08-27",
+});
+
+const endpointSecret = new Stripe(
+  process.env.STRIPE_SECRET_ENDPOINT_KEY ?? "",
+  {
+    apiVersion: "2020-08-27",
+  },
+);
+
+const bodyParser = require("body-parser");
+
+const fulfillOrder = (session: Stripe.Event.Data.Object) => {
+  // TODO: fill me in
+  console.log("Fulfilling order", session);
+};
+
+const createOrder = (session: Stripe.Event.Data.Object) => {
+  // TODO: fill me in
+  console.log("Creating order", session);
+};
+
+const emailCustomerAboutFailedPayment = (session: Stripe.Event.Data.Object) => {
+  // TODO: fill me in
+  console.log("Emailing customer", session);
+};
+
+camperRouter.post(
+  "/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  (req, res) => {
+    const payload = req.body;
+    const sig = req.headers["stripe-signature"];
+
+    console.log("Got payload: " + payload);
+    console.log("sig: " + sig);
+
+    let event;
+
+    try {
+      if (sig) {
+        event = stripe.webhooks.constructEvent(
+          payload,
+          sig,
+          endpointSecret.toString(),
+        );
+      } else {
+        console.log("no sig");
+      }
+    } catch (error: unknown) {
+      return res.status(400).send(`Webhook Error: ${error}`);
+    }
+
+    console.log("event: " + event);
+
+    if (event) {
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session: Stripe.Event.Data.Object = event.data.object;
+          // Save an order in your database, marked as 'awaiting payment'
+          console.log("hi");
+          createOrder(session); // put these functions in camper service
+
+          // Check if the order is paid (for example, from a card payment)
+          //
+          // A delayed notification payment will have an `unpaid` status, as
+          // you're still waiting for funds to be transferred from the customer's
+          // account.
+          if (Object(session).payment === "paid") {
+            fulfillOrder(session);
+          }
+
+          break;
+        }
+
+        case "checkout.session.async_payment_succeeded": {
+          const session = event.data.object;
+
+          // Fulfill the purchase...
+          fulfillOrder(session);
+
+          break;
+        }
+
+        case "checkout.session.async_payment_failed": {
+          const session = event.data.object;
+
+          // Send an email to the customer asking them to retry their order
+          emailCustomerAboutFailedPayment(session);
+
+          break;
+        }
+      }
+    }
+
+    res.status(200);
+  },
+);
 
 /* Create a camper */
 camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
-  console.log("hi register has been reached");
-
   try {
     const newCamper = await camperService.createCamper({
       firstName: req.body.firstName,
@@ -41,24 +142,32 @@ camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
       formResponses: req.body.formResponses,
       charges: req.body.charges,
     });
-    // res.status(201).json(newCamper);
 
-    // let productID: string = "prod_" + req.body.campSession.camp;
-    // let quantity: number = req.body.length;
+    // temp
+    let campSession: CampSession | null = await MgCampSession.findById(
+      req.body.campSession,
+    );
+    let priceId: string;
+    campSession ? (priceId = campSession.priceId) : (priceId = "");
+    let quantity: number = 1;
 
-    let productID: string = "prod_LWKFMHoXWTlJVk";
-    let quantity: number = 2;
+    // ** proper values with multiple children registration **
+    // let priceID: string = "price_" + req.body[0].campSession.priceId
+    // let quantity: number = Object.keys(req.body).length;
+    // console.log(quantity);
 
     let checkoutSession = await StripeClient.createCheckoutSession(
-      productID,
+      priceId,
       quantity,
     );
 
     console.log(checkoutSession.url);
 
+    // ** expected behavior - redirect to the checkoutSession.url **
     // if (checkoutSession.url !== null) {
     //   res.redirect(303, checkoutSession.url);
     // }
+
     res.status(201).json(newCamper);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
