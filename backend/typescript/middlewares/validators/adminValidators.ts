@@ -39,12 +39,9 @@ export const formTemplateUpdateValidator = async (
   next: NextFunction,
 ) => {
   if (
-    req.body.formQuestions &&
-    Array.isArray(req.body.formQuestions) &&
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    !req.body.formQuestions.every((formQuestion: { [key: string]: any }) => {
-      return validateFormQuestion(formQuestion);
-    })
+    !req.body.formQuestions ||
+    !Array.isArray(req.body.formQuestions) ||
+!req.body.formQuestions.every(validateFormQuestion(formQuestion))
   ) {
     return res
       .status(400)
