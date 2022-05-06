@@ -4,7 +4,9 @@ import { FormQuestionDTO, FormTemplateDTO, WaiverDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import formTemplateModel from "../../models/formTemplate.model";
+/* eslint-disable import/no-duplicates */
 import formQuestionModel from "../../models/formQuestion.model";
+import MgFormQuestion from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
 
@@ -79,7 +81,7 @@ class AdminService implements IAdminService {
       formTemplateDTO = await this.getFormTemplate();
     } catch (error: unknown) {
       Logger.error(
-        `Failed to update waiver. Reason: ${getErrorMessage(error)}`,
+        `Failed to update form template. Reason: ${getErrorMessage(error)}`,
       );
       throw error;
     }
@@ -90,8 +92,10 @@ class AdminService implements IAdminService {
     let formTemplateDTO: FormTemplateDTO | null;
     let form: FormTemplateDTO | null;
     try {
-      form = await formTemplateModel.findOne();
-      console.log(form?.formQuestions);
+      form = await formTemplateModel.findOne().populate({
+        path: "formQuestions",
+        model: MgFormQuestion,
+      });
       if (!form) {
         throw new Error(`Form not found.`);
       }
@@ -99,7 +103,9 @@ class AdminService implements IAdminService {
         formQuestions: form.formQuestions,
       };
     } catch (error: unknown) {
-      Logger.error(`Failed to get waiver. Reason = ${getErrorMessage(error)}`);
+      Logger.error(
+        `Failed to get form template. Reason = ${getErrorMessage(error)}`,
+      );
       throw error;
     }
     return formTemplateDTO;

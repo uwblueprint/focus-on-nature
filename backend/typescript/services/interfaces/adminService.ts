@@ -16,14 +16,14 @@ interface IAdminService {
   getWaiver(): Promise<WaiverDTO>;
   /**
    * Creates a new form template or updates it if it already exists.
-   * @returns A WaiverDTO that contains the waiver.
-   * @throws Error if waiver retrieval fails.
+   * @returns A FormTemplateDTO that contains the waiver.
+   * @throws Error if form template retrieval fails.
    */
   updateFormTemplate(form: FormTemplateDTO): Promise<FormTemplateDTO>;
   /**
    * Get the form.
-   * @returns A WaiverDTO that contains the waiver.
-   * @throws Error if waiver retrieval fails.
+   * @returns A FormTemplateDTO that contains the waiver.
+   * @throws Error if form template retrieval fails.
    */
   getFormTemplate(): Promise<FormTemplateDTO>;
 }
