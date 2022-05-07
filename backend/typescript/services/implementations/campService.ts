@@ -1,10 +1,12 @@
+import { v4 as uuidv4 } from "uuid";
+import ICampService from "../interfaces/campService";
+import IFileStorageService from "../interfaces/fileStorageService";
 import {
   CreateCampDTO,
   CampDTO,
   CamperCSVInfoDTO,
   GetCampDTO,
 } from "../../types";
-import ICampService from "../interfaces/campService";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
@@ -16,6 +18,12 @@ import MgCamper, { Camper } from "../../models/camper.model";
 const Logger = logger(__filename);
 
 class CampService implements ICampService {
+  storageService: IFileStorageService;
+
+  constructor(storageService: IFileStorageService) {
+    this.storageService = storageService;
+  }
+
   /* eslint-disable class-methods-use-this */
   async getCamps(): Promise<GetCampDTO[]> {
     try {
@@ -153,6 +161,14 @@ class CampService implements ICampService {
     let newCamp: Camp;
 
     try {
+      const fileName = camp.filePath ? uuidv4() : "";
+      if (camp.filePath) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      }
       newCamp = new MgCamp({
         name: camp.name,
         ageLower: camp.ageLower,
@@ -162,6 +178,7 @@ class CampService implements ICampService {
         location: camp.location,
         fee: camp.fee,
         formQuestions: [],
+        ...(camp.filePath && { fileName }),
       });
       /* eslint no-underscore-dangle: 0 */
       await Promise.all(
@@ -239,6 +256,7 @@ class CampService implements ICampService {
       formQuestions: newCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
+      fileName: newCamp.fileName,
     };
   }
 

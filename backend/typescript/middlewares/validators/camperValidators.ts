@@ -14,12 +14,15 @@ export const createCampersDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let campSession = "";
-  let chargeId = "";
-  if (req.body.length > 0) {
-    campSession = req.body[0].campSession;
-    chargeId = req.body[0].chargeId;
+  if (req.body.length === 0) {
+    return res
+      .status(400)
+      .send(
+        "No campers sent - there must be at least one camper in the request.",
+      );
   }
+  const { campSession, chargeId } = req.body[0];
+
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
     if (!validatePrimitive(camper.campSession, "string")) {
@@ -252,5 +255,29 @@ export const updateCamperDtoValidator = async (
   if (req.body.hasPaid && !validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
   }
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const cancelCamperDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!validatePrimitive(req.body.chargeId, "string")) {
+    return res.status(400).send(getApiValidationError("chargeId", "string"));
+  }
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+  for (let i = 0; i < req.body.camperIds.length; i += 1) {
+    if (!validatePrimitive(req.body.camperIds[i], "string")) {
+      return res.status(400).send(getApiValidationError("camperIds", "string"));
+    }
+  }
+
   return next();
 };

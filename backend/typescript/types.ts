@@ -1,4 +1,4 @@
-export type Role = "Admin" | "CampLeader";
+export type Role = "Admin" | "CampCoordinator";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
@@ -27,7 +27,7 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
-export type CampLeaderDTO = UserDTO & { campSessions: string[] };
+export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
   id: string;
@@ -102,6 +102,7 @@ export type CampDTO = {
   fee: number;
   formQuestions: string[];
   campSessions: string[];
+  fileName?: string;
 };
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
@@ -118,6 +119,8 @@ export type CreateCampDTO = Omit<
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
   campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
+  filePath?: string;
+  fileContentType?: string;
 };
 
 export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;

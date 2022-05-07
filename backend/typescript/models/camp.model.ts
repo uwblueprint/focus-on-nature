@@ -7,12 +7,14 @@ export interface Camp extends Document {
   ageLower: number;
   ageUpper: number;
   capacity: number;
-  name: string;
-  description: string;
-  location: string;
-  fee: number;
-  formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
   campSessions: (Schema.Types.ObjectId | CampSession)[];
+  description: string;
+  fee: number;
+  fileName?: string;
+  formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
+  location: string;
+  name: string;
+  productId: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -28,20 +30,23 @@ const CampSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
+  campSessions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "CampSession",
+      },
+    ],
   },
   description: {
     type: String,
   },
-  location: {
-    type: String,
-    required: true,
-  },
   fee: {
     type: Number,
     required: true,
+  },
+  fileName: {
+    type: String,
   },
   formQuestions: {
     type: [
@@ -52,13 +57,16 @@ const CampSchema: Schema = new Schema({
     ],
     required: true,
   },
-  campSessions: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "CampSession",
-      },
-    ],
+  location: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  productId: {
+    type: String,
   },
 });
 
