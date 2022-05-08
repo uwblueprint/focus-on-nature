@@ -71,18 +71,20 @@ class CamperService implements ICamperService {
           newCampers.map(camper => {
             campFees += camper.charges.camp
             earlyDropoffAndLatePickUp += camper.charges.earlyDropoff + camper.charges.latePickup
-            if(camper.specialNeeds) {
+            if(camper.specialNeeds && camp) {
               specialNeedsCamper = {camperName: camper.firstName + " "+camper.lastName, campName: camp.name, sessionDates: sessionDatesToString(existingCampSession?.dates), registrantName: camper.contacts[0].firstName + " "+camper.contacts[0].lastName, registrantEmail: camper.contacts[0].email, registrantPhoneNumber: camper.contacts[0].phoneNumber, specialNeeds: camper.specialNeeds}
             }
             emailServiceCampers.push({name: camper.firstName + " "+camper.lastName, age: camper.age})
           })
           totalPayment += campFees + earlyDropoffAndLatePickUp
           
-          await emailService.sendConfirmationEmail(newCampers[0].contacts[0].email, newCampers[0].contacts[0].firstName +" "+newCampers[0].contacts[0].lastName, camp.name, camp.location, sessionDatesToString(existingCampSession.dates), emailServiceCampers, newCampers[0].contacts[0].phoneNumber, camp.fee, campFees, earlyDropoffAndLatePickUp, totalPayment, "stub link")
-          if(specialNeedsCamper) {
+          if(camp) {
+            await emailService.sendConfirmationEmail(newCampers[0].contacts[0].email, newCampers[0].contacts[0].firstName +" "+newCampers[0].contacts[0].lastName, camp.name, camp.location, sessionDatesToString(existingCampSession.dates), emailServiceCampers, newCampers[0].contacts[0].phoneNumber, camp.fee, campFees, earlyDropoffAndLatePickUp, totalPayment, "stub link")
+          }
+          if(specialNeedsCamper && camp) {
             await emailService.sendSpecialNeedsNoticeEmail("admin@focusonnature.ca", specialNeedsCamper.camperName, specialNeedsCamper.campName, specialNeedsCamper.sessionDates, specialNeedsCamper.camperName, specialNeedsCamper.registrantEmail, specialNeedsCamper.registrantPhoneNumber, specialNeedsCamper.specialNeeds)
           }
-          if(existingCampSession.campers.length >= camp.capacity) {
+          if(camp && existingCampSession.campers.length >= camp.capacity) {
             await emailService.sendFullCampNoticeEmail("admin@focusonnature.ca", camp.name, sessionDatesToString(existingCampSession.dates))
           }
 
@@ -314,7 +316,9 @@ class CamperService implements ICamperService {
           throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
         let camp = await MgCamp.findById(existingCampSession.camp)
-        await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, camp.name, camp.location, existingCampSession.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
+        if(camp) {
+          await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, camp.name, camp.location, existingCampSession.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
+        }
       } catch (mongoDbError: unknown) {
         // rollback user creation
         try {
@@ -525,8 +529,10 @@ class CamperService implements ICamperService {
         });
         let deletedCamper = await MgCamper.findById(chargeId);
         let camp = await MgCamp.findById(campSession.camp)
-        await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
-        await emailService.sendCancellationConfirmationEmail(deletedCamper.contacts[0].email, deletedCamper.contacts[0].firstName + " " + deletedCamper.contacts[0].lastName)
+        if(camp && deletedCamper) {
+          await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
+          await emailService.sendCancellationConfirmationEmail(deletedCamper.contacts[0].email, deletedCamper.contacts[0].firstName + " " + deletedCamper.contacts[0].lastName)
+        }
       } catch (mongoDbError: unknown) {
         // could not delete users, rollback camp's camper deletions
         try {
@@ -583,7 +589,9 @@ class CamperService implements ICamperService {
         });
         let deletedCamper = await MgCamper.findById(camperId);
         let camp = await MgCamp.findById(campSession.camp)
-        await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
+        if(camp && deletedCamper) {
+          await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
+        }
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {
