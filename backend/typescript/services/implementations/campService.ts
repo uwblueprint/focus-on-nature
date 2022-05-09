@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
 import ICampService from "../interfaces/campService";
 import IFileStorageService from "../interfaces/fileStorageService";
@@ -16,6 +17,12 @@ import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 
 const Logger = logger(__filename);
+const stripe = new Stripe(
+  "sk_test_51Ke4wfJBIcYylc2BQKIlV4ab3Z1Uy1cFMGf3evNQ7YzrYuE38uIbtqhTQQCIHNpftV0Pur5prTj7fcsC1eQHbWA0000LFDOGCG",
+  {
+    apiVersion: "2020-08-27",
+  },
+);
 
 class CampService implements ICampService {
   storageService: IFileStorageService;
@@ -210,9 +217,57 @@ class CampService implements ICampService {
       );
 
       try {
-        await newCamp.save((err) => {
-          if (err) throw err;
-        });
+        await newCamp.save();
+        // creating stripe product
+        if (
+          camp.campSessions
+            .map((campSession) => campSession.active)
+            .some((active) => active)
+        ) {
+          const campStripeProduct = await stripe.products.create({
+            name: camp.name,
+            description: camp.description,
+          });
+
+          const dropOffStripeProduct = await stripe.products.create({
+            name: "Early drop off charges",
+          });
+
+          const pickUpStripeProduct = await stripe.products.create({
+            name: "Late pick up charges",
+          });
+          await MgCamp.findByIdAndUpdate(newCamp.id, {
+            productId: campStripeProduct.id,
+            dropOffProductId: dropOffStripeProduct.id,
+            pickUpProductId: pickUpStripeProduct.id,
+          });
+          camp.campSessions.forEach(async (campSession, idx) => {
+            if (!campSession.active) return;
+            const campSessionFeeInCents =
+              camp.fee * campSession.dates.length * 100;
+            const priceObject = await stripe.prices.create({
+              product: campStripeProduct.id,
+              currency: "cad",
+              unit_amount: campSessionFeeInCents,
+            });
+            const dropOffPriceObject = await stripe.prices.create({
+              product: dropOffStripeProduct.id,
+              currency: "cad",
+              unit_amount: newCamp.dropOffAndPickUpFee,
+            });
+            const pickUpPriceObject = await stripe.prices.create({
+              product: pickUpStripeProduct.id,
+              currency: "cad",
+              unit_amount: newCamp.dropOffAndPickUpFee,
+            });
+
+            await MgCampSession.findByIdAndUpdate(newCamp.campSessions[idx], {
+              priceId: priceObject.id,
+              dropOffPriceId: dropOffStripeProduct.id,
+              pickUpPriceId: pickUpPriceObject.id,
+            });
+          });
+        }
       } catch (error: unknown) {
         // rollback incomplete camp creation
 
