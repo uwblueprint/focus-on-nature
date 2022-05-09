@@ -17,12 +17,9 @@ import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 
 const Logger = logger(__filename);
-const stripe = new Stripe(
-  "sk_test_51Ke4wfJBIcYylc2BQKIlV4ab3Z1Uy1cFMGf3evNQ7YzrYuE38uIbtqhTQQCIHNpftV0Pur5prTj7fcsC1eQHbWA0000LFDOGCG",
-  {
-    apiVersion: "2020-08-27",
-  },
-);
+const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
+  apiVersion: "2020-08-27",
+});
 
 class CampService implements ICampService {
   storageService: IFileStorageService;
