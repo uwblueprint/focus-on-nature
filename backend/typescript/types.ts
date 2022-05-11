@@ -138,7 +138,11 @@ export type UpdateCampSessionDTO = Omit<
   "id" | "camp" | "campers" | "waitlist"
 >;
 
+<<<<<<< HEAD
 export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
+=======
+export type CreateCamperDTO = Omit<CamperDTO, "id">;
+>>>>>>> cce328408406c7e5b7e12c230e8ab08f6946e80d
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
