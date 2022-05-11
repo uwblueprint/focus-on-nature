@@ -91,93 +91,6 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
-    const newCamp: Camp = new MgCamp({
-      name: camp.name,
-      ageLower: camp.ageLower,
-      ageUpper: camp.ageUpper,
-      capacity: camp.capacity,
-      description: camp.description,
-      location: camp.location,
-      fee: camp.fee,
-      formQuestions: [],
-      campSessions: [],
-    });
-    try {
-      /* eslint no-underscore-dangle: 0 */
-      if (camp.formQuestions) {
-        await Promise.all(
-          camp.formQuestions.map(async (formQuestion, i) => {
-            const question = await MgFormQuestion.create({
-              type: formQuestion.type,
-              question: formQuestion.question,
-              required: formQuestion.required,
-              description: formQuestion.description,
-              options: formQuestion.options,
-            });
-            newCamp.formQuestions[i] = question._id;
-          }),
-        );
-      }
-
-      if (camp.campSessions) {
-        await Promise.all(
-          camp.campSessions.map(async (campSession, i) => {
-            const session = await MgCampSession.create({
-              camp: newCamp,
-              campers: [],
-              waitlist: [],
-              startTime: campSession.startTime,
-              endTime: campSession.endTime,
-              dates: campSession.dates,
-              active: campSession.active,
-            });
-            newCamp.campSessions[i] = session._id;
-          }),
-        );
-      }
-
-      await newCamp.save();
-    } catch (error: unknown) {
-      // rollback incomplete camp creation
-
-      try {
-        newCamp.formQuestions.forEach((formQuestionID) =>
-          MgFormQuestion.findByIdAndDelete(formQuestionID),
-        );
-        newCamp.campSessions.forEach((campSessionID) =>
-          MgCampSession.findByIdAndDelete(campSessionID),
-        );
-
-        MgCamp.findByIdAndDelete(newCamp.id);
-      } catch (rollbackError: unknown) {
-        Logger.error(
-          `Failed to rollback camp creation error. Reason = ${getErrorMessage(
-            rollbackError,
-          )}`,
-        );
-      }
-
-      Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
-      throw error;
-    }
-
-    return {
-      id: newCamp.id,
-      ageLower: newCamp.ageLower,
-      ageUpper: newCamp.ageUpper,
-      campSessions: newCamp.campSessions.map((session) => session.toString()),
-      capacity: newCamp.capacity,
-      name: newCamp.name,
-      description: newCamp.description,
-      location: newCamp.location,
-      fee: newCamp.fee,
-      formQuestions: newCamp.formQuestions.map((formQuestion) =>
-        formQuestion.toString(),
-      ),
-    };
-  }
-
   async updateCamp(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
 
@@ -218,6 +131,7 @@ class CampService implements ICampService {
   }
 
   async createCampSession(
+    // bulk create
     campId: string,
     campSession: CreateCampSessionDTO,
   ): Promise<CampSessionDTO> {
@@ -453,6 +367,7 @@ class CampService implements ICampService {
         formQuestions: [],
         ...(camp.filePath && { fileName }),
       });
+
       /* eslint no-underscore-dangle: 0 */
       await Promise.all(
         camp.formQuestions.map(async (formQuestion, i) => {
@@ -483,9 +398,7 @@ class CampService implements ICampService {
       );
 
       try {
-        await newCamp.save((err) => {
-          if (err) throw err;
-        });
+        await newCamp.save();
       } catch (error: unknown) {
         // rollback incomplete camp creation
 
@@ -533,44 +446,23 @@ class CampService implements ICampService {
     };
   }
 
-  async deleteCampSessionById(campSessionId: string): Promise<void> {
-    try {
-      const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
-      if (!campSession) {
-        throw new Error(
-          `CampSession' with campSessionID ${campSessionId} not found.`,
-        );
-      }
-      await MgCamp.findByIdAndUpdate(campSession.camp, {
-        $pullAll: { campSessions: [campSession.id] },
-      });
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to delete CampSession. Reason = ${getErrorMessage(error)}`,
-      );
-      throw error;
-    }
-  }
-
   async editCampSessionById(
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO> {
     try {
-      const oldCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
+      const newCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
-          campers: campSession.campers,
-          waitlist: campSession.waitlist,
           dates: campSession.dates,
           startTime: campSession.startTime,
           endTime: campSession.endTime,
           active: campSession.active,
         },
-        { runValidators: true },
+        { runValidators: true, new: true },
       );
 
-      if (!oldCamp) {
+      if (!newCamp) {
         throw new Error(
           `CampSession with campSessionId ${campSessionId} not found.`,
         );
@@ -584,13 +476,13 @@ class CampService implements ICampService {
 
       return {
         id: campSessionId,
-        camp: oldCamp.camp.toString(),
-        campers: campSession.campers,
-        waitlist: campSession.waitlist,
-        dates: campSession.dates,
-        startTime: campSession.startTime,
-        endTime: campSession.endTime,
-        active: campSession.active,
+        camp: newCamp.camp.toString(),
+        campers: newCamp.campers.map((camper) => camper.toString()),
+        waitlist: newCamp.waitlist.map((camper) => camper.toString()),
+        dates: newCamp.dates.map((date) => date.toString()),
+        startTime: newCamp.startTime,
+        endTime: newCamp.endTime,
+        active: newCamp.active,
       };
       // return {
       //   id:
