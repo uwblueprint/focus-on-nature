@@ -1,7 +1,6 @@
 import { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
-import { Schema } from "mongoose";
 import {
   CreateCampDTO,
   CamperCSVInfoDTO,
@@ -13,10 +12,7 @@ import {
   CreateCampSessionDTO,
 } from "../../types";
 
-<<<<<<< HEAD
 import ICampService from "../interfaces/campService";
-=======
->>>>>>> cce328408406c7e5b7e12c230e8ab08f6946e80d
 import { getErrorMessage } from "../../utilities/errorUtils";
 import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
@@ -135,10 +131,7 @@ class CampService implements ICampService {
   }
 
   async createCampSession(
-<<<<<<< HEAD
     // bulk create
-=======
->>>>>>> cce328408406c7e5b7e12c230e8ab08f6946e80d
     campId: string,
     campSession: CreateCampSessionDTO,
   ): Promise<CampSessionDTO> {
