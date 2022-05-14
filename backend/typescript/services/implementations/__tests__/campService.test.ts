@@ -18,10 +18,10 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp",
     description: "description",
     location: "canada",
-    capacity: 20,
     fee: 25,
     campSessions: [
       {
+        capacity: 20, 
         active: true,
         startTime: "12:00",
         endTime: "17:00",
@@ -43,10 +43,10 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp2",
     description: "description2",
     location: "canada",
-    capacity: 500,
     fee: 24,
     campSessions: [
       {
+        capacity: 20, 
         active: true,
         startTime: "1:00",
         endTime: "2:00",
