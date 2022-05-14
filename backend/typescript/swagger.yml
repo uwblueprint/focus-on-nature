@@ -472,7 +472,7 @@ paths:
                   type: string
                 role:
                   type: string
-                  enum: ["Admin", "CampLeader"]
+                  enum: ["Admin", "CampCoordinator"]
                 email:
                   type: string
                 active:
@@ -562,7 +562,7 @@ paths:
                   type: string
                 role:
                   type: string
-                  enum: ["Admin", "CampLeader"]
+                  enum: ["Admin", "CampCoordinator"]
                 email:
                   type: string
                 active:
