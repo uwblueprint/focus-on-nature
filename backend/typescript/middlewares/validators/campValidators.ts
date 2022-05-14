@@ -169,42 +169,52 @@ export const updateCampDtoValidator = async (
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
-export const createCampSessionDtoValidator = async (
+export const createCampSessionsDtoValidator = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const campSession = req.body;
-  if (campSession.dates && !validateArray(campSession.dates, "string")) {
-    return res.status(400).send(getApiValidationError("dates", "string", true));
-  }
-  if (!campSession.dates.every(validateDate)) {
-    return res.status(400).send(getApiValidationError("dates", "Date string"));
-  }
-  if (!validatePrimitive(campSession.startTime, "string")) {
-    return res.status(400).send(getApiValidationError("startTime", "string"));
-  }
-  if (!validateTime(campSession.startTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("startTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(campSession.endTime, "string")) {
-    return res.status(400).send(getApiValidationError("endTime", "string"));
-  }
-  if (!validateTime(campSession.endTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("endTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(campSession.active, "boolean")) {
-    return res.status(400).send(getApiValidationError("active", "boolean"));
-  }
-  if (req.body.campers) {
-    return res.status(400).send("campers should be empty");
-  }
-  if (req.body.waitlist) {
-    return res.status(400).send("waitlist should be empty");
+  if (req.body.campSessions) {
+    for (let i = 0; i < req.body.campSessions.length; i += 1) {
+      const campSession = req.body.campSessions[i];
+      if (campSession.dates && !validateArray(campSession.dates, "string")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "string", true));
+      }
+      if (!campSession.dates.every(validateDate)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "Date string"));
+      }
+      if (!validatePrimitive(campSession.startTime, "string")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("startTime", "string"));
+      }
+      if (!validateTime(campSession.startTime)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("startTime", "24 hr time string"));
+      }
+      if (!validatePrimitive(campSession.endTime, "string")) {
+        return res.status(400).send(getApiValidationError("endTime", "string"));
+      }
+      if (!validateTime(campSession.endTime)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("endTime", "24 hr time string"));
+      }
+      if (!validatePrimitive(campSession.active, "boolean")) {
+        return res.status(400).send(getApiValidationError("active", "boolean"));
+      }
+      if (req.body.campers) {
+        return res.status(400).send("campers should be empty");
+      }
+      if (req.body.waitlist) {
+        return res.status(400).send("waitlist should be empty");
+      }
+    }
   }
   return next();
 };

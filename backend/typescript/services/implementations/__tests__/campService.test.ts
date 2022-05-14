@@ -2,8 +2,8 @@ import db from "../../../testUtils/testDb";
 import CampService from "../campService";
 import {
   CreateCampDTO,
-  CreateCampSessionDTO,
-  QuestionType,
+  CreateCampSessionsDTO,
+  CreateFormQuestionsDTO,
   UpdateCampSessionDTO,
 } from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
@@ -26,22 +26,8 @@ const testCamps: CreateCampDTO[] = [
     location: "canada",
     capacity: 20,
     fee: 25,
-    campSessions: [
-      {
-        active: true,
-        startTime: "12:00",
-        endTime: "17:00",
-        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
-      },
-    ],
-    formQuestions: [
-      {
-        question: "Q1",
-        type: "Multiselect" as QuestionType,
-        required: true,
-        description: "question description",
-      },
-    ],
+    campSessions: [],
+    formQuestions: [],
   },
   {
     ageLower: 30,
@@ -51,22 +37,8 @@ const testCamps: CreateCampDTO[] = [
     location: "canada",
     capacity: 500,
     fee: 24,
-    campSessions: [
-      {
-        active: true,
-        startTime: "1:00",
-        endTime: "2:00",
-        dates: [new Date().toString()],
-      },
-    ],
-    formQuestions: [
-      {
-        question: "Q1",
-        type: "Text" as QuestionType,
-        required: true,
-        description: "question description2",
-      },
-    ],
+    campSessions: [],
+    formQuestions: [],
   },
 ];
 
@@ -109,7 +81,7 @@ describe("mongo campService", (): void => {
       campSessions: [],
     };
 
-    const testCampSessions: CreateCampSessionDTO[] = [
+    const testCampSessions: CreateCampSessionsDTO = [
       {
         dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
         startTime: "6:49",
@@ -138,6 +110,16 @@ describe("mongo campService", (): void => {
       },
     ];
 
+    // const testFormQuestions: CreateFormQuestionsDTO = [
+    //   {
+    //     type: "Multiselect",
+    //     question: "Why beans",
+    //     required: true,
+    //     description: "Good question",
+    //     options: ["Yes", "Bread"],
+    //   },
+    // ];
+
     // Step 1: Create camp with basic details
     const res = await campService.createCamp(testCamp);
     const camp = await MgCamp.findById(res.id).exec();
@@ -150,20 +132,10 @@ describe("mongo campService", (): void => {
     expect(camp?.fee).toEqual(testCamp.fee);
 
     // Step 2: Add Camp Sessions
-    const campSessionIds: string[] = [];
-    await Promise.all(
-      testCampSessions.map(async (testCampSession) => {
-        const session = await campService.createCampSession(
-          res.id,
-          testCampSession,
-        );
-        campSessionIds.push(session.id);
-      }),
+    const campSessions = await campService.createCampSessions(
+      res.id,
+      testCampSessions,
     );
-
-    const campSessions = await MgCampSession.find({
-      _id: { $in: campSessionIds },
-    });
 
     for (let i = 0; i < campSessions.length; i += 1) {
       const campSession = campSessions[i];
@@ -194,12 +166,14 @@ describe("mongo campService", (): void => {
       campSessions: [],
     };
 
-    const testCampSession: CreateCampSessionDTO = {
-      dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
-      startTime: "6:49",
-      endTime: "16:09",
-      active: true,
-    };
+    const testCampSessions: CreateCampSessionsDTO = [
+      {
+        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
+        startTime: "6:49",
+        endTime: "16:09",
+        active: true,
+      },
+    ];
 
     const updatedTestCampSession: UpdateCampSessionDTO = {
       dates: [
@@ -218,18 +192,18 @@ describe("mongo campService", (): void => {
     const res = await campService.createCamp(testCamp);
 
     // Add campSession
-    const resCampSession = await campService.createCampSession(
+    const resCampSessions = await campService.createCampSessions(
       res.id,
-      testCampSession,
+      testCampSessions,
     );
 
     await campService.updateCampSessionById(
       res.id,
-      resCampSession.id,
+      resCampSessions[0].id,
       updatedTestCampSession,
     );
 
-    const campSession = await MgCampSession.findById(resCampSession.id);
+    const campSession = await MgCampSession.findById(resCampSessions[0].id);
 
     expect(campSession?.camp.toString()).toEqual(res.id);
     expect(campSession?.dates.map((date) => new Date(date))).toEqual(

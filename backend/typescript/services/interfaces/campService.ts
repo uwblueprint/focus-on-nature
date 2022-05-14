@@ -6,7 +6,7 @@ import {
   UpdateCampSessionDTO,
   GetCampDTO,
   UpdateCampDTO,
-  CreateCampSessionDTO,
+  CreateCampSessionsDTO,
 } from "../../types";
 
 interface ICampService {
@@ -24,10 +24,10 @@ interface ICampService {
 
   deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
 
-  createCampSession(
+  createCampSessions(
     campId: string,
-    campSession: CreateCampSessionDTO,
-  ): Promise<CampSessionDTO>;
+    campSessions: CreateCampSessionsDTO,
+  ): Promise<CampSessionDTO[]>;
 
   updateCampSessionById(
     campId: string,

@@ -8,7 +8,7 @@ import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import {
   createCampDtoValidator,
-  createCampSessionDtoValidator,
+  createCampSessionsDtoValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
@@ -33,8 +33,11 @@ campRouter.get("/", async (req, res) => {
   }
 });
 
+// TODO: Functionality
+// Create/update/delete formQuestions
+
 // TODO: Required checks:
-// sort campSession by date
+// sort campSession by date D
 // dates for campSessions cannot overlap
 // fee cannot change after any campSession is published (?)
 
@@ -90,20 +93,15 @@ campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
   }
 });
 
-/* Create a camp session */
+/* Create camp sessions */
 campRouter.post(
   "/:campId/session/",
-  createCampSessionDtoValidator,
+  createCampSessionsDtoValidator,
   async (req, res) => {
     try {
-      const campSession = await campService.createCampSession(
+      const campSession = await campService.createCampSessions(
         req.params.campId,
-        {
-          dates: req.body.dates,
-          startTime: req.body.startTime,
-          endTime: req.body.endTime,
-          active: req.body.active,
-        },
+        req.body.campSessions,
       );
       res.status(200).json(campSession);
     } catch (error: unknown) {
