@@ -69,15 +69,8 @@ class AdminService implements IAdminService {
           formQuestions[i] = question._id;
         }),
       );
-      await formTemplateModel.updateOne(
-        {
-          formQuestions: { $exists: true },
-        },
-        {
-          $set: { formQuestions },
-        },
-        { upsert: true, runValidators: true },
-      );
+      await formTemplateModel.remove({});
+      await formTemplateModel.create({formQuestions})
       formTemplateDTO = await this.getFormTemplate();
     } catch (error: unknown) {
       Logger.error(
