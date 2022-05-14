@@ -57,6 +57,7 @@ class CampService implements ICampService {
 
         const campSessions = (camp.campSessions as CampSession[]).map(
           (campSession) => ({
+            capacity: campSession.capacity, 
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
@@ -70,7 +71,6 @@ class CampService implements ICampService {
           id: camp.id,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
-          capacity: camp.capacity,
           name: camp.name,
           description: camp.description,
           location: camp.location,
@@ -173,7 +173,6 @@ class CampService implements ICampService {
         name: camp.name,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
-        capacity: camp.capacity,
         description: camp.description,
         location: camp.location,
         fee: camp.fee,
@@ -198,6 +197,7 @@ class CampService implements ICampService {
         camp.campSessions.map(async (campSession, i) => {
           const session = await MgCampSession.create({
             camp: newCamp,
+            capacity: campSession.capacity, 
             campers: [],
             waitlist: [],
             startTime: campSession.startTime,
@@ -248,7 +248,6 @@ class CampService implements ICampService {
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
       campSessions: newCamp.campSessions.map((session) => session.toString()),
-      capacity: newCamp.capacity,
       name: newCamp.name,
       description: newCamp.description,
       location: newCamp.location,

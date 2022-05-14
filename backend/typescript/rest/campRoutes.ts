@@ -42,7 +42,6 @@ campRouter.post(
         name: body.name,
         description: body.description,
         location: body.location,
-        capacity: body.capacity,
         fee: body.fee,
         formQuestions: body.formQuestions,
         campSessions: body.campSessions,
