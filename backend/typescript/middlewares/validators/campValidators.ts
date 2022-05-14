@@ -158,19 +158,11 @@ export const updateCampDtoValidator = async (
   if (req.body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
   }
-
   if (req.body.formQuestions) {
     return res.status(400).send("formQuestions should be empty");
   }
-
   if (req.body.campSessions) {
     return res.status(400).send("campSessions should be empty");
-  }
-  if (req.body.campers) {
-    return res.status(400).send("campers should be empty");
-  }
-  if (req.body.waitlist) {
-    return res.status(400).send("waitlist should be empty");
   }
   return next();
 };

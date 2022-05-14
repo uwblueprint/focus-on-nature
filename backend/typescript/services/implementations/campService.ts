@@ -91,7 +91,7 @@ class CampService implements ICampService {
     }
   }
 
-  async updateCamp(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
+  async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
 
     try {

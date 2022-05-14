@@ -74,7 +74,7 @@ campRouter.post(
 /* Update a camp */
 campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
   try {
-    const newCamp = await campService.updateCamp(req.params.campId, {
+    const newCamp = await campService.updateCampById(req.params.campId, {
       ageLower: req.body.ageLower,
       ageUpper: req.body.ageUpper,
       name: req.body.name,
