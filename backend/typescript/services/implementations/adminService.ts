@@ -57,7 +57,12 @@ class AdminService implements IAdminService {
     try {
       /* eslint no-underscore-dangle: 0 */
       const formQuestions: Array<FormQuestionDTO> = [];
-      await formQuestionModel.remove({});
+      let oldFormQuestion = await this.getFormTemplate()
+        await Promise.all(
+          oldFormQuestion.formQuestions.map(async question => {
+            await formQuestionModel.remove(question)
+          }),
+        );
       await Promise.all(
         form.formQuestions.map(async (formQuestion, i) => {
           const question = await formQuestionModel.create({
