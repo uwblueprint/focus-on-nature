@@ -42,7 +42,7 @@ export const formTemplateUpdateValidator = async (
   if (
     !req.body.formQuestions ||
     !Array.isArray(req.body.formQuestions) ||
-!req.body.formQuestions.every(validateFormQuestion(formQuestion))
+    !req.body.formQuestions.every(validateFormQuestion)
   ) {
     return res
       .status(400)
