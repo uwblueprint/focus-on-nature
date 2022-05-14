@@ -600,17 +600,32 @@ class CamperService implements ICamperService {
         }
       }
 
-      const oldCamperIds = [...campSession.campers]; // clone the full array of campers for rollback
+      const oldCampers = campSession.campers; // clone the full array of campers for rollback
+
       try {
         // delete camper IDs from the camp
-        campSession.campers = campSession.campers.filter(
+        const newCampers = campSession.campers.filter(
           (camperId) => !camperIds.includes(camperId.toString()),
         );
-        await campSession.save();
+
+        const updatedCampSessionCampers = await MgCampSession.findByIdAndUpdate(
+          campSession.id,
+          { campers: newCampers },
+          { runValidators: true },
+        );
+
+        if (!updatedCampSessionCampers) {
+          throw new Error(
+            `Failed to update ${campSession} with deleted campers.`,
+          );
+        }
       } catch (mongoDbError: unknown) {
         try {
-          campSession.campers = oldCamperIds;
-          await campSession.save();
+          await MgCampSession.findByIdAndUpdate(
+            campSession.id,
+            { campers: oldCampers },
+            { runValidators: true },
+          );
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB update to campSession to restore deleted camperIds. Reason =",
