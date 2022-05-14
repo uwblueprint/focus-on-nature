@@ -28,7 +28,7 @@ const CampSessionSchema: Schema = new Schema({
   capacity: {
     type: Number,
     required: true,
-    default: 0, 
+    default: 0,
   },
   campers: {
     type: [
