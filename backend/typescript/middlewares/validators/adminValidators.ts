@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import { validatePrimitive, getApiValidationError } from "./util";
-import formQuestion from "../../models/formQuestion.model";
 
-const validateClause = (obj: any): boolean => {
-  if (!validatePrimitive(obj.text, "string")) {
+const validateClause = (clause: any): boolean => {
+  if (!validatePrimitive(clause.text, "string")) {
     return false;
   }
-  if (!validatePrimitive(obj.required, "boolean")) {
+  if (!validatePrimitive(clause.required, "boolean")) {
     return false;
   }
   return true;

@@ -54,7 +54,7 @@ class AdminService implements IAdminService {
     try {
       const formQuestions: Array<FormQuestionDTO> = [];
       // Delete old questions before creating new ones
-      let oldFormTemplate = await MgFormTemplate.findOne();
+      const oldFormTemplate = await MgFormTemplate.findOne();
       if (oldFormTemplate) {
         await MgFormQuestion.deleteMany({
           _id: {
@@ -62,6 +62,7 @@ class AdminService implements IAdminService {
           },
         });
       }
+      /* eslint-disable no-underscore-dangle */
       await Promise.all(
         form.formQuestions.map(async (formQuestion, i) => {
           const question = await MgFormQuestion.create({
@@ -85,7 +86,8 @@ class AdminService implements IAdminService {
       );
       throw error;
     }
-    return await this.getFormTemplate();
+    const formTemplate: FormTemplateDTO = await this.getFormTemplate();
+    return formTemplate;
   }
 
   async getFormTemplate(): Promise<FormTemplateDTO> {
