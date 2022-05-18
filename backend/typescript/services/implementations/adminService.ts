@@ -53,16 +53,17 @@ class AdminService implements IAdminService {
   }
 
   async updateFormTemplate(form: FormTemplateDTO): Promise<FormTemplateDTO> {
-    let formTemplateDTO: FormTemplateDTO | null;
     try {
-      /* eslint no-underscore-dangle: 0 */
       const formQuestions: Array<FormQuestionDTO> = [];
-      let oldFormQuestion = await this.getFormTemplate()
-        await Promise.all(
-          oldFormQuestion.formQuestions.map(async question => {
-            await formQuestionModel.remove(question)
-          }),
-        );
+      // Delete old questions before creating new ones
+      let oldFormTemplate = await formTemplateModel.findOne();
+      if (oldFormTemplate) {
+        await formQuestionModel.deleteMany({
+          _id: {
+            $in: oldFormTemplate.formQuestions,
+          },
+        });
+      }
       await Promise.all(
         form.formQuestions.map(async (formQuestion, i) => {
           const question = await formQuestionModel.create({
@@ -75,20 +76,21 @@ class AdminService implements IAdminService {
           formQuestions[i] = question._id;
         }),
       );
-      await formTemplateModel.remove({});
-      await formTemplateModel.create({formQuestions})
-      formTemplateDTO = await this.getFormTemplate();
+      await formTemplateModel.updateOne(
+        {},
+        { $set: { formQuestions } },
+        { runValidators: true, upsert: true },
+      );
     } catch (error: unknown) {
       Logger.error(
         `Failed to update form template. Reason: ${getErrorMessage(error)}`,
       );
       throw error;
     }
-    return formTemplateDTO;
+    return await this.getFormTemplate();
   }
 
   async getFormTemplate(): Promise<FormTemplateDTO> {
-    let formTemplateDTO: FormTemplateDTO | null;
     let form: FormTemplateDTO | null;
     try {
       form = await formTemplateModel.findOne().populate({
@@ -98,16 +100,13 @@ class AdminService implements IAdminService {
       if (!form) {
         throw new Error(`Form not found.`);
       }
-      formTemplateDTO = {
-        formQuestions: form.formQuestions,
-      };
     } catch (error: unknown) {
       Logger.error(
         `Failed to get form template. Reason = ${getErrorMessage(error)}`,
       );
       throw error;
     }
-    return formTemplateDTO;
+    return form;
   }
 }
 

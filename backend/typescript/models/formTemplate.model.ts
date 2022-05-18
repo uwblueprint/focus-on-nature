@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface FormTemplate extends Document {
   id: string;
-  questions: Schema.Types.ObjectId[];
+  formQuestions: Schema.Types.ObjectId[];
 }
 
 const FormTemplateSchema: Schema = new Schema({
