@@ -3,6 +3,7 @@ import {
   getApiValidationError,
   validatePrimitive,
   validateArray,
+  checkDuplicatesInArray,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -51,11 +52,19 @@ export const updateUserDtoValidator = async (
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   if (
-    req.body.role === "CampLeader" &&
-    req.body.camps &&
-    !validateArray(req.body.camps, "string")
+    req.body.role === "CampCoordinator" &&
+    req.body.campSessions &&
+    !validateArray(req.body.campSessions, "string")
   ) {
-    return res.status(400).send(getApiValidationError("camps", "string", true));
+    return res
+      .status(400)
+      .send(getApiValidationError("campSessions", "string", true));
+  }
+  if (
+    req.body.campSessions &&
+    checkDuplicatesInArray(req.body.campSessions) === true
+  ) {
+    return res.status(400).send("All camp sessions should be unique.");
   }
   return next();
 };

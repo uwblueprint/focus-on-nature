@@ -18,7 +18,7 @@ const testUsers = [
     firstName: "Wendy",
     lastName: "Darling",
     authId: "321",
-    role: "CampLeader",
+    role: "CampCoordinator",
     active: false,
     email: "email2@gmail.com",
   },

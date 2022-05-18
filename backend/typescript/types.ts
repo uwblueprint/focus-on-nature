@@ -1,4 +1,4 @@
-export type Role = "Admin" | "CampLeader";
+export type Role = "Admin" | "CampCoordinator";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
@@ -27,18 +27,41 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
-export type CampLeaderDTO = UserDTO & { campSessions: string[] };
+export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
   id: string;
   campSession: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  allergies: string;
+  hasCamera: boolean;
+  hasLaptop: boolean;
+  earlyDropoff: string;
+  latePickup: string;
+  specialNeeds: string;
+  contacts: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  }[];
   registrationDate: Date;
   hasPaid: boolean;
-  chargeId: string;
   formResponses: Map<string, string>;
+  chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
 };
 
-export type CamperCSVInfoDTO = Omit<CamperDTO, "campSession" | "id">;
+export type CamperCSVInfoDTO = Omit<
+  CamperDTO,
+  "id" | "campSession" | "charges" | "formResponses"
+> & { formResponses: { [key: string]: string } };
 
 export type WaitlistedCamperDTO = {
   id: string;
@@ -53,22 +76,9 @@ export type WaitlistedCamperDTO = {
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
 
-export type UpdateUserDTO = Omit<UserDTO, "id"> & { camps?: string[] };
+export type UpdateUserDTO = Omit<UserDTO, "id"> & { campSessions?: string[] };
 
 export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
-
-export type CampDTO = {
-  id: string;
-  ageLower: number;
-  ageUpper: number;
-  capacity: number;
-  name: string;
-  description: string;
-  location: string;
-  fee: number;
-  formQuestions: string[];
-  campSessions: string[];
-};
 
 export type CampSessionDTO = {
   id: string;
@@ -81,21 +91,45 @@ export type CampSessionDTO = {
   active: boolean;
 };
 
+export type CampDTO = {
+  id: string;
+  ageLower: number;
+  ageUpper: number;
+  capacity: number;
+  name: string;
+  description: string;
+  location: string;
+  fee: number;
+  formQuestions: string[];
+  campSessions: string[];
+  fileName?: string;
+};
+
+export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
+  formQuestions: FormQuestionDTO[];
+  campSessions: (Omit<
+    CampSessionDTO,
+    "id" | "camp" | "campers" | "waitlist"
+  > & { registrations: number; waitlist: number })[];
+};
+
 export type CreateCampDTO = Omit<
   CampDTO,
   "id" | "formQuestions" | "campSessions"
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
   campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
+  filePath?: string;
+  fileContentType?: string;
 };
 
-export type CreateCamperDTO = Omit<CamperDTO, "id">;
+export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
-  "id" | "registrationDate" | "chargeId"
+  "id" | "registrationDate" | "chargeId" | "charges"
 >;
 
 export type AuthDTO = Token & UserDTO;

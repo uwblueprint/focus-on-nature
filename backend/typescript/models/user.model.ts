@@ -31,7 +31,7 @@ const UserSchema: Schema = new Schema({
   role: {
     type: String,
     required: true,
-    enum: ["Admin", "CampLeader"],
+    enum: ["Admin", "CampCoordinator"],
   },
   active: {
     type: Boolean,
