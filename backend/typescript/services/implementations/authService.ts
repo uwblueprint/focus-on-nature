@@ -58,8 +58,6 @@ class AuthService implements IAuthService {
       try {
         // Note: an error message will be logged from UserService if this lookup fails.
         // You may want to silence the logger for this special OAuth user lookup case
-        // return { ...token, ...user };
-        /* eslint-disable-next-line no-empty */
         user = await this.userService.getUserByEmail(googleUser.email);
       } catch (error) {
         Logger.error(error as string);
