@@ -1,11 +1,9 @@
 import IAdminService from "../interfaces/adminService";
-import waiverModel, { Waiver } from "../../models/waiver.model";
+import MgWaiver, { Waiver } from "../../models/waiver.model";
 import { FormQuestionDTO, FormTemplateDTO, WaiverDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
-import formTemplateModel from "../../models/formTemplate.model";
-/* eslint-disable import/no-duplicates */
-import formQuestionModel from "../../models/formQuestion.model";
+import MgFormTemplate from "../../models/formTemplate.model";
 import MgFormQuestion from "../../models/formQuestion.model";
 
 const Logger = logger(__filename);
@@ -15,7 +13,7 @@ class AdminService implements IAdminService {
   async updateWaiver(waiver: WaiverDTO): Promise<WaiverDTO> {
     let waiverDto: WaiverDTO | null;
     try {
-      await waiverModel.updateOne(
+      await MgWaiver.updateOne(
         {
           clauses: { $exists: true },
         },
@@ -38,7 +36,7 @@ class AdminService implements IAdminService {
     let waiverDto: WaiverDTO | null;
     let waiver: Waiver | null;
     try {
-      waiver = await waiverModel.findOne();
+      waiver = await MgWaiver.findOne();
       if (!waiver) {
         throw new Error(`Waiver not found.`);
       }
@@ -56,9 +54,9 @@ class AdminService implements IAdminService {
     try {
       const formQuestions: Array<FormQuestionDTO> = [];
       // Delete old questions before creating new ones
-      let oldFormTemplate = await formTemplateModel.findOne();
+      let oldFormTemplate = await MgFormTemplate.findOne();
       if (oldFormTemplate) {
-        await formQuestionModel.deleteMany({
+        await MgFormQuestion.deleteMany({
           _id: {
             $in: oldFormTemplate.formQuestions,
           },
@@ -66,7 +64,7 @@ class AdminService implements IAdminService {
       }
       await Promise.all(
         form.formQuestions.map(async (formQuestion, i) => {
-          const question = await formQuestionModel.create({
+          const question = await MgFormQuestion.create({
             type: formQuestion.type,
             question: formQuestion.question,
             required: formQuestion.required,
@@ -76,7 +74,7 @@ class AdminService implements IAdminService {
           formQuestions[i] = question._id;
         }),
       );
-      await formTemplateModel.updateOne(
+      await MgFormTemplate.updateOne(
         {},
         { $set: { formQuestions } },
         { runValidators: true, upsert: true },
@@ -93,7 +91,7 @@ class AdminService implements IAdminService {
   async getFormTemplate(): Promise<FormTemplateDTO> {
     let form: FormTemplateDTO | null;
     try {
-      form = await formTemplateModel.findOne().populate({
+      form = await MgFormTemplate.findOne().populate({
         path: "formQuestions",
         model: MgFormQuestion,
       });
