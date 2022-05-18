@@ -14,6 +14,10 @@ const allowableContentTypes = new Set([
   "image/gif",
 ]);
 
+const allowableImageContentTypes = new Set(["image/png", "image/jpeg"]);
+
+const allowableImageSize = 5;
+
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const validatePrimitive = (value: any, type: Type): boolean => {
@@ -49,6 +53,10 @@ export const validateFileType = (mimetype: string): boolean => {
   return allowableContentTypes.has(mimetype);
 };
 
+export const validateImageType = (mimetype: string): boolean => {
+  return allowableImageContentTypes.has(mimetype);
+};
+
 export const getApiValidationError = (
   fieldName: string,
   type: Type,
@@ -59,6 +67,13 @@ export const getApiValidationError = (
 
 export const getFileTypeValidationError = (mimetype: string): string => {
   const allowableContentTypesString = [...allowableContentTypes].join(", ");
+  return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
+};
+
+export const getImageTypeValidationError = (mimetype: string): string => {
+  const allowableContentTypesString = [...allowableImageContentTypes].join(
+    ", ",
+  );
   return `The file type ${mimetype} is not one of ${allowableContentTypesString}`;
 };
 
@@ -95,4 +110,17 @@ export const validateMap = (
     }
   }
   return true;
+};
+
+export const validateImageSize = (imageSize: number): boolean => {
+  const imageSizeInMb = imageSize / 100000;
+  return imageSizeInMb <= allowableImageSize;
+};
+
+export const getImageSizeValidationError = (): string => {
+  return `Image size must be less than ${allowableImageSize} MB.`;
+};
+
+export const checkDuplicatesInArray = (value: Array<any>): boolean => {
+  return new Set(value).size !== value.length;
 };

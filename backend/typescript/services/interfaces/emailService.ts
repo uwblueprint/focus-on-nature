@@ -1,28 +1,87 @@
 interface IEmailService {
   /**
-   * Send confirmation email
-   * @param to recipient's email
+   * Send camp registration confirmation email.
    * @throws Error if email was not sent successfully
    */
-  sendConfirmationEmail(to: string): Promise<void>;
+  sendConfirmationEmail(
+    to: string,
+    registrantName: string,
+    campName: string,
+    campLocation: string,
+    sessionDates: string,
+    campers: { name: string; age: number }[],
+    registrantPhoneNumber: string,
+    campFee: number,
+    totalCampFees: number,
+    dropOffAndPickupFees: number,
+    totalPayment: number,
+    link: string,
+  ): Promise<void>;
   /**
-   * Send waitlist email
-   * @param to recipient's email
+   * Send camp registration cancellation confirmation email.
    * @throws Error if email was not sent successfully
    */
-  sendWaitlistEmail(to: string): Promise<void>;
+  sendCancellationConfirmationEmail(
+    to: string,
+    registrantName: string,
+  ): Promise<void>;
   /**
-   * Send waitlist admin email
-   * @param to recipient's email
+   * Send camp waitlist confirmation email.
    * @throws Error if email was not sent successfully
    */
-  sendWaitlistAdminEmail(to: string): Promise<void>;
+  sendWaitlistConfirmationEmail(
+    to: string,
+    registrantName: string,
+    campName: string,
+    campLocation: string,
+    sessionDates: string,
+    campers: { name: string; age: string }[],
+    registrantPhoneNumber: string,
+  ): Promise<void>;
   /**
-   * Send cancellation email
-   * @param to recipient's email
+   * Send registration invite email.
    * @throws Error if email was not sent successfully
    */
-  sendCancellationEmail(to: string): Promise<void>;
+  sendRegistrationInviteEmail(
+    to: string,
+    campName: string,
+    waitlistName: string,
+    sessionDates: string,
+    link: string,
+  ): Promise<void>;
+  /**
+   * Send special needs notice email.
+   * @throws Error if email was not sent successfully
+   */
+  sendSpecialNeedsNoticeEmail(
+    to: string,
+    registrantName: string,
+    campName: string,
+    sessionDates: string,
+    camperName: string,
+    registrantEmail: string,
+    registrantPhoneNumber: string,
+    specialNeeds: string,
+  ): Promise<void>;
+  /**
+   * Send full camp notice email.
+   * @throws Error if email was not sent successfully
+   */
+  sendFullCampNoticeEmail(
+    to: string,
+    campName: string,
+    sessionDates: string,
+  ): Promise<void>;
+  /**
+   * Send camper cancellation notice email.
+   * @throws Error if email was not sent successfully
+   */
+  sendCamperCancellationNoticeEmail(
+    to: string,
+    camperName: string,
+    campName: string,
+    sessionDates: string,
+  ): Promise<void>;
   /**
    * Send email
    * @param to recipient's email

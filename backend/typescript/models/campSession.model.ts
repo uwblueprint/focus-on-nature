@@ -1,18 +1,24 @@
-import { Schema, model } from "mongoose";
-import { Camp } from "./camp.model";
+import { Schema, model, Document } from "mongoose";
 import { Camper } from "./camper.model";
+import { WaitlistedCamper } from "./waitlistedCamper.model";
 
-export interface CampSession extends Camp {
+export interface CampSession extends Document {
+  id: string;
+  active: boolean;
   camp: Schema.Types.ObjectId;
   campers: (Camper | Schema.Types.ObjectId)[];
-  waitlist: Schema.Types.ObjectId[];
   dates: Date[];
-  startTime: string;
   endTime: string;
-  active: boolean;
+  priceId: string;
+  startTime: string;
+  waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
 }
 
 const CampSessionSchema: Schema = new Schema({
+  active: {
+    type: Boolean,
+    required: true,
+  },
   camp: {
     type: Schema.Types.ObjectId,
     ref: "Camp",
@@ -27,6 +33,21 @@ const CampSessionSchema: Schema = new Schema({
     ],
     default: [],
   },
+  dates: {
+    type: [Date],
+    required: true,
+  },
+  endTime: {
+    type: String,
+    required: true,
+  },
+  priceId: {
+    type: String,
+  },
+  startTime: {
+    type: String,
+    required: true,
+  },
   waitlist: {
     type: [
       {
@@ -35,22 +56,6 @@ const CampSessionSchema: Schema = new Schema({
       },
     ],
     default: [],
-  },
-  dates: {
-    type: [Date],
-    required: true,
-  },
-  startTime: {
-    type: String,
-    required: true,
-  },
-  endTime: {
-    type: String,
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    required: true,
   },
 });
 

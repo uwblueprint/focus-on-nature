@@ -2,14 +2,16 @@ import { Router } from "express";
 
 import { isAuthorizedByRole } from "../middlewares/auth";
 import {
-  createCamperDtoValidator,
+  cancelCamperDtoValidator,
+  createCampersDtoValidator,
   updateCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
+// eslint-disable-next-line import/no-named-as-default
 import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO } from "../types";
+import { CamperDTO, CreateCampersDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
 
 const camperRouter: Router = Router();
@@ -17,17 +19,11 @@ const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
 
 /* Create a camper */
-camperRouter.post("/register", createCamperDtoValidator, async (req, res) => {
+camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
-    const newCamper = await camperService.createCamper({
-      campSession: req.body.campSession,
-      registrationDate: req.body.registrationDate,
-      hasPaid: req.body.hasPaid,
-      chargeId: req.body.chargeId,
-      formResponses: req.body.formResponses,
-    });
-
-    res.status(201).json(newCamper);
+    const campers = req.body as CreateCampersDTO;
+    const newCampers = await camperService.createCampers(campers);
+    res.status(201).json(newCampers);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
@@ -60,7 +56,10 @@ camperRouter.get("/", async (req, res) => {
     } else {
       try {
         const campers = await camperService.getCampersByCampId(campId);
-        await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
+        await sendResponseByMimeType<{
+          campers: CamperDTO[];
+          waitlist: WaitlistedCamperDTO[];
+        }>(res, 200, contentType, campers);
       } catch (error: unknown) {
         await sendResponseByMimeType(res, 500, contentType, [
           {
@@ -69,6 +68,18 @@ camperRouter.get("/", async (req, res) => {
         ]);
       }
     }
+  }
+});
+
+camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const camper = await camperService.getCampersByChargeId(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
   }
 });
 
@@ -104,6 +115,16 @@ camperRouter.put(
       const updatedCamper = await camperService.updateCamperById(
         req.params.camperId,
         {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          age: req.body.age,
+          allergies: req.body.allergies,
+          hasCamera: req.body.hasCamera,
+          hasLaptop: req.body.hasLaptop,
+          earlyDropoff: req.body.earlyDropoff,
+          latePickup: req.body.latePickup,
+          specialNeeds: req.body.specialNeeds,
+          contacts: req.body.contacts,
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
@@ -116,10 +137,13 @@ camperRouter.put(
   },
 );
 
-/* Delete all campers with the chargeId */
-camperRouter.delete("/cancel/:chargeId", async (req, res) => {
+/* Delete list of campers with the chargeId */
+camperRouter.delete("/cancel", cancelCamperDtoValidator, async (req, res) => {
   try {
-    await camperService.deleteCampersByChargeId(req.params.chargeId);
+    await camperService.deleteCampersByChargeId(
+      req.body.chargeId,
+      req.body.camperIds,
+    );
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
