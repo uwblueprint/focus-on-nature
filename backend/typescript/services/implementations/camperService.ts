@@ -5,7 +5,7 @@ import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
-import MgCamp from "../../models/camp.model"
+import MgCamp from "../../models/camp.model";
 import {
   CreateCampersDTO,
   CamperDTO,
@@ -18,7 +18,6 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
-import campModel from "../../models/camp.model";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -27,13 +26,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 });
 
 function sessionDatesToString(dates: Date[] | undefined) {
-  let dateStr = ""
-    if(dates) {
-    dates.map(date => {
-      dateStr = date.toDateString() + " "
-    })
+  if (!dates) {
+    return "";
   }
-  return dateStr
+  return dates.map((date) => date.toDateString()).join(" ");
 }
 
 class CamperService implements ICamperService {
@@ -62,32 +58,77 @@ class CamperService implements ICamperService {
               `Camp session ${campers[0].campSession} not found.`,
             );
           }
-          let totalPayment = 0
-          let campFees = 0
-          let earlyDropoffAndLatePickUp = 0
-          let specialNeedsCamper = {camperName: "", campName: "", sessionDates: "", registrantName: "", registrantEmail: "", registrantPhoneNumber: "", specialNeeds: ""}
-          let emailServiceCampers : any[] = [];
-          let camp = await MgCamp.findById(existingCampSession.camp)
-          newCampers.map(camper => {
-            campFees += camper.charges.camp
-            earlyDropoffAndLatePickUp += camper.charges.earlyDropoff + camper.charges.latePickup
-            if(camper.specialNeeds && camp) {
-              specialNeedsCamper = {camperName: camper.firstName + " "+camper.lastName, campName: camp.name, sessionDates: sessionDatesToString(existingCampSession?.dates), registrantName: camper.contacts[0].firstName + " "+camper.contacts[0].lastName, registrantEmail: camper.contacts[0].email, registrantPhoneNumber: camper.contacts[0].phoneNumber, specialNeeds: camper.specialNeeds}
+          let totalPayment = 0;
+          let campFees = 0;
+          let earlyDropoffAndLatePickUp = 0;
+          let specialNeedsCamper = {
+            camperName: "",
+            campName: "",
+            sessionDates: "",
+            registrantName: "",
+            registrantEmail: "",
+            registrantPhoneNumber: "",
+            specialNeeds: "",
+          };
+          const emailServiceCampers: any[] = [];
+          const camp = await MgCamp.findById(existingCampSession.camp);
+          newCampers.forEach((camper) => {
+            campFees += camper.charges.camp;
+            earlyDropoffAndLatePickUp +=
+              camper.charges.earlyDropoff + camper.charges.latePickup;
+            if (camper.specialNeeds && camp) {
+              specialNeedsCamper = {
+                camperName: `${camper.firstName} ${camper.lastName}`,
+                campName: camp.name,
+                sessionDates: sessionDatesToString(existingCampSession?.dates),
+                registrantName: `${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`,
+                registrantEmail: camper.contacts[0].email,
+                registrantPhoneNumber: camper.contacts[0].phoneNumber,
+                specialNeeds: camper.specialNeeds,
+              };
             }
-            emailServiceCampers.push({name: camper.firstName + " "+camper.lastName, age: camper.age})
-          })
-          totalPayment += campFees + earlyDropoffAndLatePickUp
-          
-          if(camp) {
-            await emailService.sendConfirmationEmail(newCampers[0].contacts[0].email, newCampers[0].contacts[0].firstName +" "+newCampers[0].contacts[0].lastName, camp.name, camp.location, sessionDatesToString(existingCampSession.dates), emailServiceCampers, newCampers[0].contacts[0].phoneNumber, camp.fee, campFees, earlyDropoffAndLatePickUp, totalPayment, "stub link")
-          }
-          if(specialNeedsCamper && camp) {
-            await emailService.sendSpecialNeedsNoticeEmail("admin@focusonnature.ca", specialNeedsCamper.camperName, specialNeedsCamper.campName, specialNeedsCamper.sessionDates, specialNeedsCamper.camperName, specialNeedsCamper.registrantEmail, specialNeedsCamper.registrantPhoneNumber, specialNeedsCamper.specialNeeds)
-          }
-          if(camp && existingCampSession.campers.length >= camp.capacity) {
-            await emailService.sendFullCampNoticeEmail("admin@focusonnature.ca", camp.name, sessionDatesToString(existingCampSession.dates))
-          }
+            emailServiceCampers.push({
+              name: `${camper.firstName} ${camper.lastName}`,
+              age: camper.age,
+            });
+          });
+          totalPayment += campFees + earlyDropoffAndLatePickUp;
 
+          if (camp) {
+            await emailService.sendConfirmationEmail(
+              newCampers[0].contacts[0].email,
+              `${newCampers[0].contacts[0].firstName} ${newCampers[0].contacts[0].lastName}`,
+              camp.name,
+              camp.location,
+              sessionDatesToString(existingCampSession.dates),
+              emailServiceCampers,
+              newCampers[0].contacts[0].phoneNumber,
+              camp.fee,
+              campFees,
+              earlyDropoffAndLatePickUp,
+              totalPayment,
+              "stub link",
+            );
+          }
+          if (specialNeedsCamper && camp) {
+            await emailService.sendSpecialNeedsNoticeEmail(
+              "admin@focusonnature.ca",
+              specialNeedsCamper.camperName,
+              specialNeedsCamper.campName,
+              specialNeedsCamper.sessionDates,
+              specialNeedsCamper.camperName,
+              specialNeedsCamper.registrantEmail,
+              specialNeedsCamper.registrantPhoneNumber,
+              specialNeedsCamper.specialNeeds,
+            );
+          }
+          if (camp && existingCampSession.campers.length >= camp.capacity) {
+            await emailService.sendFullCampNoticeEmail(
+              "admin@focusonnature.ca",
+              camp.name,
+              sessionDatesToString(existingCampSession.dates),
+            );
+          }
         } catch (mongoDbError: unknown) {
           // rollback camper creation
           /* eslint-disable no-await-in-loop */
@@ -315,9 +356,22 @@ class CamperService implements ICamperService {
         if (!existingCampSession) {
           throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
         }
-        let camp = await MgCamp.findById(existingCampSession.camp)
-        if(camp) {
-          await emailService.sendWaitlistConfirmationEmail(waitlistedCamper.contactEmail, waitlistedCamper.contactName, camp.name, camp.location, existingCampSession.startTime, [{name: waitlistedCamper.firstName+" "+waitlistedCamper.lastName, age: waitlistedCamper.age.toString()}], waitlistedCamper.contactNumber)
+        const camp = await MgCamp.findById(existingCampSession.camp);
+        if (camp) {
+          await emailService.sendWaitlistConfirmationEmail(
+            waitlistedCamper.contactEmail,
+            waitlistedCamper.contactName,
+            camp.name,
+            camp.location,
+            existingCampSession.startTime,
+            [
+              {
+                name: `${waitlistedCamper.firstName} ${waitlistedCamper.lastName}`,
+                age: waitlistedCamper.age.toString(),
+              },
+            ],
+            waitlistedCamper.contactNumber,
+          );
         }
       } catch (mongoDbError: unknown) {
         // rollback user creation
@@ -527,11 +581,19 @@ class CamperService implements ICamperService {
             $in: camperIdsToBeDeleted,
           },
         });
-        let deletedCamper = await MgCamper.findById(chargeId);
-        let camp = await MgCamp.findById(campSession.camp)
-        if(camp && deletedCamper) {
-          await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
-          await emailService.sendCancellationConfirmationEmail(deletedCamper.contacts[0].email, deletedCamper.contacts[0].firstName + " " + deletedCamper.contacts[0].lastName)
+        const deletedCamper = await MgCamper.findById(chargeId);
+        const camp = await MgCamp.findById(campSession.camp);
+        if (camp && deletedCamper) {
+          await emailService.sendCamperCancellationNoticeEmail(
+            "admin@focusonnature.ca",
+            `${deletedCamper.firstName} ${deletedCamper.lastName}`,
+            camp.name,
+            sessionDatesToString(campSession.dates),
+          );
+          await emailService.sendCancellationConfirmationEmail(
+            deletedCamper.contacts[0].email,
+            `${deletedCamper.contacts[0].firstName} ${deletedCamper.contacts[0].lastName}`,
+          );
         }
       } catch (mongoDbError: unknown) {
         // could not delete users, rollback camp's camper deletions
@@ -587,10 +649,15 @@ class CamperService implements ICamperService {
         await MgCamper.deleteOne({
           _id: camperId,
         });
-        let deletedCamper = await MgCamper.findById(camperId);
-        let camp = await MgCamp.findById(campSession.camp)
-        if(camp && deletedCamper) {
-          await emailService.sendCamperCancellationNoticeEmail("admin@focusonnature.ca", deletedCamper.firstName + " "+deletedCamper.lastName, camp.name, sessionDatesToString(campSession.dates))
+        const deletedCamper = await MgCamper.findById(camperId);
+        const camp = await MgCamp.findById(campSession.camp);
+        if (camp && deletedCamper) {
+          await emailService.sendCamperCancellationNoticeEmail(
+            "admin@focusonnature.ca",
+            `${deletedCamper.firstName} ${deletedCamper.lastName}`,
+            camp.name,
+            sessionDatesToString(campSession.dates),
+          );
         }
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
