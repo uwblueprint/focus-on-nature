@@ -1,4 +1,4 @@
-import { WaiverDTO } from "../../types";
+import { FormTemplateDTO, WaiverDTO } from "../../types";
 
 interface IAdminService {
   /**
@@ -14,6 +14,18 @@ interface IAdminService {
    * @throws Error if waiver retrieval fails.
    */
   getWaiver(): Promise<WaiverDTO>;
+  /**
+   * Creates a new form template or updates it if it already exists.
+   * @returns A FormTemplateDTO that contains the waiver.
+   * @throws Error if form template retrieval fails.
+   */
+  updateFormTemplate(form: FormTemplateDTO): Promise<FormTemplateDTO>;
+  /**
+   * Get the form.
+   * @returns A FormTemplateDTO that contains the waiver.
+   * @throws Error if form template retrieval fails.
+   */
+  getFormTemplate(): Promise<FormTemplateDTO>;
 }
 
 export default IAdminService;

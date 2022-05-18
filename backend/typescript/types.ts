@@ -153,3 +153,7 @@ export type WaiverDTO = {
     required: boolean;
   }[];
 };
+
+export type FormTemplateDTO = {
+  formQuestions: [FormQuestionDTO];
+};

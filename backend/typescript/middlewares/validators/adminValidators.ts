@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { validatePrimitive } from "./util";
+import { validateFormQuestion } from "./formQuestionValidators";
+import { validatePrimitive, getApiValidationError } from "./util";
 
-const validateClause = (obj: any): boolean => {
-  if (!validatePrimitive(obj.text, "string")) {
+const validateClause = (clause: any): boolean => {
+  if (!validatePrimitive(clause.text, "string")) {
     return false;
   }
-  if (!validatePrimitive(obj.required, "boolean")) {
+  if (!validatePrimitive(clause.required, "boolean")) {
     return false;
   }
   return true;
@@ -28,6 +29,23 @@ export const waiverUpdateValidator = async (
       .send(
         "One or more objects in the clauses array does not match the Clause schema!",
       );
+  }
+  return next();
+};
+
+export const formTemplateUpdateValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    !req.body.formQuestions ||
+    !Array.isArray(req.body.formQuestions) ||
+    !req.body.formQuestions.every(validateFormQuestion)
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestion", "string", true));
   }
   return next();
 };
