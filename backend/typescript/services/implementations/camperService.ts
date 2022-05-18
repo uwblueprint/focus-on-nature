@@ -75,7 +75,9 @@ class CamperService implements ICamperService {
             );
           }
 
-          if (existingCampSession.campers.length >= camp.capacity) {
+          if (
+            existingCampSession.campers.length >= existingCampSession.capacity
+          ) {
             await emailService.sendAdminFullCampNoticeEmail(
               camp,
               existingCampSession,
