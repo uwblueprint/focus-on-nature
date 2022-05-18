@@ -6,6 +6,7 @@ export interface CampSession extends Document {
   id: string;
   active: boolean;
   camp: Schema.Types.ObjectId;
+  capacity: number;
   campers: (Camper | Schema.Types.ObjectId)[];
   dates: Date[];
   endTime: string;
@@ -23,6 +24,11 @@ const CampSessionSchema: Schema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Camp",
     required: true,
+  },
+  capacity: {
+    type: Number,
+    required: true,
+    default: 0,
   },
   campers: {
     type: [

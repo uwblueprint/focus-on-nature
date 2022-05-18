@@ -6,7 +6,6 @@ export interface Camp extends Document {
   id: string;
   ageLower: number;
   ageUpper: number;
-  capacity: number;
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
   fee: number;
@@ -23,10 +22,6 @@ const CampSchema: Schema = new Schema({
     required: true,
   },
   ageUpper: {
-    type: Number,
-    required: true,
-  },
-  capacity: {
     type: Number,
     required: true,
   },
