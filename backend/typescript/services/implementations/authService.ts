@@ -8,7 +8,6 @@ import { getErrorMessage } from "../../utilities/errorUtils";
 import FirebaseRestClient from "../../utilities/firebaseRestClient";
 import logger from "../../utilities/logger";
 import { validateUserEmail } from "../../middlewares/validators/util";
-import { User } from "../../models/user.model";
 
 const Logger = logger(__filename);
 
