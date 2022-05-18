@@ -3,8 +3,22 @@ import IEmailService from "../interfaces/emailService";
 import { NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
+import { Camper } from "../../models/camper.model";
+import { Camp } from "../../models/camp.model";
+import { CampSession } from "../../models/campSession.model";
+import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
+
+// TODO: swap out this email for the focus on nature admin email
+const ADMIN_EMAIL = "focusonnature@uwblueprint.org";
 
 const Logger = logger(__filename);
+
+function sessionDatesToString(dates: Date[] | undefined) {
+  if (!dates) {
+    return "";
+  }
+  return dates.map((date) => date.toDateString()).join(" ");
+}
 
 class EmailService implements IEmailService {
   transporter: Transporter;
@@ -20,24 +34,29 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendConfirmationEmail(
-    to: string,
-    registrantName: string,
-    campName: string,
-    campLocation: string,
-    sessionDates: string,
-    campers: { name: string; age: number }[],
-    registrantPhoneNumber: string,
-    campFee: number,
-    totalCampFees: number,
-    dropOffAndPickupFees: number,
-    totalPayment: number,
-    link: string,
+  async sendParentConfirmationEmail(
+    camp: Camp,
+    campers: Camper[],
+    campSession: CampSession,
   ): Promise<void> {
+    const contact = campers[0].contacts[0];
+    const link = "DUMMY LINK"; // TODO: Update link
+    let totalPayment = 0;
+    let campFees = 0;
+    let dropoffAndPickupFees = 0;
+
+    campers.forEach((camper) => {
+      campFees += camper.charges.camp;
+      dropoffAndPickupFees +=
+        camper.charges.earlyDropoff + camper.charges.latePickup;
+    });
+
+    totalPayment = campFees + dropoffAndPickupFees;
+
     await this.sendEmail(
-      to,
+      contact.email,
       "Focus on Nature Camp Registration - Confirmation Email",
-      `Hi ${registrantName},<br><br>
+      `Hi ${contact.firstName} ${contact.lastName},<br><br>
       Thank you for registering for a Focus on Nature Camp! We are very excited 
       to have your young photographer join us. We will be emailing you closer to 
       the start of the camp with additional information for you and your camper(s). 
@@ -46,15 +65,17 @@ class EmailService implements IEmailService {
       <br>
 
       <ul>
-        <li><b>Camp name:</b> ${campName} </li>
-        <li><b>Camp location:</b> ${campLocation} </li>
-        <li><b>Session dates:</b> ${sessionDates} </li>
-        <li><b>Your phone number:</b> ${registrantPhoneNumber}</li>
+        <li><b>Camp name:</b> ${camp.name} </li>
+        <li><b>Camp location:</b> ${camp.location} </li>
+        <li><b>Session dates:</b> ${sessionDatesToString(
+          campSession.dates,
+        )} </li>
+        <li><b>Your phone number:</b> ${contact.phoneNumber}</li>
         <li><b>Campers:</b></li>
         ${campers
           .map((camper) => {
             return `<ul>
-              <li><b>Name:</b> ${camper.name} </li>
+              <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
               <ul><li><b>Age:</b> ${camper.age}</li></ul>
             </ul>`;
           })
@@ -63,8 +84,8 @@ class EmailService implements IEmailService {
       <br> This is the total amount we have received from you.
       <ul>
         <li><b>Camp fees:</b> 
-        $${totalCampFees} (${campers.length} campers x $${campFee} fee) </li> 
-        <li><b>Early drop-off and late pick-up fees:</b> $${dropOffAndPickupFees} </li>
+        $${campFees} (${campers.length} campers x $${camp.fee} fee) </li> 
+        <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
 
@@ -78,14 +99,14 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendCancellationConfirmationEmail(
-    to: string,
-    registrantName: string,
+  async sendParentCancellationConfirmationEmail(
+    campers: Camper[],
   ): Promise<void> {
+    const contact = campers[0].contacts[0];
     await this.sendEmail(
-      to,
+      contact.email,
       "Focus on Nature Camp Registration - Cancellation",
-      `Hi ${registrantName},<br><br> 
+      `Hi ${contact.firstName} ${contact.lastName},<br><br> 
       Your Focus on Nature camp registration has been 
       successfully canceled. You can expect any fees paid to be refunded within the next 
       4-5 business days. If this cancellation was a mistake or you have any further concerns, 
@@ -95,37 +116,35 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendWaitlistConfirmationEmail(
-    to: string,
-    registrantName: string,
-    campName: string,
-    campLocation: string,
-    sessionDates: string,
-    campers: { name: string; age: string }[],
-    registrantPhoneNumber: string,
+  async sendParentWaitlistConfirmationEmail(
+    camp: Camp,
+    campSession: CampSession,
+    waitlistedCampers: WaitlistedCamper[],
   ): Promise<void> {
     await this.sendEmail(
-      to,
+      waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
-      `Hi ${registrantName},<br><br>
+      `Hi ${waitlistedCampers[0].contactName},<br><br>
       Thank you for joining the waitlist for a Focus on Nature Camp! We will 
       reach out to you if a spot opens up. <br>
       Please find your waitlist information below, and if you need to edit any 
       of the fields, reach out to camps@focusonnature.ca. <br>
       <ul>
-        <li><b>Camp name:</b> ${campName}</li>
-        <li><b>Camp location:</b> ${campLocation}</li>
-        <li><b>Session dates:</b> ${sessionDates}</li>
+        <li><b>Camp name:</b> ${camp.name}</li>
+        <li><b>Camp location:</b> ${camp.location}</li>
+        <li><b>Session dates:</b> ${sessionDatesToString(
+          campSession.dates,
+        )}</li>
         <li><b>Campers:</b></li>
-        ${campers
+        ${waitlistedCampers
           .map((camper) => {
             return `<ul>
-              <li><b>Name:</b> ${camper.name} </li>
+              <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
               <ul><li><b>Age:</b> ${camper.age}</li></ul>
             </ul>`;
           })
           .join("")}
-        <li><b>Your phone number:</b> ${registrantPhoneNumber}</li>
+        <li><b>Your phone number:</b> ${waitlistedCampers[0].contactNumber}</li>
       </ul>
       Thanks, <br><br>
       Focus on Nature
@@ -133,19 +152,20 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendRegistrationInviteEmail(
-    to: string,
-    campName: string,
-    waitlistName: string,
-    sessionDates: string,
-    link: string,
+  async sendParentRegistrationInviteEmail(
+    camp: Camp,
+    campSession: CampSession,
+    waitlistedCamper: WaitlistedCamper,
   ): Promise<void> {
+    const link = ""; // TODO: fix link
     await this.sendEmail(
-      to,
+      ADMIN_EMAIL,
       "Focus on Nature Camp Registration - Invitation to Register",
-      `Hi ${waitlistName},<br><br>
-      A spot opened up in ${campName} for the following session dates: 
-      ${sessionDates}. To register your camper, please use the following link:
+      `Hi ${waitlistedCamper.contactName},<br><br>
+      A spot opened up in ${camp.name} for the following session dates: 
+      ${sessionDatesToString(
+        campSession.dates,
+      )}. To register your camper, please use the following link:
       <a href=${link}>${link}</a>.<br> Please complete this registration within 
       24 hours to confirm your spot.<br><br>
       Thanks,<br><br>
@@ -154,60 +174,57 @@ class EmailService implements IEmailService {
     );
   }
 
-  async sendSpecialNeedsNoticeEmail(
-    to: string,
-    registrantName: string,
-    campName: string,
-    sessionDates: string,
-    camperName: string,
-    registrantEmail: string,
-    registrantPhoneNumber: string,
-    specialNeeds: string,
+  async sendAdminSpecialNeedsNoticeEmail(
+    camp: Camp,
+    camper: Camper,
+    campSession: CampSession,
   ): Promise<void> {
+    const contact = camper.contacts[0];
     await this.sendEmail(
-      to,
+      ADMIN_EMAIL,
       "Special Needs Camper Registration Notice",
       `This following email is to notify you of a special needs camper 
       registration. The camper listed below checked the special needs box 
       on their registration form: <br><br>
       <ul>
-        <li><b>Name of camper:</b> ${camperName} </li>
-        <li><b>Camp name:</b> ${campName} </li>
-        <li><b>Session dates:</b> ${sessionDates} </li>
-        <li><b>Parent's name:</b> ${registrantName}</li>
-        <li><b>Parent's email:</b> ${registrantEmail}</li>
-        <li><b>Parent's phone number:</b> ${registrantPhoneNumber}</li>
-        <li><b>Special need:</b> ${specialNeeds}</li>
+        <li><b>Name of camper:</b> ${camper.firstName} ${camper.lastName}</li>
+        <li><b>Camp name:</b> ${camp.name} </li>
+        <li><b>Session dates:</b> ${sessionDatesToString(
+          campSession.dates,
+        )} </li>
+        <li><b>Parent's name:</b> ${contact.firstName} ${contact.lastName}</li>
+        <li><b>Parent's email:</b> ${contact.email}</li>
+        <li><b>Parent's phone number:</b> ${contact.phoneNumber}</li>
+        <li><b>Special need:</b> ${camper.specialNeeds}</li>
       </ul>
       `,
     );
   }
 
-  async sendFullCampNoticeEmail(
-    to: string,
-    campName: string,
-    sessionDates: string,
+  async sendAdminFullCampNoticeEmail(
+    camp: Camp,
+    campSession: CampSession,
   ): Promise<void> {
     await this.sendEmail(
-      to,
+      ADMIN_EMAIL,
       "Camp Registration Notice - FULL CAPACITY",
-      `This following email is to notify you that ${campName} is full for the 
-      following session dates: ${sessionDates}.`,
+      `This following email is to notify you that ${camp.name} is full for the 
+      following session dates: ${sessionDatesToString(campSession.dates)}.`,
     );
   }
 
-  async sendCamperCancellationNoticeEmail(
-    to: string,
-    camperName: string,
-    campName: string,
-    sessionDates: string,
+  async sendAdminCamperCancellationNoticeEmail(
+    camp: Camp,
+    camper: Camper,
+    campSession: CampSession,
   ): Promise<void> {
     await this.sendEmail(
-      to,
+      ADMIN_EMAIL,
       "Camper Cancellation Notice",
-      `This following email is to notify you that ${camperName} has canceled 
-      their camp registration. A spot has now opened up in ${campName} for the 
-      following session dates: ${sessionDates}.`,
+      `This following email is to notify you that ${camper.firstName} 
+      ${camper.lastName} has cancelled their camp registration. One spot 
+      has now opened up in ${camp.name} for the following session dates: 
+      ${sessionDatesToString(campSession.dates)}.`,
     );
   }
 
