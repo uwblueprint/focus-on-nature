@@ -110,10 +110,10 @@ camperRouter.post(
 camperRouter.put(
   "/update",
   updateCamperDtoValidator,
-  isAuthorizedByRole(new Set(["Admin"])),
+  // isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
-      const camperIds = req.body.ids as Array<string>;
+      const camperIds = req.body.camperIds as Array<string>;
       const updatedCampers = await camperService.updateCampersById(camperIds, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,

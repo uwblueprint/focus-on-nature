@@ -161,6 +161,11 @@ export const updateCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
   if (
     req.body.campSession &&
     !validatePrimitive(req.body.campSession, "string")
