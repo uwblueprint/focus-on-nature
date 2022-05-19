@@ -63,6 +63,7 @@ class CampService implements ICampService {
 
         const campSessions = (camp.campSessions as CampSession[]).map(
           (campSession) => ({
+            id: campSession.id,
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
@@ -136,7 +137,6 @@ class CampService implements ICampService {
     campSessions: CreateCampSessionsDTO,
   ): Promise<CampSessionDTO[]> {
     const insertCampSessions = [];
-
     for (const campSession of campSessions) {
       insertCampSessions.push({
         camp: campId,
@@ -383,33 +383,37 @@ class CampService implements ICampService {
       });
 
       /* eslint no-underscore-dangle: 0 */
-      await Promise.all(
-        camp.formQuestions.map(async (formQuestion, i) => {
-          const question = await MgFormQuestion.create({
-            type: formQuestion.type,
-            question: formQuestion.question,
-            required: formQuestion.required,
-            description: formQuestion.description,
-            options: formQuestion.options,
-          });
-          newCamp.formQuestions[i] = question._id;
-        }),
-      );
+      if (camp.formQuestions) {
+        await Promise.all(
+          camp.formQuestions.map(async (formQuestion, i) => {
+            const question = await MgFormQuestion.create({
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            });
+            newCamp.formQuestions[i] = question._id;
+          }),
+        );
+      }
 
-      await Promise.all(
-        camp.campSessions.map(async (campSession, i) => {
-          const session = await MgCampSession.create({
-            camp: newCamp,
-            campers: [],
-            waitlist: [],
-            startTime: campSession.startTime,
-            endTime: campSession.endTime,
-            dates: campSession.dates,
-            active: campSession.active,
-          });
-          newCamp.campSessions[i] = session._id;
-        }),
-      );
+      if (camp.campSessions) {
+        await Promise.all(
+          camp.campSessions.map(async (campSession, i) => {
+            const session = await MgCampSession.create({
+              camp: newCamp,
+              campers: [],
+              waitlist: [],
+              startTime: campSession.startTime,
+              endTime: campSession.endTime,
+              dates: campSession.dates,
+              active: campSession.active,
+            });
+            newCamp.campSessions[i] = session._id;
+          }),
+        );
+      }
 
       try {
         await newCamp.save();
@@ -484,9 +488,6 @@ class CampService implements ICampService {
 
       // check all dereferenced campers and delete them (what about refunds ?? should guard against this)
       // should not be able to change campers
-
-      // console.log(oldCamp.campers); returns new ObjectId
-      // console.log(oldCamp);
 
       return {
         id: campSessionId,

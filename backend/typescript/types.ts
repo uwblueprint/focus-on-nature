@@ -128,10 +128,9 @@ export type UpdateCampDTO = Omit<
   "id" | "formQuestions" | "campSessions"
 >;
 
-export type CreateCampSessionsDTO = Omit<
-  CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist"
->[];
+export type CreateCampSessionsDTO = Array<
+  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">
+>;
 
 export type UpdateCampSessionDTO = Omit<
   CampSessionDTO,

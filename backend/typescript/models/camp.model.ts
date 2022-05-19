@@ -56,6 +56,7 @@ const CampSchema: Schema = new Schema({
         ref: "FormQuestion",
       },
     ],
+    default: [],
     required: true,
   },
   location: {

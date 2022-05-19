@@ -37,7 +37,6 @@ campRouter.get("/", async (req, res) => {
 // Create/update/delete formQuestions
 
 // TODO: Required checks:
-// sort campSession by date D
 // dates for campSessions cannot overlap
 // fee cannot change after any campSession is published (?)
 
