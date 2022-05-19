@@ -21,6 +21,14 @@ interface IEmailService {
   sendParentCancellationConfirmationEmail(campers: Camper[]): Promise<void>;
 
   /**
+   * Send waitlist registration cancellation confirmation email.
+   * @throws Error if email was not sent successfully
+   */
+  sendParentWaitlistCancellationConfirmationEmail(
+    waitlistedCamper: WaitlistedCamper,
+  ): Promise<void>;
+
+  /**
    * Send camp waitlist confirmation email.
    * @throws Error if email was not sent successfully
    */

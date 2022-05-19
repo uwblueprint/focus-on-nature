@@ -669,11 +669,9 @@ class CamperService implements ICamperService {
           _id: waitlistedCamperId,
         });
 
-        // await emailService.sendAdminCamperCancellationNoticeEmail(
-        //   camp,
-        //   camperToDelete,
-        //   campSession,
-        // );
+        await emailService.sendParentWaitlistCancellationConfirmationEmail(
+          waitlistedCamperToDelete,
+        );
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {
