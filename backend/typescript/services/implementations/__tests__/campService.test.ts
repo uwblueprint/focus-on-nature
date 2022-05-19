@@ -24,7 +24,6 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp",
     description: "description",
     location: "canada",
-    capacity: 20,
     fee: 25,
     campSessions: [],
     formQuestions: [],
@@ -35,7 +34,6 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp2",
     description: "description2",
     location: "canada",
-    capacity: 500,
     fee: 24,
     campSessions: [],
     formQuestions: [],
@@ -75,7 +73,6 @@ describe("mongo campService", (): void => {
       name: "test camp",
       description: "description",
       location: "canada",
-      capacity: 20,
       fee: 25,
       formQuestions: [],
       campSessions: [],
@@ -83,12 +80,14 @@ describe("mongo campService", (): void => {
 
     const testCampSessions: CreateCampSessionsDTO = [
       {
+        capacity: 20,
         dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
         startTime: "6:49",
         endTime: "16:09",
         active: true,
       },
       {
+        capacity: 20,
         dates: [
           new Date(2023, 1, 2),
           new Date(2023, 1, 3),
@@ -101,6 +100,7 @@ describe("mongo campService", (): void => {
         active: false,
       },
       {
+        capacity: 20,
         dates: [new Date(2023, 1, 7), new Date(2023, 1, 8)].map((date) =>
           date.toString(),
         ),
@@ -125,7 +125,6 @@ describe("mongo campService", (): void => {
     const camp = await MgCamp.findById(res.id).exec();
     expect(camp?.ageLower).toEqual(testCamp.ageLower);
     expect(camp?.ageUpper).toEqual(testCamp.ageUpper);
-    expect(camp?.capacity).toEqual(testCamp.capacity);
     expect(camp?.name).toEqual(testCamp.name);
     expect(camp?.description).toEqual(testCamp.description);
     expect(camp?.location).toEqual(testCamp.location);
@@ -146,6 +145,7 @@ describe("mongo campService", (): void => {
       expect(campSession.startTime).toEqual(testCampSessions[i].startTime);
       expect(campSession.endTime).toEqual(testCampSessions[i].endTime);
       expect(campSession.active).toEqual(testCampSessions[i].active);
+      expect(campSession.capacity).toEqual(testCampSessions[i].capacity);
       expect(campSession.campers).toHaveLength(0);
       expect(campSession.waitlist).toHaveLength(0);
     }
@@ -160,7 +160,6 @@ describe("mongo campService", (): void => {
       name: "test camp",
       description: "description",
       location: "canada",
-      capacity: 20,
       fee: 25,
       formQuestions: [],
       campSessions: [],
@@ -168,6 +167,7 @@ describe("mongo campService", (): void => {
 
     const testCampSessions: CreateCampSessionsDTO = [
       {
+        capacity: 20,
         dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
         startTime: "6:49",
         endTime: "16:09",
@@ -176,6 +176,7 @@ describe("mongo campService", (): void => {
     ];
 
     const updatedTestCampSession: UpdateCampSessionDTO = {
+      capacity: 30,
       dates: [
         new Date(2023, 1, 2),
         new Date(2023, 1, 3),
@@ -270,7 +271,6 @@ describe("mongo campService", (): void => {
 
       expect(res.ageLower).toEqual(testCamp.ageLower);
       expect(res.ageUpper).toEqual(testCamp.ageUpper);
-      expect(res.capacity).toEqual(testCamp.capacity);
       expect(res.name).toEqual(testCamp.name);
       expect(res.description).toEqual(testCamp.description);
       expect(res.location).toEqual(testCamp.location);

@@ -5,6 +5,7 @@ import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
+import MgCamp, { Camp } from "../../models/camp.model";
 import {
   CreateCampersDTO,
   CamperDTO,
@@ -14,8 +15,12 @@ import {
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
+import IEmailService from "../interfaces/emailService";
+import nodemailerConfig from "../../nodemailer.config";
+import EmailService from "./emailService";
 
 const Logger = logger(__filename);
+const emailService: IEmailService = new EmailService(nodemailerConfig);
 const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
@@ -44,6 +49,38 @@ class CamperService implements ICamperService {
           if (!existingCampSession) {
             throw new Error(
               `Camp session ${campers[0].campSession} not found.`,
+            );
+          }
+          const camp = await MgCamp.findById(existingCampSession.camp);
+          if (!camp) {
+            throw new Error(`Camp ${existingCampSession.camp} not found.`);
+          }
+
+          await emailService.sendParentConfirmationEmail(
+            camp,
+            newCampers,
+            existingCampSession,
+          );
+
+          const specialNeedsCampers = newCampers.filter(
+            (camper) => camper.specialNeeds,
+          );
+
+          /* eslint-disable no-await-in-loop */
+          for (let i = 0; i < specialNeedsCampers.length; i += 1) {
+            await emailService.sendAdminSpecialNeedsNoticeEmail(
+              camp,
+              specialNeedsCampers[i],
+              existingCampSession,
+            );
+          }
+
+          if (
+            existingCampSession.campers.length >= existingCampSession.capacity
+          ) {
+            await emailService.sendAdminFullCampNoticeEmail(
+              camp,
+              existingCampSession,
             );
           }
         } catch (mongoDbError: unknown) {
@@ -271,8 +308,20 @@ class CamperService implements ICamperService {
         );
 
         if (!existingCampSession) {
-          throw new Error(`Camp ${waitlistedCamper.campSession} not found.`);
+          throw new Error(
+            `Camp session ${waitlistedCamper.campSession} not found.`,
+          );
         }
+
+        const camp = await MgCamp.findById(existingCampSession.camp);
+        if (!camp) {
+          throw new Error(`Camp ${existingCampSession.camp} not found.`);
+        }
+        await emailService.sendParentWaitlistConfirmationEmail(
+          camp,
+          existingCampSession,
+          [newWaitlistedCamper],
+        );
       } catch (mongoDbError: unknown) {
         // rollback user creation
         try {
@@ -440,6 +489,13 @@ class CamperService implements ICamperService {
         );
       }
 
+      const camp = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(
+          `Campers' camp with campId ${campSession.camp} not found.`,
+        );
+      }
+
       const today = new Date();
       const diffInMilliseconds: number = Math.abs(
         campSession.dates[0].getTime() - today.getTime(),
@@ -481,6 +537,14 @@ class CamperService implements ICamperService {
             $in: camperIdsToBeDeleted,
           },
         });
+        await emailService.sendAdminCamperCancellationNoticeEmail(
+          camp,
+          campersToBeDeleted[0],
+          campSession,
+        );
+        await emailService.sendParentCancellationConfirmationEmail(
+          campersToBeDeleted,
+        );
       } catch (mongoDbError: unknown) {
         // could not delete users, rollback camp's camper deletions
         try {
@@ -508,20 +572,24 @@ class CamperService implements ICamperService {
 
   async deleteCamperById(camperId: string): Promise<void> {
     try {
-      const camper: Camper | null = await MgCamper.findById(camperId);
+      const camperToDelete: Camper | null = await MgCamper.findById(camperId);
 
-      if (!camper) {
+      if (!camperToDelete) {
         throw new Error(`Camper with camper ID ${camperId} not found.`);
       }
 
       const campSession: CampSession | null = await MgCampSession.findById(
-        camper.campSession,
+        camperToDelete.campSession,
       );
-
       if (!campSession) {
         throw new Error(
-          `Camper's camp session with campId ${camper.campSession} not found.`,
+          `Camper's camp session with campId ${camperToDelete.campSession} not found.`,
         );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with campId ${campSession.camp} not found.`);
       }
 
       // delete the camper from the camp's list of campers
@@ -535,6 +603,12 @@ class CamperService implements ICamperService {
         await MgCamper.deleteOne({
           _id: camperId,
         });
+
+        await emailService.sendAdminCamperCancellationNoticeEmail(
+          camp,
+          camperToDelete,
+          campSession,
+        );
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {

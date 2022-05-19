@@ -45,9 +45,6 @@ export const createCampDtoValidator = async (
   if (body.ageUpper < body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
-  if (!validatePrimitive(body.capacity, "integer")) {
-    return res.status(400).send(getApiValidationError("capacity", "integer"));
-  }
   if (!validatePrimitive(body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
@@ -71,6 +68,11 @@ export const createCampDtoValidator = async (
   if (body.campSessions) {
     for (let i = 0; i < body.campSessions.length; i += 1) {
       const campSession = body.campSessions[i];
+      if (!validatePrimitive(campSession.capacity, "integer")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("capacity", "integer"));
+      }
       if (campSession.dates && !validateArray(campSession.dates, "string")) {
         return res
           .status(400)

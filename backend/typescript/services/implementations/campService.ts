@@ -64,6 +64,7 @@ class CampService implements ICampService {
         const campSessions = (camp.campSessions as CampSession[]).map(
           (campSession) => ({
             id: campSession.id,
+            capacity: campSession.capacity,
             dates: campSession.dates.map((date) => date.toString()),
             startTime: campSession.startTime,
             endTime: campSession.endTime,
@@ -77,7 +78,6 @@ class CampService implements ICampService {
           id: camp.id,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
-          capacity: camp.capacity,
           name: camp.name,
           description: camp.description,
           location: camp.location,
@@ -101,7 +101,6 @@ class CampService implements ICampService {
           name: camp.name,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
-          capacity: camp.capacity,
           description: camp.description,
           location: camp.location,
           fee: camp.fee,
@@ -120,7 +119,6 @@ class CampService implements ICampService {
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
       campSessions: oldCamp.campSessions.map((session) => session.toString()),
-      capacity: camp.capacity,
       name: camp.name,
       description: camp.description,
       location: camp.location,
@@ -141,6 +139,7 @@ class CampService implements ICampService {
       insertCampSessions.push({
         camp: campId,
         campers: [],
+        capacity: campSession.capacity,
         waitlist: [],
         dates: campSession.dates.sort(),
         startTime: campSession.startTime,
@@ -189,6 +188,7 @@ class CampService implements ICampService {
           id: session.id,
           camp: campId,
           campers: [],
+          capacity: session.capacity,
           waitlist: [],
           dates: session.dates.map((date) => date.toString()),
           startTime: session.startTime,
@@ -238,6 +238,7 @@ class CampService implements ICampService {
         id: campSessionId,
         camp: newCampSession.camp.toString(),
         campers: newCampSession.campers.map((camper) => camper.toString()),
+        capacity: newCampSession.capacity,
         waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
         dates: newCampSession.dates.map((date) => date.toString()),
         startTime: newCampSession.startTime,
@@ -374,7 +375,6 @@ class CampService implements ICampService {
         name: camp.name,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
-        capacity: camp.capacity,
         description: camp.description,
         location: camp.location,
         fee: camp.fee,
@@ -452,7 +452,6 @@ class CampService implements ICampService {
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
       campSessions: newCamp.campSessions.map((session) => session.toString()),
-      capacity: newCamp.capacity,
       name: newCamp.name,
       description: newCamp.description,
       location: newCamp.location,
@@ -469,9 +468,10 @@ class CampService implements ICampService {
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO> {
     try {
-      const newCamp: CampSession | null = await MgCampSession.findByIdAndUpdate(
+      const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
+          capacity: campSession.capacity,
           dates: campSession.dates,
           startTime: campSession.startTime,
           endTime: campSession.endTime,
@@ -480,7 +480,7 @@ class CampService implements ICampService {
         { runValidators: true, new: true },
       );
 
-      if (!newCamp) {
+      if (!newCampSession) {
         throw new Error(
           `CampSession with campSessionId ${campSessionId} not found.`,
         );
@@ -491,24 +491,15 @@ class CampService implements ICampService {
 
       return {
         id: campSessionId,
-        camp: newCamp.camp.toString(),
-        campers: newCamp.campers.map((camper) => camper.toString()),
-        waitlist: newCamp.waitlist.map((camper) => camper.toString()),
-        dates: newCamp.dates.map((date) => date.toString()),
-        startTime: newCamp.startTime,
-        endTime: newCamp.endTime,
-        active: newCamp.active,
+        camp: newCampSession.camp.toString(),
+        campers: newCampSession.campers.map((camper) => camper.toString()),
+        capacity: newCampSession.capacity,
+        waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
+        dates: newCampSession.dates.map((date) => date.toString()),
+        startTime: newCampSession.startTime,
+        endTime: newCampSession.endTime,
+        active: newCampSession.active,
       };
-      // return {
-      //   id:
-      //   camp:
-      //   campers:
-      //   waitlist:
-      //   dates:
-      //   startTime:
-      //   endTime:
-      //   active:
-      // }
     } catch (error: unknown) {
       Logger.error(
         `Failed to edit CampSession. Reason = ${getErrorMessage(error)}`,
