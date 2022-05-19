@@ -81,7 +81,6 @@ campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       location: req.body.location,
-      capacity: req.body.capacity,
       fee: req.body.fee,
     });
 
@@ -118,6 +117,7 @@ campRouter.patch(
         req.params.campId,
         req.params.campSessionId,
         {
+          capacity: req.body.capacity,
           dates: req.body.dates,
           startTime: req.body.startTime,
           endTime: req.body.endTime,

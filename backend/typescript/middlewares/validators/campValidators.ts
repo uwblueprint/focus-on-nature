@@ -151,9 +151,6 @@ export const updateCampDtoValidator = async (
   if (req.body.ageUpper < req.body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
-  if (!validatePrimitive(req.body.capacity, "integer")) {
-    return res.status(400).send(getApiValidationError("capacity", "integer"));
-  }
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
@@ -210,6 +207,11 @@ export const createCampSessionsDtoValidator = async (
       if (!validatePrimitive(campSession.active, "boolean")) {
         return res.status(400).send(getApiValidationError("active", "boolean"));
       }
+      if (!validatePrimitive(campSession.capacity, "integer")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("capacity", "integer"));
+      }
       if (req.body.campers) {
         return res.status(400).send("campers should be empty");
       }
@@ -253,6 +255,9 @@ export const updateCampSessionDtoValidator = async (
   }
   if (!validatePrimitive(campSession.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
+  if (!validatePrimitive(campSession.capacity, "integer")) {
+    return res.status(400).send(getApiValidationError("capacity", "integer"));
   }
   if (req.body.campers) {
     return res.status(400).send("campers should be empty");
