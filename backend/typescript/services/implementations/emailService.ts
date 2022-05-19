@@ -116,6 +116,25 @@ class EmailService implements IEmailService {
     );
   }
 
+  async sendParentWaitlistCancellationConfirmationEmail(
+    waitlistedCampers: WaitlistedCamper[],
+  ): Promise<void> {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const waitlistedCamper of waitlistedCampers) {
+      this.sendEmail(
+        waitlistedCamper.contactEmail,
+        "Focus on Nature Waitlist Registration - Cancellation",
+        `Hi ${waitlistedCamper.contactName},<br><br> 
+        Your Focus on Nature waitlist registration for ${waitlistedCamper.firstName} ${waitlistedCamper.lastName} has been 
+        successfully canceled. You can expect any fees paid to be refunded within the next 
+        4-5 business days. If this cancellation was a mistake or you have any further concerns, 
+        please do not hesitate to contact camps@focusonnature.ca.<br><br>
+        Thanks,<br><br>
+        Focus on Nature`,
+      );
+    }
+  }
+
   async sendParentWaitlistConfirmationEmail(
     camp: Camp,
     campSession: CampSession,
