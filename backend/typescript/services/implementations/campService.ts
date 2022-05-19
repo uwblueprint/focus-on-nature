@@ -135,9 +135,10 @@ class CampService implements ICampService {
     campId: string,
     campSessions: CreateCampSessionsDTO,
   ): Promise<CampSessionDTO[]> {
-    let newCampSessions = [];
+    const insertCampSessions = [];
+
     for (const campSession of campSessions) {
-      const newCampSession: CampSession = new MgCampSession({
+      insertCampSessions.push({
         camp: campId,
         campers: [],
         waitlist: [],
@@ -146,39 +147,42 @@ class CampService implements ICampService {
         endTime: campSession.endTime,
         active: campSession.active,
       });
-      newCampSessions.push(newCampSession);
-
-      try {
-        await newCampSession.save();
-
-        await MgCamp.findByIdAndUpdate(
-          campId,
-          {
-            $push: { campSessions: newCampSession.id },
-          },
-          { runValidators: true },
-        );
-      } catch (error: unknown) {
-        try {
-          Promise.all(
-            newCampSessions.map(async (session) => {
-              MgCampSession.findByIdAndDelete(session.id);
-            }),
-          );
-        } catch (rollbackError: unknown) {
-          Logger.error(
-            `Failed to rollback camp session creation error. Reason = ${getErrorMessage(
-              rollbackError,
-            )}`,
-          );
-        }
-
-        Logger.error(
-          `Failed to create CampSession. Reason = ${getErrorMessage(error)}`,
-        );
-        throw error;
-      }
     }
+
+    let newCampSessions: Array<CampSession> = [];
+    let newCampSessionsIds: Array<String>;
+
+    try {
+      newCampSessions = await MgCampSession.insertMany(insertCampSessions);
+      newCampSessionsIds = newCampSessions.map((session) => session.id);
+      await MgCamp.findByIdAndUpdate(
+        campId,
+        {
+          $push: { campSessions: newCampSessionsIds },
+        },
+        { runValidators: true },
+      );
+    } catch (error: unknown) {
+      try {
+        Promise.all(
+          newCampSessions.map(async (session) => {
+            MgCampSession.findByIdAndDelete(session.id);
+          }),
+        );
+      } catch (rollbackError: unknown) {
+        Logger.error(
+          `Failed to rollback camp session creation error. Reason = ${getErrorMessage(
+            rollbackError,
+          )}`,
+        );
+      }
+
+      Logger.error(
+        `Failed to create CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
     return newCampSessions.map(
       (session) =>
         <CampSessionDTO>{
