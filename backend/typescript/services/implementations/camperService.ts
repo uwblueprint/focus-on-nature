@@ -37,20 +37,21 @@ class CamperService implements ICamperService {
       if (campers.length > 0) {
         try {
           newCamperIds = newCampers.map((newCamper) => newCamper.id);
-          existingCampSession = await MgCampSession.findByIdAndUpdate(
+          existingCampSession = await MgCampSession.findById(
             campers[0].campSession,
-            {
-              $push: { campers: newCamperIds },
-            },
-            {
-              runValidators: true,
-            },
           );
+
           if (!existingCampSession) {
             throw new Error(
               `Camp session ${campers[0].campSession} not found.`,
             );
           }
+
+          existingCampSession.campers = existingCampSession.campers
+            .map((id) => id.toString())
+            .concat(newCamperIds);
+          await existingCampSession.save();
+
           const camp = await MgCamp.findById(existingCampSession.camp);
           if (!camp) {
             throw new Error(`Camp ${existingCampSession.camp} not found.`);
