@@ -3,7 +3,7 @@ import * as firebaseAdmin from "firebase-admin";
 import IAuthService from "../interfaces/authService";
 import IEmailService from "../interfaces/emailService";
 import IUserService from "../interfaces/userService";
-import { AuthDTO, Role, Token } from "../../types";
+import { AuthDTO, Role, Token, UserDTO } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import FirebaseRestClient from "../../utilities/firebaseRestClient";
 import logger from "../../utilities/logger";
@@ -42,6 +42,7 @@ class AuthService implements IAuthService {
   /* eslint-disable class-methods-use-this */
   async generateTokenOAuth(idToken: string): Promise<AuthDTO> {
     try {
+      let user: UserDTO | null = null;
       const googleUser = await FirebaseRestClient.signInWithGoogleOAuth(
         idToken,
       );
@@ -54,23 +55,32 @@ class AuthService implements IAuthService {
         throw new Error(errorMessage);
       }
 
+      try {
+        // Note: an error message will be logged from UserService if this lookup fails.
+        // You may want to silence the logger for this special OAuth user lookup case
+        user = await this.userService.getUserByEmail(googleUser.email);
+      } catch (error) {
+        Logger.error(error as string);
+      }
+
       // googleUser.idToken refers to the Firebase Auth access token for the user
       const token = {
         accessToken: googleUser.idToken,
         refreshToken: googleUser.refreshToken,
       };
-      // If user already has a login with this email, just return the token
-      try {
-        // Note: an error message will be logged from UserService if this lookup fails.
-        // You may want to silence the logger for this special OAuth user lookup case
-        const user = await this.userService.getUserByEmail(googleUser.email);
-        return { ...token, ...user };
-        /* eslint-disable-next-line no-empty */
-      } catch (error) {
-        Logger.error(error as string);
+
+      if (user) {
+        if (!user.active) {
+          const errorMessage = "User is inactive.";
+          Logger.error(errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          // If user already has a login with this email, just return the token
+          return { ...token, ...user };
+        }
       }
 
-      const user = await this.userService.createUser(
+      user = await this.userService.createUser(
         {
           firstName: googleUser.firstName,
           lastName: googleUser.lastName,
