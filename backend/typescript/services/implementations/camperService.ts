@@ -636,7 +636,7 @@ class CamperService implements ICamperService {
     }
   }
 
-  async deleteWaitlistedCamper(waitlistedCamperId: string): Promise<void> {
+  async deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void> {
     try {
       const waitlistedCamperToDelete: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
         waitlistedCamperId,
