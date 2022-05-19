@@ -134,8 +134,8 @@ class CampService implements ICampService {
     campId: string,
     campSessions: CreateCampSessionsDTO,
   ): Promise<CampSessionDTO[]> {
-    const insertCampSessions = [];
-    for (const campSession of campSessions) {
+    const insertCampSessions: Omit<CampSessionDTO, "id">[] = [];
+    campSessions.forEach((campSession) => {
       insertCampSessions.push({
         camp: campId,
         campers: [],
@@ -146,10 +146,10 @@ class CampService implements ICampService {
         endTime: campSession.endTime,
         active: campSession.active,
       });
-    }
+    });
 
     let newCampSessions: Array<CampSession> = [];
-    let newCampSessionsIds: Array<String>;
+    let newCampSessionsIds: Array<string>;
 
     try {
       newCampSessions = await MgCampSession.insertMany(insertCampSessions);
