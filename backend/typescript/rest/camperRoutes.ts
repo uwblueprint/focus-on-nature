@@ -113,7 +113,9 @@ camperRouter.put("/waitlist/:waitListCamperId", async (req, res) => {
     );
     res.status(201).json(updatedWaitlistedCamper);
   } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error), id:  req.params.waitListCamperId});
+    res
+      .status(500)
+      .json({ error: getErrorMessage(error), id: req.params.waitListCamperId });
   }
 });
 
@@ -121,7 +123,7 @@ camperRouter.put("/waitlist/:waitListCamperId", async (req, res) => {
 camperRouter.put(
   "/:camperId",
   updateCamperDtoValidator,
-  //isAuthorizedByRole(new Set(["Admin"])),
+  // isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
       const updatedCamper = await camperService.updateCamperById(

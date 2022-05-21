@@ -662,9 +662,9 @@ class CamperService implements ICamperService {
             camperToUpdate,
           );
           camperToUpdate.status = "REGISTRATION FORM SENT";
-          await camperToUpdate.save()
-          //await MgWaitlistedCamper.update({_id: camperToUpdate.id})
-        } 
+          await camperToUpdate.save();
+          // await MgWaitlistedCamper.update({_id: camperToUpdate.id})
+        }
       }
 
       if (camperToUpdate)
@@ -683,9 +683,9 @@ class CamperService implements ICamperService {
       Logger.error(
         `Failed to updated waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
           error,
-          )}`,
-        );
-        throw error;
+        )}`,
+      );
+      throw error;
     }
   }
 
