@@ -661,7 +661,9 @@ class CamperService implements ICamperService {
             camperToUpdate,
           );
           camperToUpdate.status = "REGISTRATION FORM SENT";
-        }
+          await camperToUpdate.save()
+          //await MgWaitlistedCamper.update({_id: camperToUpdate.id})
+        } 
       }
 
       if (camperToUpdate)
