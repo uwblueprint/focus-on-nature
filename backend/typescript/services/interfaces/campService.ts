@@ -1,8 +1,12 @@
 import {
   CampDTO,
   CamperCSVInfoDTO,
+  CampSessionDTO,
   CreateCampDTO,
+  UpdateCampSessionDTO,
   GetCampDTO,
+  UpdateCampDTO,
+  CreateCampSessionsDTO,
 } from "../../types";
 
 interface ICampService {
@@ -14,6 +18,23 @@ interface ICampService {
    */
   getCamps(): Promise<GetCampDTO[]>;
 
+  createCamp(camp: CreateCampDTO): Promise<CampDTO>;
+
+  updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO>;
+
+  deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
+
+  createCampSessions(
+    campId: string,
+    campSessions: CreateCampSessionsDTO,
+  ): Promise<CampSessionDTO[]>;
+
+  updateCampSessionById(
+    campId: string,
+    campSessionId: string,
+    campSession: UpdateCampSessionDTO,
+  ): Promise<CampSessionDTO>;
+
   /**
    * Get all campers associated with camps of id campId
    * @param campId camp's id
@@ -21,10 +42,6 @@ interface ICampService {
    * @throws Error if camper retrieval fails
    */
   getCampersByCampSessionId(campId: string): Promise<CamperCSVInfoDTO[]>;
-
-  createCamp(user: CreateCampDTO): Promise<CampDTO>;
-
-  //  createBaseCamp(user: CreateCampDTO, authId?: string): Promise<CampDTO>;
 
   /**
    * Generates CSV string containg all the campers associated with a camp

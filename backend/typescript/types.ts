@@ -123,6 +123,24 @@ export type CreateCampDTO = Omit<
   fileContentType?: string;
 };
 
+export type UpdateCampDTO = Omit<
+  CampDTO,
+  "id" | "formQuestions" | "campSessions"
+>;
+
+export type CreateCampSessionsDTO = Array<
+  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">
+>;
+
+export type UpdateCampSessionDTO = Omit<
+  CampSessionDTO,
+  "id" | "camp" | "campers" | "waitlist"
+>;
+
+export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];
+
+export type UpdateFormQuestionDTO = Omit<FormQuestionDTO, "id">[];
+
 export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
 
 export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
