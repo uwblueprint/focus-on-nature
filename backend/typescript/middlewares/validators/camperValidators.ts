@@ -162,23 +162,24 @@ export const createCampersDtoValidator = async (
           .status(400)
           .send(getApiValidationError("charges.latePickup", "integer"));
       }
+    } else {
+      return res.status(400).send(getApiValidationError("charges", "mixed"));
     }
     if (!Array.isArray(camper.optionalClauses)) {
       return res.status(400).send("optional clauses must be an array");
     }
+    // eslint-disable-next-line no-restricted-syntax
     for (const optionalClause of camper.optionalClauses) {
       if (!validatePrimitive(optionalClause.clause, "string")) {
         return res
-        .status(400)
-        .send(getApiValidationError("optionalClause.clause", "string"));
+          .status(400)
+          .send(getApiValidationError("optionalClause.clause", "string"));
       }
       if (!validatePrimitive(optionalClause.agreed, "boolean")) {
         return res
-        .status(400)
-        .send(getApiValidationError("optionalClause.agreed", "boolean"));
+          .status(400)
+          .send(getApiValidationError("optionalClause.agreed", "boolean"));
       }
-    } else {
-      return res.status(400).send(getApiValidationError("charges", "mixed"));
     }
   }
   return next();
@@ -298,18 +299,19 @@ export const updateCamperDtoValidator = async (
   if (!Array.isArray(req.body.optionalClauses)) {
     return res.status(400).send("optional clauses must be an array");
   }
+  // eslint-disable-next-line no-restricted-syntax
   for (const optionalClause of req.body.optionalClauses) {
     if (!validatePrimitive(optionalClause.clause, "string")) {
       return res
-      .status(400)
-      .send(getApiValidationError("optionalClause.clause", "string"));
+        .status(400)
+        .send(getApiValidationError("optionalClause.clause", "string"));
     }
     if (!validatePrimitive(optionalClause.agreed, "boolean")) {
       return res
-      .status(400)
-      .send(getApiValidationError("optionalClause.agreed", "boolean"));
+        .status(400)
+        .send(getApiValidationError("optionalClause.agreed", "boolean"));
     }
-  } 
+  }
   return next();
 };
 
