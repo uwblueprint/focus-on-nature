@@ -83,6 +83,7 @@ export type RegisterUserDTO = Omit<CreateUserDTO, "role">;
 export type CampSessionDTO = {
   id: string;
   camp: string;
+  capacity: number;
   campers: string[];
   waitlist: string[];
   dates: string[];
@@ -95,7 +96,6 @@ export type CampDTO = {
   id: string;
   ageLower: number;
   ageUpper: number;
-  capacity: number;
   name: string;
   description: string;
   location: string;
@@ -152,4 +152,8 @@ export type WaiverDTO = {
     text: string;
     required: boolean;
   }[];
+};
+
+export type FormTemplateDTO = {
+  formQuestions: [FormQuestionDTO];
 };

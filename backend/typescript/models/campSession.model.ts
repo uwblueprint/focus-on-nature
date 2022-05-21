@@ -6,7 +6,8 @@ export interface CampSession extends Document {
   id: string;
   active: boolean;
   camp: Schema.Types.ObjectId;
-  campers: (Camper | Schema.Types.ObjectId)[];
+  capacity: number;
+  campers: (Camper | Schema.Types.ObjectId | string)[];
   dates: Date[];
   endTime: string;
   priceId: string;
@@ -24,6 +25,11 @@ const CampSessionSchema: Schema = new Schema({
     ref: "Camp",
     required: true,
   },
+  capacity: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   campers: {
     type: [
       {
@@ -32,6 +38,12 @@ const CampSessionSchema: Schema = new Schema({
       },
     ],
     default: [],
+    validate: [
+      function (this: any, value: any) {
+        return value.length <= this.capacity;
+      },
+      "Capacity error - tried to register for more spots than available",
+    ],
   },
   dates: {
     type: [Date],

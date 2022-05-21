@@ -79,6 +79,12 @@ interface ICamperService {
    * @throws Error if camper deletion fails
    */
   deleteCampersById(camperIds: Array<string>): Promise<void>;
+  /**
+   * Delete waitlisted camper associated with the ID
+   * @param waitlistedCamperId waitlisted camper's Id
+   * @throws Error if waitlisted camper deletion fails
+   */
+  deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void>;
 }
 
 export default ICamperService;
