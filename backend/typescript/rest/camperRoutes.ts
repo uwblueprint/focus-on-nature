@@ -160,4 +160,16 @@ camperRouter.delete("/:camperId", async (req, res) => {
   }
 });
 
+/* Delete a waitlisted camper */
+camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
+  try {
+    await camperService.deleteWaitlistedCamperById(
+      req.params.waitlistedCamperId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 export default camperRouter;
