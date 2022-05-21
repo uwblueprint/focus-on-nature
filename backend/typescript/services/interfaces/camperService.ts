@@ -79,6 +79,9 @@ interface ICamperService {
    * @throws Error if camper cancellation fails
    */
   deleteCamperById(camperId: string): Promise<void>;
+
+
+  updateWaitlistedCamperStatus(waitlistedCamperId: string): Promise<any>;
 }
 
 export default ICamperService;

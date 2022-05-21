@@ -234,7 +234,7 @@ class CamperService implements ICamperService {
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
-          status: "TEMPORARY",
+          status: "NOT REGISTERED",
         };
       });
     } catch (error: unknown) {
@@ -364,7 +364,7 @@ class CamperService implements ICamperService {
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
       campSession: waitlistedCamper.campSession,
-      status: "TEMPORARY",
+      status: "NOT REGISTERED",
     };
   }
 
@@ -640,20 +640,38 @@ class CamperService implements ICamperService {
   }
 
 
-  async updateWaitlistedCamperSession(waitlistedCamper: WaitlistedCamperDTO): Promise<void> {
+  async updateWaitlistedCamperStatus(waitlistedCamperId: string): Promise<any> {
     //send email to contact to invite them to register
-    let cS = await MgCampSession.findById(waitlistedCamper.campSession)
+    const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(waitlistedCamperId);
+    let campSession;
+    if(camperToUpdate) {campSession = await MgCampSession.findById(camperToUpdate.campSession)}
     
-    if(cS) {
-      let cmp = await MgCamp.findById(cS.camp)
-      if (cmp) {
-        //fix waitlistedCamper below bc don't think it can be a dto
-        await emailService.sendParentRegistrationInviteEmail(cmp, cS, waitlistedCamper)
-      }
-    }
+      try {
+        if(campSession && camperToUpdate) {
+          let camp = await MgCamp.findById(campSession.camp)
+          if (camp) {
+            //fix waitlistedCamper below bc don't think it can be a dto
+            await emailService.sendParentRegistrationInviteEmail(camp, campSession, camperToUpdate)
+            camperToUpdate.status = "REGISTRATION FORM SENT";
+          }
+        }
 
-    //update status
-    waitlistedCamper.status = "invite sent or smth";
+        if(camperToUpdate)
+        return {
+          id: camperToUpdate.id,
+          firstName: camperToUpdate.firstName,
+          lastName: camperToUpdate.lastName,
+          age: camperToUpdate.age,
+          contactName: camperToUpdate.contactName,
+          contactEmail: camperToUpdate.contactEmail,
+          contactNumber: camperToUpdate.contactNumber,
+          campSession: camperToUpdate.campSession,
+          status: "REGISTRATION FORM SENT",
+        };
+
+    } catch (error: unknown) {
+      throw error;
+    }
   }
 }
 

@@ -96,10 +96,23 @@ camperRouter.post(
         contactEmail: req.body.contactEmail,
         contactNumber: req.body.contactNumber,
         campSession: req.body.campSession,
-        status: "TEMPORARY",
+        status: "NOT REGISTERED",
       });
 
       res.status(201).json(newWaitlistedCamper);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+camperRouter.put(
+  "/waitlist/:waitListCamperId",
+  async (req, res) => {
+    try {
+
+      const updatedWaitlistedCamper = await camperService.updateWaitlistedCamperStatus(req.params.waitListCamperId)
+      res.status(201).json(updatedWaitlistedCamper);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }
