@@ -213,6 +213,7 @@ describe("mongo campService", (): void => {
     expect(campSession?.startTime).toEqual(updatedTestCampSession.startTime);
     expect(campSession?.endTime).toEqual(updatedTestCampSession.endTime);
     expect(campSession?.active).toEqual(updatedTestCampSession.active);
+    expect(campSession?.capacity).toEqual(updatedTestCampSession.capacity);
     expect(campSession?.campers).toHaveLength(0);
     expect(campSession?.waitlist).toHaveLength(0);
   });
@@ -240,6 +241,7 @@ describe("mongo campService", (): void => {
         );
         expect(campSession.endTime).toEqual(testCamp.campSessions[i].endTime);
         expect(campSession.active).toEqual(testCamp.campSessions[i].active);
+        expect(campSession.capacity).toEqual(testCamp.campSessions[i].capacity);
         expect(campSession.campers).toHaveLength(0);
         expect(campSession.waitlist).toHaveLength(0);
       }

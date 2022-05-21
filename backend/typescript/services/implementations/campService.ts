@@ -220,6 +220,7 @@ class CampService implements ICampService {
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
+          capacity: campSession.capacity,
           dates: campSession.dates.sort(),
           startTime: campSession.startTime,
           endTime: campSession.endTime,
