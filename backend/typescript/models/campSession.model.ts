@@ -42,7 +42,7 @@ const CampSessionSchema: Schema = new Schema({
       function (this: any, value: any) {
         return value.length <= this.capacity;
       },
-      "Camp is at maximum capacity",
+      "Capacity error - tried to register for more spots than available",
     ],
   },
   dates: {
