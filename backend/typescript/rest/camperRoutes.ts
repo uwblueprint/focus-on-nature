@@ -128,6 +128,7 @@ camperRouter.put(
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
+          optionalClauses: req.body.optionalClauses,
         },
       );
       res.status(200).json(updatedCamper);

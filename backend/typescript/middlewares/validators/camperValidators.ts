@@ -55,23 +55,38 @@ export const createCampersDtoValidator = async (
         .status(400)
         .send(getApiValidationError("hasLaptop", "boolean"));
     }
-    if (
-      camper.earlyDropoff &&
-      (!validatePrimitive(camper.earlyDropoff, "string") ||
-        !validateTime(camper.earlyDropoff))
-    ) {
+    if (!Array.isArray(camper.contacts) || camper.contacts.length !== 2) {
       return res
         .status(400)
-        .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+        .send("There must be 2 emergency contacts specified.");
     }
-    if (
-      camper.latePickup &&
-      (!validatePrimitive(camper.latePickup, "string") ||
-        !validateTime(camper.latePickup))
-    ) {
-      return res
-        .status(400)
-        .send(getApiValidationError("latePickup", "24 hr time string"));
+    if (!Array.isArray(camper.earlyDropoff)) {
+      return res.status(400).send("early dropoff is not an array");
+    }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const dropoffDate of camper.earlyDropoff) {
+      if (
+        !validatePrimitive(dropoffDate, "Date string") ||
+        !validateTime(dropoffDate)
+      ) {
+        return res
+          .status(400)
+          .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+      }
+    }
+    if (!Array.isArray(camper.latePickup)) {
+      return res.status(400).send("late pickup is not an array");
+    }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const pickupDate of camper.latePickup) {
+      if (
+        !validatePrimitive(pickupDate, "Date string") ||
+        !validateTime(pickupDate)
+      ) {
+        return res
+          .status(400)
+          .send(getApiValidationError("latePickup", "24 hr time string"));
+      }
     }
     if (
       camper.specialNeeds &&
@@ -147,6 +162,21 @@ export const createCampersDtoValidator = async (
           .status(400)
           .send(getApiValidationError("charges.latePickup", "integer"));
       }
+    }
+    if (!Array.isArray(camper.optionalClauses)) {
+      return res.status(400).send("optional clauses must be an array");
+    }
+    for (const optionalClause of camper.optionalClauses) {
+      if (!validatePrimitive(optionalClause.clause, "string")) {
+        return res
+        .status(400)
+        .send(getApiValidationError("optionalClause.clause", "string"));
+      }
+      if (!validatePrimitive(optionalClause.agreed, "boolean")) {
+        return res
+        .status(400)
+        .send(getApiValidationError("optionalClause.agreed", "boolean"));
+      }
     } else {
       return res.status(400).send(getApiValidationError("charges", "mixed"));
     }
@@ -185,23 +215,33 @@ export const updateCamperDtoValidator = async (
   if (req.body.hasLaptop && !validatePrimitive(req.body.hasLaptop, "boolean")) {
     return res.status(400).send(getApiValidationError("hasLaptop", "boolean"));
   }
-  if (
-    req.body.earlyDropoff &&
-    (!validatePrimitive(req.body.earlyDropoff, "string") ||
-      !validateTime(req.body.earlyDropoff))
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+  if (!Array.isArray(req.body.earlyDropoff)) {
+    return res.status(400).send("early dropoff is not an array");
   }
-  if (
-    req.body.latePickup &&
-    (!validatePrimitive(req.body.latePickup, "string") ||
-      !validateTime(req.body.latePickup))
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("latePickup", "24 hr time string"));
+  // eslint-disable-next-line no-restricted-syntax
+  for (const dropoffDate of req.body.earlyDropoff) {
+    if (
+      !validatePrimitive(dropoffDate, "Date string") ||
+      !validateTime(dropoffDate)
+    ) {
+      return res
+        .status(400)
+        .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+    }
+  }
+  if (!Array.isArray(req.body.latePickup)) {
+    return res.status(400).send("late pickup is not an array");
+  }
+  // eslint-disable-next-line no-restricted-syntax
+  for (const pickupDate of req.body.latePickup) {
+    if (
+      !validatePrimitive(pickupDate, "Date string") ||
+      !validateTime(pickupDate)
+    ) {
+      return res
+        .status(400)
+        .send(getApiValidationError("latePickup", "24 hr time string"));
+    }
   }
   if (
     req.body.specialNeeds &&
@@ -255,6 +295,21 @@ export const updateCamperDtoValidator = async (
   if (req.body.hasPaid && !validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
   }
+  if (!Array.isArray(req.body.optionalClauses)) {
+    return res.status(400).send("optional clauses must be an array");
+  }
+  for (const optionalClause of req.body.optionalClauses) {
+    if (!validatePrimitive(optionalClause.clause, "string")) {
+      return res
+      .status(400)
+      .send(getApiValidationError("optionalClause.clause", "string"));
+    }
+    if (!validatePrimitive(optionalClause.agreed, "boolean")) {
+      return res
+      .status(400)
+      .send(getApiValidationError("optionalClause.agreed", "boolean"));
+    }
+  } 
   return next();
 };
 

@@ -148,6 +148,7 @@ class CampService implements ICampService {
             registrationDate: camper.registrationDate,
             hasPaid: camper.hasPaid,
             chargeId: camper.chargeId,
+            optionalClauses: camper.optionalClauses,
           };
         }),
       );
