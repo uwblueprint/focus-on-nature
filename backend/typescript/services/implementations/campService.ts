@@ -130,7 +130,6 @@ class CampService implements ICampService {
   }
 
   async createCampSessions(
-    // bulk create
     campId: string,
     campSessions: CreateCampSessionsDTO,
   ): Promise<CampSessionDTO[]> {
@@ -486,9 +485,6 @@ class CampService implements ICampService {
           `CampSession with campSessionId ${campSessionId} not found.`,
         );
       }
-
-      // check all dereferenced campers and delete them (what about refunds ?? should guard against this)
-      // should not be able to change campers
 
       return {
         id: campSessionId,
