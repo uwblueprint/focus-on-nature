@@ -8,7 +8,7 @@ export interface WaitlistedCamper extends Document {
   contactName: string;
   contactEmail: string;
   contactNumber: string;
-  status: string, 
+  status: string;
   campSession: Schema.Types.ObjectId;
 }
 

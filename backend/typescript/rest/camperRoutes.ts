@@ -106,18 +106,16 @@ camperRouter.post(
   },
 );
 
-camperRouter.put(
-  "/waitlist/:waitListCamperId",
-  async (req, res) => {
-    try {
-
-      const updatedWaitlistedCamper = await camperService.updateWaitlistedCamperStatus(req.params.waitListCamperId)
-      res.status(201).json(updatedWaitlistedCamper);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
-  },
-);
+camperRouter.put("/waitlist/:waitListCamperId", async (req, res) => {
+  try {
+    const updatedWaitlistedCamper = await camperService.updateWaitlistedCamperStatus(
+      req.params.waitListCamperId,
+    );
+    res.status(201).json(updatedWaitlistedCamper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
 
 /* Update the camper with the specified camperId */
 camperRouter.put(

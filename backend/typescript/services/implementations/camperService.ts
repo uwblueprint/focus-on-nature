@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { off } from "process";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -18,7 +19,6 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
-import { off } from "process";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -639,24 +639,32 @@ class CamperService implements ICamperService {
     }
   }
 
-
+  /* eslint-disable consistent-return */
   async updateWaitlistedCamperStatus(waitlistedCamperId: string): Promise<any> {
-    //send email to contact to invite them to register
-    const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(waitlistedCamperId);
+    // send email to contact to invite them to register
+    const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+      waitlistedCamperId,
+    );
     let campSession;
-    if(camperToUpdate) {campSession = await MgCampSession.findById(camperToUpdate.campSession)}
-    
-      try {
-        if(campSession && camperToUpdate) {
-          let camp = await MgCamp.findById(campSession.camp)
-          if (camp) {
-            //fix waitlistedCamper below bc don't think it can be a dto
-            await emailService.sendParentRegistrationInviteEmail(camp, campSession, camperToUpdate)
-            camperToUpdate.status = "REGISTRATION FORM SENT";
-          }
-        }
+    if (camperToUpdate) {
+      campSession = await MgCampSession.findById(camperToUpdate.campSession);
+    }
 
-        if(camperToUpdate)
+    try {
+      if (campSession && camperToUpdate) {
+        const camp = await MgCamp.findById(campSession.camp);
+        if (camp) {
+          // fix waitlistedCamper below bc don't think it can be a dto
+          await emailService.sendParentRegistrationInviteEmail(
+            camp,
+            campSession,
+            camperToUpdate,
+          );
+          camperToUpdate.status = "REGISTRATION FORM SENT";
+        }
+      }
+
+      if (camperToUpdate)
         return {
           id: camperToUpdate.id,
           firstName: camperToUpdate.firstName,
@@ -668,8 +676,12 @@ class CamperService implements ICamperService {
           campSession: camperToUpdate.campSession,
           status: "REGISTRATION FORM SENT",
         };
-
     } catch (error: unknown) {
+      Logger.error(
+        `Failed to updated waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
       throw error;
     }
   }

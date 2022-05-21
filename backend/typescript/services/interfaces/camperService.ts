@@ -80,7 +80,6 @@ interface ICamperService {
    */
   deleteCamperById(camperId: string): Promise<void>;
 
-
   updateWaitlistedCamperStatus(waitlistedCamperId: string): Promise<any>;
 }
 
