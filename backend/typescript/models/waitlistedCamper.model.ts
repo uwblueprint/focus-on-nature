@@ -39,6 +39,8 @@ const WaitlistedCamperSchema: Schema = new Schema({
   },
   status: {
     type: String,
+    enum: ["NOT REGISTERED", "REGISTRATION FORM SENT", "REGISTERED"],
+    default: "NOT REGISTERED",
     required: true,
   },
   campSession: {
