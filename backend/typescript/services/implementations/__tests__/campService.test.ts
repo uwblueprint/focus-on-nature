@@ -1,7 +1,13 @@
 import db from "../../../testUtils/testDb";
 import CampService from "../campService";
-import { CreateCampDTO, QuestionType } from "../../../types";
+import {
+  CreateCampDTO,
+  CreateCampSessionsDTO,
+  CreateFormQuestionsDTO,
+  UpdateCampSessionDTO,
+} from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
+import MgCamp from "../../../models/camp.model";
 import MgFormQuestion from "../../../models/formQuestion.model";
 import FileStorageService from "../fileStorageService";
 import IFileStorageService from "../../interfaces/fileStorageService";
@@ -19,23 +25,8 @@ const testCamps: CreateCampDTO[] = [
     description: "description",
     location: "canada",
     fee: 25,
-    campSessions: [
-      {
-        capacity: 20,
-        active: true,
-        startTime: "12:00",
-        endTime: "17:00",
-        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
-      },
-    ],
-    formQuestions: [
-      {
-        question: "Q1",
-        type: "Multiselect" as QuestionType,
-        required: true,
-        description: "question description",
-      },
-    ],
+    campSessions: [],
+    formQuestions: [],
   },
   {
     ageLower: 30,
@@ -44,23 +35,8 @@ const testCamps: CreateCampDTO[] = [
     description: "description2",
     location: "canada",
     fee: 24,
-    campSessions: [
-      {
-        capacity: 20,
-        active: true,
-        startTime: "1:00",
-        endTime: "2:00",
-        dates: [new Date().toString()],
-      },
-    ],
-    formQuestions: [
-      {
-        question: "Q1",
-        type: "Text" as QuestionType,
-        required: true,
-        description: "question description2",
-      },
-    ],
+    campSessions: [],
+    formQuestions: [],
   },
 ];
 
@@ -90,6 +66,158 @@ describe("mongo campService", (): void => {
     await db.clear();
   });
 
+  it("registerCamp", async () => {
+    const testCamp: CreateCampDTO = {
+      ageLower: 15,
+      ageUpper: 30,
+      name: "test camp",
+      description: "description",
+      location: "canada",
+      fee: 25,
+      formQuestions: [],
+      campSessions: [],
+    };
+
+    const testCampSessions: CreateCampSessionsDTO = [
+      {
+        capacity: 20,
+        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
+        startTime: "6:49",
+        endTime: "16:09",
+        active: true,
+      },
+      {
+        capacity: 20,
+        dates: [
+          new Date(2023, 1, 2),
+          new Date(2023, 1, 3),
+          new Date(2023, 1, 4),
+          new Date(2023, 1, 5),
+          new Date(2023, 1, 6),
+        ].map((date) => date.toString()),
+        startTime: "6:49",
+        endTime: "16:09",
+        active: false,
+      },
+      {
+        capacity: 20,
+        dates: [new Date(2023, 1, 7), new Date(2023, 1, 8)].map((date) =>
+          date.toString(),
+        ),
+        startTime: "6:49",
+        endTime: "16:09",
+        active: false,
+      },
+    ];
+
+    // const testFormQuestions: CreateFormQuestionsDTO = [
+    //   {
+    //     type: "Multiselect",
+    //     question: "Why beans",
+    //     required: true,
+    //     description: "Good question",
+    //     options: ["Yes", "Bread"],
+    //   },
+    // ];
+
+    // Step 1: Create camp with basic details
+    const res = await campService.createCamp(testCamp);
+    const camp = await MgCamp.findById(res.id).exec();
+    expect(camp?.ageLower).toEqual(testCamp.ageLower);
+    expect(camp?.ageUpper).toEqual(testCamp.ageUpper);
+    expect(camp?.name).toEqual(testCamp.name);
+    expect(camp?.description).toEqual(testCamp.description);
+    expect(camp?.location).toEqual(testCamp.location);
+    expect(camp?.fee).toEqual(testCamp.fee);
+
+    // Step 2: Add Camp Sessions
+    const campSessions = await campService.createCampSessions(
+      res.id,
+      testCampSessions,
+    );
+
+    for (let i = 0; i < campSessions.length; i += 1) {
+      const campSession = campSessions[i];
+      expect(campSession.camp.toString()).toEqual(res.id);
+      expect(campSession.dates.map((date) => new Date(date))).toEqual(
+        testCampSessions[i].dates.map((date) => new Date(date)),
+      );
+      expect(campSession.startTime).toEqual(testCampSessions[i].startTime);
+      expect(campSession.endTime).toEqual(testCampSessions[i].endTime);
+      expect(campSession.active).toEqual(testCampSessions[i].active);
+      expect(campSession.capacity).toEqual(testCampSessions[i].capacity);
+      expect(campSession.campers).toHaveLength(0);
+      expect(campSession.waitlist).toHaveLength(0);
+    }
+
+    // TODO: Step 3: Add form questions :eyes
+  });
+
+  it("updateCamp", async () => {
+    const testCamp: CreateCampDTO = {
+      ageLower: 15,
+      ageUpper: 30,
+      name: "test camp",
+      description: "description",
+      location: "canada",
+      fee: 25,
+      formQuestions: [],
+      campSessions: [],
+    };
+
+    const testCampSessions: CreateCampSessionsDTO = [
+      {
+        capacity: 20,
+        dates: ["Sun Mar 13 2022 20:01:14 GMT-0600 (Mountain Daylight Time)"],
+        startTime: "6:49",
+        endTime: "16:09",
+        active: true,
+      },
+    ];
+
+    const updatedTestCampSession: UpdateCampSessionDTO = {
+      capacity: 30,
+      dates: [
+        new Date(2023, 1, 2),
+        new Date(2023, 1, 3),
+        new Date(2023, 1, 4),
+        new Date(2023, 1, 5),
+        new Date(2023, 1, 6),
+      ].map((date) => date.toString()),
+      startTime: "6:49",
+      endTime: "16:09",
+      active: false,
+    };
+
+    // Create camp with basic details
+    const res = await campService.createCamp(testCamp);
+
+    // Add campSession
+    const resCampSessions = await campService.createCampSessions(
+      res.id,
+      testCampSessions,
+    );
+
+    await campService.updateCampSessionById(
+      res.id,
+      resCampSessions[0].id,
+      updatedTestCampSession,
+    );
+
+    const campSession = await MgCampSession.findById(resCampSessions[0].id);
+
+    expect(campSession?.camp.toString()).toEqual(res.id);
+    expect(campSession?.dates.map((date) => new Date(date))).toEqual(
+      updatedTestCampSession.dates.map((date) => new Date(date)),
+    );
+    expect(campSession?.startTime).toEqual(updatedTestCampSession.startTime);
+    expect(campSession?.endTime).toEqual(updatedTestCampSession.endTime);
+    expect(campSession?.active).toEqual(updatedTestCampSession.active);
+    expect(campSession?.capacity).toEqual(updatedTestCampSession.capacity);
+    expect(campSession?.campers).toHaveLength(0);
+    expect(campSession?.waitlist).toHaveLength(0);
+  });
+
   it("createCamp", async () => {
     /* eslint-disable no-restricted-syntax */
     for (const testCamp of testCamps) {
@@ -113,6 +241,7 @@ describe("mongo campService", (): void => {
         );
         expect(campSession.endTime).toEqual(testCamp.campSessions[i].endTime);
         expect(campSession.active).toEqual(testCamp.campSessions[i].active);
+        expect(campSession.capacity).toEqual(testCamp.campSessions[i].capacity);
         expect(campSession.campers).toHaveLength(0);
         expect(campSession.waitlist).toHaveLength(0);
       }

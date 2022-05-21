@@ -38,20 +38,21 @@ class CamperService implements ICamperService {
       if (campers.length > 0) {
         try {
           newCamperIds = newCampers.map((newCamper) => newCamper.id);
-          existingCampSession = await MgCampSession.findByIdAndUpdate(
+          existingCampSession = await MgCampSession.findById(
             campers[0].campSession,
-            {
-              $push: { campers: newCamperIds },
-            },
-            {
-              runValidators: true,
-            },
           );
+
           if (!existingCampSession) {
             throw new Error(
               `Camp session ${campers[0].campSession} not found.`,
             );
           }
+
+          existingCampSession.campers = existingCampSession.campers
+            .map((id) => id.toString())
+            .concat(newCamperIds);
+          await existingCampSession.save();
+
           const camp = await MgCamp.findById(existingCampSession.camp);
           if (!camp) {
             throw new Error(`Camp ${existingCampSession.camp} not found.`);
@@ -681,6 +682,65 @@ class CamperService implements ICamperService {
     } catch (error: unknown) {
       Logger.error(
         `Failed to updated waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
+          error,
+          )}`,
+        );
+        throw error;
+    }
+  }
+
+  async deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void> {
+    try {
+      const waitlistedCamperToDelete: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+        waitlistedCamperId,
+      );
+
+      if (!waitlistedCamperToDelete) {
+        throw new Error(
+          `Waitlisted Camper with ID ${waitlistedCamperId} not found.`,
+        );
+      }
+
+      const campSession: CampSession | null = await MgCampSession.findById(
+        waitlistedCamperToDelete.campSession,
+      );
+      if (!campSession) {
+        throw new Error(
+          `Waitlisted Camper's camp session with ID ${waitlistedCamperToDelete.campSession} not found.`,
+        );
+      }
+
+      // delete the camper from the session's waitlist
+      const oldWaitlistedCamperIds = [...campSession.waitlist];
+      campSession.waitlist = campSession.waitlist.filter(
+        (id) => id.toString() !== waitlistedCamperId,
+      );
+      await campSession.save();
+
+      try {
+        await MgWaitlistedCamper.deleteOne({
+          _id: waitlistedCamperId,
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's waitlist deletion
+        try {
+          campSession.waitlist = oldWaitlistedCamperIds;
+          await campSession.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB waitlist's updated waitlistedCampers field after deleting waitlistedCamper document failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB waitlisted camper id that could not be deleted =",
+            waitlistedCamperId,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete camper with camper ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
           error,
         )}`,
       );
