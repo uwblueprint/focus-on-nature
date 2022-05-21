@@ -9,7 +9,7 @@ export interface FormQuestion extends Document {
   required: boolean;
   description?: string;
   options?: string[];
-  answers?: string[]; 
+  answers?: string[];
 }
 
 const FormQuestionSchema: Schema = new Schema({
@@ -33,8 +33,8 @@ const FormQuestionSchema: Schema = new Schema({
     type: [String],
   },
   answers: {
-    type: [String], 
-  }, 
+    type: [String],
+  },
 });
 
 export default mongoose.model<FormQuestion>("FormQuestion", FormQuestionSchema);
