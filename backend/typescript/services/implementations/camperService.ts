@@ -657,7 +657,7 @@ class CamperService implements ICamperService {
         );
       }
 
-      // delete the camper from the session's waitlist list of campers
+      // delete the camper from the session's waitlist
       const oldWaitlistedCamperIds = [...campSession.waitlist];
       campSession.waitlist = campSession.waitlist.filter(
         (id) => id.toString() !== waitlistedCamperId,
@@ -669,7 +669,7 @@ class CamperService implements ICamperService {
           _id: waitlistedCamperId,
         });
       } catch (mongoDbError: unknown) {
-        // could not delete camper, rollback camp's campers deletion
+        // could not delete camper, rollback camp's waitlist deletion
         try {
           campSession.waitlist = oldWaitlistedCamperIds;
           await campSession.save();
