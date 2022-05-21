@@ -9,6 +9,7 @@ export interface FormQuestion extends Document {
   required: boolean;
   description?: string;
   options?: string[];
+  answers?: string[]; 
 }
 
 const FormQuestionSchema: Schema = new Schema({
@@ -31,6 +32,11 @@ const FormQuestionSchema: Schema = new Schema({
   options: {
     type: [String],
   },
+  answers: {
+    type: [String], 
+  }, 
 });
 
 export default mongoose.model<FormQuestion>("FormQuestion", FormQuestionSchema);
+
+// add one field that maps the required questions to the field that stores the responses on the camper
