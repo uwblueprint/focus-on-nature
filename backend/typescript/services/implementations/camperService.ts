@@ -18,6 +18,7 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
+import { off } from "process";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -233,6 +234,7 @@ class CamperService implements ICamperService {
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          status: "TEMPORARY",
         };
       });
     } catch (error: unknown) {
@@ -362,6 +364,7 @@ class CamperService implements ICamperService {
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
       campSession: waitlistedCamper.campSession,
+      status: "TEMPORARY",
     };
   }
 
@@ -634,6 +637,23 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
+  }
+
+
+  async updateWaitlistedCamperSession(waitlistedCamper: WaitlistedCamperDTO): Promise<void> {
+    //send email to contact to invite them to register
+    let cS = await MgCampSession.findById(waitlistedCamper.campSession)
+    
+    if(cS) {
+      let cmp = await MgCamp.findById(cS.camp)
+      if (cmp) {
+        //fix waitlistedCamper below bc don't think it can be a dto
+        await emailService.sendParentRegistrationInviteEmail(cmp, cS, waitlistedCamper)
+      }
+    }
+
+    //update status
+    waitlistedCamper.status = "invite sent or smth";
   }
 }
 
