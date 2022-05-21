@@ -4,7 +4,6 @@ import {
   validatePrimitive,
   validateDate,
   validateMap,
-  validateTime,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -67,11 +66,11 @@ export const createCampersDtoValidator = async (
     for (const dropoffDate of camper.earlyDropoff) {
       if (
         !validatePrimitive(dropoffDate, "Date string") ||
-        !validateTime(dropoffDate)
+        !validateDate(dropoffDate)
       ) {
         return res
           .status(400)
-          .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+          .send(getApiValidationError("earlyDropoff", "Date string"));
       }
     }
     if (!Array.isArray(camper.latePickup)) {
@@ -81,11 +80,11 @@ export const createCampersDtoValidator = async (
     for (const pickupDate of camper.latePickup) {
       if (
         !validatePrimitive(pickupDate, "Date string") ||
-        !validateTime(pickupDate)
+        !validateDate(pickupDate)
       ) {
         return res
           .status(400)
-          .send(getApiValidationError("latePickup", "24 hr time string"));
+          .send(getApiValidationError("latePickup", "Date string"));
       }
     }
     if (
@@ -223,11 +222,11 @@ export const updateCamperDtoValidator = async (
   for (const dropoffDate of req.body.earlyDropoff) {
     if (
       !validatePrimitive(dropoffDate, "Date string") ||
-      !validateTime(dropoffDate)
+      !validateDate(dropoffDate)
     ) {
       return res
         .status(400)
-        .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+        .send(getApiValidationError("earlyDropoff", "Date string"));
     }
   }
   if (!Array.isArray(req.body.latePickup)) {
@@ -237,11 +236,11 @@ export const updateCamperDtoValidator = async (
   for (const pickupDate of req.body.latePickup) {
     if (
       !validatePrimitive(pickupDate, "Date string") ||
-      !validateTime(pickupDate)
+      !validateDate(pickupDate)
     ) {
       return res
         .status(400)
-        .send(getApiValidationError("latePickup", "24 hr time string"));
+        .send(getApiValidationError("latePickup", "Date string"));
     }
   }
   if (
