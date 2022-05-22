@@ -22,6 +22,8 @@ interface ICampService {
 
   updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO>;
 
+  deleteCamp(campId: string): Promise<void>;
+
   deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
 
   createCampSessions(
