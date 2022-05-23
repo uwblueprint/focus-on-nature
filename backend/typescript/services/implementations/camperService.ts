@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import mongoose from "mongoose";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -15,7 +16,6 @@ import {
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
-import mongoose from "mongoose";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
