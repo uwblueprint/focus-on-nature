@@ -466,7 +466,6 @@ class CamperService implements ICamperService {
           newCampSession.campers = newCampSessionCampers;
           const updatedNewCampSessionCampers = await newCampSession.save();
 
-
           if (!updatedNewCampSessionCampers) {
             throw new Error(
               `Failed to update ${newCampSession} with updated campers.`,
@@ -485,17 +484,11 @@ class CamperService implements ICamperService {
           }
         } catch (mongoDbError: unknown) {
           try {
-            await MgCampSession.findByIdAndUpdate(
-              oldCampSession.id,
-              { campers: oldCampSessionOriginalCampers },
-              { runValidators: true },
-            );
+            oldCampSession.campers = oldCampSessionOriginalCampers;
+            await oldCampSession.save();
 
-            await MgCampSession.findByIdAndUpdate(
-              newCampSession.id,
-              { campers: newCampSessionOriginalCampers },
-              { runValidators: true },
-            );
+            newCampSession.campers = newCampSessionOriginalCampers;
+            await newCampSession.save();
           } catch (rollbackDbError: unknown) {
             const errorMessage = [
               "Failed to rollback MongoDB update to campSession to restore camperIds. Reason =",
@@ -765,11 +758,8 @@ class CamperService implements ICamperService {
         }
       } catch (mongoDbError: unknown) {
         try {
-          await MgCampSession.findByIdAndUpdate(
-            campSession.id,
-            { campers: oldCampers },
-            { runValidators: true },
-          );
+          campSession.campers = oldCampers;
+          await campSession.save();
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB update to campSession to restore deleted camperIds. Reason =",
