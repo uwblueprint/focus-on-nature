@@ -463,11 +463,9 @@ class CamperService implements ICamperService {
 
         try {
           // update camper IDs for new camp session
-          const updatedNewCampSessionCampers = await MgCampSession.findByIdAndUpdate(
-            newCampSession.id,
-            { campers: newCampSessionCampers },
-            { runValidators: true },
-          );
+          newCampSession.campers = newCampSessionCampers;
+          const updatedNewCampSessionCampers = await newCampSession.save();
+
 
           if (!updatedNewCampSessionCampers) {
             throw new Error(
@@ -476,11 +474,9 @@ class CamperService implements ICamperService {
           }
 
           // update camper IDs for old camp session
-          const updatedOldCampSessionCampers = await MgCampSession.findByIdAndUpdate(
-            oldCampSession.id,
-            { campers: oldCampSessionCampers },
-            { runValidators: true },
-          );
+
+          oldCampSession.campers = oldCampSessionCampers;
+          const updatedOldCampSessionCampers = await oldCampSession.save();
 
           if (!updatedOldCampSessionCampers) {
             throw new Error(
@@ -502,7 +498,7 @@ class CamperService implements ICamperService {
             );
           } catch (rollbackDbError: unknown) {
             const errorMessage = [
-              "Failed to rollback MongoDB update to campSession to restore deleted camperIds. Reason =",
+              "Failed to rollback MongoDB update to campSession to restore camperIds. Reason =",
               getErrorMessage(rollbackDbError),
               "MongoDB camper ids that could not be restored in the camp Sessions=",
               camperIds,
@@ -759,11 +755,8 @@ class CamperService implements ICamperService {
           (camperId) => !camperIds.includes(camperId.toString()),
         );
 
-        const updatedCampSessionCampers = await MgCampSession.findByIdAndUpdate(
-          campSession.id,
-          { campers: newCampers },
-          { runValidators: true },
-        );
+        campSession.campers = newCampers;
+        const updatedCampSessionCampers = await campSession.save();
 
         if (!updatedCampSessionCampers) {
           throw new Error(
