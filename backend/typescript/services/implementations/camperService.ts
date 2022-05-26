@@ -483,13 +483,11 @@ class CamperService implements ICamperService {
           }
         } catch (mongoDbError: unknown) {
           try {
-            
             oldCampSession.campers = oldCampSessionOriginalCampers;
             await oldCampSession.save();
 
             newCampSession.campers = newCampSessionOriginalCampers;
             await newCampSession.save();
-
           } catch (rollbackDbError: unknown) {
             const errorMessage = [
               "Failed to rollback MongoDB update to campSession to restore camperIds. Reason =",
