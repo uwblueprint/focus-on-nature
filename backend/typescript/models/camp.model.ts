@@ -1,19 +1,25 @@
 import { Schema, Document, model } from "mongoose";
 import { CampSession } from "./campSession.model";
 import { FormQuestion } from "./formQuestion.model";
+import { User } from "./user.model";
 
 export interface Camp extends Document {
   id: string;
   ageLower: number;
   ageUpper: number;
+  campCoordinators: (User | Schema.Types.ObjectId)[];
+  campCounsellors: (User | Schema.Types.ObjectId)[];
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
+  earlyDropOff: string;
   fee: number;
   fileName?: string;
   formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
+  latePickup: string;
   location: string;
   name: string;
   productId: string;
+  volunteers: string[];
 }
 
 const CampSchema: Schema = new Schema({
@@ -25,6 +31,24 @@ const CampSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
+  campCoordinators: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
+  },
+  campCounsellors: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
+  },
   campSessions: {
     type: [
       {
@@ -35,6 +59,9 @@ const CampSchema: Schema = new Schema({
     default: [],
   },
   description: {
+    type: String,
+  },
+  earlyDropoff: {
     type: String,
   },
   fee: {
@@ -54,6 +81,9 @@ const CampSchema: Schema = new Schema({
     default: [],
     required: true,
   },
+  latePickup: {
+    type: String,
+  },
   location: {
     type: String,
     required: true,
@@ -64,6 +94,10 @@ const CampSchema: Schema = new Schema({
   },
   productId: {
     type: String,
+  },
+  volunteers: {
+    type: String,
+    default: [],
   },
 });
 

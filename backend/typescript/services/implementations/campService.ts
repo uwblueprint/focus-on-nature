@@ -78,12 +78,21 @@ class CampService implements ICampService {
           id: camp.id,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators.map((coordinator) =>
+            coordinator.toString(),
+          ),
+          campCounsellors: camp.campCounsellors.map((counsellor) =>
+            counsellor.toString(),
+          ),
           name: camp.name,
           description: camp.description,
+          earlyDropOff: camp.earlyDropOff,
+          latePickup: camp.latePickup,
           location: camp.location,
           fee: camp.fee,
           formQuestions,
           campSessions,
+          volunteers: camp.volunteers,
         };
       });
     } catch (error: unknown) {
@@ -118,14 +127,23 @@ class CampService implements ICampService {
       id: campId,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: camp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
       campSessions: oldCamp.campSessions.map((session) => session.toString()),
       name: camp.name,
       description: camp.description,
+      earlyDropOff: camp.earlyDropOff,
+      latePickup: camp.latePickup,
       location: camp.location,
       fee: camp.fee,
       formQuestions: oldCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
+      volunteers: camp.volunteers,
     };
   }
 
@@ -452,14 +470,23 @@ class CampService implements ICampService {
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
       campSessions: newCamp.campSessions.map((session) => session.toString()),
+      campCoordinators: newCamp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: newCamp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
       name: newCamp.name,
       description: newCamp.description,
+      earlyDropOff: newCamp.earlyDropOff,
+      latePickup: newCamp.latePickup,
       location: newCamp.location,
       fee: newCamp.fee,
       formQuestions: newCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
       fileName: newCamp.fileName,
+      volunteers: newCamp.volunteers,
     };
   }
 

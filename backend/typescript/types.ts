@@ -96,13 +96,18 @@ export type CampDTO = {
   id: string;
   ageLower: number;
   ageUpper: number;
+  campCoordinators: string[];
+  campCounsellors: string[];
   name: string;
   description: string;
+  earlyDropOff: string;
   location: string;
   fee: number;
   formQuestions: string[];
+  latePickup: string;
   campSessions: string[];
   fileName?: string;
+  volunteers: string[];
 };
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
