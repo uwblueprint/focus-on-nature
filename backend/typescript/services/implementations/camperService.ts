@@ -473,7 +473,6 @@ class CamperService implements ICamperService {
           }
 
           // update camper IDs for old camp session
-
           oldCampSession.campers = oldCampSessionCampers;
           const updatedOldCampSessionCampers = await oldCampSession.save();
 
@@ -484,11 +483,13 @@ class CamperService implements ICamperService {
           }
         } catch (mongoDbError: unknown) {
           try {
+            
             oldCampSession.campers = oldCampSessionOriginalCampers;
             await oldCampSession.save();
 
             newCampSession.campers = newCampSessionOriginalCampers;
             await newCampSession.save();
+
           } catch (rollbackDbError: unknown) {
             const errorMessage = [
               "Failed to rollback MongoDB update to campSession to restore camperIds. Reason =",
@@ -743,7 +744,7 @@ class CamperService implements ICamperService {
       const oldCampers = campSession.campers; // clone the full array of campers for rollback
 
       try {
-        // delete camper IDs from the camp
+        // delete camper IDs from the array of campers in the camp session
         const newCampers = campSession.campers.filter(
           (camperId) => !camperIds.includes(camperId.toString()),
         );

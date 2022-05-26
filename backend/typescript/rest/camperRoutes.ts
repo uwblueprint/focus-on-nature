@@ -110,7 +110,7 @@ camperRouter.post(
 camperRouter.put(
   "/update",
   updateCamperDtoValidator,
-  // isAuthorizedByRole(new Set(["Admin"])),
+  isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
       const camperIds = req.body.camperIds as Array<string>;
