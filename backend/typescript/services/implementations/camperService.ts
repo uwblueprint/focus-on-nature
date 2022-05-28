@@ -375,16 +375,6 @@ class CamperService implements ICamperService {
     let updatedCamperDTOs: Array<CamperDTO> = [];
     let updatedCampers: Array<Camper> = [];
     let oldCampers: Array<Camper> = [];
-    const newCampSessionCampers: (
-      | string
-      | mongoose.Schema.Types.ObjectId
-      | Camper
-    )[] = [];
-    const oldCampSessionCampers: (
-      | string
-      | mongoose.Schema.Types.ObjectId
-      | Camper
-    )[] = [];
     let newCampSession: CampSession | null;
     let oldCampSession: CampSession | null;
 
