@@ -10,6 +10,7 @@ import {
   GetCampDTO,
   UpdateCampDTO,
   CreateCampSessionsDTO,
+  FormQuestionDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -462,6 +463,18 @@ class CampService implements ICampService {
       fileName: newCamp.fileName,
     };
   }
+
+  async createFormQuestions(
+    campSessionId: string,
+    formQuestions: FormQuestionDTO,
+  ): Promise<void> {
+    try {
+      // insert form questions into db
+      MgFormQuestion
+
+      // insert ids into db
+    }
+  };
 
   async editCampSessionById(
     campSessionId: string,
