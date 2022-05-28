@@ -191,6 +191,16 @@ export const updateCamperDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+  if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
+    return res
+      .status(400)
+      .send(getApiValidationError("camperIds", "string", true));
+  }
   if (
     req.body.campSession &&
     !validatePrimitive(req.body.campSession, "string")
@@ -335,5 +345,25 @@ export const cancelCamperDtoValidator = async (
     }
   }
 
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const deleteCamperDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+  if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
+    return res
+      .status(400)
+      .send(getApiValidationError("camperIds", "string", true));
+  }
   return next();
 };

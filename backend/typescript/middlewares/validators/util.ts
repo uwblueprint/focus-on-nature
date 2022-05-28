@@ -121,6 +121,6 @@ export const getImageSizeValidationError = (): string => {
   return `Image size must be less than ${allowableImageSize} MB.`;
 };
 
-export const checkDuplicatesInArray = (value: Array<any>): boolean => {
+export const duplicatesInArray = (value: Array<any>): boolean => {
   return new Set(value).size !== value.length;
 };

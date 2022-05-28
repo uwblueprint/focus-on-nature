@@ -5,6 +5,7 @@ import {
   cancelCamperDtoValidator,
   createCampersDtoValidator,
   updateCamperDtoValidator,
+  deleteCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
 // eslint-disable-next-line import/no-named-as-default
 import CamperService from "../services/implementations/camperService";
@@ -106,14 +107,14 @@ camperRouter.post(
 );
 
 /* Update the camper with the specified camperId */
-camperRouter.put(
-  "/:camperId",
+camperRouter.patch(
+  "/",
   updateCamperDtoValidator,
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
-      const updatedCamper = await camperService.updateCamperById(
-        req.params.camperId,
+      const updatedCampers = await camperService.updateCampersById(
+        req.body.camperIds,
         {
           firstName: req.body.firstName,
           lastName: req.body.lastName,
@@ -131,30 +132,34 @@ camperRouter.put(
           optionalClauses: req.body.optionalClauses,
         },
       );
-      res.status(200).json(updatedCamper);
+      res.status(200).json(updatedCampers);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }
   },
 );
 
-/* Delete list of campers with the chargeId */
-camperRouter.delete("/cancel", cancelCamperDtoValidator, async (req, res) => {
-  try {
-    await camperService.deleteCampersByChargeId(
-      req.body.chargeId,
-      req.body.camperIds,
-    );
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+/* Cancel registration for the list of campers with the chargeId */
+camperRouter.delete(
+  "/cancel-registration",
+  cancelCamperDtoValidator,
+  async (req, res) => {
+    try {
+      await camperService.cancelRegistration(
+        req.body.chargeId,
+        req.body.camperIds,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Delete a camper */
-camperRouter.delete("/:camperId", async (req, res) => {
+camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
   try {
-    await camperService.deleteCamperById(req.params.camperId);
+    await camperService.deleteCampersById(req.body.camperIds);
     res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
