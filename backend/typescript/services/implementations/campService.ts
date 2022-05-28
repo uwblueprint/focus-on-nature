@@ -104,7 +104,7 @@ class CampService implements ICampService {
     try {
       // active is not a field on camp atm
       if (oldCamp.active) {
-        oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+        oldCamp.updateOne({
           $set: {
             name: camp.name,
             ageLower: camp.ageLower,
@@ -114,7 +114,7 @@ class CampService implements ICampService {
           },
         });
       } else {
-        oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+        oldCamp.updateOne({
           $set: {
             name: camp.name,
             ageLower: camp.ageLower,
@@ -124,9 +124,6 @@ class CampService implements ICampService {
             fee: camp.fee,
           },
         });
-      }
-      if (!oldCamp) {
-        throw new Error(`Camp' with campId ${campId} not found.`);
       }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
