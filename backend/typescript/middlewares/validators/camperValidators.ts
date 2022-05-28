@@ -65,7 +65,7 @@ export const createCampersDtoValidator = async (
     // eslint-disable-next-line no-restricted-syntax
     for (const dropoffDate of camper.earlyDropoff) {
       if (
-        !validatePrimitive(dropoffDate, "Date string") ||
+        !validatePrimitive(dropoffDate, "string") ||
         !validateDate(dropoffDate)
       ) {
         return res
