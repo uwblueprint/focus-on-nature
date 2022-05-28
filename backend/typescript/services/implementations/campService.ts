@@ -108,6 +108,7 @@ class CampService implements ICampService {
       oldCamp = await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
+          active: camp.active,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
           campCoordinators: camp.campCoordinators,
@@ -116,6 +117,8 @@ class CampService implements ICampService {
           earlyDropOff: camp.earlyDropOff,
           latePickup: camp.latePickup,
           location: camp.location,
+          startTime: camp.startTime,
+          endTime: camp.endTime,
           fee: camp.fee,
           volunteers: camp.volunteers,
         },

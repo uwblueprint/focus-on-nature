@@ -72,7 +72,7 @@ const CampSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  earlyDropoff: {
+  earlyDropOff: {
     type: String,
   },
   fee: {
