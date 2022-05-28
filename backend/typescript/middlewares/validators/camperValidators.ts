@@ -79,7 +79,7 @@ export const createCampersDtoValidator = async (
     // eslint-disable-next-line no-restricted-syntax
     for (const pickupDate of camper.latePickup) {
       if (
-        !validatePrimitive(pickupDate, "Date string") ||
+        !validatePrimitive(pickupDate, "string") ||
         !validateDate(pickupDate)
       ) {
         return res
