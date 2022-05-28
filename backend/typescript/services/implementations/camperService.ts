@@ -235,7 +235,7 @@ class CamperService implements ICamperService {
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
-          status: "NOT REGISTERED",
+          status: camper.status,
         };
       });
     } catch (error: unknown) {
@@ -365,7 +365,7 @@ class CamperService implements ICamperService {
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
       campSession: waitlistedCamper.campSession,
-      status: "NOT REGISTERED",
+      status: waitlistedCamper.status,
     };
   }
 
@@ -641,7 +641,7 @@ class CamperService implements ICamperService {
   }
 
   /* eslint-disable consistent-return */
-  async updateWaitlistedCamperStatus(waitlistedCamperId: string): Promise<any> {
+  async inviteWaitlistedCamper(waitlistedCamperId: string): Promise<any> {
     // send email to contact to invite them to register
     const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
       waitlistedCamperId,
@@ -655,15 +655,13 @@ class CamperService implements ICamperService {
       if (campSession && camperToUpdate) {
         const camp = await MgCamp.findById(campSession.camp);
         if (camp) {
-          // fix waitlistedCamper below bc don't think it can be a dto
           await emailService.sendParentRegistrationInviteEmail(
             camp,
             campSession,
             camperToUpdate,
           );
-          camperToUpdate.status = "REGISTRATION FORM SENT";
+          camperToUpdate.status = "RegistrationFormSent";
           await camperToUpdate.save();
-          // await MgWaitlistedCamper.update({_id: camperToUpdate.id})
         }
       }
 
@@ -677,7 +675,7 @@ class CamperService implements ICamperService {
           contactEmail: camperToUpdate.contactEmail,
           contactNumber: camperToUpdate.contactNumber,
           campSession: camperToUpdate.campSession,
-          status: "REGISTRATION FORM SENT",
+          status: camperToUpdate.status,
         };
     } catch (error: unknown) {
       Logger.error(

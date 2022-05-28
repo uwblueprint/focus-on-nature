@@ -176,3 +176,8 @@ export type WaiverDTO = {
 export type FormTemplateDTO = {
   formQuestions: [FormQuestionDTO];
 };
+
+export type WaitlistedCamperStatus =
+  | "NotRegistered"
+  | "RegistrationFormSent"
+  | "Registered";
