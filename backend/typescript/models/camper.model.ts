@@ -9,8 +9,8 @@ export interface Camper extends Document {
   allergies: string;
   hasCamera: boolean;
   hasLaptop: boolean;
-  earlyDropoff: string[];
-  latePickup: string[];
+  earlyDropoff: Date[];
+  latePickup: Date[];
   specialNeeds: string;
   contacts: {
     firstName: string;
@@ -19,7 +19,7 @@ export interface Camper extends Document {
     phoneNumber: string;
   }[];
   formResponses: Map<string, string>;
-  registrationDate: string;
+  registrationDate: Date;
   hasPaid: boolean;
   chargeId: string;
   charges: {
