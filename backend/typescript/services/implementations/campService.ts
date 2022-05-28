@@ -109,42 +109,30 @@ class CampService implements ICampService {
     }
 
     try {
+      var updates: any = {
+        name: camp.name,
+        active: camp.active,
+        ageLower: camp.ageLower,
+        ageUpper: camp.ageUpper,
+        campCoordinators: camp.campCoordinators,
+        campCounsellors: camp.campCounsellors,
+        description: camp.description,
+        earlyDropOff: camp.earlyDropOff,
+        latePickup: camp.latePickup,
+        location: camp.location,
+        startTime: camp.startTime,
+        endTime: camp.endTime,
+        volunteers: camp.volunteers,
+      };
+
       if (oldCamp.active) {
         oldCamp.updateOne({
-          $set: {
-            name: camp.name,
-            active: camp.active,
-            ageLower: camp.ageLower,
-            ageUpper: camp.ageUpper,
-            campCoordinators: camp.campCoordinators,
-            campCounsellors: camp.campCounsellors,
-            description: camp.description,
-            earlyDropOff: camp.earlyDropOff,
-            latePickup: camp.latePickup,
-            location: camp.location,
-            startTime: camp.startTime,
-            endTime: camp.endTime,
-            volunteers: camp.volunteers,
-          },
+          $set: updates,
         });
       } else {
+        updates.fee = camp.fee; 
         oldCamp.updateOne({
-          $set: {
-            name: camp.name,
-            active: camp.active,
-            ageLower: camp.ageLower,
-            ageUpper: camp.ageUpper,
-            campCoordinators: camp.campCoordinators,
-            campCounsellors: camp.campCounsellors,
-            description: camp.description,
-            earlyDropOff: camp.earlyDropOff,
-            latePickup: camp.latePickup,
-            location: camp.location,
-            startTime: camp.startTime,
-            endTime: camp.endTime,
-            fee: camp.fee,
-            volunteers: camp.volunteers,
-          },
+          $set: updates,
         });
       }
     } catch (error: unknown) {
