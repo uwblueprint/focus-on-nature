@@ -95,17 +95,36 @@ class CampService implements ICampService {
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
 
+    oldCamp = await MgCamp.findById(campId);
+
+    if (!oldCamp) {
+      throw new Error(`Camp' with campId ${campId} not found.`);
+    }
+
     try {
-      oldCamp = await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          description: camp.description,
-          location: camp.location,
-          fee: camp.fee,
-        },
-      });
+      // active is not a field on camp atm
+      if (oldCamp.active) {
+        oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+          $set: {
+            name: camp.name,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            description: camp.description,
+            location: camp.location,
+          },
+        });
+      } else {
+        oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+          $set: {
+            name: camp.name,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            description: camp.description,
+            location: camp.location,
+            fee: camp.fee,
+          },
+        });
+      }
       if (!oldCamp) {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
@@ -214,6 +233,25 @@ class CampService implements ICampService {
         throw new Error(
           `CampSession with campSessionId ${campSessionId} not found for Camp with id ${campId}.`,
         );
+      }
+      if (oldCamp.active) {
+        const oldCampSession: CampSession | null = await MgCampSession.findById(
+          campSessionId,
+        );
+        if (oldCampSession) {
+          if (
+            oldCampSession.campers !== null &&
+            campSession.capacity < oldCampSession.campers.length
+          ) {
+            throw new Error(
+              `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+            );
+          }
+        } else {
+          throw new Error(
+            `CampSession with campSessionId ${campSessionId} not found.`,
+          );
+        }
       }
 
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
