@@ -9,8 +9,8 @@ export interface Camper extends Document {
   allergies: string;
   hasCamera: boolean;
   hasLaptop: boolean;
-  earlyDropoff: Date[];
-  latePickup: Date[];
+  earlyDropoff: string[];
+  latePickup: string[];
   specialNeeds: string;
   contacts: {
     firstName: string;
@@ -19,7 +19,7 @@ export interface Camper extends Document {
     phoneNumber: string;
   }[];
   formResponses: Map<string, string>;
-  registrationDate: Date;
+  registrationDate: string;
   hasPaid: boolean;
   chargeId: string;
   charges: {
@@ -120,6 +120,16 @@ const CamperSchema: Schema = new Schema({
       required: true,
     },
   },
+  optionalClauses: [
+    {
+      clause: {
+        type: String,
+      },
+      agreed: {
+        type: Boolean,
+      },
+    },
+  ],
 });
 
 export default mongoose.model<Camper>("Camper", CamperSchema);
