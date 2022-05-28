@@ -54,11 +54,6 @@ export const createCampersDtoValidator = async (
         .status(400)
         .send(getApiValidationError("hasLaptop", "boolean"));
     }
-    if (!Array.isArray(camper.contacts) || camper.contacts.length !== 2) {
-      return res
-        .status(400)
-        .send("There must be 2 emergency contacts specified.");
-    }
     if (!Array.isArray(camper.earlyDropoff)) {
       return res.status(400).send("early dropoff is not an array");
     }
