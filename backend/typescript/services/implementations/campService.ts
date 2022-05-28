@@ -102,29 +102,50 @@ class CampService implements ICampService {
   }
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
-    let oldCamp: Camp | null;
+    const oldCamp: Camp | null = await MgCamp.findById(campId);
+
+    if (!oldCamp) {
+      throw new Error(`Camp' with campId ${campId} not found.`);
+    }
 
     try {
-      oldCamp = await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators,
-          campCounsellors: camp.campCounsellors,
-          description: camp.description,
-          earlyDropOff: camp.earlyDropOff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          fee: camp.fee,
-          volunteers: camp.volunteers,
-        },
-      });
-      if (!oldCamp) {
-        throw new Error(`Camp' with campId ${campId} not found.`);
+      if (oldCamp.active) {
+        oldCamp.updateOne({
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropOff: camp.earlyDropOff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            volunteers: camp.volunteers,
+          },
+        });
+      } else {
+        oldCamp.updateOne({
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropOff: camp.earlyDropOff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            fee: camp.fee,
+            volunteers: camp.volunteers,
+          },
+        });
       }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
@@ -237,6 +258,26 @@ class CampService implements ICampService {
         throw new Error(
           `CampSession with campSessionId ${campSessionId} not found for Camp with id ${campId}.`,
         );
+      }
+
+      if (oldCamp.active) {
+        const oldCampSession: CampSession | null = await MgCampSession.findById(
+          campSessionId,
+        );
+        if (oldCampSession) {
+          if (
+            oldCampSession.campers !== null &&
+            campSession.capacity < oldCampSession.campers.length
+          ) {
+            throw new Error(
+              `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+            );
+          }
+        } else {
+          throw new Error(
+            `CampSession with campSessionId ${campSessionId} not found.`,
+          );
+        }
       }
 
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
