@@ -51,8 +51,8 @@ authRouter.post("/register", registerRequestValidator, async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      role: "User",
-      password: req.body.password,
+      role: "Admin",
+      active: true,
     });
 
     const authDTO = await authService.generateToken(

@@ -4,14 +4,13 @@ info:
   title: UW Blueprint Starter Code TypeScript API
   description: An API for the TypeScript Backend of Starter Code
 
-
-# Authentication 
+# Authentication
 components:
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth: # arbitrary name for the security scheme
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
   schemas:
     PasswordLogin:
       type: object
@@ -30,7 +29,6 @@ components:
         idToken:
           type: string
 
-
 paths:
   /entities:
     get:
@@ -40,7 +38,7 @@ paths:
         - Entity
       description: Returns a list of entities
       responses:
-        '200':
+        "200":
           description: Successfully returned a list of entities
           content:
             application/json:
@@ -49,7 +47,7 @@ paths:
                 items:
                   type: object
                   required:
-                      - intField, stringField, boolField, enumField, stringArrayField
+                    - intField, stringField, boolField, enumField, stringArrayField
                   properties:
                     intField:
                       type: integer
@@ -66,11 +64,10 @@ paths:
                       type: boolean
                     fileName:
                       type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-
 
     post:
       security:
@@ -91,7 +88,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        '201':
+        "201":
           description: Successfully created a new entity
           content:
             application/json:
@@ -115,12 +112,11 @@ paths:
                     type: boolean
                   fileName:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-  
-  
+
   /entities/{id}:
     get:
       security:
@@ -138,7 +134,7 @@ paths:
         - Entity
       description: Returns an entity based on its ID
       responses:
-        '200':
+        "200":
           description: Successfully returns entity based on ID
           content:
             application/json:
@@ -162,11 +158,10 @@ paths:
                     type: boolean
                   fileName:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid ID
-
 
     put:
       security:
@@ -196,13 +191,12 @@ paths:
                   type: string
                   format: binary
       responses:
-        '200':
+        "200":
           description: Successfully edited entity based on ID
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-
 
     delete:
       security:
@@ -220,11 +214,11 @@ paths:
         - Entity
       description: Delete an entity based on its ID
       responses:
-        '200':
+        "200":
           description: Successfully deleted entity based on ID
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid ID
 
   /entities/files/{fileName}:
@@ -242,7 +236,7 @@ paths:
         - Entity
       description: Returns a signed URL to the file associated with an entity
       responses:
-        '200':
+        "200":
           description: Successfully returns the signed URL of the file
           content:
             application/json:
@@ -253,9 +247,9 @@ paths:
                 properties:
                   fileURL:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid fileName
 
   /auth/login:
@@ -269,16 +263,16 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/PasswordLogin'
-                - $ref: '#/components/schemas/OAuthLogin'
+                - $ref: "#/components/schemas/PasswordLogin"
+                - $ref: "#/components/schemas/OAuthLogin"
       responses:
-        '200':
-          description:  Returns access token in response body and sets refreshToken as an httpOnly cookie
+        "200":
+          description: Returns access token in response body and sets refreshToken as an httpOnly cookie
           content:
             application/json:
               schema:
                 type: object
-                properties:   
+                properties:
                   accessToken:
                     type: string
                   id:
@@ -291,9 +285,11 @@ paths:
                     type: string
                   role:
                     type: string
-        '500':
+                  active:
+                    type: boolean
+        "500":
           description: Invalid request
-  
+
   /auth/register:
     post:
       tags:
@@ -317,13 +313,13 @@ paths:
                 lastName:
                   type: string
       responses:
-        '200':
-          description:  Returns access token in response body and sets refreshToken as an httpOnly cookie
+        "200":
+          description: Returns access token in response body and sets refreshToken as an httpOnly cookie
           content:
             application/json:
               schema:
                 type: object
-                properties:   
+                properties:
                   accessToken:
                     type: string
                   id:
@@ -336,9 +332,8 @@ paths:
                     type: string
                   role:
                     type: string
-        '500':
+        "500":
           description: Invalid request
-
 
   /auth/refresh:
     post:
@@ -348,21 +343,20 @@ paths:
         - Auth
       description: Refresh auth credentials
       responses:
-        '200':
-          description:  Returns access token in response body and sets refreshToken as an httpOnly cookie
+        "200":
+          description: Returns access token in response body and sets refreshToken as an httpOnly cookie
           content:
             application/json:
               schema:
                 type: object
-                properties:   
+                properties:
                   accessToken:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-                  
-                
+
   /auth/logout/{userid}:
     post:
       security:
@@ -380,13 +374,12 @@ paths:
         - Auth
       description: Logout as user
       responses:
-        '204':
+        "204":
           description: Revokes all of the specified user's refresh tokens
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-
 
   /auth/resetPassword/{email}:
     post:
@@ -402,13 +395,12 @@ paths:
         - Auth
       description: Triggers password reset for user with specified email (reset link will be emailed)
       responses:
-        '204':
+        "204":
           description: Successfully sent password reset email
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-
 
   /users:
     get:
@@ -431,7 +423,7 @@ paths:
         - User
       description: Get all users, optionally filter by a userId or email query parameter to retrieve a single user
       responses:
-        '200':
+        "200":
           description: Successfully returned a list of users, or a user filtered by id or email
           content:
             application/json:
@@ -440,7 +432,7 @@ paths:
                 items:
                   type: object
                   required:
-                      - id, firstName, lastName, email, role
+                    - id, firstName, lastName, email, role
                   properties:
                     id:
                       type: string
@@ -452,13 +444,12 @@ paths:
                       type: string
                     role:
                       type: string
-        '400':
+        "400":
           description: Cannot query by both user and email
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
-
 
     post:
       security:
@@ -481,18 +472,20 @@ paths:
                   type: string
                 role:
                   type: string
-                  enum: ["User", "Admin"]
+                  enum: ["Admin", "CampCoordinator"]
                 email:
                   type: string
+                active:
+                  type: boolean
       responses:
-        '201':
+        "201":
           description: Successfully created a new user
           content:
             application/json:
               schema:
                 type: object
                 required:
-                    - id, firstName, lastName, email, role
+                  - id, firstName, lastName, email, role
                 properties:
                   id:
                     type: string
@@ -504,12 +497,11 @@ paths:
                     type: string
                   role:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
 
-          
     delete:
       security:
         - bearerAuth: []
@@ -530,16 +522,15 @@ paths:
         - User
       description: Deletes a user by userId or email, specified through a query parameter
       responses:
-        '204':
+        "204":
           description: Succesfully deleted user
-        '400':
+        "400":
           description: Cannot query by both userId and email, invalid userId or email, userId or email is not a string, userId or email not supplied
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request
 
-                
   /users/{userId}:
     put:
       security:
@@ -571,18 +562,20 @@ paths:
                   type: string
                 role:
                   type: string
-                  enum: ["User", "Admin"]
+                  enum: ["Admin", "CampCoordinator"]
                 email:
                   type: string
+                active:
+                  type: boolean
       responses:
-        '200':
+        "200":
           description: Successfully updated user
           content:
             application/json:
               schema:
                 type: object
                 required:
-                    - id, firstName, lastName, email, role
+                  - id, firstName, lastName, email, role
                 properties:
                   id:
                     type: string
@@ -594,7 +587,7 @@ paths:
                     type: string
                   role:
                     type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
+        "500":
           description: Invalid request

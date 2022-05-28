@@ -1,4 +1,3 @@
-
 import UserModel from "../../../models/user.model";
 import UserService from "../userService";
 
@@ -12,12 +11,16 @@ const testUsers = [
     lastName: "Pan",
     authId: "123",
     role: "Admin",
+    active: true,
+    email: "email@gmail.com",
   },
   {
     firstName: "Wendy",
     lastName: "Darling",
     authId: "321",
-    role: "User",
+    role: "CampCoordinator",
+    active: false,
+    email: "email2@gmail.com",
   },
 ];
 
@@ -59,4 +62,3 @@ describe("mongo userService", (): void => {
     });
   });
 });
-

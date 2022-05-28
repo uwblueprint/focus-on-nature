@@ -2,18 +2,13 @@ import mongoose from "mongoose";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MongoMemoryServer } from "mongodb-memory-server";
 
-
 const mongo = new MongoMemoryServer();
 
 const mongoTest = {
   connect: async (): Promise<void> => {
     await mongo.start();
-    const uri = mongo.getUri();
-    await mongoose.connect(uri, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      useFindAndModify: false,
-    });
+    const uri = await mongo.getUri("fon-test");
+    await mongoose.connect(uri);
   },
 
   disconnect: async (): Promise<void> => {
@@ -32,4 +27,3 @@ const mongoTest = {
 };
 
 export default mongoTest;
-

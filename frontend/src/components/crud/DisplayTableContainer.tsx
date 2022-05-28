@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import BTable from "react-bootstrap/Table";
 import { HeaderGroup, useTable, Column } from "react-table";
 
-
 import EntityAPIClient, {
   EntityResponse,
 } from "../../APIClients/EntityAPIClient";
@@ -149,7 +148,6 @@ const DisplayTableContainer: React.FC = (): React.ReactElement | null => {
   }, []);
 
   const downloadEntityFile = async (fileUUID: string) => {
-
     const data = await EntityAPIClient.getFile(fileUUID);
     downloadFile(data, "file");
   };

@@ -1,35 +1,70 @@
-import { Schema, model } from "mongoose";
-import AbstractCampSchema, { AbstractCamp } from "./abstractCamp.model";
+import { Schema, Document, model } from "mongoose";
+import { CampSession } from "./campSession.model";
+import { FormQuestion } from "./formQuestion.model";
 
-export interface Camp extends AbstractCamp {
-    campers: string[]; // TODO: make camper array
-    waitlist: string[]; // TODO: make camper array
-    startDate: Date;
-    endDate: Date;
-    active: boolean;
+export interface Camp extends Document {
+  id: string;
+  ageLower: number;
+  ageUpper: number;
+  campSessions: (Schema.Types.ObjectId | CampSession)[];
+  description: string;
+  fee: number;
+  fileName?: string;
+  formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
+  location: string;
+  name: string;
+  productId: string;
 }
 
-const CampSchema: Schema = AbstractCampSchema.discriminator('Camp', new Schema({
-    campers: {
-        type: [String],
-        required: true,
-    }, // TODO: make camper array
-    waitlist: {
-        type: [String],
-        required: true,
-    }, // TODO: make camper array
-    startDate: {
-        type: Date,
-        required: true,
-    },
-    endDate: {
-        type: Date,
-        required: true,
-    },
-    active: {
-        type: Boolean,
-        required: true,
-    }
-}));
+const CampSchema: Schema = new Schema({
+  ageLower: {
+    type: Number,
+    required: true,
+  },
+  ageUpper: {
+    type: Number,
+    required: true,
+  },
+  campSessions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "CampSession",
+      },
+    ],
+    default: [],
+  },
+  description: {
+    type: String,
+  },
+  fee: {
+    type: Number,
+    required: true,
+  },
+  fileName: {
+    type: String,
+  },
+  formQuestions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "FormQuestion",
+      },
+    ],
+    default: [],
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  productId: {
+    type: String,
+  },
+});
 
-export default model<Camp>("Camp");
+export default model<Camp>("Camp", CampSchema);

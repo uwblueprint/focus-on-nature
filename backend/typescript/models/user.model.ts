@@ -3,11 +3,12 @@ import mongoose, { Schema, Document } from "mongoose";
 import { Role } from "../types";
 
 export interface User extends Document {
-  id: string;
   firstName: string;
   lastName: string;
   authId: string;
+  email: string;
   role: Role;
+  active: boolean;
 }
 
 const UserSchema: Schema = new Schema({
@@ -23,10 +24,18 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   role: {
     type: String,
     required: true,
-    enum: ["User", "Admin"],
+    enum: ["Admin", "CampCoordinator"],
+  },
+  active: {
+    type: Boolean,
+    required: true,
   },
 });
 

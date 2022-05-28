@@ -2,7 +2,16 @@ import * as firebaseAdmin from "firebase-admin";
 
 import IUserService from "../interfaces/userService";
 import MgUser, { User } from "../../models/user.model";
-import { CreateUserDTO, Role, UpdateUserDTO, UserDTO } from "../../types";
+import MgCampCoordinator, {
+  CampCoordinator,
+} from "../../models/campcoordinator.model";
+import {
+  CreateUserDTO,
+  Role,
+  UpdateUserDTO,
+  UserDTO,
+  CampCoordinatorDTO,
+} from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 
@@ -41,6 +50,7 @@ class UserService implements IUserService {
       lastName: user.lastName,
       email: firebaseUser.email ?? "",
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -66,6 +76,7 @@ class UserService implements IUserService {
       lastName: user.lastName,
       email: firebaseUser.email ?? "",
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -129,6 +140,7 @@ class UserService implements IUserService {
             lastName: user.lastName,
             email: firebaseUser.email ?? "",
             role: user.role,
+            active: user.active,
           };
         }),
       );
@@ -140,32 +152,23 @@ class UserService implements IUserService {
     return userDtos;
   }
 
-  async createUser(
-    user: CreateUserDTO,
-    authId?: string,
-    signUpMethod = "PASSWORD",
-  ): Promise<UserDTO> {
+  async createUser(user: CreateUserDTO, authId?: string): Promise<UserDTO> {
     let newUser: User;
     let firebaseUser: firebaseAdmin.auth.UserRecord;
 
     try {
-      if (signUpMethod === "GOOGLE") {
-        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-        firebaseUser = await firebaseAdmin.auth().getUser(authId!);
-      } else {
-        // signUpMethod === PASSWORD
-        firebaseUser = await firebaseAdmin.auth().createUser({
-          email: user.email,
-          password: user.password,
-        });
-      }
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      firebaseUser = await firebaseAdmin.auth().getUser(authId!);
 
       try {
         newUser = await MgUser.create({
           firstName: user.firstName,
           lastName: user.lastName,
           authId: firebaseUser.uid,
+          email: firebaseUser.email,
           role: user.role,
+          active: user.active,
+          __t: "CampCoordinator",
         });
       } catch (mongoDbError) {
         // rollback user creation in Firebase
@@ -194,64 +197,175 @@ class UserService implements IUserService {
       lastName: newUser.lastName,
       email: firebaseUser.email ?? "",
       role: newUser.role,
+      active: newUser.active,
     };
   }
 
-  async updateUserById(userId: string, user: UpdateUserDTO): Promise<UserDTO> {
-    let oldUser: User | null;
-    let updatedFirebaseUser: firebaseAdmin.auth.UserRecord;
+  async updateUserById(
+    userId: string,
+    user: UpdateUserDTO,
+  ): Promise<UserDTO | CampCoordinatorDTO> {
+    let updatedUser: User | CampCoordinator | null;
+
+    const oldUser = await MgUser.findById(userId); // getting the user to check their role
+
+    if (!oldUser) {
+      throw new Error(`userId ${userId} not found before update.`);
+    }
 
     try {
-      // must explicitly specify runValidators when updating through findByIdAndUpdate
-      oldUser = await MgUser.findByIdAndUpdate(
-        userId,
-        { firstName: user.firstName, lastName: user.lastName, role: user.role },
-        { runValidators: true },
-      );
-
-      if (!oldUser) {
-        throw new Error(`userId ${userId} not found.`);
+      // update roles
+      if (user.role && user.role !== oldUser.role) {
+        if (user.role === "CampCoordinator") {
+          await MgUser.findByIdAndUpdate(userId, {
+            $set: {
+              __t: "CampCoordinator",
+            },
+          });
+        } else if (user.role === "Admin") {
+          await MgCampCoordinator.findByIdAndUpdate(userId, {
+            $unset: {
+              __t: "CampCoordinator",
+              campSessions: (oldUser as CampCoordinator).campSessions,
+            },
+          });
+        } else {
+          throw new Error(`${user.role} is not a valid role.`);
+        }
       }
 
-      try {
-        updatedFirebaseUser = await firebaseAdmin
-          .auth()
-          .updateUser(oldUser.authId, { email: user.email });
-      } catch (error) {
-        // rollback MongoDB user updates
-        try {
-          await MgUser.findByIdAndUpdate(
-            userId,
-            {
-              firstName: oldUser.firstName,
-              lastName: oldUser.lastName,
-              role: oldUser.role,
-            },
-            { runValidators: true },
-          );
-        } catch (mongoDbError: unknown) {
-          const errorMessage = [
-            "Failed to rollback MongoDB user update after Firebase user update failure. Reason =",
-            getErrorMessage(mongoDbError),
-            "MongoDB user id with possibly inconsistent data =",
-            oldUser.id,
-          ];
-          Logger.error(errorMessage.join(" "));
-        }
+      // must explicitly specify runValidators when updating through findByIdAndUpdate
 
-        throw error;
+      if (
+        (user.role && user.role === "CampCoordinator") ||
+        (!user.role && oldUser.role === "CampCoordinator")
+      ) {
+        updatedUser = await MgCampCoordinator.findByIdAndUpdate(
+          { _id: userId, __t: "CampCoordinator" },
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            active: user.active,
+            campSessions: user.campSessions,
+          },
+          { runValidators: true },
+        );
+      } else if (
+        (user.role && user.role === "Admin") ||
+        (!user.role && oldUser.role === "Admin")
+      ) {
+        updatedUser = await MgUser.findByIdAndUpdate(
+          userId,
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            active: user.active,
+          },
+          { runValidators: true },
+        );
+      } else {
+        throw new Error(`userId ${userId} does not have a valid role.`);
+      }
+
+      if (!updatedUser) {
+        throw new Error(`userId ${userId} not found after update.`);
+      }
+
+      if (user.email) {
+        try {
+          await firebaseAdmin
+            .auth()
+            .updateUser(oldUser.authId, { email: user.email });
+        } catch (error) {
+          // rollback MongoDB user updates
+          try {
+            // revert role updates
+            if (user.role && user.role !== oldUser.role) {
+              if (user.role === "CampCoordinator") {
+                await MgCampCoordinator.findByIdAndUpdate(userId, {
+                  $unset: {
+                    __t: "CampCoordinator",
+                    campSessions: user.campSessions,
+                  },
+                });
+              } else {
+                await MgUser.findByIdAndUpdate(userId, {
+                  $set: {
+                    __t: "CampCoordinator",
+                  },
+                });
+              }
+            }
+            // revert other updates
+            if (oldUser.role === "CampCoordinator") {
+              await MgCampCoordinator.findByIdAndUpdate(
+                { _id: userId, __t: "CampCoordinator" },
+                {
+                  firstName: oldUser.firstName,
+                  lastName: oldUser.lastName,
+                  email: oldUser.email,
+                  role: oldUser.role,
+                  active: oldUser.active,
+                  campSessions: (oldUser as CampCoordinator).campSessions,
+                },
+                { runValidators: true },
+              );
+            } else {
+              await MgUser.findByIdAndUpdate(
+                userId,
+                {
+                  firstName: oldUser.firstName,
+                  lastName: oldUser.lastName,
+                  email: oldUser.email,
+                  role: oldUser.role,
+                  active: oldUser.active,
+                },
+                { runValidators: true },
+              );
+            }
+          } catch (mongoDbError: unknown) {
+            const errorMessage = [
+              "Failed to rollback MongoDB user update after Firebase user update failure. Reason =",
+              getErrorMessage(mongoDbError),
+              "MongoDB user id with possibly inconsistent data =",
+              oldUser.id,
+            ];
+            Logger.error(errorMessage.join(" "));
+          }
+
+          throw error;
+        }
       }
     } catch (error: unknown) {
       Logger.error(`Failed to update user. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
 
+    if (
+      (user.role && user.role === "CampCoordinator") ||
+      (!user.role && oldUser.role === "CampCoordinator")
+    ) {
+      return {
+        id: userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        active: user.active,
+        campSessions: user.campSessions,
+      };
+    }
     return {
       id: userId,
       firstName: user.firstName,
       lastName: user.lastName,
-      email: updatedFirebaseUser.email ?? "",
+      email: user.email,
       role: user.role,
+      active: user.active,
     };
   }
 
@@ -273,6 +387,7 @@ class UserService implements IUserService {
             lastName: deletedUser.lastName,
             authId: deletedUser.authId,
             role: deletedUser.role,
+            active: deletedUser.active,
           });
         } catch (mongoDbError: unknown) {
           const errorMessage = [
@@ -315,6 +430,7 @@ class UserService implements IUserService {
             lastName: deletedUser.lastName,
             authId: deletedUser.authId,
             role: deletedUser.role,
+            active: deletedUser.active,
           });
         } catch (mongoDbError: unknown) {
           const errorMessage = [
