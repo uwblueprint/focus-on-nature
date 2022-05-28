@@ -166,6 +166,11 @@ export const updateCamperDtoValidator = async (
       .status(400)
       .send("There must be at least one camperId specified.");
   }
+  if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
+    return res
+      .status(400)
+      .send(getApiValidationError("camperIds", "string", true));
+  }
   if (
     req.body.campSession &&
     !validatePrimitive(req.body.campSession, "string")
@@ -299,10 +304,10 @@ export const deleteCamperDtoValidator = async (
       .status(400)
       .send("There must be at least one camperId specified.");
   }
-  for (let i = 0; i < req.body.camperIds.length; i += 1) {
-    if (!validatePrimitive(req.body.camperIds[i], "string")) {
-      return res.status(400).send(getApiValidationError("camperIds", "string"));
-    }
+  if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
+    return res
+      .status(400)
+      .send(getApiValidationError("camperIds", "string", true));
   }
   return next();
 };

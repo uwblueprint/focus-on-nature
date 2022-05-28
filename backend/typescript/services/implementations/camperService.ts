@@ -375,12 +375,12 @@ class CamperService implements ICamperService {
     let updatedCamperDTOs: Array<CamperDTO> = [];
     let updatedCampers: Array<Camper> = [];
     let oldCampers: Array<Camper> = [];
-    let newCampSessionCampers: (
+    const newCampSessionCampers: (
       | string
       | mongoose.Schema.Types.ObjectId
       | Camper
     )[] = [];
-    let oldCampSessionCampers: (
+    const oldCampSessionCampers: (
       | string
       | mongoose.Schema.Types.ObjectId
       | Camper
@@ -406,6 +406,15 @@ class CamperService implements ICamperService {
         }
       }
 
+      const oldCampSessionId = oldCampers[0].campSession;
+      for (let i = 0; i < oldCampers.length; i += 1) {
+        if (oldCampers[i].campSession !== oldCampSessionId) {
+          throw new Error(
+            `Not all campers are registered for the same camp session`,
+          );
+        }
+      }
+
       if (updatedFields.campSession) {
         newCampSession = await MgCampSession.findById(
           updatedFields.campSession,
@@ -425,21 +434,6 @@ class CamperService implements ICamperService {
           throw new Error(`Camp ${oldCampers[0].campSession} not found.`);
         }
 
-        /* eslint-disable no-await-in-loop */
-        for (let i = 0; i < camperIds.length; i += 1) {
-          const oneCampSession = await MgCampSession.findById(
-            oldCampers[i].campSession,
-          );
-          if (
-            oneCampSession &&
-            oneCampSession.id.toString() !== oldCampSession.id.toString()
-          ) {
-            throw new Error(
-              `Not all campers are registered for the same camp session`,
-            );
-          }
-        }
-
         if (newCampSession.camp.toString() !== oldCampSession.camp.toString()) {
           throw new Error(
             `Error: for all campers, can only change sessions between the same camp`,
@@ -450,37 +444,17 @@ class CamperService implements ICamperService {
 
         if (newCampSession) {
           // campers for new camp session
-          newCampSessionCampers = newCampSession.campers;
-          for (let i = 0; i < oldCampers.length; i += 1) {
-            newCampSessionCampers.push(oldCampers[i]);
-          }
+          newCampSession.campers.concat(oldCampers);
 
           // campers for old camp session
-          oldCampSessionCampers = oldCampSession.campers.filter(
+          oldCampSession.campers = oldCampSession.campers.filter(
             (camperId) => !camperIds.includes(camperId.toString()),
           );
         }
 
         try {
-          // update camper IDs for new camp session
-          newCampSession.campers = newCampSessionCampers;
-          const updatedNewCampSessionCampers = await newCampSession.save();
-
-          if (!updatedNewCampSessionCampers) {
-            throw new Error(
-              `Failed to update ${newCampSession} with updated campers.`,
-            );
-          }
-
-          // update camper IDs for old camp session
-          oldCampSession.campers = oldCampSessionCampers;
-          const updatedOldCampSessionCampers = await oldCampSession.save();
-
-          if (!updatedOldCampSessionCampers) {
-            throw new Error(
-              `Failed to update ${oldCampSession} with updated campers.`,
-            );
-          }
+          await newCampSession.save();
+          await oldCampSession.save();
         } catch (mongoDbError: unknown) {
           try {
             oldCampSession.campers = oldCampSessionOriginalCampers;
@@ -526,10 +500,7 @@ class CamperService implements ICamperService {
             const rollBackCamper = await MgCamper.findByIdAndUpdate(
               oldCampers[i].id,
               {
-                campSession: oldCampers[i].campSession,
-                formResponses: oldCampers[i].formResponses,
-                hasPaid: oldCampers[i].hasPaid,
-                chargeId: oldCampers[i].chargeId,
+                ...oldCampers[i],
               },
               { runValidators: true },
             );
@@ -677,8 +648,20 @@ class CamperService implements ICamperService {
         amount: refundAmount,
       });
 
-      // call delete campers function
       await this.deleteCampersById(camperIdsToBeDeleted);
+      await Promise.all(
+        campersToBeDeleted.map(async (camper) => {
+          emailService.sendAdminCamperCancellationNoticeEmail(
+            camp,
+            camper,
+            campSession,
+          );
+        }),
+      );
+
+      await emailService.sendParentCancellationConfirmationEmail(
+        campersToBeDeleted,
+      );
     } catch (error: unknown) {
       Logger.error(
         `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
@@ -708,6 +691,15 @@ class CamperService implements ICamperService {
         }
       }
 
+      const campSessionId = campers[0].campSession;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].campSession !== campSessionId) {
+          throw new Error(
+            `Not all campers are registered for the same campSession.`,
+          );
+        }
+      }
+
       const campSession: CampSession | null = await MgCampSession.findById(
         campers[0].campSession,
       );
@@ -715,23 +707,6 @@ class CamperService implements ICamperService {
         throw new Error(
           `Camp session with ID ${campers[0].campSession} not found.`,
         );
-      }
-
-      /* eslint-disable no-await-in-loop */
-      for (let i = 0; i < campers.length; i += 1) {
-        const camperCampSession: CampSession | null = await MgCampSession.findById(
-          campers[i].campSession,
-        );
-        if (!camperCampSession) {
-          throw new Error(
-            `Campers' camp session with campSessionId ${campers[i].campSession} not found.`,
-          );
-        }
-        if (camperCampSession.id.toString() !== campSession.id.toString()) {
-          throw new Error(
-            `Not all campers are registered for the same campSession.`,
-          );
-        }
       }
 
       const camp: Camp | null = await MgCamp.findById(campSession.camp);
@@ -777,14 +752,6 @@ class CamperService implements ICamperService {
             $in: camperIds,
           },
         });
-        /* eslint-disable no-await-in-loop */
-        for (let i = 0; i < campers.length; i += 1) {
-          await emailService.sendAdminCamperCancellationNoticeEmail(
-            camp,
-            campers[i],
-            campSession,
-          );
-        }
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {

@@ -107,28 +107,30 @@ camperRouter.post(
 );
 
 /* Update the camper with the specified camperId */
-camperRouter.put(
-  "/update",
+camperRouter.patch(
+  "/",
   updateCamperDtoValidator,
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
-      const camperIds = req.body.camperIds as Array<string>;
-      const updatedCampers = await camperService.updateCampersById(camperIds, {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        age: req.body.age,
-        allergies: req.body.allergies,
-        hasCamera: req.body.hasCamera,
-        hasLaptop: req.body.hasLaptop,
-        earlyDropoff: req.body.earlyDropoff,
-        latePickup: req.body.latePickup,
-        specialNeeds: req.body.specialNeeds,
-        contacts: req.body.contacts,
-        campSession: req.body.campSession,
-        formResponses: req.body.formResponses,
-        hasPaid: req.body.hasPaid,
-      });
+      const updatedCampers = await camperService.updateCampersById(
+        req.body.camperIds,
+        {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          age: req.body.age,
+          allergies: req.body.allergies,
+          hasCamera: req.body.hasCamera,
+          hasLaptop: req.body.hasLaptop,
+          earlyDropoff: req.body.earlyDropoff,
+          latePickup: req.body.latePickup,
+          specialNeeds: req.body.specialNeeds,
+          contacts: req.body.contacts,
+          campSession: req.body.campSession,
+          formResponses: req.body.formResponses,
+          hasPaid: req.body.hasPaid,
+        },
+      );
       res.status(200).json(updatedCampers);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
@@ -138,7 +140,7 @@ camperRouter.put(
 
 /* Cancel registration for the list of campers with the chargeId */
 camperRouter.delete(
-  "/cancelRegistration",
+  "/cancel-registration",
   cancelCamperDtoValidator,
   async (req, res) => {
     try {
@@ -154,7 +156,7 @@ camperRouter.delete(
 );
 
 /* Delete a camper */
-camperRouter.delete("/delete", deleteCamperDtoValidator, async (req, res) => {
+camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
   try {
     await camperService.deleteCampersById(req.body.camperIds);
     res.status(204).send();
