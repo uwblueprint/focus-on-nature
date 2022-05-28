@@ -62,8 +62,8 @@ const CamperSchema: Schema = new Schema({
   hasLaptop: {
     type: Boolean,
   },
-  earlyDropoff: [{ type: Date }],
-  latePickup: [{ type: Date }],
+  earlyDropoff: [Date],
+  latePickup: [Date],
   specialNeeds: {
     type: String,
   },
