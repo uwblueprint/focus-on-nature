@@ -87,13 +87,11 @@ export type CampSessionDTO = {
   campers: string[];
   waitlist: string[];
   dates: string[];
-  startTime: string;
-  endTime: string;
-  active: boolean;
 };
 
 export type CampDTO = {
   id: string;
+  active: boolean;
   ageLower: number;
   ageUpper: number;
   campCoordinators: string[];
@@ -101,8 +99,10 @@ export type CampDTO = {
   name: string;
   description: string;
   earlyDropOff: string;
+  endTime: string;
   latePickup: string;
   location: string;
+  startTime: string;
   fee: number;
   formQuestions: string[];
   campSessions: string[];

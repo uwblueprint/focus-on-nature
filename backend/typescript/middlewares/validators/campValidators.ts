@@ -41,6 +41,25 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(body.latePickup, "string")) {
     return res.status(400).send(getApiValidationError("latePickup", "string"));
   }
+  if (!validatePrimitive(body.startTime, "string")) {
+    return res.status(400).send(getApiValidationError("startTime", "string"));
+  }
+  if (!validateTime(body.startTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("startTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(body.endTime, "string")) {
+    return res.status(400).send(getApiValidationError("endTime", "string"));
+  }
+  if (!validateTime(body.endTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("endTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(body.active, "boolean")) {
+    return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
   if (!validatePrimitive(body.location, "string")) {
     return res.status(400).send(getApiValidationError("location", "string"));
   }
@@ -73,7 +92,6 @@ export const createCampDtoValidator = async (
   if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
   }
-  console.log(body);
   if (body.volunteers && !validateArray(body.volunteers, "string")) {
     return res
       .status(400)
@@ -109,27 +127,6 @@ export const createCampDtoValidator = async (
         return res
           .status(400)
           .send(getApiValidationError("dates", "Date string"));
-      }
-      if (!validatePrimitive(campSession.startTime, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("startTime", "string"));
-      }
-      if (!validateTime(campSession.startTime)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("startTime", "24 hr time string"));
-      }
-      if (!validatePrimitive(campSession.endTime, "string")) {
-        return res.status(400).send(getApiValidationError("endTime", "string"));
-      }
-      if (!validateTime(campSession.endTime)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("endTime", "24 hr time string"));
-      }
-      if (!validatePrimitive(campSession.active, "boolean")) {
-        return res.status(400).send(getApiValidationError("active", "boolean"));
       }
     }
   }
@@ -178,6 +175,25 @@ export const updateCampDtoValidator = async (
   if (req.body.ageUpper < req.body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
+  if (!validatePrimitive(req.body.startTime, "string")) {
+    return res.status(400).send(getApiValidationError("startTime", "string"));
+  }
+  if (!validateTime(req.body.startTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("startTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(req.body.endTime, "string")) {
+    return res.status(400).send(getApiValidationError("endTime", "string"));
+  }
+  if (!validateTime(req.body.endTime)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("endTime", "24 hr time string"));
+  }
+  if (!validatePrimitive(req.body.active, "boolean")) {
+    return res.status(400).send(getApiValidationError("active", "boolean"));
+  }
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
@@ -213,27 +229,6 @@ export const createCampSessionsDtoValidator = async (
           .status(400)
           .send(getApiValidationError("dates", "Date string"));
       }
-      if (!validatePrimitive(campSession.startTime, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("startTime", "string"));
-      }
-      if (!validateTime(campSession.startTime)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("startTime", "24 hr time string"));
-      }
-      if (!validatePrimitive(campSession.endTime, "string")) {
-        return res.status(400).send(getApiValidationError("endTime", "string"));
-      }
-      if (!validateTime(campSession.endTime)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("endTime", "24 hr time string"));
-      }
-      if (!validatePrimitive(campSession.active, "boolean")) {
-        return res.status(400).send(getApiValidationError("active", "boolean"));
-      }
       if (!validatePrimitive(campSession.capacity, "integer")) {
         return res
           .status(400)
@@ -263,25 +258,6 @@ export const updateCampSessionDtoValidator = async (
   }
   if (!campSession.dates.every(validateDate)) {
     return res.status(400).send(getApiValidationError("dates", "Date string"));
-  }
-  if (!validatePrimitive(campSession.startTime, "string")) {
-    return res.status(400).send(getApiValidationError("startTime", "string"));
-  }
-  if (!validateTime(campSession.startTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("startTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(campSession.endTime, "string")) {
-    return res.status(400).send(getApiValidationError("endTime", "string"));
-  }
-  if (!validateTime(campSession.endTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("endTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(campSession.active, "boolean")) {
-    return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   if (!validatePrimitive(campSession.capacity, "integer")) {
     return res.status(400).send(getApiValidationError("capacity", "integer"));

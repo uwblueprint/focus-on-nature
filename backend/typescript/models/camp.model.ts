@@ -5,6 +5,7 @@ import { User } from "./user.model";
 
 export interface Camp extends Document {
   id: string;
+  active: boolean;
   ageLower: number;
   ageUpper: number;
   campCoordinators: (User | Schema.Types.ObjectId)[];
@@ -12,17 +13,23 @@ export interface Camp extends Document {
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
   earlyDropOff: string;
+  endTime: string;
   fee: number;
   fileName?: string;
   formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
   latePickup: string;
   location: string;
   name: string;
+  startTime: string;
   productId: string;
   volunteers: string[];
 }
 
 const CampSchema: Schema = new Schema({
+  active: {
+    type: Boolean,
+    required: true,
+  },
   ageLower: {
     type: Number,
     required: true,
@@ -61,6 +68,10 @@ const CampSchema: Schema = new Schema({
   description: {
     type: String,
   },
+  endTime: {
+    type: String,
+    required: true,
+  },
   earlyDropoff: {
     type: String,
   },
@@ -94,6 +105,10 @@ const CampSchema: Schema = new Schema({
   },
   productId: {
     type: String,
+  },
+  startTime: {
+    type: String,
+    required: true,
   },
   volunteers: {
     type: [
