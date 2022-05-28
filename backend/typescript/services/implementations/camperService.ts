@@ -397,7 +397,9 @@ class CamperService implements ICamperService {
 
       const oldCampSessionId = oldCampers[0].campSession;
       for (let i = 0; i < oldCampers.length; i += 1) {
-        if (oldCampers[i].campSession !== oldCampSessionId) {
+        if (
+          oldCampers[i].campSession.toString() !== oldCampSessionId.toString()
+        ) {
           throw new Error(
             `Not all campers are registered for the same camp session`,
           );
@@ -433,7 +435,7 @@ class CamperService implements ICamperService {
 
         if (newCampSession) {
           // campers for new camp session
-          newCampSession.campers.concat(oldCampers);
+          newCampSession.campers = newCampSession.campers.concat(oldCampers);
 
           // campers for old camp session
           oldCampSession.campers = oldCampSession.campers.filter(
@@ -682,7 +684,7 @@ class CamperService implements ICamperService {
 
       const campSessionId = campers[0].campSession;
       for (let i = 0; i < campers.length; i += 1) {
-        if (campers[i].campSession !== campSessionId) {
+        if (campers[i].campSession.toString() !== campSessionId.toString()) {
           throw new Error(
             `Not all campers are registered for the same campSession.`,
           );
