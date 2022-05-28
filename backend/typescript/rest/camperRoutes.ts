@@ -96,7 +96,7 @@ camperRouter.post(
         contactEmail: req.body.contactEmail,
         contactNumber: req.body.contactNumber,
         campSession: req.body.campSession,
-        status: "NOT REGISTERED",
+        status: "NotRegistered",
       });
 
       res.status(201).json(newWaitlistedCamper);
