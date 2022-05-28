@@ -3,7 +3,7 @@ import {
   getApiValidationError,
   validatePrimitive,
   validateArray,
-  checkDuplicatesInArray,
+  duplicatesInArray,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -62,7 +62,7 @@ export const updateUserDtoValidator = async (
   }
   if (
     req.body.campSessions &&
-    checkDuplicatesInArray(req.body.campSessions) === true
+    duplicatesInArray(req.body.campSessions) === true
   ) {
     return res.status(400).send("All camp sessions should be unique.");
   }
