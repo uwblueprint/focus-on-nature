@@ -33,6 +33,14 @@ export const createCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
+  if (!validateTime(body.earlyDropOff)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("earlyDropOff", "24 hr time string"));
+  }
+  if (!validatePrimitive(body.latePickup, "string")) {
+    return res.status(400).send(getApiValidationError("latePickup", "string"));
+  }
   if (!validatePrimitive(body.location, "string")) {
     return res.status(400).send(getApiValidationError("location", "string"));
   }
@@ -42,16 +50,35 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(body.ageUpper, "integer")) {
     return res.status(400).send(getApiValidationError("ageUpper", "integer"));
   }
+  if (
+    body.campCoordinators &&
+    !validateArray(body.campCoordinators, "string")
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campCoordinators", "string", true));
+  }
+  if (body.campCounsellors && !validateArray(body.campCounsellors, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campCounsellors", "string", true));
+  }
+
   if (body.ageUpper < body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
   if (!validatePrimitive(body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
-  if (req.body.fee < 0) {
+  if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
   }
-
+  console.log(body);
+  if (body.volunteers && !validateArray(body.volunteers, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("volunteers", "string", true));
+  }
   if (
     body.formQuestions &&
     Array.isArray(body.formQuestions) &&

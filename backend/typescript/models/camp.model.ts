@@ -96,7 +96,11 @@ const CampSchema: Schema = new Schema({
     type: String,
   },
   volunteers: {
-    type: String,
+    type: [
+      {
+        type: String,
+      },
+    ],
     default: [],
   },
 });

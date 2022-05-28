@@ -110,9 +110,14 @@ class CampService implements ICampService {
           name: camp.name,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators,
+          campCounsellors: camp.campCounsellors,
           description: camp.description,
+          earlyDropOff: camp.earlyDropOff,
+          latePickup: camp.latePickup,
           location: camp.location,
           fee: camp.fee,
+          volunteers: camp.volunteers,
         },
       });
       if (!oldCamp) {
@@ -393,10 +398,15 @@ class CampService implements ICampService {
         name: camp.name,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
+        campCoordinators: camp.campCoordinators,
+        campCounsellors: camp.campCounsellors,
         description: camp.description,
+        earlyDropOff: camp.earlyDropOff,
+        latePickup: camp.latePickup,
         location: camp.location,
         fee: camp.fee,
         formQuestions: [],
+        volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
       });
 

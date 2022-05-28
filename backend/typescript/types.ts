@@ -101,10 +101,10 @@ export type CampDTO = {
   name: string;
   description: string;
   earlyDropOff: string;
+  latePickup: string;
   location: string;
   fee: number;
   formQuestions: string[];
-  latePickup: string;
   campSessions: string[];
   fileName?: string;
   volunteers: string[];

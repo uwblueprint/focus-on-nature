@@ -510,8 +510,9 @@ class CamperService implements ICamperService {
           `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days.`,
         );
       }
+      const x = campSession.campers;
 
-      const oldCamperIds = [...campSession.campers]; // clone the full array of campers for rollback
+      const oldCamperIds = campSession.campers; // clone the full array of campers for rollback
       // delete camper IDs from the camp
       campSession.campers = campSession.campers.filter(
         (camperId) => !camperIdsToBeDeleted.includes(camperId.toString()),

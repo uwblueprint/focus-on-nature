@@ -53,15 +53,21 @@ campRouter.post(
       const newCamp = await campService.createCamp({
         ageLower: body.ageLower,
         ageUpper: body.ageUpper,
+        campCoordinators: body.campCoordinators,
+        campCounsellors: body.campCounsellors,
         name: body.name,
         description: body.description,
+        earlyDropOff: body.earlyDropOff,
+        latePickup: body.latePickup,
         location: body.location,
         fee: body.fee,
         formQuestions: body.formQuestions,
         campSessions: body.campSessions,
         filePath: req.file?.path,
         fileContentType: req.file?.mimetype,
+        volunteers: body.volunteers,
       });
+
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
       }
@@ -78,10 +84,15 @@ campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
     const newCamp = await campService.updateCampById(req.params.campId, {
       ageLower: req.body.ageLower,
       ageUpper: req.body.ageUpper,
+      campCoordinators: req.body.campCoordinators,
+      campCounsellors: req.body.campCounsellors,
       name: req.body.name,
       description: req.body.description,
+      earlyDropOff: req.body.earlyDropOff,
+      latePickup: req.body.latePickup,
       location: req.body.location,
       fee: req.body.fee,
+      volunteers: req.body.volunteers,
     });
 
     res.status(200).json(newCamp);
