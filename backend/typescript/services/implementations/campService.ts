@@ -109,7 +109,7 @@ class CampService implements ICampService {
     }
 
     try {
-      var updates: any = {
+      const updates: any = {
         name: camp.name,
         active: camp.active,
         ageLower: camp.ageLower,
@@ -130,7 +130,7 @@ class CampService implements ICampService {
           $set: updates,
         });
       } else {
-        updates.fee = camp.fee; 
+        updates.fee = camp.fee;
         oldCamp.updateOne({
           $set: updates,
         });
