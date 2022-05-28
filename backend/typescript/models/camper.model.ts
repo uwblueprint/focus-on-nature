@@ -27,6 +27,12 @@ export interface Camper extends Document {
     earlyDropoff: number;
     latePickup: number;
   };
+  optionalClauses: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 }
 
 const CamperSchema: Schema = new Schema({
