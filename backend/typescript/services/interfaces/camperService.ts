@@ -54,32 +54,31 @@ interface ICamperService {
   ): Promise<WaitlistedCamperDTO>;
 
   /**
-   * Update a camper
-   * @param camperId camper's id
-   * @param camper the camper to be updated
-   * @returns a CamperDTO with the updated camper's information
-   * @throws Error if camper update fails
+   * Update an array of campers
+   * @param camperIds the campers to be updated
+   * @param updatedFields camper fields to be updated
+   * @returns an array of CamperDTOs with the updated campers' information
+   * @throws Error if campers' update fails
    */
-  updateCamperById(
-    camperId: string,
-    camper: UpdateCamperDTO,
-  ): Promise<CamperDTO>;
+  updateCampersById(
+    camperIds: Array<string>,
+    updatedFields: UpdateCamperDTO,
+  ): Promise<Array<CamperDTO>>;
 
   /**
-   * Delete all campers in camperIds associated with the charge ID
+   * Delete all campers in camperIds associated with the charge ID if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request
    * @param chargeId the charge ID for the payment
-   * @param camperIds the camper IDs to be deleted
+   * @param camperIds is the array of camper IDs to be deleted
    * @throws Error if camper cancellation fails
    */
-  deleteCampersByChargeId(chargeId: string, camperIds: string[]): Promise<void>;
+  cancelRegistration(chargeId: string, camperIds: string[]): Promise<void>;
 
   /**
-   * Delete camper associated with the camper ID, without issuing refund
-   * @param camperId camper's Id
-   * @throws Error if camper cancellation fails
+   * Delete campers associated with the camper IDs
+   * @param camperIds array of camper Ids
+   * @throws Error if camper deletion fails
    */
-  deleteCamperById(camperId: string): Promise<void>;
-
+  deleteCampersById(camperIds: Array<string>): Promise<void>;
   /**
    * Delete waitlisted camper associated with the ID
    * @param waitlistedCamperId waitlisted camper's Id
