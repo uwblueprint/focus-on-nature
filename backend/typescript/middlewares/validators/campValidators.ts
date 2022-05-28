@@ -33,6 +33,11 @@ export const createCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
+  if (!validatePrimitive(body.earlyDropOff, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("earlyDropOff", "string"));
+  }
   if (!validateTime(body.earlyDropOff)) {
     return res
       .status(400)
@@ -40,6 +45,11 @@ export const createCampDtoValidator = async (
   }
   if (!validatePrimitive(body.latePickup, "string")) {
     return res.status(400).send(getApiValidationError("latePickup", "string"));
+  }
+  if (!validateTime(body.latePickup)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("latePickup", "24 hr time string"));
   }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
@@ -175,6 +185,40 @@ export const updateCampDtoValidator = async (
   if (req.body.ageUpper < req.body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
+  if (
+    req.body.campCoordinators &&
+    !validateArray(req.body.campCoordinators, "string")
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campCoordinators", "string", true));
+  }
+  if (
+    req.body.campCounsellors &&
+    !validateArray(req.body.campCounsellors, "string")
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campCounsellors", "string", true));
+  }
+  if (!validatePrimitive(req.body.earlyDropOff, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("earlyDropOff", "string"));
+  }
+  if (!validateTime(req.body.earlyDropOff)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("earlyDropOff", "24 hr time string"));
+  }
+  if (!validatePrimitive(req.body.latePickup, "string")) {
+    return res.status(400).send(getApiValidationError("latePickup", "string"));
+  }
+  if (!validateTime(req.body.latePickup)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("latePickup", "24 hr time string"));
+  }
   if (!validatePrimitive(req.body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
   }
@@ -196,6 +240,11 @@ export const updateCampDtoValidator = async (
   }
   if (!validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
+  }
+  if (req.body.volunteers && !validateArray(req.body.volunteers, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("volunteers", "string", true));
   }
   if (req.body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
