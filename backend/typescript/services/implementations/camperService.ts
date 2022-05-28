@@ -376,6 +376,8 @@ class CamperService implements ICamperService {
     let oldCampers: Array<Camper> = [];
     let newCampSession: CampSession | null;
     let oldCampSession: CampSession | null;
+    let movedCampSession = false;
+    let camp: Camp | null;
 
     try {
       oldCampers = await MgCamper.find({
@@ -407,6 +409,7 @@ class CamperService implements ICamperService {
       }
 
       if (updatedFields.campSession) {
+        movedCampSession = true;
         newCampSession = await MgCampSession.findById(
           updatedFields.campSession,
         );
@@ -522,6 +525,49 @@ class CamperService implements ICamperService {
         $in: camperIds,
       },
     });
+
+    if (movedCampSession) {
+      try {
+        oldCampSession = await MgCampSession.findById(
+          oldCampers[0].campSession,
+        );
+
+        if (!oldCampSession) {
+          throw new Error(
+            `Error: Old camp session ${oldCampers[0].campSession} not found`,
+          );
+        }
+
+        newCampSession = await MgCampSession.findById(
+          updatedFields.campSession,
+        );
+
+        if (!newCampSession) {
+          throw new Error(
+            `Error: New camp session ${updatedFields.campSession} not found`,
+          );
+        }
+
+        camp = await MgCamp.findById(newCampSession.camp);
+        if (!camp) {
+          throw new Error(`Error: Camp ${newCampSession.camp} not found`);
+        }
+
+        await emailService.sendParentMovedConfirmationEmail(
+          updatedCampers,
+          camp,
+          oldCampSession,
+          newCampSession,
+        );
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to send confirmation email. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
 
     updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
       return {
