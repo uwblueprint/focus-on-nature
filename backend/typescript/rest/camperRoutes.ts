@@ -106,7 +106,7 @@ camperRouter.post(
   },
 );
 
-camperRouter.put("/waitlist/:waitlistedCamperId", async (req, res) => {
+camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
   try {
     const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
       req.params.waitlistedCamperId,
