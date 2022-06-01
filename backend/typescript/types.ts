@@ -38,8 +38,8 @@ export type CamperDTO = {
   allergies: string;
   hasCamera: boolean;
   hasLaptop: boolean;
-  earlyDropoff: string;
-  latePickup: string;
+  earlyDropoff: string[];
+  latePickup: string[];
   specialNeeds: string;
   contacts: {
     firstName: string;
@@ -47,7 +47,7 @@ export type CamperDTO = {
     email: string;
     phoneNumber: string;
   }[];
-  registrationDate: Date;
+  registrationDate: string;
   hasPaid: boolean;
   formResponses: Map<string, string>;
   chargeId: string;
@@ -56,6 +56,12 @@ export type CamperDTO = {
     earlyDropoff: number;
     latePickup: number;
   };
+  optionalClauses: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 };
 
 export type CamperCSVInfoDTO = Omit<

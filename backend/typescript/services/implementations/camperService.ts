@@ -124,15 +124,16 @@ class CamperService implements ICamperService {
         allergies: newCamper.allergies,
         hasCamera: newCamper.hasCamera,
         hasLaptop: newCamper.hasLaptop,
-        earlyDropoff: newCamper.earlyDropoff,
-        latePickup: newCamper.latePickup,
+        earlyDropoff: newCamper.earlyDropoff.map((date) => date.toString()),
+        latePickup: newCamper.latePickup.map((date) => date.toString()),
         specialNeeds: newCamper.specialNeeds,
         contacts: newCamper.contacts,
-        registrationDate: newCamper.registrationDate,
+        registrationDate: newCamper.registrationDate.toString(),
         hasPaid: newCamper.hasPaid,
         chargeId: newCamper.chargeId,
         formResponses: newCamper.formResponses,
         charges: newCamper.charges,
+        optionalClauses: newCamper.optionalClauses,
       };
     });
     return newCamperDTOs;
@@ -153,15 +154,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
     } catch (error: unknown) {
@@ -210,15 +212,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
 
@@ -263,15 +266,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
           formResponses: camper.formResponses,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
 
@@ -535,15 +539,16 @@ class CamperService implements ICamperService {
         allergies: updatedCamper.allergies,
         hasCamera: updatedCamper.hasCamera,
         hasLaptop: updatedCamper.hasLaptop,
-        earlyDropoff: updatedCamper.earlyDropoff,
-        latePickup: updatedCamper.latePickup,
+        earlyDropoff: updatedCamper.earlyDropoff.map((date) => date.toString()),
+        latePickup: updatedCamper.latePickup.map((date) => date.toString()),
         specialNeeds: updatedCamper.specialNeeds,
         contacts: updatedCamper.contacts,
         formResponses: updatedCamper.formResponses,
-        registrationDate: updatedCamper.registrationDate,
+        registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
         charges: updatedCamper.charges,
+        optionalClauses: updatedCamper.optionalClauses,
       };
     });
 
