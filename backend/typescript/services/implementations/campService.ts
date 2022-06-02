@@ -66,24 +66,33 @@ class CampService implements ICampService {
             id: campSession.id,
             capacity: campSession.capacity,
             dates: campSession.dates.map((date) => date.toString()),
-            startTime: campSession.startTime,
-            endTime: campSession.endTime,
             registrations: campSession.campers.length,
             waitlist: campSession.waitlist.length,
-            active: campSession.active,
           }),
         );
 
         return {
           id: camp.id,
+          active: camp.active,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators.map((coordinator) =>
+            coordinator.toString(),
+          ),
+          campCounsellors: camp.campCounsellors.map((counsellor) =>
+            counsellor.toString(),
+          ),
           name: camp.name,
           description: camp.description,
+          earlyDropoff: camp.earlyDropoff,
+          latePickup: camp.latePickup,
           location: camp.location,
+          startTime: camp.startTime,
+          endTime: camp.endTime,
           fee: camp.fee,
           formQuestions,
           campSessions,
+          volunteers: camp.volunteers,
         };
       });
     } catch (error: unknown) {
@@ -99,11 +108,19 @@ class CampService implements ICampService {
       oldCamp = await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
+          active: camp.active,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators,
+          campCounsellors: camp.campCounsellors,
           description: camp.description,
+          earlyDropoff: camp.earlyDropoff,
+          latePickup: camp.latePickup,
           location: camp.location,
+          startTime: camp.startTime,
+          endTime: camp.endTime,
           fee: camp.fee,
+          volunteers: camp.volunteers,
         },
       });
       if (!oldCamp) {
@@ -116,16 +133,28 @@ class CampService implements ICampService {
 
     return {
       id: campId,
+      active: camp.active,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: camp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
       campSessions: oldCamp.campSessions.map((session) => session.toString()),
       name: camp.name,
       description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      latePickup: camp.latePickup,
       location: camp.location,
+      startTime: camp.startTime,
+      endTime: camp.endTime,
       fee: camp.fee,
       formQuestions: oldCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
+      volunteers: camp.volunteers,
     };
   }
 
@@ -141,9 +170,6 @@ class CampService implements ICampService {
         capacity: campSession.capacity,
         waitlist: [],
         dates: campSession.dates.sort(),
-        startTime: campSession.startTime,
-        endTime: campSession.endTime,
-        active: campSession.active,
       });
     });
 
@@ -190,9 +216,6 @@ class CampService implements ICampService {
           capacity: session.capacity,
           waitlist: [],
           dates: session.dates.map((date) => date.toString()),
-          startTime: session.startTime,
-          endTime: session.endTime,
-          active: session.active,
         },
     );
   }
@@ -221,9 +244,6 @@ class CampService implements ICampService {
         {
           capacity: campSession.capacity,
           dates: campSession.dates.sort(),
-          startTime: campSession.startTime,
-          endTime: campSession.endTime,
-          active: campSession.active,
         },
         { runValidators: true, new: true },
       );
@@ -241,9 +261,6 @@ class CampService implements ICampService {
         capacity: newCampSession.capacity,
         waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
         dates: newCampSession.dates.map((date) => date.toString()),
-        startTime: newCampSession.startTime,
-        endTime: newCampSession.endTime,
-        active: newCampSession.active,
       };
     } catch (error: unknown) {
       Logger.error(
@@ -374,12 +391,20 @@ class CampService implements ICampService {
       }
       newCamp = new MgCamp({
         name: camp.name,
+        active: camp.active,
         ageLower: camp.ageLower,
         ageUpper: camp.ageUpper,
+        campCoordinators: camp.campCoordinators,
+        campCounsellors: camp.campCounsellors,
         description: camp.description,
+        earlyDropoff: camp.earlyDropoff,
+        endTime: camp.endTime,
+        latePickup: camp.latePickup,
         location: camp.location,
+        startTime: camp.startTime,
         fee: camp.fee,
         formQuestions: [],
+        volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
       });
 
@@ -406,10 +431,7 @@ class CampService implements ICampService {
               camp: newCamp,
               campers: [],
               waitlist: [],
-              startTime: campSession.startTime,
-              endTime: campSession.endTime,
               dates: campSession.dates,
-              active: campSession.active,
             });
             newCamp.campSessions[i] = session._id;
           }),
@@ -450,17 +472,29 @@ class CampService implements ICampService {
 
     return {
       id: newCamp.id,
+      active: newCamp.active,
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
       campSessions: newCamp.campSessions.map((session) => session.toString()),
+      campCoordinators: newCamp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: newCamp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
       name: newCamp.name,
       description: newCamp.description,
+      earlyDropoff: newCamp.earlyDropoff,
+      latePickup: newCamp.latePickup,
       location: newCamp.location,
       fee: newCamp.fee,
       formQuestions: newCamp.formQuestions.map((formQuestion) =>
         formQuestion.toString(),
       ),
       fileName: newCamp.fileName,
+      startTime: newCamp.startTime,
+      endTime: newCamp.endTime,
+      volunteers: newCamp.volunteers,
     };
   }
 
@@ -474,9 +508,6 @@ class CampService implements ICampService {
         {
           capacity: campSession.capacity,
           dates: campSession.dates,
-          startTime: campSession.startTime,
-          endTime: campSession.endTime,
-          active: campSession.active,
         },
         { runValidators: true, new: true },
       );
@@ -494,9 +525,6 @@ class CampService implements ICampService {
         capacity: newCampSession.capacity,
         waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
         dates: newCampSession.dates.map((date) => date.toString()),
-        startTime: newCampSession.startTime,
-        endTime: newCampSession.endTime,
-        active: newCampSession.active,
       };
     } catch (error: unknown) {
       Logger.error(
