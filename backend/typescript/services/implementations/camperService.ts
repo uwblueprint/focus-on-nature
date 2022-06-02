@@ -661,7 +661,11 @@ class CamperService implements ICamperService {
           );
           camperToUpdate.status = "RegistrationFormSent";
           await camperToUpdate.save();
+        } else {
+          throw new Error("Associated camp is null!");
         }
+      } else {
+        throw new Error("Camp session and/or camper are null!");
       }
 
       if (camperToUpdate)
