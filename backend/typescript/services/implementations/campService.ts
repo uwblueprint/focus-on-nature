@@ -108,33 +108,29 @@ class CampService implements ICampService {
       throw new Error(`Camp' with campId ${campId} not found.`);
     }
 
-    try {
-      const updates: any = {
-        name: camp.name,
-        active: camp.active,
-        ageLower: camp.ageLower,
-        ageUpper: camp.ageUpper,
-        campCoordinators: camp.campCoordinators,
-        campCounsellors: camp.campCounsellors,
-        description: camp.description,
-        earlyDropOff: camp.earlyDropOff,
-        latePickup: camp.latePickup,
-        location: camp.location,
-        startTime: camp.startTime,
-        endTime: camp.endTime,
-        volunteers: camp.volunteers,
-      };
+    if (oldCamp.active && camp.fee) {
+      throw new Error(`Error - cannot update fee of active camp`);
+    }
 
-      if (oldCamp.active) {
-        oldCamp.updateOne({
-          $set: updates,
-        });
-      } else {
-        updates.fee = camp.fee;
-        oldCamp.updateOne({
-          $set: updates,
-        });
-      }
+    try {
+      await MgCamp.findByIdAndUpdate(campId, {
+        $set: {
+          name: camp.name,
+          active: camp.active,
+          ageLower: camp.ageLower,
+          ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators,
+          campCounsellors: camp.campCounsellors,
+          description: camp.description,
+          earlyDropOff: camp.earlyDropOff,
+          latePickup: camp.latePickup,
+          location: camp.location,
+          startTime: camp.startTime,
+          endTime: camp.endTime,
+          volunteers: camp.volunteers,
+          fee: camp.fee,
+        },
+      });
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -272,7 +268,7 @@ class CampService implements ICampService {
         campSessionId,
         {
           capacity: campSession.capacity,
-          dates: campSession.dates.sort(),
+          dates: campSession.dates ? campSession.dates.sort() : undefined,
         },
         { runValidators: true, new: true },
       );

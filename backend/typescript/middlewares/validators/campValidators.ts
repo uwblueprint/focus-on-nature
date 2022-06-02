@@ -238,7 +238,7 @@ export const updateCampDtoValidator = async (
   if (!validatePrimitive(req.body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
-  if (!validatePrimitive(req.body.fee, "integer")) {
+  if (req.body.fee && !validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
   if (req.body.volunteers && !validateArray(req.body.volunteers, "string")) {
@@ -305,7 +305,7 @@ export const updateCampSessionDtoValidator = async (
   if (campSession.dates && !validateArray(campSession.dates, "string")) {
     return res.status(400).send(getApiValidationError("dates", "string", true));
   }
-  if (!campSession.dates.every(validateDate)) {
+  if (campSession.dates && !campSession.dates.every(validateDate)) {
     return res.status(400).send(getApiValidationError("dates", "Date string"));
   }
   if (!validatePrimitive(campSession.capacity, "integer")) {
