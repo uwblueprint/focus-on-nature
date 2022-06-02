@@ -109,7 +109,7 @@ class CampService implements ICampService {
     }
 
     if (oldCamp.active && camp.fee) {
-      throw new Error(`Error - cannot update fee of active camp`);
+      throw new Error(`Cannot update fee of active camp`);
     }
 
     try {
