@@ -81,9 +81,9 @@ interface ICamperService {
   deleteCamperById(camperId: string): Promise<void>;
 
   /**
-   * Updates status of waitlisted camper to show that a registration form is sent and sends an email to the parents.
+   * Sends email inviting waitlisted camper to register and updates their status
    * @param waitlistedCamperId waitlisted camper's Id
-   * @throws Error if waitlisted camper's status fails
+   * @throws Error if waitlisted camper's status update fails
    */
   inviteWaitlistedCamper(waitlistedCamperId: string): Promise<any>;
 
