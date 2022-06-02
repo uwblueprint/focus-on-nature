@@ -98,7 +98,7 @@ export type CampDTO = {
   campCounsellors: string[];
   name: string;
   description: string;
-  earlyDropOff: string;
+  earlyDropoff: string;
   endTime: string;
   latePickup: string;
   location: string;

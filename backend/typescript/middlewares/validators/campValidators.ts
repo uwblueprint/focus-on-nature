@@ -33,15 +33,15 @@ export const createCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (!validatePrimitive(body.earlyDropOff, "string")) {
+  if (!validatePrimitive(body.earlyDropoff, "string")) {
     return res
       .status(400)
-      .send(getApiValidationError("earlyDropOff", "string"));
+      .send(getApiValidationError("earlyDropoff", "string"));
   }
-  if (!validateTime(body.earlyDropOff)) {
+  if (!validateTime(body.earlyDropoff)) {
     return res
       .status(400)
-      .send(getApiValidationError("earlyDropOff", "24 hr time string"));
+      .send(getApiValidationError("earlyDropoff", "24 hr time string"));
   }
   if (!validatePrimitive(body.latePickup, "string")) {
     return res.status(400).send(getApiValidationError("latePickup", "string"));
@@ -201,15 +201,15 @@ export const updateCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("campCounsellors", "string", true));
   }
-  if (!validatePrimitive(req.body.earlyDropOff, "string")) {
+  if (!validatePrimitive(req.body.earlyDropoff, "string")) {
     return res
       .status(400)
-      .send(getApiValidationError("earlyDropOff", "string"));
+      .send(getApiValidationError("earlyDropoff", "string"));
   }
-  if (!validateTime(req.body.earlyDropOff)) {
+  if (!validateTime(req.body.earlyDropoff)) {
     return res
       .status(400)
-      .send(getApiValidationError("earlyDropOff", "24 hr time string"));
+      .send(getApiValidationError("earlyDropoff", "24 hr time string"));
   }
   if (!validatePrimitive(req.body.latePickup, "string")) {
     return res.status(400).send(getApiValidationError("latePickup", "string"));
