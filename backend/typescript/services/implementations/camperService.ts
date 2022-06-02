@@ -645,29 +645,27 @@ class CamperService implements ICamperService {
     const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
       waitlistedCamperId,
     );
-    let campSession;
-    if (camperToUpdate) {
-      campSession = await MgCampSession.findById(camperToUpdate.campSession);
+    if (camperToUpdate == null) {
+      throw new Error("The camper to update is null!");
     }
-
+    const campSession = await MgCampSession.findById(
+      camperToUpdate.campSession,
+    );
+    if (campSession == null) {
+      throw new Error("The camp session is null!");
+    }
     try {
-      if (campSession && camperToUpdate) {
-        const camp = await MgCamp.findById(campSession.camp);
-        if (camp) {
-          await emailService.sendParentRegistrationInviteEmail(
-            camp,
-            campSession,
-            camperToUpdate,
-          );
-          camperToUpdate.status = "RegistrationFormSent";
-          await camperToUpdate.save();
-        } else {
-          throw new Error("Associated camp is null!");
-        }
-      } else {
-        throw new Error("Camp session and/or camper are null!");
+      const camp = await MgCamp.findById(campSession.camp);
+      if (camp == null) {
+        throw new Error("Associated camp is null!");
       }
-
+      await emailService.sendParentRegistrationInviteEmail(
+        camp,
+        campSession,
+        camperToUpdate,
+      );
+      camperToUpdate.status = "RegistrationFormSent";
+      await camperToUpdate.save();
       if (camperToUpdate)
         return {
           id: camperToUpdate.id,
