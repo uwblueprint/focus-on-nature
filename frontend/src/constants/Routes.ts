@@ -1,6 +1,6 @@
 export const HOME_PAGE = "/";
 
-export const LOGIN_PAGE = "/login";
+export const LOGIN_PAGE = "/admin/login";
 
 export const SIGNUP_PAGE = "/signup";
 
