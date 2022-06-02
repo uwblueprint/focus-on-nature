@@ -343,14 +343,15 @@ class CampService implements ICampService {
             allergies: camper.allergies,
             hasCamera: camper.hasCamera,
             hasLaptop: camper.hasLaptop,
-            earlyDropoff: camper.earlyDropoff,
-            latePickup: camper.latePickup,
+            earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+            latePickup: camper.latePickup.map((date) => date.toString()),
             specialNeeds: camper.specialNeeds,
             contacts: camper.contacts,
             formResponses: formResponseObject,
-            registrationDate: camper.registrationDate,
+            registrationDate: camper.registrationDate.toString(),
             hasPaid: camper.hasPaid,
             chargeId: camper.chargeId,
+            optionalClauses: camper.optionalClauses,
           };
         }),
       );
