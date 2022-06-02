@@ -680,7 +680,7 @@ class CamperService implements ICamperService {
         };
     } catch (error: unknown) {
       Logger.error(
-        `Failed to updated waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
+        `Failed to update waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
           error,
         )}`,
       );
