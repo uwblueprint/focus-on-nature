@@ -9,6 +9,7 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
+  createFormQuestionsValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
@@ -153,5 +154,21 @@ campRouter.get("/csv/:id", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+campRouter.post(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.createFormQuestions(
+        req.params.campId,
+        req.body.data.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 export default campRouter;

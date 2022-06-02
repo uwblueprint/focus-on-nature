@@ -267,3 +267,31 @@ export const updateCampSessionDtoValidator = async (
   }
   return next();
 };
+
+export const createFormQuestionsValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  let body;
+  try {
+    body = JSON.parse(req.body.data);
+  } catch (e: unknown) {
+    return res.status(400).send(getErrorMessage(e));
+  }
+
+  if (
+    body.formQuestions &&
+    Array.isArray(body.formQuestions) &&
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    !body.formQuestions.every((formQuestion: { [key: string]: any }) => {
+      return validateFormQuestion(formQuestion);
+    })
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestion", "string", true));
+  }
+
+  return next();
+};

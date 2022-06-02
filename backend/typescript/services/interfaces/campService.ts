@@ -7,6 +7,7 @@ import {
   GetCampDTO,
   UpdateCampDTO,
   CreateCampSessionsDTO,
+  FormQuestionDTO,
 } from "../../types";
 
 interface ICampService {
@@ -50,6 +51,18 @@ interface ICampService {
    * @throws Error if CSV generation fails
    */
   generateCampersCSV(campId: string): Promise<string>;
+
+  /**
+   * Adds form questions to db
+   * @param campId camp's id
+   * @param formQuestions the form questions to be associated with camp
+   * @returns formQuestion ids that were successfully inserted
+   * @throws Error if formQuestions cannot be inserted
+   */
+  createFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]>;
 }
 
 export default ICampService;

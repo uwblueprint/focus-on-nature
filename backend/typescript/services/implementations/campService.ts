@@ -465,18 +465,6 @@ class CampService implements ICampService {
     };
   }
 
-  async createFormQuestions(
-    campSessionId: string,
-    formQuestions: FormQuestionDTO,
-  ): Promise<void> {
-    try {
-      // insert form questions into db
-      MgFormQuestion
-
-      // insert ids into db
-    }
-  };
-
   async editCampSessionById(
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
@@ -552,6 +540,48 @@ class CampService implements ICampService {
       );
       throw error;
     }
+  }
+
+  async createFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]> {
+    const formQuestionIds: string[] = [];
+
+    try {
+      await Promise.all(
+        formQuestions.map(async (formQuestion) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIds.push(question._id);
+        }),
+      );
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create form questions. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
+    try {
+      await MgCamp.findByIdAndUpdate(campId, {
+        formQuestions: formQuestionIds,
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to insert question ids into camp ${campId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+
+    return formQuestionIds;
   }
 }
 
