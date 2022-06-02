@@ -159,7 +159,7 @@ class EmailService implements IEmailService {
   ): Promise<void> {
     const link = ""; // TODO: fix link
     await this.sendEmail(
-      ADMIN_EMAIL,
+      waitlistedCamper.contactEmail,
       "Focus on Nature Camp Registration - Invitation to Register",
       `Hi ${waitlistedCamper.contactName},<br><br>
       A spot opened up in ${camp.name} for the following session dates: 

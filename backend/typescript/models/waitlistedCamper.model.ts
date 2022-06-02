@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { WaitlistedCamperStatus } from "../types";
 
 export interface WaitlistedCamper extends Document {
   id: string;
@@ -8,6 +9,7 @@ export interface WaitlistedCamper extends Document {
   contactName: string;
   contactEmail: string;
   contactNumber: string;
+  status: WaitlistedCamperStatus;
   campSession: Schema.Types.ObjectId;
 }
 
@@ -34,6 +36,12 @@ const WaitlistedCamperSchema: Schema = new Schema({
   },
   contactNumber: {
     type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["NotRegistered", "RegistrationFormSent", "Registered"],
+    default: "NotRegistered",
     required: true,
   },
   campSession: {

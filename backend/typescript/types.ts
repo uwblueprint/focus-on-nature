@@ -78,6 +78,7 @@ export type WaitlistedCamperDTO = {
   contactEmail: string;
   contactNumber: string;
   campSession: string;
+  status: string;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
@@ -181,3 +182,8 @@ export type WaiverDTO = {
 export type FormTemplateDTO = {
   formQuestions: [FormQuestionDTO];
 };
+
+export type WaitlistedCamperStatus =
+  | "NotRegistered"
+  | "RegistrationFormSent"
+  | "Registered";
