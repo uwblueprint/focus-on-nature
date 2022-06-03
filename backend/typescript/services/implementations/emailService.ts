@@ -143,7 +143,7 @@ class EmailService implements IEmailService {
 
     await this.sendEmail(
       contact.email,
-      "Focus on Nature Successful Camp Session Change - Confirmation",
+      "Focus on Nature Camp Session Change - Confirmation",
       `Hi ${contact.firstName} ${contact.lastName},<br><br>
       This following email is to notify you that ${camperNames} ${placeholder} been successfully 
       moved from ${camp.name} happening on
