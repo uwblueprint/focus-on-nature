@@ -38,8 +38,8 @@ export type CamperDTO = {
   allergies: string;
   hasCamera: boolean;
   hasLaptop: boolean;
-  earlyDropoff: string;
-  latePickup: string;
+  earlyDropoff: string[];
+  latePickup: string[];
   specialNeeds: string;
   contacts: {
     firstName: string;
@@ -47,7 +47,7 @@ export type CamperDTO = {
     email: string;
     phoneNumber: string;
   }[];
-  registrationDate: Date;
+  registrationDate: string;
   hasPaid: boolean;
   formResponses: Map<string, string>;
   chargeId: string;
@@ -56,6 +56,12 @@ export type CamperDTO = {
     earlyDropoff: number;
     latePickup: number;
   };
+  optionalClauses: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 };
 
 export type CamperCSVInfoDTO = Omit<
@@ -72,6 +78,7 @@ export type WaitlistedCamperDTO = {
   contactEmail: string;
   contactNumber: string;
   campSession: string;
+  status: string;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
@@ -87,22 +94,27 @@ export type CampSessionDTO = {
   campers: string[];
   waitlist: string[];
   dates: string[];
-  startTime: string;
-  endTime: string;
-  active: boolean;
 };
 
 export type CampDTO = {
   id: string;
+  active: boolean;
   ageLower: number;
   ageUpper: number;
+  campCoordinators: string[];
+  campCounsellors: string[];
   name: string;
   description: string;
+  earlyDropoff: string;
+  endTime: string;
+  latePickup: string;
   location: string;
+  startTime: string;
   fee: number;
   formQuestions: string[];
   campSessions: string[];
   fileName?: string;
+  volunteers: string[];
 };
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
@@ -175,3 +187,8 @@ export type WaiverDTO = {
 export type FormTemplateDTO = {
   formQuestions: [FormQuestionDTO];
 };
+
+export type WaitlistedCamperStatus =
+  | "NotRegistered"
+  | "RegistrationFormSent"
+  | "Registered";

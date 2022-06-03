@@ -97,6 +97,7 @@ camperRouter.post(
         contactEmail: req.body.contactEmail,
         contactNumber: req.body.contactNumber,
         campSession: req.body.campSession,
+        status: "NotRegistered",
       });
 
       res.status(201).json(newWaitlistedCamper);
@@ -105,6 +106,20 @@ camperRouter.post(
     }
   },
 );
+
+camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
+  try {
+    const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
+      req.params.waitlistedCamperId,
+    );
+    res.status(200).json(updatedWaitlistedCamper);
+  } catch (error: unknown) {
+    res.status(500).json({
+      error: getErrorMessage(error),
+      id: req.params.waitlistedCamperId,
+    });
+  }
+});
 
 /* Update the camper with the specified camperId */
 camperRouter.patch(
@@ -129,6 +144,7 @@ camperRouter.patch(
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
+          optionalClauses: req.body.optionalClauses,
         },
       );
       res.status(200).json(updatedCampers);
