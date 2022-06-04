@@ -116,6 +116,41 @@ class EmailService implements IEmailService {
     );
   }
 
+  async sendParentMovedConfirmationEmail(
+    campers: Camper[],
+    camp: Camp,
+    oldCampSession: CampSession,
+    newCampSession: CampSession,
+  ): Promise<void> {
+    let camperNames = "";
+    const placeholder = campers.length > 1 ? "have" : "has";
+    const contact = campers[0].contacts[0];
+    for (let i = 0; i < campers.length; i += 1) {
+      camperNames += `${campers[i].firstName} ${campers[i].lastName}`;
+      if (i === campers.length - 1) {
+        break;
+      } else if (i === campers.length - 2) {
+        camperNames += " and ";
+      } else {
+        camperNames += ", ";
+      }
+    }
+
+    await this.sendEmail(
+      contact.email,
+      "Focus on Nature Camp Session Change - Confirmation",
+      `Hi ${contact.firstName} ${contact.lastName},<br><br>
+      This following email is to notify you that ${camperNames} ${placeholder} been successfully 
+      moved from ${camp.name} happening on
+      ${sessionDatesToString(oldCampSession.dates)} to ${camp.name} happening on
+      ${sessionDatesToString(newCampSession.dates)}.<br><br>
+      If you have further questions or concerns, please do not hesitate to contact camps@focusonnature.ca.<br><br>
+      Thanks,<br><br>
+      Focus on Nature
+      `,
+    );
+  }
+
   async sendParentWaitlistConfirmationEmail(
     camp: Camp,
     campSession: CampSession,
