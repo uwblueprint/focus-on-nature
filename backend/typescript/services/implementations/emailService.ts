@@ -135,9 +135,6 @@ class EmailService implements IEmailService {
         camperNames += ", ";
       }
     }
-    if (campers.length > 1) {
-      placeholder = "have";
-    }
 
     await this.sendEmail(
       contact.email,
