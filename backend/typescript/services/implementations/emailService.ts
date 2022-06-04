@@ -123,7 +123,7 @@ class EmailService implements IEmailService {
     newCampSession: CampSession,
   ): Promise<void> {
     let camperNames = "";
-    let placeholder = "has";
+    let placeholder = campers.length > 1 ? "have" : "has";
     const contact = campers[0].contacts[0];
     for (let i = 0; i < campers.length; i += 1) {
       camperNames += `${campers[i].firstName} ${campers[i].lastName}`
