@@ -380,8 +380,8 @@ class CamperService implements ICamperService {
     let updatedCamperDTOs: Array<CamperDTO> = [];
     let updatedCampers: Array<Camper> = [];
     let oldCampers: Array<Camper> = [];
-    let newCampSession: CampSession | null;
-    let oldCampSession: CampSession | null;
+    let newCampSession: CampSession | null = null;
+    let oldCampSession: CampSession | null = null;
     let movedCampSession = false;
     let camp: Camp | null;
 
@@ -532,28 +532,8 @@ class CamperService implements ICamperService {
       },
     });
 
-    if (movedCampSession) {
+    if (movedCampSession && newCampSession && oldCampSession) {
       try {
-        oldCampSession = await MgCampSession.findById(
-          oldCampers[0].campSession,
-        );
-
-        if (!oldCampSession) {
-          throw new Error(
-            `Error: Old camp session ${oldCampers[0].campSession} not found`,
-          );
-        }
-
-        newCampSession = await MgCampSession.findById(
-          updatedFields.campSession,
-        );
-
-        if (!newCampSession) {
-          throw new Error(
-            `Error: New camp session ${updatedFields.campSession} not found`,
-          );
-        }
-
         camp = await MgCamp.findById(newCampSession.camp);
         if (!camp) {
           throw new Error(`Error: Camp ${newCampSession.camp} not found`);
