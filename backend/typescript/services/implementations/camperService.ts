@@ -382,7 +382,7 @@ class CamperService implements ICamperService {
     let oldCampers: Array<Camper> = [];
     let newCampSession: CampSession | null;
     let oldCampSession: CampSession | null;
-    let movedCampSession = false;
+    let movedCampSession: boolean = false;
     let camp: Camp | null;
 
     try {
