@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
@@ -408,36 +409,6 @@ class CampService implements ICampService {
         volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
       });
-
-      /* eslint no-underscore-dangle: 0 */
-      if (camp.formQuestions) {
-        await Promise.all(
-          camp.formQuestions.map(async (formQuestion, i) => {
-            const question = await MgFormQuestion.create({
-              type: formQuestion.type,
-              question: formQuestion.question,
-              required: formQuestion.required,
-              description: formQuestion.description,
-              options: formQuestion.options,
-            });
-            newCamp.formQuestions[i] = question._id;
-          }),
-        );
-      }
-
-      if (camp.campSessions) {
-        await Promise.all(
-          camp.campSessions.map(async (campSession, i) => {
-            const session = await MgCampSession.create({
-              camp: newCamp,
-              campers: [],
-              waitlist: [],
-              dates: campSession.dates,
-            });
-            newCamp.campSessions[i] = session._id;
-          }),
-        );
-      }
 
       try {
         await newCamp.save();
