@@ -635,7 +635,7 @@ class CampService implements ICampService {
       const oldFormQuestions = oldCamp.formQuestions as FormQuestion[];
       if (
         !oldFormQuestions.find(
-          (question) => question.id.toString() === formQuestionId,
+          (question) => question.toString() === formQuestionId,
         )
       ) {
         throw new Error(

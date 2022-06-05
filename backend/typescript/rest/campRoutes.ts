@@ -10,10 +10,10 @@ import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
+  editFormQuestionValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
-import { validateFormQuestion } from "../middlewares/validators/formQuestionValidators";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -177,7 +177,7 @@ campRouter.post(
     try {
       const successfulFormQuestions = await campService.createFormQuestions(
         req.params.campId,
-        req.body.data.formQuestions,
+        req.body.formQuestions,
       );
       res.status(200).json(successfulFormQuestions);
     } catch (error: unknown) {
@@ -187,13 +187,13 @@ campRouter.post(
 );
 
 campRouter.put(
-  "/:campId/form/:formQuestionId",
-  validateFormQuestion,
+  "/:campId/form/:formQuestionId/",
+  editFormQuestionValidator,
   async (req, res) => {
     try {
       const successfulFormQuestion = await campService.editFormQuestion(
         req.params.formQuestionId,
-        req.body.data.formQuestion,
+        req.body.formQuestion,
       );
 
       res.status(200).json(successfulFormQuestion);
@@ -203,7 +203,7 @@ campRouter.put(
   },
 );
 
-campRouter.delete("/:campId/form/:formQuestionId", async (req, res) => {
+campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
   try {
     await campService.deleteFormQuestion(
       req.params.campId,
@@ -222,7 +222,7 @@ campRouter.patch(
     try {
       const successfulFormQuestions = await campService.appendFormQuestions(
         req.params.campId,
-        req.body.data.formQuestions,
+        req.body.formQuestions,
       );
       res.status(200).json(successfulFormQuestions);
     } catch (error: unknown) {
