@@ -622,6 +622,47 @@ class CampService implements ICampService {
       throw error;
     }
   }
+
+  async deleteFormQuestion(
+    campId: string,
+    formQuestionId: string,
+  ): Promise<void> {
+    try {
+      const oldCamp: Camp | null = await MgCamp.findById(campId);
+      if (!oldCamp) {
+        throw new Error(`Camp with campId ${campId} not found.`);
+      }
+
+      const oldFormQuestions = oldCamp.formQuestions as FormQuestion[];
+      if (
+        !oldFormQuestions.find(
+          (question) => question.id.toString() === formQuestionId,
+        )
+      ) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found for Camp with id ${campId}.`,
+        );
+      }
+
+      const deletedFormQuestion = await MgFormQuestion.findByIdAndRemove(
+        formQuestionId,
+      );
+      if (!deletedFormQuestion) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found.`,
+        );
+      }
+
+      await MgCamp.findByIdAndUpdate(campId, {
+        $pullAll: { formQuestions: [deletedFormQuestion.id] },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete FormQuestion. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
 }
 
 export default CampService;

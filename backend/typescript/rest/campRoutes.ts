@@ -189,4 +189,16 @@ campRouter.put(
   },
 );
 
+campRouter.delete("/:campId/form/:formQuestionId", async (req, res) => {
+  try {
+    await campService.deleteFormQuestion(
+      req.params.campId,
+      req.params.formQuestionId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 export default campRouter;

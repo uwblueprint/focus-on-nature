@@ -66,7 +66,6 @@ interface ICampService {
 
   /**
    * Edits form question associated with a camp
-   * @param campId camp's id
    * @param formQuestionId form question to edit's id
    * @param formQuestion the data to replace it with
    * @returns successfully edited form question
@@ -76,6 +75,15 @@ interface ICampService {
     formQuestionId: string,
     formQuestion: FormQuestionDTO,
   ): Promise<FormQuestionDTO>;
+
+  /**
+   * Delete a form question
+   * @param campId camp's id
+   * @param formQuestionId form question to edit's id
+   * @returns successfully deleted form question
+   * @throws Error if formQuestions cannot be found or deleted
+   */
+  deleteFormQuestion(campId: string, formQuestionId: string): Promise<void>;
 }
 
 export default ICampService;
