@@ -583,6 +583,45 @@ class CampService implements ICampService {
 
     return formQuestionIds;
   }
+
+  async editFormQuestion(
+    formQuestionId: string,
+    formQuestion: FormQuestionDTO,
+  ): Promise<FormQuestionDTO> {
+    try {
+      const newFormQuestion: FormQuestion | null = await MgFormQuestion.findByIdAndUpdate(
+        formQuestionId,
+        {
+          type: formQuestion.type,
+          question: formQuestion.question,
+          required: formQuestion.required,
+          description: formQuestion?.description,
+          options: formQuestion?.options,
+        },
+        { runValidators: true, new: true },
+      );
+
+      if (!newFormQuestion) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found.`,
+        );
+      }
+
+      return {
+        id: formQuestionId,
+        type: newFormQuestion.type,
+        question: newFormQuestion.question,
+        required: newFormQuestion.required,
+        description: newFormQuestion?.description,
+        options: newFormQuestion?.options,
+      };
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit FormQuestion. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
 }
 
 export default CampService;

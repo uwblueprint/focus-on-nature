@@ -13,6 +13,7 @@ import {
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
+import { validateFormQuestion } from "../middlewares/validators/formQuestionValidators";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -28,7 +29,7 @@ const campService: ICampService = new CampService(fileStorageService);
 campRouter.get("/", async (req, res) => {
   try {
     const camps = await campService.getCamps();
-    res.status(200).json(camps);
+    res.status(200).send(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
@@ -165,6 +166,23 @@ campRouter.post(
         req.body.data.formQuestions,
       );
       res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+campRouter.put(
+  "/:campId/form/:formQuestionId",
+  validateFormQuestion,
+  async (req, res) => {
+    try {
+      const successfulFormQuestion = await campService.editFormQuestion(
+        req.params.formQuestionId,
+        req.body.data.formQuestion,
+      );
+
+      res.status(200).json(successfulFormQuestion);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }

@@ -63,6 +63,19 @@ interface ICampService {
     campId: string,
     formQuestions: FormQuestionDTO[],
   ): Promise<string[]>;
+
+  /**
+   * Edits form question associated with a camp
+   * @param campId camp's id
+   * @param formQuestionId form question to edit's id
+   * @param formQuestion the data to replace it with
+   * @returns successfully edited form question
+   * @throws Error if formQuestions cannot be edited
+   */
+  editFormQuestion(
+    formQuestionId: string,
+    formQuestion: FormQuestionDTO,
+  ): Promise<FormQuestionDTO>;
 }
 
 export default ICampService;
