@@ -84,6 +84,18 @@ interface ICampService {
    * @throws Error if formQuestions cannot be found or deleted
    */
   deleteFormQuestion(campId: string, formQuestionId: string): Promise<void>;
+
+  /**
+   * Append form questions to existing camp
+   * @param campId camp's id
+   * @param formQuestions the form questions to be added
+   * @returns successfully appended form questions
+   * @throws Error if formQuestions cannot be appended
+   */
+  appendFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]>;
 }
 
 export default ICampService;

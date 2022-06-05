@@ -691,6 +691,48 @@ class CampService implements ICampService {
       throw error;
     }
   }
+
+  async appendFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]> {
+    const formQuestionIds: string[] = [];
+
+    try {
+      await Promise.all(
+        formQuestions.map(async (formQuestion) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIds.push(question._id);
+        }),
+      );
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create form questions. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
+    try {
+      await MgCamp.findByIdAndUpdate(campId, {
+        $push: { formQuestions: formQuestionIds },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to append question ids into camp ${campId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+
+    return formQuestionIds;
+  }
 }
 
 export default CampService;

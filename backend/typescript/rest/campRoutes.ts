@@ -215,4 +215,20 @@ campRouter.delete("/:campId/form/:formQuestionId", async (req, res) => {
   }
 });
 
+campRouter.patch(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.appendFormQuestions(
+        req.params.campId,
+        req.body.data.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
 export default campRouter;
