@@ -82,30 +82,39 @@ campRouter.post(
 );
 
 /* Update a camp */
-campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
-  try {
-    const newCamp = await campService.updateCampById(req.params.campId, {
-      active: req.body.active,
-      ageLower: req.body.ageLower,
-      ageUpper: req.body.ageUpper,
-      campCoordinators: req.body.campCoordinators,
-      campCounsellors: req.body.campCounsellors,
-      name: req.body.name,
-      description: req.body.description,
-      earlyDropoff: req.body.earlyDropoff,
-      latePickup: req.body.latePickup,
-      location: req.body.location,
-      fee: req.body.fee,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
-      volunteers: req.body.volunteers,
-    });
-
-    res.status(200).json(newCamp);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+campRouter.patch(
+  "/:campId",
+  upload.single("file"),
+  updateCampDtoValidator,
+  async (req, res) => {
+    try {
+      const newCamp = await campService.updateCampById(req.params.campId, {
+        active: req.body.active,
+        ageLower: req.body.ageLower,
+        ageUpper: req.body.ageUpper,
+        campCoordinators: req.body.campCoordinators,
+        campCounsellors: req.body.campCounsellors,
+        name: req.body.name,
+        description: req.body.description,
+        earlyDropoff: req.body.earlyDropoff,
+        latePickup: req.body.latePickup,
+        location: req.body.location,
+        fee: req.body.fee,
+        filePath: req.file?.path,
+        fileContentType: req.file?.mimetype,
+        endTime: "",
+        startTime: "",
+        volunteers: [],
+      });
+      if (req.file?.path) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(200).json(newCamp);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Create camp sessions */
 campRouter.post(

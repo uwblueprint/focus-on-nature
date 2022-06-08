@@ -138,7 +138,10 @@ export type CreateCampDTO = Omit<
 export type UpdateCampDTO = Omit<
   CampDTO,
   "id" | "formQuestions" | "campSessions"
->;
+> & {
+  filePath?: string;
+  fileContentType?: string;
+};
 
 export type CreateCampSessionsDTO = Array<
   Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">
