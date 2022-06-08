@@ -22,25 +22,45 @@ type GoogleErrorResponse = {
   details: string;
 };
 
+enum ResponseError {
+  Invalid = `Invalid Google domain for the account.`,
+  Inactive = `User is inactive.`,
+}
+
 enum LoginErrorMessages {
+  Error = `There was an error logging in with Google SSO, please try again.`,
   Invalid = `Invalid email entered. Please contact a Focus on Nature admin to gain access to the Camp Management Tool.`,
   Inactive = `The account associated with this email is currently inactive. Please contact a Focus on Nature admin to gain access to the Camp Management Tool.`,
+}
+
+function isAuthenticatedUserType(
+  res: AuthenticatedUser | string,
+): res is AuthenticatedUser {
+  return (res as AuthenticatedUser)!.id !== undefined;
 }
 
 const Login = (): React.ReactElement => {
   const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
   const [loginStatus, setLoginStatus] = useState<"" | "success" | "fail">("");
   const [loginErrorMessage, setLoginErrorMessage] = useState<string>(
-    LoginErrorMessages.Inactive,
+    LoginErrorMessages.Invalid,
   );
   const history = useHistory();
 
   const onGoogleLoginSuccess = async (tokenId: string) => {
-    const user: AuthenticatedUser = await authAPIClient.loginWithGoogle(
+    const res: AuthenticatedUser | string = await authAPIClient.loginWithGoogle(
       tokenId,
     );
-    setLoginStatus("success");
-    setAuthenticatedUser(user);
+
+    if (isAuthenticatedUserType(res)) {
+      setLoginStatus("success");
+      setAuthenticatedUser(res);
+    } else {
+      setLoginStatus("fail");
+      if (res === ResponseError.Inactive)
+        setLoginErrorMessage(LoginErrorMessages.Inactive);
+      else setLoginErrorMessage(LoginErrorMessages.Invalid);
+    }
   };
 
   if (authenticatedUser) {
@@ -87,12 +107,15 @@ const Login = (): React.ReactElement => {
                 if ("tokenId" in response) {
                   onGoogleLoginSuccess(response.tokenId);
                 } else {
+                  setLoginStatus("fail");
+                  setLoginErrorMessage(LoginErrorMessages.Error);
                   // eslint-disable-next-line no-alert
                   window.alert(response);
                 }
               }}
               onFailure={(error: GoogleErrorResponse) => {
                 setLoginStatus("fail");
+                setLoginErrorMessage(LoginErrorMessages.Error);
                 // eslint-disable-next-line no-alert
                 window.alert(JSON.stringify(error));
               }}
