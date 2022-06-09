@@ -123,7 +123,7 @@ class CampService implements ICampService {
           campCoordinators: camp.campCoordinators,
           campCounsellors: camp.campCounsellors,
           description: camp.description,
-          earlyDropOff: camp.earlyDropoff,
+          earlyDropoff: camp.earlyDropoff,
           latePickup: camp.latePickup,
           location: camp.location,
           startTime: camp.startTime,
