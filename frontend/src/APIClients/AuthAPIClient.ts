@@ -34,8 +34,8 @@ const loginWithGoogle = async (
     );
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
-  } catch (error) {
-    return error as string;
+  } catch (error: any) {
+    return error.response.data.error as string;
   }
 };
 
