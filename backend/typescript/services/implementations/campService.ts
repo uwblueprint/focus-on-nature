@@ -103,7 +103,6 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
-
     try {
       oldCamp = await MgCamp.findById(campId);
 
@@ -112,32 +111,34 @@ class CampService implements ICampService {
       }
 
       if (oldCamp.active && camp.fee) {
-        throw new Error(`Cannot update fee of active camp`);
+        throw new Error(`Error - cannot update fee of active camp`);
       }
-    } catch (error: unknown) {
-      Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
-      throw error;
-    }
 
-    try {
-      await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators,
-          campCounsellors: camp.campCounsellors,
-          description: camp.description,
-          earlyDropOff: camp.earlyDropOff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          volunteers: camp.volunteers,
-          fee: camp.fee,
-        },
-      });
+      try {
+        await MgCamp.findByIdAndUpdate(campId, {
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropOff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            volunteers: camp.volunteers,
+            fee: camp.fee,
+          },
+        });
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to update camp. Reason = ${getErrorMessage(error)}`,
+        );
+        throw error;
+      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
