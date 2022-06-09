@@ -114,31 +114,24 @@ class CampService implements ICampService {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
-      try {
-        await MgCamp.findByIdAndUpdate(campId, {
-          $set: {
-            name: camp.name,
-            active: camp.active,
-            ageLower: camp.ageLower,
-            ageUpper: camp.ageUpper,
-            campCoordinators: camp.campCoordinators,
-            campCounsellors: camp.campCounsellors,
-            description: camp.description,
-            earlyDropOff: camp.earlyDropoff,
-            latePickup: camp.latePickup,
-            location: camp.location,
-            startTime: camp.startTime,
-            endTime: camp.endTime,
-            volunteers: camp.volunteers,
-            fee: camp.fee,
-          },
-        });
-      } catch (error: unknown) {
-        Logger.error(
-          `Failed to update camp. Reason = ${getErrorMessage(error)}`,
-        );
-        throw error;
-      }
+      await MgCamp.findByIdAndUpdate(campId, {
+        $set: {
+          name: camp.name,
+          active: camp.active,
+          ageLower: camp.ageLower,
+          ageUpper: camp.ageUpper,
+          campCoordinators: camp.campCoordinators,
+          campCounsellors: camp.campCounsellors,
+          description: camp.description,
+          earlyDropOff: camp.earlyDropoff,
+          latePickup: camp.latePickup,
+          location: camp.location,
+          startTime: camp.startTime,
+          endTime: camp.endTime,
+          volunteers: camp.volunteers,
+          fee: camp.fee,
+        },
+      });
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
