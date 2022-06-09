@@ -103,9 +103,18 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
-
     try {
-      oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+      oldCamp = await MgCamp.findById(campId);
+
+      if (!oldCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+
+      if (oldCamp.active && camp.fee) {
+        throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
           active: camp.active,
@@ -119,13 +128,10 @@ class CampService implements ICampService {
           location: camp.location,
           startTime: camp.startTime,
           endTime: camp.endTime,
-          fee: camp.fee,
           volunteers: camp.volunteers,
+          fee: camp.fee,
         },
       });
-      if (!oldCamp) {
-        throw new Error(`Camp' with campId ${campId} not found.`);
-      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -305,11 +311,31 @@ class CampService implements ICampService {
         );
       }
 
+      if (oldCamp.active) {
+        const oldCampSession: CampSession | null = await MgCampSession.findById(
+          campSessionId,
+        );
+        if (oldCampSession) {
+          if (
+            oldCampSession.campers !== null &&
+            campSession.capacity < oldCampSession.campers.length
+          ) {
+            throw new Error(
+              `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+            );
+          }
+        } else {
+          throw new Error(
+            `CampSession with campSessionId ${campSessionId} not found.`,
+          );
+        }
+      }
+
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
           capacity: campSession.capacity,
-          dates: campSession.dates.sort(),
+          dates: campSession.dates ? campSession.dates.sort() : undefined,
         },
         { runValidators: true, new: true },
       );
