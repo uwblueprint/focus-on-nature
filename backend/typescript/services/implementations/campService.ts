@@ -102,14 +102,21 @@ class CampService implements ICampService {
   }
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
-    const oldCamp: Camp | null = await MgCamp.findById(campId);
+    let oldCamp: Camp | null;
 
-    if (!oldCamp) {
-      throw new Error(`Camp' with campId ${campId} not found.`);
-    }
+    try {
+      oldCamp = await MgCamp.findById(campId);
 
-    if (oldCamp.active && camp.fee) {
-      throw new Error(`Cannot update fee of active camp`);
+      if (!oldCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+
+      if (oldCamp.active && camp.fee) {
+        throw new Error(`Cannot update fee of active camp`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
     }
 
     try {
