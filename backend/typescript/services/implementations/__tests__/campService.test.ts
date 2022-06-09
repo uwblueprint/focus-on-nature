@@ -32,7 +32,11 @@ const testCamps: CreateCampDTO[] = [
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
+<<<<<<< HEAD
     earlyDropOff: "12:30",
+=======
+    earlyDropoff: "12:30",
+>>>>>>> main
     latePickup: "2:30",
     startTime: "6:49",
     endTime: "16:09",
@@ -50,7 +54,11 @@ const testCamps: CreateCampDTO[] = [
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
+<<<<<<< HEAD
     earlyDropOff: "12:30",
+=======
+    earlyDropoff: "12:30",
+>>>>>>> main
     latePickup: "2:30",
     startTime: "6:49",
     endTime: "16:09",
@@ -91,7 +99,11 @@ describe("mongo campService", (): void => {
       ageUpper: 30,
       campCoordinators: ["61fb3d34272ea0002ad6a24d"],
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
+<<<<<<< HEAD
       earlyDropOff: "12:30",
+=======
+      earlyDropoff: "12:30",
+>>>>>>> main
       latePickup: "2:30",
       name: "test camp",
       description: "description",
@@ -156,7 +168,11 @@ describe("mongo campService", (): void => {
     expect(
       camp?.campCounsellors.map((counsellor) => counsellor.toString()),
     ).toEqual(testCamp.campCounsellors);
+<<<<<<< HEAD
     expect(camp?.earlyDropOff).toEqual(testCamp.earlyDropOff);
+=======
+    expect(camp?.earlyDropoff).toEqual(testCamp.earlyDropoff);
+>>>>>>> main
     expect(camp?.latePickup).toEqual(testCamp.latePickup);
 
     // Step 2: Add Camp Sessions
@@ -186,7 +202,11 @@ describe("mongo campService", (): void => {
       ageUpper: 30,
       campCoordinators: ["61fb3d34272ea0002ad6a24d"],
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
+<<<<<<< HEAD
       earlyDropOff: "12:30",
+=======
+      earlyDropoff: "12:30",
+>>>>>>> main
       latePickup: "2:30",
       name: "test camp",
       description: "description",
@@ -302,7 +322,11 @@ describe("mongo campService", (): void => {
       expect(res.active).toEqual(testCamp.active);
       expect(res.campCoordinators).toEqual(testCamp.campCoordinators);
       expect(res.campCounsellors).toEqual(testCamp.campCounsellors);
+<<<<<<< HEAD
       expect(res.earlyDropOff).toEqual(testCamp.earlyDropOff);
+=======
+      expect(res.earlyDropoff).toEqual(testCamp.earlyDropoff);
+>>>>>>> main
       expect(res.latePickup).toEqual(testCamp.latePickup);
     }
   });
@@ -314,7 +338,11 @@ describe("mongo campService", (): void => {
       ageUpper: 30,
       campCoordinators: ["61fb3d34272ea0002ad6a24d"],
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
+<<<<<<< HEAD
       earlyDropOff: "12:30",
+=======
+      earlyDropoff: "12:30",
+>>>>>>> main
       latePickup: "2:30",
       name: "test camp",
       description: "description",
@@ -333,7 +361,11 @@ describe("mongo campService", (): void => {
       ageUpper: 30,
       campCoordinators: [],
       campCounsellors: [],
+<<<<<<< HEAD
       earlyDropOff: "2:30",
+=======
+      earlyDropoff: "2:30",
+>>>>>>> main
       latePickup: "8:30",
       name: "ab",
       description: "ba",
@@ -367,7 +399,76 @@ describe("mongo campService", (): void => {
     expect(
       camp?.campCounsellors.map((counsellor) => counsellor.toString()),
     ).toEqual(updatedTestCamp.campCounsellors);
+<<<<<<< HEAD
     expect(camp?.earlyDropOff).toEqual(updatedTestCamp.earlyDropOff);
     expect(camp?.latePickup).toEqual(updatedTestCamp.latePickup);
   });
+=======
+    expect(camp?.earlyDropoff).toEqual(updatedTestCamp.earlyDropoff);
+    expect(camp?.latePickup).toEqual(updatedTestCamp.latePickup);
+  });
+
+  it("deleteCamp", async () => {
+    // add camp
+    const res = await campService.createCamp({
+      active: true,
+      ageLower: 5,
+      ageUpper: 12,
+      name: "Test Camp",
+      description: "description",
+      location: "Canada",
+      fee: 7,
+      campCoordinators: [],
+      campCounsellors: [],
+      earlyDropoff: "14:00",
+      latePickup: "19:00",
+      startTime: "15:00",
+      endTime: "18:00",
+      formQuestions: [
+        {
+          type: "Text",
+          question: "how is it going",
+          required: true,
+          description: "asdfasdf",
+        },
+        {
+          type: "Text",
+          question: "Hi",
+          required: true,
+          description: "Description",
+        },
+      ],
+      campSessions: [
+        {
+          capacity: 12,
+          dates: ["December 17, 1995 03:24:00"],
+        },
+      ],
+      volunteers: [],
+    });
+
+    const camp = await MgCamp.findById(res.id).exec();
+    expect(camp).toBeInstanceOf(MgCamp); // make sure not null
+    expect(res.campSessions).toHaveLength(1);
+    expect(res.formQuestions).toHaveLength(2);
+
+    // delete camp
+    await campService.deleteCamp(res.id);
+
+    const deletedCamp = await MgCamp.findById(res.id).exec();
+    const deletedCampSession = await MgCampSession.findById(
+      res.campSessions[0],
+    );
+    const deletedFirstFormQuestion = await MgFormQuestion.findById(
+      res.formQuestions[0],
+    );
+    const deletedSecondFormQuestion = await MgFormQuestion.findById(
+      res.formQuestions[1],
+    );
+    expect(deletedCamp).toBeNull(); // make sure deleted
+    expect(deletedCampSession).toBeNull();
+    expect(deletedFirstFormQuestion).toBeNull();
+    expect(deletedSecondFormQuestion).toBeNull();
+  });
+>>>>>>> main
 });

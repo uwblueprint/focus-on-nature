@@ -59,7 +59,7 @@ campRouter.post(
         campSessions: body.campSessions,
         name: body.name,
         description: body.description,
-        earlyDropOff: body.earlyDropOff,
+        earlyDropoff: body.earlyDropoff,
         latePickup: body.latePickup,
         location: body.location,
         fee: body.fee,
@@ -92,7 +92,7 @@ campRouter.patch("/:campId", updateCampDtoValidator, async (req, res) => {
       campCounsellors: req.body.campCounsellors,
       name: req.body.name,
       description: req.body.description,
-      earlyDropOff: req.body.earlyDropOff,
+      earlyDropoff: req.body.earlyDropoff,
       latePickup: req.body.latePickup,
       location: req.body.location,
       fee: req.body.fee,
@@ -163,6 +163,16 @@ campRouter.get("/csv/:id", async (req, res) => {
   try {
     const csvString = await campService.generateCampersCSV(req.params.id);
     res.status(200).set("Content-Type", "text/csv").send(csvString);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+/* Delete a camp */
+campRouter.delete("/:id", async (req, res) => {
+  try {
+    await campService.deleteCamp(req.params.id);
+    res.status(204).send();
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

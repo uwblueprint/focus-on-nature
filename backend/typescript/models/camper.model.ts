@@ -9,8 +9,8 @@ export interface Camper extends Document {
   allergies: string;
   hasCamera: boolean;
   hasLaptop: boolean;
-  earlyDropoff: string;
-  latePickup: string;
+  earlyDropoff: Date[];
+  latePickup: Date[];
   specialNeeds: string;
   contacts: {
     firstName: string;
@@ -27,6 +27,12 @@ export interface Camper extends Document {
     earlyDropoff: number;
     latePickup: number;
   };
+  optionalClauses: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 }
 
 const CamperSchema: Schema = new Schema({
@@ -56,12 +62,8 @@ const CamperSchema: Schema = new Schema({
   hasLaptop: {
     type: Boolean,
   },
-  earlyDropoff: {
-    type: String,
-  },
-  latePickup: {
-    type: String,
-  },
+  earlyDropoff: [Date],
+  latePickup: [Date],
   specialNeeds: {
     type: String,
   },
@@ -118,6 +120,16 @@ const CamperSchema: Schema = new Schema({
       required: true,
     },
   },
+  optionalClauses: [
+    {
+      clause: {
+        type: String,
+      },
+      agreed: {
+        type: Boolean,
+      },
+    },
+  ],
 });
 
 export default mongoose.model<Camper>("Camper", CamperSchema);

@@ -124,15 +124,16 @@ class CamperService implements ICamperService {
         allergies: newCamper.allergies,
         hasCamera: newCamper.hasCamera,
         hasLaptop: newCamper.hasLaptop,
-        earlyDropoff: newCamper.earlyDropoff,
-        latePickup: newCamper.latePickup,
+        earlyDropoff: newCamper.earlyDropoff.map((date) => date.toString()),
+        latePickup: newCamper.latePickup.map((date) => date.toString()),
         specialNeeds: newCamper.specialNeeds,
         contacts: newCamper.contacts,
-        registrationDate: newCamper.registrationDate,
+        registrationDate: newCamper.registrationDate.toString(),
         hasPaid: newCamper.hasPaid,
         chargeId: newCamper.chargeId,
         formResponses: newCamper.formResponses,
         charges: newCamper.charges,
+        optionalClauses: newCamper.optionalClauses,
       };
     });
     return newCamperDTOs;
@@ -153,15 +154,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
     } catch (error: unknown) {
@@ -210,15 +212,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           formResponses: camper.formResponses,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
 
@@ -234,6 +237,7 @@ class CamperService implements ICamperService {
           contactEmail: camper.contactEmail,
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          status: camper.status,
         };
       });
     } catch (error: unknown) {
@@ -263,15 +267,16 @@ class CamperService implements ICamperService {
           allergies: camper.allergies,
           hasCamera: camper.hasCamera,
           hasLaptop: camper.hasLaptop,
-          earlyDropoff: camper.earlyDropoff,
-          latePickup: camper.latePickup,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
           formResponses: camper.formResponses,
-          registrationDate: camper.registrationDate,
+          registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
         };
       });
 
@@ -363,6 +368,7 @@ class CamperService implements ICamperService {
       contactEmail: waitlistedCamper.contactEmail,
       contactNumber: waitlistedCamper.contactNumber,
       campSession: waitlistedCamper.campSession,
+      status: waitlistedCamper.status,
     };
   }
 
@@ -374,8 +380,10 @@ class CamperService implements ICamperService {
     let updatedCamperDTOs: Array<CamperDTO> = [];
     let updatedCampers: Array<Camper> = [];
     let oldCampers: Array<Camper> = [];
-    let newCampSession: CampSession | null;
-    let oldCampSession: CampSession | null;
+    let newCampSession: CampSession | null = null;
+    let oldCampSession: CampSession | null = null;
+    let movedCampSession = false;
+    let camp: Camp | null;
 
     try {
       oldCampers = await MgCamper.find({
@@ -407,6 +415,7 @@ class CamperService implements ICamperService {
       }
 
       if (updatedFields.campSession) {
+        movedCampSession = true;
         newCampSession = await MgCampSession.findById(
           updatedFields.campSession,
         );
@@ -523,6 +532,29 @@ class CamperService implements ICamperService {
       },
     });
 
+    if (movedCampSession && newCampSession && oldCampSession) {
+      try {
+        camp = await MgCamp.findById(newCampSession.camp);
+        if (!camp) {
+          throw new Error(`Error: Camp ${newCampSession.camp} not found`);
+        }
+
+        await emailService.sendParentMovedConfirmationEmail(
+          updatedCampers,
+          camp,
+          oldCampSession,
+          newCampSession,
+        );
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to send confirmation email. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
+
     updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
       return {
         id: updatedCamper.id,
@@ -535,15 +567,16 @@ class CamperService implements ICamperService {
         allergies: updatedCamper.allergies,
         hasCamera: updatedCamper.hasCamera,
         hasLaptop: updatedCamper.hasLaptop,
-        earlyDropoff: updatedCamper.earlyDropoff,
-        latePickup: updatedCamper.latePickup,
+        earlyDropoff: updatedCamper.earlyDropoff.map((date) => date.toString()),
+        latePickup: updatedCamper.latePickup.map((date) => date.toString()),
         specialNeeds: updatedCamper.specialNeeds,
         contacts: updatedCamper.contacts,
         formResponses: updatedCamper.formResponses,
-        registrationDate: updatedCamper.registrationDate,
+        registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
         charges: updatedCamper.charges,
+        optionalClauses: updatedCamper.optionalClauses,
       };
     });
 
@@ -770,6 +803,55 @@ class CamperService implements ICamperService {
     } catch (error: unknown) {
       Logger.error(
         `Failed to delete campers with camper IDs [${camperIds}]. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
+
+  /* eslint-disable consistent-return */
+  async inviteWaitlistedCamper(waitlistedCamperId: string): Promise<any> {
+    // send email to contact to invite them to register
+    const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+      waitlistedCamperId,
+    );
+    if (camperToUpdate == null) {
+      throw new Error("The camper to update is null!");
+    }
+    const campSession = await MgCampSession.findById(
+      camperToUpdate.campSession,
+    );
+    if (campSession == null) {
+      throw new Error("The camp session is null!");
+    }
+    try {
+      const camp = await MgCamp.findById(campSession.camp);
+      if (camp == null) {
+        throw new Error("Associated camp is null!");
+      }
+      await emailService.sendParentRegistrationInviteEmail(
+        camp,
+        campSession,
+        camperToUpdate,
+      );
+      camperToUpdate.status = "RegistrationFormSent";
+      await camperToUpdate.save();
+      if (camperToUpdate)
+        return {
+          id: camperToUpdate.id,
+          firstName: camperToUpdate.firstName,
+          lastName: camperToUpdate.lastName,
+          age: camperToUpdate.age,
+          contactName: camperToUpdate.contactName,
+          contactEmail: camperToUpdate.contactEmail,
+          contactNumber: camperToUpdate.contactNumber,
+          campSession: camperToUpdate.campSession,
+          status: camperToUpdate.status,
+        };
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to update waitlisted camper's status with ID ${waitlistedCamperId}. Reason = ${getErrorMessage(
           error,
         )}`,
       );

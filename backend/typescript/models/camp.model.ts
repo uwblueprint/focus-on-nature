@@ -12,7 +12,7 @@ export interface Camp extends Document {
   campCounsellors: (User | Schema.Types.ObjectId)[];
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
-  earlyDropOff: string;
+  earlyDropoff: string;
   endTime: string;
   fee: number;
   fileName?: string;
@@ -72,7 +72,7 @@ const CampSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  earlyDropOff: {
+  earlyDropoff: {
     type: String,
   },
   fee: {
