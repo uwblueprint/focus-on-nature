@@ -6,7 +6,7 @@ import SampleContext from "../../contexts/SampleContext";
 import Logout from "../auth/Logout";
 import RefreshCredentials from "../auth/RefreshCredentials";
 import ResetPassword from "../auth/ResetPassword";
-import NavBar from "../common/NavBar"
+import NavBar from "../common/NavBar";
 
 type ButtonProps = { text: string; path: string };
 
@@ -40,24 +40,25 @@ const TeamInfoDisplay = () => {
 
 const Default = (): React.ReactElement => {
   return (
-    <div><NavBar/>
-    <div style={{ textAlign: "center", paddingTop: "20px" }}>
-      <h1>Default Page</h1>
-      <div className="btn-group" style={{ paddingRight: "10px" }}>
-        <Logout />
-        <RefreshCredentials />
-        <ResetPassword />
-        <Button text="Create Entity" path={Routes.CREATE_ENTITY_PAGE} />
-        <Button text="Update Entity" path={Routes.UPDATE_ENTITY_PAGE} />
-        <Button text="Display Entities" path={Routes.DISPLAY_ENTITY_PAGE} />
-        <Button text="Edit Team" path={Routes.EDIT_TEAM_PAGE} />
-        <Button text="Hooks Demo" path={Routes.HOOKS_PAGE} />
+    <div>
+      <NavBar />
+      <div style={{ textAlign: "center", paddingTop: "20px" }}>
+        <h1>Default Page</h1>
+        <div className="btn-group" style={{ paddingRight: "10px" }}>
+          <Logout />
+          <RefreshCredentials />
+          <ResetPassword />
+          <Button text="Create Entity" path={Routes.CREATE_ENTITY_PAGE} />
+          <Button text="Update Entity" path={Routes.UPDATE_ENTITY_PAGE} />
+          <Button text="Display Entities" path={Routes.DISPLAY_ENTITY_PAGE} />
+          <Button text="Edit Team" path={Routes.EDIT_TEAM_PAGE} />
+          <Button text="Hooks Demo" path={Routes.HOOKS_PAGE} />
+        </div>
+
+        <div style={{ height: "2rem" }} />
+
+        <TeamInfoDisplay />
       </div>
-
-      <div style={{ height: "2rem" }} />
-
-      <TeamInfoDisplay />
-    </div>
     </div>
   );
 };
