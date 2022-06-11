@@ -18,6 +18,8 @@ interface ICampService {
    */
   getCamps(): Promise<GetCampDTO[]>;
 
+  getCampById(campId: string): Promise<CampDTO>;
+
   createCamp(camp: CreateCampDTO): Promise<CampDTO>;
 
   deleteCamp(campId: string): Promise<void>;

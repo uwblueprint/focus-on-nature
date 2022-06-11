@@ -101,6 +101,47 @@ class CampService implements ICampService {
     }
   }
 
+  async getCampById(campId: string): Promise<CampDTO> {
+    let camp: Camp | null;
+
+    try {
+      camp = await MgCamp.findById(campId);
+
+      if (!camp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return{
+      id: campId,
+      active: camp.active,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: camp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
+      campSessions: camp.campSessions.map((session) => session.toString()),
+      name: camp.name,
+      description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      latePickup: camp.latePickup,
+      location: camp.location,
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      fee: camp.fee,
+      formQuestions: camp.formQuestions.map((formQuestion) =>
+        formQuestion.toString(),
+      ),
+      volunteers: camp.volunteers,
+    }
+  }
+
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
 
