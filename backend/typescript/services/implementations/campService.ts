@@ -105,9 +105,18 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
-
     try {
-      oldCamp = await MgCamp.findByIdAndUpdate(campId, {
+      oldCamp = await MgCamp.findById(campId);
+
+      if (!oldCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+
+      if (oldCamp.active && camp.fee) {
+        throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
           active: camp.active,
@@ -121,13 +130,10 @@ class CampService implements ICampService {
           location: camp.location,
           startTime: camp.startTime,
           endTime: camp.endTime,
-          fee: camp.fee,
           volunteers: camp.volunteers,
+          fee: camp.fee,
         },
       });
-      if (!oldCamp) {
-        throw new Error(`Camp' with campId ${campId} not found.`);
-      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -158,6 +164,72 @@ class CampService implements ICampService {
       ),
       volunteers: camp.volunteers,
     };
+  }
+
+  async deleteCamp(campId: string): Promise<void> {
+    let camp: Camp | null;
+
+    try {
+      camp = await MgCamp.findById(campId);
+      if (!camp) {
+        throw new Error(`Camp with camp ID ${campId} not found.`);
+      }
+
+      // delete the camp's file, if it exists
+      if (camp.fileName) {
+        await this.storageService.deleteFile(camp.fileName);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to delete camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    try {
+      try {
+        // delete the form questions and camp sessions
+        if (camp.formQuestions.length) {
+          await Promise.all(
+            camp.formQuestions.map(async (formQuestionId) => {
+              try {
+                await MgFormQuestion.findByIdAndDelete(formQuestionId);
+              } catch (deleteFormQuestionErr: unknown) {
+                // log error but don't throw
+                Logger.error(
+                  `Issues with form question deletion. Reason = ${getErrorMessage(
+                    deleteFormQuestionErr,
+                  )}`,
+                );
+              }
+            }),
+          );
+        }
+        if (camp.campSessions.length) {
+          await Promise.all(
+            camp.campSessions.map(async (campSessionId) => {
+              try {
+                await this.deleteCampSessionById(
+                  campId,
+                  campSessionId.toString(),
+                );
+              } catch (deleteCampSessionErr: unknown) {
+                Logger.error(
+                  `Issues with delete camp session deletion. Reason = ${getErrorMessage(
+                    deleteCampSessionErr,
+                  )}`,
+                );
+              }
+            }),
+          );
+        }
+      } catch (deleteError: unknown) {
+        // don't do anything
+      }
+
+      await MgCamp.findByIdAndDelete(campId); // delete camp itself
+    } catch (error: unknown) {
+      Logger.error(`Failed to delete camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
   }
 
   async createCampSessions(
@@ -241,11 +313,31 @@ class CampService implements ICampService {
         );
       }
 
+      if (oldCamp.active) {
+        const oldCampSession: CampSession | null = await MgCampSession.findById(
+          campSessionId,
+        );
+        if (oldCampSession) {
+          if (
+            oldCampSession.campers !== null &&
+            campSession.capacity < oldCampSession.campers.length
+          ) {
+            throw new Error(
+              `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+            );
+          }
+        } else {
+          throw new Error(
+            `CampSession with campSessionId ${campSessionId} not found.`,
+          );
+        }
+      }
+
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
           capacity: campSession.capacity,
-          dates: campSession.dates.sort(),
+          dates: campSession.dates ? campSession.dates.sort() : undefined,
         },
         { runValidators: true, new: true },
       );
@@ -276,6 +368,7 @@ class CampService implements ICampService {
     campId: string,
     campSessionId: string,
   ): Promise<void> {
+    let campSession: CampSession | null;
     try {
       const oldCamp: Camp | null = await MgCamp.findById(campId);
       if (!oldCamp) {
@@ -289,20 +382,44 @@ class CampService implements ICampService {
           `CampSession with campSessionId ${campSessionId} not found for Camp with id ${campId}.`,
         );
       }
-      const campSession = await MgCampSession.findByIdAndRemove(campSessionId);
+      campSession = await MgCampSession.findByIdAndRemove(campSessionId);
       if (!campSession) {
         throw new Error(
           `CampSession' with campSessionID ${campSessionId} not found.`,
         );
       }
+
       await MgCamp.findByIdAndUpdate(campId, {
         $pullAll: { campSessions: [campSession.id] },
       });
     } catch (error: unknown) {
       Logger.error(
-        `Failed to delete CampSession. Reason = ${getErrorMessage(error)}`,
+        `Failed to delete CampSession ${campSessionId} properly. Reason = ${getErrorMessage(
+          error,
+        )}`,
       );
       throw error;
+    }
+
+    // delete all the campers belonging to the camp session
+    const existingCampers = [...campSession.campers];
+    let numberOfCampersDeleted = 0;
+
+    try {
+      Promise.all(
+        existingCampers.map(async (camperId) => {
+          await MgCamper.findByIdAndDelete(camperId);
+          numberOfCampersDeleted += 1;
+        }),
+      );
+    } catch (error: unknown) {
+      // log but don't throw error
+      const errorMessage = [
+        `Failed to delete all campers belonging to camp session ${campSessionId}. Campers not deleted, although CampSession has been deleted`,
+        "Campers not yet deleted:",
+        existingCampers.slice(numberOfCampersDeleted),
+      ];
+      Logger.error(errorMessage.join(" "));
     }
   }
 

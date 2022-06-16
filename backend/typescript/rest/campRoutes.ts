@@ -231,4 +231,14 @@ campRouter.patch(
   },
 );
 
+/* Delete a camp */
+campRouter.delete("/:id", async (req, res) => {
+  try {
+    await campService.deleteCamp(req.params.id);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 export default campRouter;

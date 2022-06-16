@@ -1,8 +1,3 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  OperationVariables,
-} from "@apollo/client";
 import AUTHENTICATED_USER_KEY from "../constants/AuthConstants";
 import { AuthenticatedUser } from "../types/AuthTypes";
 import baseAPIClient from "./BaseAPIClient";
@@ -28,7 +23,9 @@ const login = async (
   }
 };
 
-const loginWithGoogle = async (idToken: string): Promise<AuthenticatedUser> => {
+const loginWithGoogle = async (
+  idToken: string,
+): Promise<AuthenticatedUser | string> => {
   try {
     const { data } = await baseAPIClient.post(
       "/auth/login",
@@ -37,8 +34,8 @@ const loginWithGoogle = async (idToken: string): Promise<AuthenticatedUser> => {
     );
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
-  } catch (error) {
-    return null;
+  } catch (error: any) {
+    return error.response.data.error as string;
   }
 };
 
