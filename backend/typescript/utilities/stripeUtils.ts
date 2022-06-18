@@ -32,3 +32,11 @@ export async function createStripeCampProducts(
     pickUpProductId: pickUpProduct.id,
   };
 }
+
+export async function createStripePrice(product: string, unit_amount: number) {
+  return await stripe.prices.create({
+    product,
+    currency: "cad",
+    unit_amount,
+  });
+}

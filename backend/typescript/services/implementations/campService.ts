@@ -18,10 +18,12 @@ import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
+import MgFees, { Fees } from "../../models/fees.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import {
   createStripeCampProducts,
+  createStripePrice,
   IStripeCampProducts,
 } from "../../utilities/stripeUtils";
 
@@ -567,6 +569,11 @@ class CampService implements ICampService {
       }
 
       if (camp.active) {
+        const fees = await MgFees.findOne();
+        if (!fees) {
+          throw new Error("No fees found in collection");
+        }
+
         const stripeProducts: IStripeCampProducts = await createStripeCampProducts(
           camp.name,
           camp.description,
@@ -575,6 +582,20 @@ class CampService implements ICampService {
         newCamp.productId = stripeProducts.productId;
         newCamp.dropoffProductId = stripeProducts.dropoffProductId;
         newCamp.pickUpProductId = stripeProducts.pickUpProductId;
+
+        await Promise.all(
+          newCamp.campSessions.map(async (campSession, i) => {
+            const dropoffPriceObject = await createStripePrice(
+              stripeProducts.dropoffProductId,
+              fees.dropoffFee,
+            );
+
+            const pickUpPriceObject = await createStripePrice(
+              stripeProducts.dropoffProductId,
+              fees.pickUpFee,
+            );
+          }),
+        );
       }
 
       try {
