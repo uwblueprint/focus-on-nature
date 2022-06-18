@@ -329,7 +329,7 @@ export const editFormQuestionValidator = async (
   if (req.body.formQuestion && !validateFormQuestion(req.body.formQuestion)) {
     return res
       .status(400)
-      .send(getApiValidationError("formQuestion", "string", true));
+      .send(getApiValidationError("formQuestion", "Form question"));
   }
 
   return next();
@@ -343,14 +343,11 @@ export const createFormQuestionsValidator = async (
   if (
     req.body.formQuestions &&
     Array.isArray(req.body.formQuestions) &&
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    !req.body.formQuestions.every((formQuestion: { [key: string]: any }) => {
-      return validateFormQuestion(formQuestion);
-    })
+    !req.body.formQuestions.every(validateFormQuestion)
   ) {
     return res
       .status(400)
-      .send(getApiValidationError("formQuestion", "string", true));
+      .send(getApiValidationError("formQuestions", "Form question", true));
   }
 
   return next();

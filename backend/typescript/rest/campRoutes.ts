@@ -29,7 +29,7 @@ const campService: ICampService = new CampService(fileStorageService);
 campRouter.get("/", async (req, res) => {
   try {
     const camps = await campService.getCamps();
-    res.status(200).send(camps);
+    res.status(200).json(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
