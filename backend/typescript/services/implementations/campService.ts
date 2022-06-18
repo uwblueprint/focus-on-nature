@@ -20,6 +20,10 @@ import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import {
+  createStripeCampProducts,
+  IStripeCampProducts,
+} from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
 
@@ -87,6 +91,9 @@ class CampService implements ICampService {
           earlyDropoff: camp.earlyDropoff,
           latePickup: camp.latePickup,
           location: camp.location,
+          productId: camp.productId,
+          dropoffProductId: camp.dropoffProductId,
+          pickUpProductId: camp.pickUpProductId,
           startTime: camp.startTime,
           endTime: camp.endTime,
           fee: camp.fee,
@@ -103,6 +110,7 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
+    let newCamp: Camp | null;
     try {
       oldCamp = await MgCamp.findById(campId);
 
@@ -114,7 +122,7 @@ class CampService implements ICampService {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
-      await MgCamp.findByIdAndUpdate(campId, {
+      newCamp = await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
           active: camp.active,
@@ -154,6 +162,9 @@ class CampService implements ICampService {
       earlyDropoff: camp.earlyDropoff,
       latePickup: camp.latePickup,
       location: camp.location,
+      productId: newCamp?.productId || "",
+      dropoffProductId: newCamp?.dropoffProductId || "",
+      pickUpProductId: newCamp?.pickUpProductId || "",
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
@@ -555,6 +566,17 @@ class CampService implements ICampService {
         );
       }
 
+      if (camp.active) {
+        const stripeProducts: IStripeCampProducts = await createStripeCampProducts(
+          camp.name,
+          camp.description,
+        );
+
+        newCamp.productId = stripeProducts.productId;
+        newCamp.dropoffProductId = stripeProducts.dropoffProductId;
+        newCamp.pickUpProductId = stripeProducts.pickUpProductId;
+      }
+
       try {
         await newCamp.save();
       } catch (error: unknown) {
@@ -611,6 +633,9 @@ class CampService implements ICampService {
       fileName: newCamp.fileName,
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
+      productId: newCamp.productId,
+      dropoffProductId: newCamp.dropoffProductId,
+      pickUpProductId: newCamp.pickUpProductId,
       volunteers: newCamp.volunteers,
     };
   }

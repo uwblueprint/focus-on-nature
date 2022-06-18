@@ -103,12 +103,15 @@ export type CampDTO = {
   ageUpper: number;
   campCoordinators: string[];
   campCounsellors: string[];
+  dropoffProductId: string;
   name: string;
   description: string;
   earlyDropoff: string;
   endTime: string;
   latePickup: string;
   location: string;
+  pickUpProductId: string;
+  productId: string;
   startTime: string;
   fee: number;
   formQuestions: string[];
@@ -127,7 +130,12 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
 
 export type CreateCampDTO = Omit<
   CampDTO,
-  "id" | "formQuestions" | "campSessions"
+  | "id"
+  | "formQuestions"
+  | "campSessions"
+  | "productId"
+  | "dropoffProductId"
+  | "pickUpProductId"
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
   campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
@@ -137,7 +145,12 @@ export type CreateCampDTO = Omit<
 
 export type UpdateCampDTO = Omit<
   CampDTO,
-  "id" | "formQuestions" | "campSessions"
+  | "id"
+  | "formQuestions"
+  | "campSessions"
+  | "productId"
+  | "dropoffProductId"
+  | "pickUpProductId"
 >;
 
 export type CreateCampSessionsDTO = Array<
