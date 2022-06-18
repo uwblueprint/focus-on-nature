@@ -12,6 +12,7 @@ import {
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
+import camperRouter from "./camperRoutes";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -34,6 +35,16 @@ campRouter.get("/", async (req, res) => {
     }
 
     res.status(200).json(camps);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+campRouter.get("/:id", async (req, res) => {
+  try {
+    const camp = await campService.getCampById(req.params.id);
+
+    res.status(200).json(camp);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

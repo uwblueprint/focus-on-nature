@@ -18,6 +18,12 @@ interface ICampService {
    */
   getCamps(): Promise<GetCampDTO[]>;
 
+   /**
+   * Get camp with the specified campId 
+   * @param campId camp's id
+   * @returns a CampDTO
+   * @throws Error if camper retrieval fails
+   */
   getCampById(campId: string): Promise<CampDTO>;
 
   createCamp(camp: CreateCampDTO): Promise<CampDTO>;
