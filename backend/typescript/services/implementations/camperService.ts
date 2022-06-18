@@ -369,7 +369,6 @@ class CamperService implements ICamperService {
       contactNumber: waitlistedCamper.contactNumber,
       campSession: waitlistedCamper.campSession,
       status: waitlistedCamper.status,
-      linkExpiry: undefined,
     };
   }
 
@@ -804,7 +803,7 @@ class CamperService implements ICamperService {
   }
 
   /* eslint-disable consistent-return */
-  async inviteWaitlistedCamper(waitlistedCamperId: string): Promise<unknown> {
+  async inviteWaitlistedCamper(waitlistedCamperId: string): Promise<any> {
     // send email to contact to invite them to register
     const camperToUpdate: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
       waitlistedCamperId,
@@ -829,11 +828,6 @@ class CamperService implements ICamperService {
         camperToUpdate,
       );
       camperToUpdate.status = "RegistrationFormSent";
-
-      const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + 3);
-      camperToUpdate.linkExpiry = expiryDate;
-
       await camperToUpdate.save();
       if (camperToUpdate)
         return {

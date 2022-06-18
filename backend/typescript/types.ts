@@ -79,7 +79,6 @@ export type WaitlistedCamperDTO = {
   contactNumber: string;
   campSession: string;
   status: string;
-  linkExpiry?: Date;
 };
 
 export type CreateUserDTO = Omit<UserDTO, "id">;
