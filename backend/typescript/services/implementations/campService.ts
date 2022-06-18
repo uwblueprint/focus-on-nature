@@ -115,7 +115,7 @@ class CampService implements ICampService {
       throw error;
     }
 
-    return{
+    return {
       id: campId,
       active: camp.active,
       ageLower: camp.ageLower,
@@ -139,7 +139,7 @@ class CampService implements ICampService {
         formQuestion.toString(),
       ),
       volunteers: camp.volunteers,
-    }
+    };
   }
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
