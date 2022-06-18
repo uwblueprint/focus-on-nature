@@ -1,7 +1,15 @@
-import { Container, Flex, Image, Stack, Button } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Image,
+  Stack,
+  Button,
+  Box,
+  color,
+} from "@chakra-ui/react";
 import { LockIcon } from "@chakra-ui/icons";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link as ReactLink, useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCampground, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +19,8 @@ import FONIcon from "../../assets/fon_icon.svg";
 import * as Routes from "../../constants/Routes";
 import AuthContext from "../../contexts/AuthContext";
 import { Role } from "../../types/AuthTypes";
+
+import COLOR from "../../theme/colors";
 
 const NavBar = (): JSX.Element => {
   const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
@@ -25,6 +35,10 @@ const NavBar = (): JSX.Element => {
     }
   };
 
+  useEffect(() => {
+    console.log(hoveredItem);
+  });
+
   return (
     <Container variant="headerContainer">
       <Flex>
@@ -34,16 +48,74 @@ const NavBar = (): JSX.Element => {
             <>
               {authenticatedUser.role === Role.ADMIN ? (
                 <Stack direction="row">
-                  <Button leftIcon={<FontAwesomeIcon icon={faCampground} />}>
+                  <Button
+                    bg="#FFF"
+                    _hover={{
+                      bg: "#FFF",
+                      color: COLOR.primary.green[100],
+                    }}
+                    _active={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    _focus={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    onClick={() => setHoveredItem("Camps")}
+                    leftIcon={<FontAwesomeIcon icon={faCampground} />}
+                  >
                     Camps
                   </Button>
-                  <Button leftIcon={<FontAwesomeIcon icon={faPenToSquare} />}>
+                  <Button
+                    bg="#FFF"
+                    _hover={{
+                      bg: "#FFF",
+                      color: COLOR.primary.green[100],
+                    }}
+                    _active={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    _focus={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    onClick={() => setHoveredItem("Global Forms")}
+                    leftIcon={<FontAwesomeIcon icon={faPenToSquare} />}
+                  >
                     Global Forms
                   </Button>
-                  <Button leftIcon={<LockIcon />}>Access Control</Button>
+                  <Button
+                    bg="#FFF"
+                    _hover={{
+                      bg: "#FFF",
+                      color: COLOR.primary.green[100],
+                    }}
+                    _active={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    _focus={{
+                      color: COLOR.primary.green[100],
+                    }}
+                    onClick={() => setHoveredItem("Access Control")}
+                    leftIcon={<LockIcon />}
+                  >
+                    Access Control
+                  </Button>
                 </Stack>
               ) : (
-                <Button leftIcon={<FontAwesomeIcon icon={faCampground} />}>
+                <Button
+                  bg="#FFF"
+                  _hover={{
+                    bg: "#FFF",
+                    color: COLOR.primary.green[100],
+                  }}
+                  _active={{
+                    color: COLOR.primary.green[100],
+                  }}
+                  _focus={{
+                    color: COLOR.primary.green[100],
+                  }}
+                  onClick={() => setHoveredItem("Camps")}
+                  leftIcon={<FontAwesomeIcon icon={faCampground} />}
+                >
                   Camps
                 </Button>
               )}
