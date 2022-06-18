@@ -9,6 +9,8 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
+  createFormQuestionsValidator,
+  editFormQuestionValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
@@ -167,6 +169,67 @@ campRouter.get("/csv/:id", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+campRouter.post(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.createFormQuestions(
+        req.params.campId,
+        req.body.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+campRouter.put(
+  "/:campId/form/:formQuestionId/",
+  editFormQuestionValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestion = await campService.editFormQuestion(
+        req.params.formQuestionId,
+        req.body.formQuestion,
+      );
+
+      res.status(200).json(successfulFormQuestion);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
+  try {
+    await campService.deleteFormQuestion(
+      req.params.campId,
+      req.params.formQuestionId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+campRouter.patch(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.appendFormQuestions(
+        req.params.campId,
+        req.body.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Delete a camp */
 campRouter.delete("/:id", async (req, res) => {
