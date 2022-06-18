@@ -12,7 +12,6 @@ import {
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
-import camperRouter from "./camperRoutes";
 
 const upload = multer({ dest: "uploads/" });
 
