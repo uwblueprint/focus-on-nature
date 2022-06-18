@@ -11,6 +11,7 @@ export interface WaitlistedCamper extends Document {
   contactNumber: string;
   status: WaitlistedCamperStatus;
   campSession: Schema.Types.ObjectId;
+  linkExpiry?: Date;
 }
 
 const WaitlistedCamperSchema: Schema = new Schema({
@@ -48,6 +49,9 @@ const WaitlistedCamperSchema: Schema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "CampSession",
     required: true,
+  },
+  linkExpiry: {
+    type: Date,
   },
 });
 
