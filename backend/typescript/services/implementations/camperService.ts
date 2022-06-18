@@ -302,7 +302,6 @@ class CamperService implements ICamperService {
         contactEmail: waitlistedCamper.contactEmail,
         contactNumber: waitlistedCamper.contactNumber,
         campSession: waitlistedCamper.campSession,
-        linkExpiry: undefined,
       });
 
       try {
