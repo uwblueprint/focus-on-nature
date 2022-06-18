@@ -4,10 +4,12 @@ import {
   Image,
   Stack,
   Button,
-  Box,
-  color,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
-import { LockIcon } from "@chakra-ui/icons";
+import { LockIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 import React, { useContext, useEffect, useState } from "react";
 import { Link as ReactLink, useHistory } from "react-router-dom";
@@ -119,6 +121,18 @@ const NavBar = (): JSX.Element => {
                   Camps
                 </Button>
               )}
+            </>
+          ) : null}
+          {authenticatedUser ? (
+            <>
+              <Menu>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                  {authenticatedUser?.firstName} {authenticatedUser?.lastName}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>Logout</MenuItem>
+                </MenuList>
+              </Menu>
             </>
           ) : null}
         </Stack>
