@@ -255,6 +255,14 @@ export const updateCampDtoValidator = async (
   if (req.body.campSessions) {
     return res.status(400).send("campSessions should be empty");
   }
+  if (req.file && !validateImageType(req.file.mimetype)) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).send(getImageTypeValidationError(req.file.mimetype));
+  }
+  if (req.file && !validateImageSize(req.file.size)) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).send(getImageSizeValidationError());
+  }
   return next();
 };
 
