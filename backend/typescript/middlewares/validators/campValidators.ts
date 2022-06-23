@@ -320,3 +320,35 @@ export const updateCampSessionDtoValidator = async (
   }
   return next();
 };
+
+export const editFormQuestionValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.body.formQuestion && !validateFormQuestion(req.body.formQuestion)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestion", "Form question"));
+  }
+
+  return next();
+};
+
+export const createFormQuestionsValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    req.body.formQuestions &&
+    Array.isArray(req.body.formQuestions) &&
+    !req.body.formQuestions.every(validateFormQuestion)
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestions", "Form question", true));
+  }
+
+  return next();
+};
