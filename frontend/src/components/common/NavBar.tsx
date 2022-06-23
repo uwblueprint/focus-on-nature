@@ -43,14 +43,13 @@ const NavBar = (): JSX.Element => {
   });
 
   return (
-    <Container variant="headerContainer">
-      <Flex>
-        <Image src={FONIcon} alt="FON icon" display="inline" />
-        <Stack spacing="2rem" direction="row" align="center">
+    <Container maxWidth="100vw">
+      <Flex direction="row" align="center" justify="space-between">
+        <Image src={FONIcon} alt="FON icon" display="inline"/>
           {authenticatedUser ? (
             <>
               {authenticatedUser.role === Role.ADMIN ? (
-                <Stack direction="row">
+                <Stack direction="row" justify="center">
                   <Button
                     bg="#FFF"
                     _hover={{
@@ -135,7 +134,17 @@ const NavBar = (): JSX.Element => {
           {authenticatedUser ? (
             <>
               <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} bg="#FFF"
+                _hover={{
+                  color: 'none',
+                }}
+                _active={{
+                  color: 'none',
+                }}
+                _focus={{
+                  color: 'none',
+                }}
+                >
                   {authenticatedUser?.firstName} {authenticatedUser?.lastName}
                 </MenuButton>
                 <MenuList>
@@ -144,7 +153,6 @@ const NavBar = (): JSX.Element => {
               </Menu>
             </>
           ) : null}
-        </Stack>
       </Flex>
     </Container>
   );
