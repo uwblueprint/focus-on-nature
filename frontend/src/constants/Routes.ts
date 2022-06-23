@@ -13,3 +13,9 @@ export const CREATE_ENTITY_PAGE = "/entity/create";
 export const UPDATE_ENTITY_PAGE = "/entity/update";
 
 export const HOOKS_PAGE = "/hooks";
+
+export const CAMPS_PAGE = "/camps";
+
+export const GLOBAL_FORMS_PAGE = "/global-forms";
+
+export const ACCESS_CONTROL_PAGE = "/access-control";

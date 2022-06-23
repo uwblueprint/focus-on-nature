@@ -32,6 +32,7 @@ const NavBar = (): JSX.Element => {
   const onLogOutClick = async () => {
     const success = await authAPIClient.logout(authenticatedUser?.id);
     if (success) {
+      console.log(success);
       history.push(Routes.LOGIN_PAGE);
       setAuthenticatedUser(null);
     }
@@ -53,7 +54,6 @@ const NavBar = (): JSX.Element => {
                   <Button
                     bg="#FFF"
                     _hover={{
-                      bg: "#FFF",
                       color: COLOR.primary.green[100],
                     }}
                     _active={{
@@ -62,7 +62,10 @@ const NavBar = (): JSX.Element => {
                     _focus={{
                       color: COLOR.primary.green[100],
                     }}
-                    onClick={() => setHoveredItem("Camps")}
+                    onClick={() => {
+                      setHoveredItem("Camps");
+                      history.push(Routes.CAMPS_PAGE);
+                    }}
                     leftIcon={<FontAwesomeIcon icon={faCampground} />}
                   >
                     Camps
@@ -70,7 +73,6 @@ const NavBar = (): JSX.Element => {
                   <Button
                     bg="#FFF"
                     _hover={{
-                      bg: "#FFF",
                       color: COLOR.primary.green[100],
                     }}
                     _active={{
@@ -79,7 +81,10 @@ const NavBar = (): JSX.Element => {
                     _focus={{
                       color: COLOR.primary.green[100],
                     }}
-                    onClick={() => setHoveredItem("Global Forms")}
+                    onClick={() => {
+                      setHoveredItem("Global Forms");
+                      history.push(Routes.GLOBAL_FORMS_PAGE);
+                    }}
                     leftIcon={<FontAwesomeIcon icon={faPenToSquare} />}
                   >
                     Global Forms
@@ -87,7 +92,6 @@ const NavBar = (): JSX.Element => {
                   <Button
                     bg="#FFF"
                     _hover={{
-                      bg: "#FFF",
                       color: COLOR.primary.green[100],
                     }}
                     _active={{
@@ -96,7 +100,10 @@ const NavBar = (): JSX.Element => {
                     _focus={{
                       color: COLOR.primary.green[100],
                     }}
-                    onClick={() => setHoveredItem("Access Control")}
+                    onClick={() => {
+                      setHoveredItem("Access Control");
+                      history.push(Routes.ACCESS_CONTROL_PAGE);
+                    }}
                     leftIcon={<LockIcon />}
                   >
                     Access Control
@@ -106,7 +113,6 @@ const NavBar = (): JSX.Element => {
                 <Button
                   bg="#FFF"
                   _hover={{
-                    bg: "#FFF",
                     color: COLOR.primary.green[100],
                   }}
                   _active={{
@@ -115,7 +121,10 @@ const NavBar = (): JSX.Element => {
                   _focus={{
                     color: COLOR.primary.green[100],
                   }}
-                  onClick={() => setHoveredItem("Camps")}
+                  onClick={() => {
+                    setHoveredItem("Camps");
+                    history.push(Routes.CAMPS_PAGE);
+                  }}
                   leftIcon={<FontAwesomeIcon icon={faCampground} />}
                 >
                   Camps
@@ -130,7 +139,7 @@ const NavBar = (): JSX.Element => {
                   {authenticatedUser?.firstName} {authenticatedUser?.lastName}
                 </MenuButton>
                 <MenuList>
-                  <MenuItem>Logout</MenuItem>
+                  <MenuItem onClick={onLogOutClick}>Logout</MenuItem>
                 </MenuList>
               </Menu>
             </>

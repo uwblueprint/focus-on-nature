@@ -11,6 +11,9 @@ import Default from "./components/pages/Default";
 import DisplayPage from "./components/pages/DisplayPage";
 import NotFound from "./components/pages/NotFound";
 import UpdatePage from "./components/pages/UpdatePage";
+import CampsPage from "./components/pages/CampsPage";
+import GlobalFormsPage from "./components/pages/GlobalFormsPage";
+import AccessControlPage from "./components/pages/AccessControlPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -56,6 +59,21 @@ const App = (): React.ReactElement => {
               <Switch>
                 <Route exact path={Routes.LOGIN_PAGE} component={Login} />
                 <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
+                <PrivateRoute
+                  exact
+                  path={Routes.CAMPS_PAGE}
+                  component={CampsPage}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.GLOBAL_FORMS_PAGE}
+                  component={GlobalFormsPage}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.ACCESS_CONTROL_PAGE}
+                  component={AccessControlPage}
+                />
                 <PrivateRoute
                   exact
                   path={Routes.HOME_PAGE}
