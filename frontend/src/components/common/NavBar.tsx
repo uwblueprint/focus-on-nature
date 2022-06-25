@@ -2,15 +2,14 @@ import {
   Container,
   Flex,
   Image,
-  Stack,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Tabs,
   Tab,
   TabList,
+  PopoverContent,
+  PopoverTrigger,
+  Popover,
+  PopoverBody,
 } from "@chakra-ui/react";
 import { LockIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
@@ -97,7 +96,7 @@ const NavBar = (): JSX.Element => {
               width="750px"
               alignContent="center"
             >
-              <TabList justifyContent="space-between">
+              <TabList justifyContent="space-evenly">
                 <Tab
                   id="Camps"
                   _selected={{
@@ -138,31 +137,37 @@ const NavBar = (): JSX.Element => {
         ) : null}
         {authenticatedUser ? (
           <>
-            <Menu>
+            <Popover placement="bottom-start" matchWidth>
               {({ isOpen }) => (
                 <>
-                  <MenuButton
-                    as={Button}
-                    rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                    bg="#FFF"
-                    _hover={{
-                      color: "none",
-                    }}
-                    _active={{
-                      color: "none",
-                    }}
-                    _focus={{
-                      color: "none",
-                    }}
-                  >
-                    {authenticatedUser?.firstName} {authenticatedUser?.lastName}
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem onClick={onLogOutClick}>Logout</MenuItem>
-                  </MenuList>
+                  <PopoverTrigger>
+                    <Button
+                      rightIcon={
+                        isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />
+                      }
+                      bg="#FFF"
+                      _hover={{
+                        color: "none",
+                      }}
+                      _active={{
+                        color: "none",
+                      }}
+                      _focus={{
+                        color: "none",
+                      }}
+                    >
+                      {authenticatedUser?.firstName}{" "}
+                      {authenticatedUser?.lastName}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent width="inherit">
+                    <PopoverBody as={Button} bg="#FFF" onClick={onLogOutClick}>
+                      Logout
+                    </PopoverBody>
+                  </PopoverContent>
                 </>
               )}
-            </Menu>
+            </Popover>
           </>
         ) : null}
       </Flex>
