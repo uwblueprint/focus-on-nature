@@ -151,26 +151,29 @@ class CampService implements ICampService {
         stripeProducts.pickUpProductId = stripePickUpProduct.id;
       }
 
-      const bruh = { ...stripeProducts };
-      newCamp = await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators,
-          campCounsellors: camp.campCounsellors,
-          description: camp.description,
-          earlyDropoff: camp.earlyDropoff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          volunteers: camp.volunteers,
-          fee: camp.fee,
-          ...stripeProducts,
+      newCamp = await MgCamp.findByIdAndUpdate(
+        campId,
+        {
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropoff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            volunteers: camp.volunteers,
+            fee: camp.fee,
+            ...stripeProducts,
+          },
         },
-      }).populate({
+        { new: true },
+      ).populate({
         path: "campSessions",
         model: MgCampSession,
       });
@@ -195,6 +198,7 @@ class CampService implements ICampService {
         const campProductId = newCamp.campProductId;
         const dropoffProductId = newCamp.dropoffProductId;
         const pickUpProductId = newCamp.pickUpProductId;
+        const campFee = newCamp.fee;
 
         const fees = await MgFees.findOne();
         if (!fees) {
@@ -205,8 +209,7 @@ class CampService implements ICampService {
           (newCamp.campSessions as CampSession[]).map(
             async (campSession, i) => {
               const campSessionFeeInCents =
-                camp.fee * campSession.dates.length * 100;
-
+                campFee * campSession.dates.length * 100;
               const priceObject = await createStripePrice(
                 campProductId,
                 campSessionFeeInCents,
