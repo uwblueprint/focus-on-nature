@@ -12,7 +12,7 @@ import {
   Tab,
   TabList,
 } from "@chakra-ui/react";
-import { LockIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { LockIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 import React, { useContext } from "react";
 import { Link as ReactLink, useHistory } from "react-router-dom";
@@ -73,16 +73,18 @@ const NavBar = (): JSX.Element => {
 
   return (
     <Container maxWidth="100vw">
-      <Flex direction="row" align="center" justify="space-between">
-        <Image src={FONIcon} alt="FON icon" display="inline" />
+      <Flex direction="row" justifyContent="space-between" marginLeft="80px" marginRight="80px" marginTop="14px" marginBottom="14px">
+        <Image src={FONIcon} alt="FON icon" display="inline" width="40px" height="40px"/>
         {authenticatedUser ? (
           <>
             <Tabs
               variant="unstyled"
               onChange={navigate}
               defaultIndex={getIndex as any}
+              width="750px"
+              alignContent="center"
             >
-              <TabList>
+              <TabList justifyContent="space-between">
                 <Tab
                   id="Camps"
                   _selected={{
@@ -124,9 +126,11 @@ const NavBar = (): JSX.Element => {
         {authenticatedUser ? (
           <>
             <Menu>
+            {({ isOpen }) => (
+              <>
               <MenuButton
                 as={Button}
-                rightIcon={<ChevronDownIcon />}
+                rightIcon={ isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 bg="#FFF"
                 _hover={{
                   color: "none",
@@ -143,6 +147,8 @@ const NavBar = (): JSX.Element => {
               <MenuList>
                 <MenuItem onClick={onLogOutClick}>Logout</MenuItem>
               </MenuList>
+                </>
+                  )}
             </Menu>
           </>
         ) : null}
