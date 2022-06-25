@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
@@ -10,6 +11,7 @@ import {
   GetCampDTO,
   UpdateCampDTO,
   CreateCampSessionsDTO,
+  FormQuestionDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -730,6 +732,170 @@ class CampService implements ICampService {
       );
       throw error;
     }
+  }
+
+  async createFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]> {
+    const formQuestionIds: string[] = [];
+
+    try {
+      await Promise.all(
+        formQuestions.map(async (formQuestion) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIds.push(question._id);
+        }),
+      );
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create form questions. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
+    try {
+      await MgCamp.findByIdAndUpdate(campId, {
+        formQuestions: formQuestionIds,
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to insert question ids into camp ${campId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+
+    return formQuestionIds;
+  }
+
+  async editFormQuestion(
+    formQuestionId: string,
+    formQuestion: FormQuestionDTO,
+  ): Promise<FormQuestionDTO> {
+    try {
+      const newFormQuestion: FormQuestion | null = await MgFormQuestion.findByIdAndUpdate(
+        formQuestionId,
+        {
+          type: formQuestion.type,
+          question: formQuestion.question,
+          required: formQuestion.required,
+          description: formQuestion?.description,
+          options: formQuestion?.options,
+        },
+        { runValidators: true, new: true },
+      );
+
+      if (!newFormQuestion) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found.`,
+        );
+      }
+
+      return {
+        id: formQuestionId,
+        type: newFormQuestion.type,
+        question: newFormQuestion.question,
+        required: newFormQuestion.required,
+        description: newFormQuestion?.description,
+        options: newFormQuestion?.options,
+      };
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit FormQuestion. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async deleteFormQuestion(
+    campId: string,
+    formQuestionId: string,
+  ): Promise<void> {
+    try {
+      const oldCamp: Camp | null = await MgCamp.findById(campId);
+      if (!oldCamp) {
+        throw new Error(`Camp with campId ${campId} not found.`);
+      }
+
+      const oldFormQuestions = oldCamp.formQuestions as FormQuestion[];
+      if (
+        !oldFormQuestions.find(
+          (question) => question.toString() === formQuestionId,
+        )
+      ) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found for Camp with id ${campId}.`,
+        );
+      }
+
+      const deletedFormQuestion = await MgFormQuestion.findByIdAndRemove(
+        formQuestionId,
+      );
+      if (!deletedFormQuestion) {
+        throw new Error(
+          `FormQuestion with formQuestionId ${formQuestionId} not found.`,
+        );
+      }
+
+      await MgCamp.findByIdAndUpdate(campId, {
+        $pullAll: { formQuestions: [deletedFormQuestion.id] },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete FormQuestion. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async appendFormQuestions(
+    campId: string,
+    formQuestions: FormQuestionDTO[],
+  ): Promise<string[]> {
+    const formQuestionIds: string[] = [];
+
+    try {
+      await Promise.all(
+        formQuestions.map(async (formQuestion) => {
+          const question = await MgFormQuestion.create({
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          });
+          formQuestionIds.push(question._id);
+        }),
+      );
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create form questions. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
+    try {
+      await MgCamp.findByIdAndUpdate(campId, {
+        $push: { formQuestions: formQuestionIds },
+      });
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to append question ids into camp ${campId}. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+
+    return formQuestionIds;
   }
 }
 

@@ -4,7 +4,8 @@ type Type =
   | "boolean"
   | "mixed"
   | "Date string"
-  | "24 hr time string";
+  | "24 hr time string"
+  | "Form question";
 
 const allowableContentTypes = new Set([
   "text/plain",
