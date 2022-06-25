@@ -27,6 +27,7 @@ import {
   createStripeCampProducts,
   createStripePrice,
   IStripeCampProducts,
+  updateStripeProduct,
 } from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
@@ -76,9 +77,9 @@ class CampService implements ICampService {
             dates: campSession.dates.map((date) => date.toString()),
             registrations: campSession.campers.length,
             waitlist: campSession.waitlist.length,
-            campPriceId: "",
-            dropoffPriceId: "",
-            pickUpPriceId: "",
+            campPriceId: campSession.campPriceId,
+            dropoffPriceId: campSession.dropoffPriceId,
+            pickUpPriceId: campSession.pickUpPriceId,
           }),
         );
 
@@ -146,6 +147,12 @@ class CampService implements ICampService {
           volunteers: camp.volunteers,
           fee: camp.fee,
         },
+      });
+
+      updateStripeProduct({
+        productId: oldCamp.campProductId,
+        campName: camp.name,
+        campDescription: camp.description,
       });
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
@@ -265,6 +272,63 @@ class CampService implements ICampService {
         pickUpPriceId: "",
       });
     });
+
+    const camp = await MgCamp.findById(campId);
+
+    if (!camp) throw `camp with id ${campId} not found`;
+
+    await Promise.all(
+      campSessions.map(async (campSession, i) => {
+        let priceIds = {
+          pickUpPriceId: "",
+          dropoffPriceId: "",
+          campPriceId: "",
+        };
+        if (camp.active) {
+          const fees = await MgFees.findOne();
+          if (!fees) {
+            throw new Error("No fees found in Fees collection");
+          }
+
+          const campSessionFeeInCents =
+            camp.fee * campSession.dates.length * 100;
+
+          const priceObject = await createStripePrice(
+            camp.campProductId,
+            campSessionFeeInCents,
+          );
+
+          const dropoffPriceObject = await createStripePrice(
+            camp.dropoffProductId,
+            fees.dropoffFee,
+          );
+
+          const pickUpPriceObject = await createStripePrice(
+            camp.dropoffProductId,
+            fees.pickUpFee,
+          );
+
+          priceIds = {
+            pickUpPriceId: pickUpPriceObject.id,
+            dropoffPriceId: dropoffPriceObject.id,
+            campPriceId: priceObject.id,
+          };
+          // 1. need to save these in the models
+          // 2. need to update validators
+          // 3. need to add this to editCamp
+          // testing
+        }
+
+        insertCampSessions[i] = {
+          camp: campId,
+          campers: [],
+          capacity: campSession.capacity,
+          waitlist: [],
+          dates: campSession.dates.sort(),
+          ...priceIds,
+        };
+      }),
+    );
 
     let newCampSessions: Array<CampSession> = [];
     let newCampSessionsIds: Array<string>;
@@ -540,8 +604,7 @@ class CampService implements ICampService {
       }
 
       const stripeProducts: IStripeCampProducts = await createStripeCampProducts(
-        camp.name,
-        camp.description,
+        { campName: camp.name, campDescription: camp.description },
       );
 
       newCamp = new MgCamp({
@@ -566,6 +629,7 @@ class CampService implements ICampService {
         ...(camp.filePath && { fileName }),
       });
 
+      // TODO(Jason) Should be moved to another endpoint
       /* eslint no-underscore-dangle: 0 */
       if (camp.formQuestions) {
         await Promise.all(
@@ -578,57 +642,6 @@ class CampService implements ICampService {
               options: formQuestion.options,
             });
             newCamp.formQuestions[i] = question._id;
-          }),
-        );
-      }
-
-      if (camp.campSessions) {
-        await Promise.all(
-          camp.campSessions.map(async (campSession, i) => {
-            let priceIds = {};
-            if (camp.active) {
-              const fees = await MgFees.findOne();
-              if (!fees) {
-                throw new Error("No fees found in Fees collection");
-              }
-
-              const campSessionFeeInCents =
-                camp.fee * campSession.dates.length * 100;
-
-              const priceObject = await createStripePrice(
-                stripeProducts.campProductId,
-                campSessionFeeInCents,
-              );
-
-              const dropoffPriceObject = await createStripePrice(
-                stripeProducts.dropoffProductId,
-                fees.dropoffFee,
-              );
-
-              const pickUpPriceObject = await createStripePrice(
-                stripeProducts.dropoffProductId,
-                fees.pickUpFee,
-              );
-
-              priceIds = {
-                pickUpPriceId: pickUpPriceObject.id,
-                dropoffPriceId: dropoffPriceObject.id,
-                campPriceId: priceObject.id,
-              };
-              // 1. need to save these in the models
-              // 2. need to update validators
-              // 3. need to add this to editCamp
-              // testing
-            }
-
-            const session = await MgCampSession.create({
-              camp: newCamp,
-              campers: [],
-              waitlist: [],
-              dates: campSession.dates,
-              ...priceIds,
-            });
-            newCamp.campSessions[i] = session._id;
           }),
         );
       }

@@ -10,10 +10,13 @@ export interface IStripeCampProducts {
   pickUpProductId: string;
 }
 
-export async function createStripeCampProducts(
-  campName: string,
-  campDescription: string,
-): Promise<IStripeCampProducts> {
+export async function createStripeCampProducts({
+  campName,
+  campDescription,
+}: {
+  campName: string;
+  campDescription: string;
+}): Promise<IStripeCampProducts> {
   const campProduct = await stripe.products.create({
     name: campName,
     description: campDescription,
@@ -31,6 +34,21 @@ export async function createStripeCampProducts(
     dropoffProductId: dropoffProduct.id,
     pickUpProductId: pickUpProduct.id,
   };
+}
+
+export async function updateStripeProduct({
+  productId,
+  campName,
+  campDescription,
+}: {
+  productId: string;
+  campName?: string;
+  campDescription?: string;
+}) {
+  await stripe.products.update(productId, {
+    ...(campDescription && { description: campDescription }),
+    ...(campName && { name: campName }),
+  });
 }
 
 export async function createStripePrice(product: string, unit_amount: number) {
