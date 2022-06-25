@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 });
 
 export interface IStripeCampProducts {
-  productId: string;
+  campProductId: string;
   dropoffProductId: string;
   pickUpProductId: string;
 }
@@ -27,7 +27,7 @@ export async function createStripeCampProducts(
     name: "Late pick up charges",
   });
   return {
-    productId: campProduct.id,
+    campProductId: campProduct.id,
     dropoffProductId: dropoffProduct.id,
     pickUpProductId: pickUpProduct.id,
   };

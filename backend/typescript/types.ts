@@ -93,8 +93,11 @@ export type CampSessionDTO = {
   camp: string;
   capacity: number;
   campers: string[];
-  waitlist: string[];
+  campPriceId: string;
   dates: string[];
+  dropoffPriceId: string;
+  pickUpPriceId: string;
+  waitlist: string[];
 };
 
 export type CampDTO = {
@@ -112,7 +115,7 @@ export type CampDTO = {
   latePickup: string;
   location: string;
   pickUpProductId: string;
-  productId: string;
+  campProductId: string;
   startTime: string;
   fee: number;
   formQuestions: string[];
@@ -134,7 +137,7 @@ export type CreateCampDTO = Omit<
   | "id"
   | "formQuestions"
   | "campSessions"
-  | "productId"
+  | "campProductId"
   | "dropoffProductId"
   | "pickUpProductId"
 > & {
@@ -149,18 +152,33 @@ export type UpdateCampDTO = Omit<
   | "id"
   | "formQuestions"
   | "campSessions"
-  | "productId"
+  | "campProductId"
   | "dropoffProductId"
   | "pickUpProductId"
 >;
 
 export type CreateCampSessionsDTO = Array<
-  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">
+  Omit<
+    CampSessionDTO,
+    | "id"
+    | "camp"
+    | "campers"
+    | "waitlist"
+    | "campPriceId"
+    | "dropoffPriceId"
+    | "pickUpPriceId"
+  >
 >;
 
 export type UpdateCampSessionDTO = Omit<
   CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist"
+  | "id"
+  | "camp"
+  | "campers"
+  | "waitlist"
+  | "campPriceId"
+  | "dropoffPriceId"
+  | "pickUpPriceId"
 >;
 
 export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];

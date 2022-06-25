@@ -21,7 +21,7 @@ export interface Camp extends Document {
   location: string;
   name: string;
   startTime: string;
-  productId: string;
+  campProductId: string;
   dropoffProductId: string;
   pickUpProductId: string;
   volunteers: string[];
@@ -105,7 +105,7 @@ const CampSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  productId: {
+  campProductId: {
     type: String,
   },
   dropoffProductId: {
