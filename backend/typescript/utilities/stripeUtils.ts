@@ -4,36 +4,32 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
-export interface IStripeCampProducts {
-  campProductId: string;
-  dropoffProductId: string;
-  pickUpProductId: string;
-}
-
-export async function createStripeCampProducts({
+export async function createStripeCampProduct({
   campName,
   campDescription,
 }: {
   campName: string;
   campDescription: string;
-}): Promise<IStripeCampProducts> {
+}) {
   const campProduct = await stripe.products.create({
     name: campName,
     description: campDescription,
   });
+  return campProduct;
+}
 
+export async function createStripeDropoffProduct() {
   const dropoffProduct = await stripe.products.create({
     name: "Early drop off charges",
   });
+  return dropoffProduct;
+}
 
+export async function createStripePickUpProduct() {
   const pickUpProduct = await stripe.products.create({
     name: "Late pick up charges",
   });
-  return {
-    campProductId: campProduct.id,
-    dropoffProductId: dropoffProduct.id,
-    pickUpProductId: pickUpProduct.id,
-  };
+  return pickUpProduct;
 }
 
 export async function updateStripeProduct({

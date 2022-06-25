@@ -24,10 +24,11 @@ import MgFees, { Fees } from "../../models/fees.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import {
-  createStripeCampProducts,
   createStripePrice,
-  IStripeCampProducts,
   updateStripeProduct,
+  createStripeCampProduct,
+  createStripeDropoffProduct,
+  createStripePickUpProduct,
 } from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
@@ -126,10 +127,31 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      if (oldCamp.active && camp.fee) {
-        throw new Error(`Error - cannot update fee of active camp`);
+      let stripeProducts: {
+        campProductId?: string;
+        dropoffProductId?: string;
+        pickUpProductId?: string;
+      } = {};
+
+      if (!oldCamp.campProductId) {
+        const stripeCampProduct = await createStripeCampProduct({
+          campName: camp.name,
+          campDescription: camp.description,
+        });
+        stripeProducts.campProductId = stripeCampProduct.id;
       }
 
+      if (!oldCamp.dropoffProductId) {
+        const stripeDropoffProduct = await createStripeDropoffProduct();
+        stripeProducts.dropoffProductId = stripeDropoffProduct.id;
+      }
+
+      if (!oldCamp.pickUpProductId) {
+        const stripePickUpProduct = await createStripePickUpProduct();
+        stripeProducts.pickUpProductId = stripePickUpProduct.id;
+      }
+
+      const bruh = { ...stripeProducts };
       newCamp = await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
@@ -146,14 +168,73 @@ class CampService implements ICampService {
           endTime: camp.endTime,
           volunteers: camp.volunteers,
           fee: camp.fee,
+          ...stripeProducts,
         },
+      }).populate({
+        path: "campSessions",
+        model: MgCampSession,
       });
 
-      updateStripeProduct({
-        productId: oldCamp.campProductId,
-        campName: camp.name,
-        campDescription: camp.description,
-      });
+      if (!newCamp || !oldCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+
+      if (oldCamp.active && camp.fee) {
+        throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      if (oldCamp.campProductId) {
+        updateStripeProduct({
+          productId: oldCamp.campProductId,
+          campName: camp.name,
+          campDescription: camp.description,
+        });
+      }
+
+      if (!oldCamp.active && camp.active) {
+        const campProductId = newCamp.campProductId;
+        const dropoffProductId = newCamp.dropoffProductId;
+        const pickUpProductId = newCamp.pickUpProductId;
+
+        const fees = await MgFees.findOne();
+        if (!fees) {
+          throw new Error("No fees found in Fees collection");
+        }
+
+        await Promise.all(
+          (newCamp.campSessions as CampSession[]).map(
+            async (campSession, i) => {
+              const campSessionFeeInCents =
+                camp.fee * campSession.dates.length * 100;
+
+              const priceObject = await createStripePrice(
+                campProductId,
+                campSessionFeeInCents,
+              );
+
+              const dropoffPriceObject = await createStripePrice(
+                dropoffProductId,
+                fees.dropoffFee,
+              );
+
+              const pickUpPriceObject = await createStripePrice(
+                pickUpProductId,
+                fees.pickUpFee,
+              );
+
+              await MgCampSession.findByIdAndUpdate(
+                campSession.id,
+                {
+                  pickUpPriceId: pickUpPriceObject.id,
+                  dropoffPriceId: dropoffPriceObject.id,
+                  campPriceId: priceObject.id,
+                },
+                { runValidators: true },
+              );
+            },
+          ),
+        );
+      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -277,6 +358,11 @@ class CampService implements ICampService {
 
     if (!camp) throw `camp with id ${campId} not found`;
 
+    const fees = await MgFees.findOne();
+    if (!fees) {
+      throw new Error("No fees found in Fees collection");
+    }
+
     await Promise.all(
       campSessions.map(async (campSession, i) => {
         let priceIds = {
@@ -285,11 +371,6 @@ class CampService implements ICampService {
           campPriceId: "",
         };
         if (camp.active) {
-          const fees = await MgFees.findOne();
-          if (!fees) {
-            throw new Error("No fees found in Fees collection");
-          }
-
           const campSessionFeeInCents =
             camp.fee * campSession.dates.length * 100;
 
@@ -603,9 +684,12 @@ class CampService implements ICampService {
         );
       }
 
-      const stripeProducts: IStripeCampProducts = await createStripeCampProducts(
-        { campName: camp.name, campDescription: camp.description },
-      );
+      const stripeCampProduct = await createStripeCampProduct({
+        campName: camp.name,
+        campDescription: camp.description,
+      });
+      const stripeDropoffProduct = await createStripeDropoffProduct();
+      const stripePickUpProduct = await createStripePickUpProduct();
 
       newCamp = new MgCamp({
         name: camp.name,
@@ -615,13 +699,13 @@ class CampService implements ICampService {
         campCoordinators: camp.campCoordinators,
         campCounsellors: camp.campCounsellors,
         description: camp.description,
-        dropoffProductId: stripeProducts.dropoffProductId,
+        dropoffProductId: stripeDropoffProduct.id,
         earlyDropoff: camp.earlyDropoff,
         endTime: camp.endTime,
         latePickup: camp.latePickup,
         location: camp.location,
-        campProductId: stripeProducts.campProductId,
-        pickUpProductId: stripeProducts.pickUpProductId,
+        campProductId: stripeCampProduct.id,
+        pickUpProductId: stripePickUpProduct.id,
         startTime: camp.startTime,
         fee: camp.fee,
         formQuestions: [],
