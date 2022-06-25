@@ -73,8 +73,21 @@ const NavBar = (): JSX.Element => {
 
   return (
     <Container maxWidth="100vw">
-      <Flex direction="row" justifyContent="space-between" marginLeft="80px" marginRight="80px" marginTop="14px" marginBottom="14px">
-        <Image src={FONIcon} alt="FON icon" display="inline" width="40px" height="40px"/>
+      <Flex
+        direction="row"
+        justifyContent="space-between"
+        marginLeft="80px"
+        marginRight="80px"
+        marginTop="14px"
+        marginBottom="14px"
+      >
+        <Image
+          src={FONIcon}
+          alt="FON icon"
+          display="inline"
+          width="40px"
+          height="40px"
+        />
         {authenticatedUser ? (
           <>
             <Tabs
@@ -126,29 +139,29 @@ const NavBar = (): JSX.Element => {
         {authenticatedUser ? (
           <>
             <Menu>
-            {({ isOpen }) => (
-              <>
-              <MenuButton
-                as={Button}
-                rightIcon={ isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                bg="#FFF"
-                _hover={{
-                  color: "none",
-                }}
-                _active={{
-                  color: "none",
-                }}
-                _focus={{
-                  color: "none",
-                }}
-              >
-                {authenticatedUser?.firstName} {authenticatedUser?.lastName}
-              </MenuButton>
-              <MenuList>
-                <MenuItem onClick={onLogOutClick}>Logout</MenuItem>
-              </MenuList>
+              {({ isOpen }) => (
+                <>
+                  <MenuButton
+                    as={Button}
+                    rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                    bg="#FFF"
+                    _hover={{
+                      color: "none",
+                    }}
+                    _active={{
+                      color: "none",
+                    }}
+                    _focus={{
+                      color: "none",
+                    }}
+                  >
+                    {authenticatedUser?.firstName} {authenticatedUser?.lastName}
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem onClick={onLogOutClick}>Logout</MenuItem>
+                  </MenuList>
                 </>
-                  )}
+              )}
             </Menu>
           </>
         ) : null}
