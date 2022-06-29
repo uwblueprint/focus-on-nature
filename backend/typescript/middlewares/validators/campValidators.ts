@@ -71,27 +71,27 @@ export const createCampDtoValidator = async (
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   if (body.location) {
-    if (!validatePrimitive(body.locaton.streetAddress1, "string")) {
+    if (!validatePrimitive(body.location.streetAddress1, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress1", "string"));
     }
-    if (!validatePrimitive(body.locaton.streetAddress2, "string")) {
+    if (!validatePrimitive(body.location.streetAddress2, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress2", "string"));
     }
-    if (!validatePrimitive(body.locaton.city, "string")) {
+    if (!validatePrimitive(body.location.city, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.city", "string"));
     }
-    if (!validatePrimitive(body.locaton.province, "string")) {
+    if (!validatePrimitive(body.location.province, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.province", "string"));
     }
-    if (!validatePrimitive(body.locaton.postalCode, "string")) {
+    if (!validatePrimitive(body.location.postalCode, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.postalCode", "string"));
@@ -198,27 +198,27 @@ export const updateCampDtoValidator = async (
     return res.status(400).send(getApiValidationError("description", "string"));
   }
   if (req.body.location) {
-    if (!validatePrimitive(req.body.locaton.streetAddress1, "string")) {
+    if (!validatePrimitive(req.body.location.streetAddress1, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress1", "string"));
     }
-    if (!validatePrimitive(req.body.locaton.streetAddress2, "string")) {
+    if (!validatePrimitive(req.body.location.streetAddress2, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress2", "string"));
     }
-    if (!validatePrimitive(req.body.locaton.city, "string")) {
+    if (!validatePrimitive(req.body.location.city, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.city", "string"));
     }
-    if (!validatePrimitive(req.body.locaton.province, "string")) {
+    if (!validatePrimitive(req.body.location.province, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.province", "string"));
     }
-    if (!validatePrimitive(req.body.locaton.postalCode, "string")) {
+    if (!validatePrimitive(req.body.location.postalCode, "string")) {
       return res
         .status(400)
         .send(getApiValidationError("location.postalCode", "string"));
