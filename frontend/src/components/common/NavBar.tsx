@@ -33,7 +33,6 @@ const NavBar = (): JSX.Element => {
   const onLogOutClick = async () => {
     const success = await authAPIClient.logout(authenticatedUser?.id);
     if (success) {
-      console.log(success);
       history.push(Routes.LOGIN_PAGE);
       setAuthenticatedUser(null);
     }
