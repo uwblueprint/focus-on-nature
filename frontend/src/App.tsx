@@ -7,7 +7,6 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import CreatePage from "./components/pages/CreatePage";
-import Default from "./components/pages/Default";
 import DisplayPage from "./components/pages/DisplayPage";
 import NotFound from "./components/pages/NotFound";
 import UpdatePage from "./components/pages/UpdatePage";
@@ -29,6 +28,7 @@ import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
 import LandingPage from "./components/pages/LandingPage";
+import NavBar from "./components/common/NavBar";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -57,10 +57,10 @@ const App = (): React.ReactElement => {
             value={{ authenticatedUser, setAuthenticatedUser }}
           >
             <Router>
+              <NavBar />
               <Switch>
                 <Route exact path={Routes.LOGIN_PAGE} component={Login} />
                 <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
-                {/* TODO: Update HOME_PAGE route to be a public landing based on designs */}
                 <Route exact path={Routes.HOME_PAGE} component={LandingPage} />
                 <PrivateRoute
                   exact

@@ -78,15 +78,15 @@ const NavBar = (): JSX.Element => {
         marginTop="14px"
         marginBottom="14px"
       >
-        <Image
-          src={FONIcon}
-          alt="FON icon"
-          display="inline"
-          width="40px"
-          height="40px"
-        />
         {authenticatedUser ? (
           <>
+            <Image
+              src={FONIcon}
+              alt="FON icon"
+              display="inline"
+              width="40px"
+              height="40px"
+            />
             <Tabs
               variant="unstyled"
               onChange={navigate}
@@ -131,10 +131,6 @@ const NavBar = (): JSX.Element => {
                 )}
               </TabList>
             </Tabs>
-          </>
-        ) : null}
-        {authenticatedUser ? (
-          <>
             <Popover placement="bottom-start" matchWidth>
               {({ isOpen }) => (
                 <>
