@@ -274,6 +274,8 @@ export const createCampSessionsDtoValidator = async (
         return res.status(400).send("waitlist should be empty");
       }
     }
+  } else {
+    return res.status(400).send("campSessions are required");
   }
   return next();
 };

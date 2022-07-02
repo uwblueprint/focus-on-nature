@@ -25,10 +25,12 @@ import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import {
   createStripePrice,
-  updateStripeProduct,
+  updateStripeCampProduct,
   createStripeCampProduct,
   createStripeDropoffProduct,
   createStripePickUpProduct,
+  updateStripeDropoffProduct,
+  updateStripePickUpProduct,
 } from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
@@ -146,12 +148,14 @@ class CampService implements ICampService {
       }
 
       if (!oldCamp.dropoffProductId) {
-        const stripeDropoffProduct = await createStripeDropoffProduct();
+        const stripeDropoffProduct = await createStripeDropoffProduct(
+          camp.name,
+        );
         stripeProducts.dropoffProductId = stripeDropoffProduct.id;
       }
 
       if (!oldCamp.pickUpProductId) {
-        const stripePickUpProduct = await createStripePickUpProduct();
+        const stripePickUpProduct = await createStripePickUpProduct(camp.name);
         stripeProducts.pickUpProductId = stripePickUpProduct.id;
       }
 
@@ -186,14 +190,30 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
+      // Update names of existing Stripe products
       if (oldCamp.campProductId) {
-        updateStripeProduct({
+        updateStripeCampProduct({
           productId: oldCamp.campProductId,
           campName: camp.name,
           campDescription: camp.description,
         });
       }
 
+      if (oldCamp.dropoffProductId) {
+        updateStripeDropoffProduct({
+          productId: oldCamp.dropoffProductId,
+          campName: camp.name,
+        });
+      }
+
+      if (oldCamp.pickUpProductId) {
+        updateStripePickUpProduct({
+          productId: oldCamp.pickUpProductId,
+          campName: camp.name,
+        });
+      }
+
+      // Create Price Objects if switching from inactive to active
       if (!oldCamp.active && camp.active) {
         const { campProductId, dropoffProductId, pickUpProductId } = newCamp;
 
@@ -388,7 +408,7 @@ class CampService implements ICampService {
             );
 
             const pickUpPriceObject = await createStripePrice(
-              camp.dropoffProductId,
+              camp.pickUpProductId,
               fees.pickUpFee,
             );
 
@@ -715,8 +735,8 @@ class CampService implements ICampService {
         campName: camp.name,
         campDescription: camp.description,
       });
-      const stripeDropoffProduct = await createStripeDropoffProduct();
-      const stripePickUpProduct = await createStripePickUpProduct();
+      const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
+      const stripePickUpProduct = await createStripePickUpProduct(camp.name);
 
       newCamp = new MgCamp({
         name: camp.name,

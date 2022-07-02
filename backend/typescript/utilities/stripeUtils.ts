@@ -4,6 +4,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const dropoffProductName = "Early Drop Off Fees";
+const pickUpProductName = "Late Pick Up Fees";
+
 export async function createStripeCampProduct({
   campName,
   campDescription,
@@ -18,25 +21,25 @@ export async function createStripeCampProduct({
   return campProduct;
 }
 
-export async function createStripeDropoffProduct(): Promise<
-  Stripe.Response<Stripe.Product>
-> {
+export async function createStripeDropoffProduct(
+  campName: string,
+): Promise<Stripe.Response<Stripe.Product>> {
   const dropoffProduct = await stripe.products.create({
-    name: "Early drop off charges",
+    name: `${campName} - ${dropoffProductName}`,
   });
   return dropoffProduct;
 }
 
-export async function createStripePickUpProduct(): Promise<
-  Stripe.Response<Stripe.Product>
-> {
+export async function createStripePickUpProduct(
+  campName: string,
+): Promise<Stripe.Response<Stripe.Product>> {
   const pickUpProduct = await stripe.products.create({
-    name: "Late pick up charges",
+    name: `${campName} - ${pickUpProductName}`,
   });
   return pickUpProduct;
 }
 
-export async function updateStripeProduct({
+export async function updateStripeCampProduct({
   productId,
   campName,
   campDescription,
@@ -48,6 +51,30 @@ export async function updateStripeProduct({
   await stripe.products.update(productId, {
     ...(campDescription && { description: campDescription }),
     ...(campName && { name: campName }),
+  });
+}
+
+export async function updateStripeDropoffProduct({
+  productId,
+  campName,
+}: {
+  productId: string;
+  campName?: string;
+}): Promise<void> {
+  await stripe.products.update(productId, {
+    ...(campName && { name: `${campName} - ${dropoffProductName}` }),
+  });
+}
+
+export async function updateStripePickUpProduct({
+  productId,
+  campName,
+}: {
+  productId: string;
+  campName?: string;
+}): Promise<void> {
+  await stripe.products.update(productId, {
+    ...(campName && { name: `${campName} - ${pickUpProductName}` }),
   });
 }
 
