@@ -142,16 +142,6 @@ export type CreateCampDTO = Omit<
   | "pickUpProductId"
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
-  campSessions: Omit<
-    CampSessionDTO,
-    | "id"
-    | "camp"
-    | "campers"
-    | "waitlist"
-    | "campPriceId"
-    | "dropoffPriceId"
-    | "pickUpPriceId"
-  >[];
   filePath?: string;
   fileContentType?: string;
 };
