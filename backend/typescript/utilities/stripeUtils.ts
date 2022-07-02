@@ -10,7 +10,7 @@ export async function createStripeCampProduct({
 }: {
   campName: string;
   campDescription: string;
-}) {
+}): Promise<Stripe.Response<Stripe.Product>> {
   const campProduct = await stripe.products.create({
     name: campName,
     description: campDescription,
@@ -18,14 +18,18 @@ export async function createStripeCampProduct({
   return campProduct;
 }
 
-export async function createStripeDropoffProduct() {
+export async function createStripeDropoffProduct(): Promise<
+  Stripe.Response<Stripe.Product>
+> {
   const dropoffProduct = await stripe.products.create({
     name: "Early drop off charges",
   });
   return dropoffProduct;
 }
 
-export async function createStripePickUpProduct() {
+export async function createStripePickUpProduct(): Promise<
+  Stripe.Response<Stripe.Product>
+> {
   const pickUpProduct = await stripe.products.create({
     name: "Late pick up charges",
   });
@@ -40,17 +44,21 @@ export async function updateStripeProduct({
   productId: string;
   campName?: string;
   campDescription?: string;
-}) {
+}): Promise<void> {
   await stripe.products.update(productId, {
     ...(campDescription && { description: campDescription }),
     ...(campName && { name: campName }),
   });
 }
 
-export async function createStripePrice(product: string, unit_amount: number) {
-  return await stripe.prices.create({
+export async function createStripePrice(
+  product: string,
+  unit_amount: number,
+): Promise<Stripe.Response<Stripe.Price>> {
+  const priceObject = await stripe.prices.create({
     product,
     currency: "cad",
     unit_amount,
   });
+  return priceObject;
 }

@@ -20,7 +20,7 @@ import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
-import MgFees, { Fees } from "../../models/fees.model";
+import MgFees from "../../models/fees.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import {
@@ -127,7 +127,11 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      let stripeProducts: {
+      if (oldCamp.active && camp.fee) {
+        throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      const stripeProducts: {
         campProductId?: string;
         dropoffProductId?: string;
         pickUpProductId?: string;
@@ -178,12 +182,8 @@ class CampService implements ICampService {
         model: MgCampSession,
       });
 
-      if (!newCamp || !oldCamp) {
+      if (!newCamp) {
         throw new Error(`Camp' with campId ${campId} not found.`);
-      }
-
-      if (oldCamp.active && camp.fee) {
-        throw new Error(`Error - cannot update fee of active camp`);
       }
 
       if (oldCamp.campProductId) {
@@ -195,9 +195,8 @@ class CampService implements ICampService {
       }
 
       if (!oldCamp.active && camp.active) {
-        const campProductId = newCamp.campProductId;
-        const dropoffProductId = newCamp.dropoffProductId;
-        const pickUpProductId = newCamp.pickUpProductId;
+        const { campProductId, dropoffProductId, pickUpProductId } = newCamp;
+
         const campFee = newCamp.fee;
 
         const fees = await MgFees.findOne();
@@ -206,36 +205,34 @@ class CampService implements ICampService {
         }
 
         await Promise.all(
-          (newCamp.campSessions as CampSession[]).map(
-            async (campSession, i) => {
-              const campSessionFeeInCents =
-                campFee * campSession.dates.length * 100;
-              const priceObject = await createStripePrice(
-                campProductId,
-                campSessionFeeInCents,
-              );
+          (newCamp.campSessions as CampSession[]).map(async (campSession) => {
+            const campSessionFeeInCents =
+              campFee * campSession.dates.length * 100;
+            const priceObject = await createStripePrice(
+              campProductId,
+              campSessionFeeInCents,
+            );
 
-              const dropoffPriceObject = await createStripePrice(
-                dropoffProductId,
-                fees.dropoffFee,
-              );
+            const dropoffPriceObject = await createStripePrice(
+              dropoffProductId,
+              fees.dropoffFee,
+            );
 
-              const pickUpPriceObject = await createStripePrice(
-                pickUpProductId,
-                fees.pickUpFee,
-              );
+            const pickUpPriceObject = await createStripePrice(
+              pickUpProductId,
+              fees.pickUpFee,
+            );
 
-              await MgCampSession.findByIdAndUpdate(
-                campSession.id,
-                {
-                  pickUpPriceId: pickUpPriceObject.id,
-                  dropoffPriceId: dropoffPriceObject.id,
-                  campPriceId: priceObject.id,
-                },
-                { runValidators: true },
-              );
-            },
-          ),
+            await MgCampSession.findByIdAndUpdate(
+              campSession.id,
+              {
+                pickUpPriceId: pickUpPriceObject.id,
+                dropoffPriceId: dropoffPriceObject.id,
+                campPriceId: priceObject.id,
+              },
+              { runValidators: true },
+            );
+          }),
         );
       }
     } catch (error: unknown) {
@@ -358,50 +355,77 @@ class CampService implements ICampService {
     });
 
     const camp = await MgCamp.findById(campId);
-
-    if (!camp) throw `camp with id ${campId} not found`;
+    if (!camp) {
+      throw new Error(`camp with id ${campId} not found`);
+    }
 
     const fees = await MgFees.findOne();
     if (!fees) {
       throw new Error("No fees found in Fees collection");
     }
 
-    await Promise.all(
-      campSessions.map(async (campSession, i) => {
-        let priceIds = {
+    if (camp.active) {
+      await Promise.all(
+        campSessions.map(async (campSession, i) => {
+          let priceIds = {
+            pickUpPriceId: "",
+            dropoffPriceId: "",
+            campPriceId: "",
+          };
+
+          const campSessionFeeInCents =
+            camp.fee * campSession.dates.length * 100;
+
+          try {
+            const priceObject = await createStripePrice(
+              camp.campProductId,
+              campSessionFeeInCents,
+            );
+
+            const dropoffPriceObject = await createStripePrice(
+              camp.dropoffProductId,
+              fees.dropoffFee,
+            );
+
+            const pickUpPriceObject = await createStripePrice(
+              camp.dropoffProductId,
+              fees.pickUpFee,
+            );
+
+            priceIds = {
+              pickUpPriceId: pickUpPriceObject.id,
+              dropoffPriceId: dropoffPriceObject.id,
+              campPriceId: priceObject.id,
+            };
+            // 1. need to save these in the models /
+            // 2. need to update validators **
+            // 3. need to add this to editCamp **
+            // testing
+
+            insertCampSessions[i] = {
+              camp: campId,
+              campers: [],
+              capacity: campSession.capacity,
+              waitlist: [],
+              dates: campSession.dates.sort(),
+              ...priceIds,
+            };
+          } catch (err: unknown) {
+            Logger.error(
+              `Stripe price object creation failed. Reason = ${getErrorMessage(
+                err,
+              )}`,
+            );
+          }
+        }),
+      );
+    } else {
+      campSessions.forEach((campSession, i) => {
+        const priceIds = {
           pickUpPriceId: "",
           dropoffPriceId: "",
           campPriceId: "",
         };
-        if (camp.active) {
-          const campSessionFeeInCents =
-            camp.fee * campSession.dates.length * 100;
-
-          const priceObject = await createStripePrice(
-            camp.campProductId,
-            campSessionFeeInCents,
-          );
-
-          const dropoffPriceObject = await createStripePrice(
-            camp.dropoffProductId,
-            fees.dropoffFee,
-          );
-
-          const pickUpPriceObject = await createStripePrice(
-            camp.dropoffProductId,
-            fees.pickUpFee,
-          );
-
-          priceIds = {
-            pickUpPriceId: pickUpPriceObject.id,
-            dropoffPriceId: dropoffPriceObject.id,
-            campPriceId: priceObject.id,
-          };
-          // 1. need to save these in the models
-          // 2. need to update validators
-          // 3. need to add this to editCamp
-          // testing
-        }
 
         insertCampSessions[i] = {
           camp: campId,
@@ -411,8 +435,8 @@ class CampService implements ICampService {
           dates: campSession.dates.sort(),
           ...priceIds,
         };
-      }),
-    );
+      });
+    }
 
     let newCampSessions: Array<CampSession> = [];
     let newCampSessionsIds: Array<string>;
@@ -496,7 +520,7 @@ class CampService implements ICampService {
               `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
             );
           }
-          if (oldCampSession.dates.length != campSession.dates.length) {
+          if (oldCampSession.dates.length !== campSession.dates.length) {
             throw new Error(
               `Cannot change the number of dates for an active camp. Requested dates length: ${campSession.dates.length}, current number of dates ${oldCampSession.dates.length}`,
             );
