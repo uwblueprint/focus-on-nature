@@ -35,6 +35,16 @@ campRouter.get("/", async (req, res) => {
   }
 });
 
+campRouter.get("/:id", async (req, res) => {
+  try {
+    const camp = await campService.getCampById(req.params.id);
+
+    res.status(200).json(camp);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 // TODO: Functionality
 // Create/update/delete formQuestions
 
