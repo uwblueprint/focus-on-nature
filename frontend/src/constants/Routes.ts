@@ -14,7 +14,7 @@ export const UPDATE_ENTITY_PAGE = "/entity/update";
 
 export const HOOKS_PAGE = "/hooks";
 
-export const CAMPS_PAGE = "/admin/camps";
+export const CAMPS_PAGE = "/admin";
 
 export const GLOBAL_FORMS_PAGE = "/admin/global-forms";
 

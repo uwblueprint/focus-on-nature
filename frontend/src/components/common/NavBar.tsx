@@ -72,7 +72,7 @@ const NavBar = (): JSX.Element => {
     <Container maxWidth="100vw">
       <Flex
         direction="row"
-        justifyContent="space-between"
+        justifyContent="center"
         marginLeft="80px"
         marginRight="80px"
         marginTop="14px"
