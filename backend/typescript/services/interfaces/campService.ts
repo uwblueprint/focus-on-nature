@@ -24,7 +24,7 @@ interface ICampService {
    * @returns a CampDTO
    * @throws Error if camper retrieval fails
    */
-  getCampById(campId: string): Promise<CampDTO>;
+  getCampById(campId: string): Promise<GetCampDTO>;
 
   createCamp(camp: CreateCampDTO): Promise<CampDTO>;
 

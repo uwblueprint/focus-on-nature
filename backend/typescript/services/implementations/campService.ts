@@ -101,17 +101,25 @@ class CampService implements ICampService {
     }
   }
 
-  async getCampById(campId: string): Promise<CampDTO> {
+  async getCampById(campId: string): Promise<GetCampDTO> {
     let camp: Camp | null;
 
     try {
-      camp = await MgCamp.findById(campId);
+      camp = await MgCamp.findById(campId)
+        .populate({
+          path: "campSessions",
+          model: MgCampSession,
+        })
+        .populate({
+          path: "formQuestions",
+          model: MgFormQuestion,
+        });
 
       if (!camp) {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
     } catch (error: unknown) {
-      Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
+      Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
 
@@ -126,7 +134,13 @@ class CampService implements ICampService {
       campCounsellors: camp.campCounsellors.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: camp.campSessions.map((session) => session.toString()),
+      campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
+        id: campSession.id,
+        capacity: campSession.capacity,
+        dates: campSession.dates.map((date) => date.toString()),
+        registrations: campSession.campers.length,
+        waitlist: campSession.waitlist.length,
+      })),
       name: camp.name,
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
@@ -135,8 +149,17 @@ class CampService implements ICampService {
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
-      formQuestions: camp.formQuestions.map((formQuestion) =>
-        formQuestion.toString(),
+      formQuestions: (camp.formQuestions as FormQuestion[]).map(
+        (formQuestion: FormQuestion) => {
+          return {
+            id: formQuestion.id,
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          };
+        },
       ),
       volunteers: camp.volunteers,
     };
