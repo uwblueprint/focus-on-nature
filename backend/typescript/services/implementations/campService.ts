@@ -152,12 +152,18 @@ class CampService implements ICampService {
       campCounsellors: camp.campCounsellors.map((counsellor) =>
         counsellor.toString(),
       ),
+      campProductId: camp.campProductId,
+      dropoffProductId: camp.dropoffProductId,
+      pickUpProductId: camp.pickUpProductId,
       campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
         id: campSession.id,
         capacity: campSession.capacity,
         dates: campSession.dates.map((date) => date.toString()),
         registrations: campSession.campers.length,
         waitlist: campSession.waitlist.length,
+        dropoffPriceId: campSession.dropoffPriceId,
+        pickUpPriceId: campSession.pickUpPriceId,
+        campPriceId: campSession.campPriceId,
       })),
       name: camp.name,
       description: camp.description,
@@ -481,10 +487,6 @@ class CampService implements ICampService {
               dropoffPriceId: dropoffPriceObject.id,
               campPriceId: priceObject.id,
             };
-            // 1. need to save these in the models /
-            // 2. need to update validators **
-            // 3. need to add this to editCamp **
-            // testing
 
             insertCampSessions[i] = {
               camp: campId,
