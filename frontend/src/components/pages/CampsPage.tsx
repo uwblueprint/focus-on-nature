@@ -1,9 +1,4 @@
 import React, { useContext } from "react";
-// import { useHistory } from "react-router-dom";
-// import * as Routes from "../../constants/Routes";
-// import SampleContext from "../../contexts/SampleContext";
-
-// import Logout from "../auth/Logout";
 import NavBar from "../common/NavBar";
 
 const CampsPage = (): React.ReactElement => {

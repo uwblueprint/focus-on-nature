@@ -28,6 +28,7 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
+import LandingPage from "./components/pages/LandingPage";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -59,6 +60,8 @@ const App = (): React.ReactElement => {
               <Switch>
                 <Route exact path={Routes.LOGIN_PAGE} component={Login} />
                 <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
+                {/* TODO: Update HOME_PAGE route to be a public landing based on designs */}
+                <Route exact path={Routes.HOME_PAGE} component={LandingPage} />
                 <PrivateRoute
                   exact
                   path={Routes.CAMPS_PAGE}
@@ -73,11 +76,6 @@ const App = (): React.ReactElement => {
                   exact
                   path={Routes.ACCESS_CONTROL_PAGE}
                   component={AccessControlPage}
-                />
-                <PrivateRoute
-                  exact
-                  path={Routes.HOME_PAGE}
-                  component={Default}
                 />
                 <PrivateRoute
                   exact

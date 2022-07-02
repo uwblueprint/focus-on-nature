@@ -14,7 +14,7 @@ import {
 import { LockIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 import React, { useContext } from "react";
-import { Link as ReactLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCampground, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
@@ -24,7 +24,6 @@ import * as Routes from "../../constants/Routes";
 import AuthContext from "../../contexts/AuthContext";
 import { Role } from "../../types/AuthTypes";
 
-import COLOR from "../../theme/colors";
 import { FontWeights } from "../../theme/textStyles";
 
 const NavBar = (): JSX.Element => {
@@ -100,8 +99,8 @@ const NavBar = (): JSX.Element => {
                 <Tab
                   id="Camps"
                   _selected={{
-                    color: COLOR.primary.green[100],
-                    fontWeight: FontWeights.BOLD,
+                    color: "primary.green.100",
+                    fontWeight: FontWeights.SEMIBOLD,
                   }}
                 >
                   <FontAwesomeIcon icon={faCampground} />
@@ -112,8 +111,8 @@ const NavBar = (): JSX.Element => {
                     <Tab
                       id="Global Forms"
                       _selected={{
-                        color: COLOR.primary.green[100],
-                        fontWeight: FontWeights.BOLD,
+                        color: "primary.green.100",
+                        fontWeight: FontWeights.SEMIBOLD,
                       }}
                     >
                       <FontAwesomeIcon icon={faPenToSquare} />
@@ -122,8 +121,8 @@ const NavBar = (): JSX.Element => {
                     <Tab
                       id="Access Control"
                       _selected={{
-                        color: COLOR.primary.green[100],
-                        fontWeight: FontWeights.BOLD,
+                        color: "primary.green.100",
+                        fontWeight: FontWeights.SEMIBOLD,
                       }}
                     >
                       <LockIcon />
@@ -145,7 +144,7 @@ const NavBar = (): JSX.Element => {
                       rightIcon={
                         isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />
                       }
-                      bg="#FFF"
+                      bg="background.white.100"
                       _hover={{
                         color: "none",
                       }}
@@ -161,7 +160,11 @@ const NavBar = (): JSX.Element => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent width="inherit">
-                    <PopoverBody as={Button} bg="#FFF" onClick={onLogOutClick}>
+                    <PopoverBody
+                      as={Button}
+                      bg="background.white.100"
+                      onClick={onLogOutClick}
+                    >
                       Logout
                     </PopoverBody>
                   </PopoverContent>

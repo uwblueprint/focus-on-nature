@@ -18,10 +18,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   const { authenticatedUser } = useContext(AuthContext);
 
   return authenticatedUser ? (
-    <>
-      <Route path={path} exact={exact} component={component} />
-      <Redirect to={CAMPS_PAGE} />
-    </>
+    <Route path={path} exact={exact} component={component} />
   ) : (
     <Redirect to={LOGIN_PAGE} />
   );
