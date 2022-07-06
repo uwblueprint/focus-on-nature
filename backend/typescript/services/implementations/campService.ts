@@ -103,6 +103,70 @@ class CampService implements ICampService {
     }
   }
 
+  async getCampById(campId: string): Promise<GetCampDTO> {
+    let camp: Camp | null;
+
+    try {
+      camp = await MgCamp.findById(campId)
+        .populate({
+          path: "campSessions",
+          model: MgCampSession,
+        })
+        .populate({
+          path: "formQuestions",
+          model: MgFormQuestion,
+        });
+
+      if (!camp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: campId,
+      active: camp.active,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: camp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
+      campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
+        id: campSession.id,
+        capacity: campSession.capacity,
+        dates: campSession.dates.map((date) => date.toString()),
+        registrations: campSession.campers.length,
+        waitlist: campSession.waitlist.length,
+      })),
+      name: camp.name,
+      description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      latePickup: camp.latePickup,
+      location: camp.location,
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      fee: camp.fee,
+      formQuestions: (camp.formQuestions as FormQuestion[]).map(
+        (formQuestion: FormQuestion) => {
+          return {
+            id: formQuestion.id,
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          };
+        },
+      ),
+      volunteers: camp.volunteers,
+    };
+  }
+
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
     try {
