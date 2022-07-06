@@ -9,7 +9,7 @@ import {
 import { Button, Center, Image, Text, VStack } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import authAPIClient from "../../APIClients/AuthAPIClient";
-import { HOME_PAGE } from "../../constants/Routes";
+import { CAMPS_PAGE } from "../../constants/Routes";
 import AuthContext from "../../contexts/AuthContext";
 import { AuthenticatedUser } from "../../types/AuthTypes";
 
@@ -64,7 +64,7 @@ const Login = (): React.ReactElement => {
   };
 
   if (authenticatedUser) {
-    return <Redirect to={HOME_PAGE} />;
+    return <Redirect to={CAMPS_PAGE} />;
   }
 
   return (
