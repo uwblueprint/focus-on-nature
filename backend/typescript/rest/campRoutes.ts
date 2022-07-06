@@ -9,6 +9,8 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
+  createFormQuestionsValidator,
+  editFormQuestionValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
@@ -28,6 +30,16 @@ campRouter.get("/", async (req, res) => {
   try {
     const camps = await campService.getCamps();
     res.status(200).json(camps);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+campRouter.get("/:id", async (req, res) => {
+  try {
+    const camp = await campService.getCampById(req.params.id);
+
+    res.status(200).json(camp);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
@@ -89,6 +101,7 @@ campRouter.patch(
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
+      const oldCamp = await campService.getCampById(req.params.campId);
       const newCamp = await campService.updateCampById(req.params.campId, {
         active: body.active,
         ageLower: body.ageLower,
@@ -109,6 +122,13 @@ campRouter.patch(
       });
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
+      } else {
+        const oldPath = oldCamp.filePath;
+        var oldImage = fs.readFileSync(oldPath);
+        var newImage = fs.readFileSync(req.file?.path);
+        if(!oldImage.equals(newImage)) {
+          fs.unlinkSync(oldPath)
+        }
       }
       res.status(200).json(newCamp);
     } catch (error: unknown) {
@@ -177,6 +197,67 @@ campRouter.get("/csv/:id", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+campRouter.post(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.createFormQuestions(
+        req.params.campId,
+        req.body.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+campRouter.put(
+  "/:campId/form/:formQuestionId/",
+  editFormQuestionValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestion = await campService.editFormQuestion(
+        req.params.formQuestionId,
+        req.body.formQuestion,
+      );
+
+      res.status(200).json(successfulFormQuestion);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
+  try {
+    await campService.deleteFormQuestion(
+      req.params.campId,
+      req.params.formQuestionId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+campRouter.patch(
+  "/:campId/form/",
+  createFormQuestionsValidator,
+  async (req, res) => {
+    try {
+      const successfulFormQuestions = await campService.appendFormQuestions(
+        req.params.campId,
+        req.body.formQuestions,
+      );
+      res.status(200).json(successfulFormQuestions);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Delete a camp */
 campRouter.delete("/:id", async (req, res) => {

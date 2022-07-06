@@ -201,7 +201,8 @@ export const updateCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("campCounsellors", "string", true));
   }
-  if (!validatePrimitive(req.body.data.earlyDropoff, "string")) {
+
+  if (!validatePrimitive(req.body.earlyDropoff, "string")) {
     return res
       .status(400)
       .send(getApiValidationError("earlyDropoff", "string"));
@@ -238,7 +239,7 @@ export const updateCampDtoValidator = async (
   if (!validatePrimitive(req.body.data.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
-  if (!validatePrimitive(req.body.data.fee, "integer")) {
+  if (req.body.fee && !validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
   if (req.body.data.volunteers && !validateArray(req.body.data.volunteers, "string")) {
@@ -313,7 +314,7 @@ export const updateCampSessionDtoValidator = async (
   if (campSession.dates && !validateArray(campSession.dates, "string")) {
     return res.status(400).send(getApiValidationError("dates", "string", true));
   }
-  if (!campSession.dates.every(validateDate)) {
+  if (campSession.dates && !campSession.dates.every(validateDate)) {
     return res.status(400).send(getApiValidationError("dates", "Date string"));
   }
   if (!validatePrimitive(campSession.capacity, "integer")) {
@@ -325,5 +326,37 @@ export const updateCampSessionDtoValidator = async (
   if (req.body.waitlist) {
     return res.status(400).send("waitlist should be empty");
   }
+  return next();
+};
+
+export const editFormQuestionValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.body.formQuestion && !validateFormQuestion(req.body.formQuestion)) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestion", "Form question"));
+  }
+
+  return next();
+};
+
+export const createFormQuestionsValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    req.body.formQuestions &&
+    Array.isArray(req.body.formQuestions) &&
+    !req.body.formQuestions.every(validateFormQuestion)
+  ) {
+    return res
+      .status(400)
+      .send(getApiValidationError("formQuestions", "Form question", true));
+  }
+
   return next();
 };

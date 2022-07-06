@@ -3,6 +3,7 @@ import { validateArray, validatePrimitive } from "./util";
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
 export const validateFormQuestion = async (formQuestion: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }) => {
   if (!validatePrimitive(formQuestion.type, "string")) {

@@ -7,10 +7,12 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import CreatePage from "./components/pages/CreatePage";
-import Default from "./components/pages/Default";
 import DisplayPage from "./components/pages/DisplayPage";
 import NotFound from "./components/pages/NotFound";
 import UpdatePage from "./components/pages/UpdatePage";
+import CampsPage from "./components/pages/CampsPage";
+import GlobalFormsPage from "./components/pages/GlobalFormsPage";
+import AccessControlPage from "./components/pages/AccessControlPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -25,6 +27,8 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
+import LandingPage from "./components/pages/LandingPage";
+import NavBar from "./components/common/NavBar";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -53,13 +57,25 @@ const App = (): React.ReactElement => {
             value={{ authenticatedUser, setAuthenticatedUser }}
           >
             <Router>
+              <NavBar />
               <Switch>
                 <Route exact path={Routes.LOGIN_PAGE} component={Login} />
                 <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
+                <Route exact path={Routes.HOME_PAGE} component={LandingPage} />
                 <PrivateRoute
                   exact
-                  path={Routes.HOME_PAGE}
-                  component={Default}
+                  path={Routes.CAMPS_PAGE}
+                  component={CampsPage}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.GLOBAL_FORMS_PAGE}
+                  component={GlobalFormsPage}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.ACCESS_CONTROL_PAGE}
+                  component={AccessControlPage}
                 />
                 <PrivateRoute
                   exact

@@ -1,4 +1,4 @@
-enum FontWeights {
+export enum FontWeights {
   REGULAR = 400,
   MEDIUM = 500,
   SEMIBOLD = 600,
