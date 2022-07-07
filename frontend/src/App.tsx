@@ -12,7 +12,6 @@ import NotFound from "./components/pages/NotFound";
 import UpdatePage from "./components/pages/UpdatePage";
 import CampsPage from "./components/pages/CampsPage";
 import GlobalFormsPage from "./components/pages/GlobalFormsPage";
-import AccessControlPage from "./components/pages/AccessControlPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
