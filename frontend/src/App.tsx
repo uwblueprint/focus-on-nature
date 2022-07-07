@@ -27,6 +27,7 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
+import TestCampOverview from "./components/pages/CampOverview"; // remove when done
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
 
@@ -101,6 +102,11 @@ const App = (): React.ReactElement => {
                   exact
                   path={Routes.HOOKS_PAGE}
                   component={HooksDemo}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.TEST_CAMP_OVERVIEW_PAGE} // remove when done
+                  component={TestCampOverview}
                 />
                 <Route exact path="*" component={NotFound} />
               </Switch>
