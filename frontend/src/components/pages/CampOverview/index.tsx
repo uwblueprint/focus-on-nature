@@ -10,32 +10,54 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import placeHolderImage from "../../../assets/germany.jpeg";
+import costIcon from "../../../assets/cost.png";
+import locationIcon from "../../../assets/location.png";
+import capacityRangeIcon from "../../../assets/capacityrange.png";
+import numberPerSessionIcon from "../../../assets/numberpersesh.png";
+import { Camp } from "../../../types/CampsTypes";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 
 import * as Routes from "../../../constants/Routes";
 import AuthContext from "../../../contexts/AuthContext";
 
+export type CampOverviewProps = {
+  campId: string;
+};
+
 const CampOverview = (): JSX.Element => {
-  const history = useHistory();
+  const [camp, setCamp] = useState<Camp>();
+  const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now
+
+  useEffect(() => {
+    const getCampInfo = async () => {
+      const campResponse = await CampsAPIClient.getCampById(campId);
+      setCamp(campResponse);
+      console.log(campResponse);
+    };
+    getCampInfo();
+  }, []);
 
   return (
     <>
-      <Container variant="baseContainer">
-        <Flex>
+      <Container maxWidth="100vw">
+        <Flex marginLeft="80px" marginRight="80px">
           <Box width="100%" mt="1rem">
-            <Text align="left" marginBottom="13px" textStyle="displayXLarge">
-              Waterloo Photography Camp 2022
-            </Text>
-            <Tag
-              size="md"
-              borderRadius="full"
-              variant="solid"
-              colorScheme="orange"
-              width="6em"
-              px="1.5em"
-            />
+            <Stack direction="row" width="100%">
+              <Text align="left" marginBottom="13px" textStyle="displayXLarge">
+                {camp?.name}
+              </Text>
+              <Tag
+                size="md"
+                borderRadius="full"
+                variant="solid"
+                colorScheme="orange"
+                width="6em"
+                px="1.5em"
+              />
+            </Stack>
             <Stack direction="row" width="100%">
               <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
                 Camp Coordinators:
@@ -60,10 +82,46 @@ const CampOverview = (): JSX.Element => {
                 Placeholder
               </Text>
             </Stack>
+            <Text marginBottom="30px" textStyle="bodyBold" width="100%">
+              Camp Details
+            </Text>
+            <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
+              {camp?.description}
+            </Text>
+            <Stack direction="row" width="100%">
+              <Image objectFit="scale-down" src={costIcon} alt="Cost Icon" />
+              <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
+                ${camp?.fee} per day
+              </Text>
+              <Image
+                objectFit="scale-down"
+                src={capacityRangeIcon}
+                alt="Capacity Range Icon"
+              />
+              <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
+                {camp?.ageLower} to {camp?.ageUpper}
+              </Text>
+              <Image
+                objectFit="scale-down"
+                src={numberPerSessionIcon}
+                alt="Number Per Session Icon"
+              />
+              <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
+                # campers per session
+              </Text>
+              <Image
+                objectFit="scale-down"
+                src={locationIcon}
+                alt="Location Icon"
+              />
+              <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
+                {camp?.location}
+              </Text>
+            </Stack>
           </Box>
+
           <Image
             objectFit="scale-down"
-            display={{ base: "none", md: "inline" }}
             height="260px"
             ml="5rem"
             alignSelf="flex-end"
@@ -71,15 +129,6 @@ const CampOverview = (): JSX.Element => {
             alt="Camp Image"
           />
         </Flex>
-        <Text marginBottom="30px" textStyle="bodyBold" width="100%">
-          Camp Details
-        </Text>
-        <Text marginBottom="30px" textStyle="bodyRegular" width="100%">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel
-          odio nisl. Fusce a laoreet quam. Cras mollis gravida lorem ut commodo.
-          Praesent viverra ligula dapibus ligula elementum, nec ultrices velit
-          euismod.
-        </Text>
       </Container>
     </>
   );

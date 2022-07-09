@@ -21,4 +21,3 @@ export const GLOBAL_FORMS_PAGE = "/admin/global-forms";
 export const ACCESS_CONTROL_PAGE = "/admin/access-control";
 
 export const TEST_CAMP_OVERVIEW_PAGE = "/admin/test-camp-overview"; // remove when done
-
