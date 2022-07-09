@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import React, { useContext } from "react";
+import React from "react";
 import CampSessionInfoHeader from "../common/camps/CampSessionInfoHeader";
 
 const CampsPage = (): React.ReactElement => {
