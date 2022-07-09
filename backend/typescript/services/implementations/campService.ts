@@ -164,6 +164,12 @@ class CampService implements ICampService {
       camp.campSessions = (camp.campSessions as CampSession[]).filter(
         (campSession) => campSession.id === campSessionId,
       );
+
+      if (camp.campSessions.length === 0) {
+        throw new Error(
+          `No camp session matches with session ${campSessionId}`,
+        );
+      }
     }
 
     return {
