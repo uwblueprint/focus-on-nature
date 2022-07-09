@@ -22,6 +22,9 @@ import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import MgWaitlistedCamper, {
+  WaitlistedCamper,
+} from "../../models/waitlistedCamper.model";
 
 const Logger = logger(__filename);
 
@@ -103,9 +106,41 @@ class CampService implements ICampService {
     }
   }
 
-  async getCampById(campId: string): Promise<GetCampDTO> {
-    let camp: Camp | null;
+  async getCampById(
+    campId: string,
+    campSessionId?: string,
+    waitlistedCamperId?: string,
+  ): Promise<GetCampDTO> {
+    if (waitlistedCamperId) {
+      try {
+        const waitlistedCamper: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+          waitlistedCamperId,
+        );
 
+        if (!waitlistedCamper || !waitlistedCamper?.linkExpiry) {
+          throw new Error(
+            `Waitlisted Camper with Id ${waitlistedCamperId} does not exist or does not have an invite link.`,
+          );
+        }
+
+        const linkExpiryDate = new Date(waitlistedCamper.linkExpiry);
+        const currentDate = new Date();
+        if (linkExpiryDate > currentDate) {
+          throw new Error(
+            `Invite link has expired, please contact us to resolve this issue.`,
+          );
+        }
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to verify waitlisted camper. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
+
+    let camp: Camp | null;
     try {
       camp = await MgCamp.findById(campId)
         .populate({
@@ -123,6 +158,12 @@ class CampService implements ICampService {
     } catch (error: unknown) {
       Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
       throw error;
+    }
+
+    if (waitlistedCamperId) {
+      camp.campSessions = (camp.campSessions as CampSession[]).filter(
+        (campSession) => campSession.id === campSessionId,
+      );
     }
 
     return {
