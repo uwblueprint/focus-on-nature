@@ -47,7 +47,7 @@ const NavBar = (): JSX.Element => {
         history.push(Routes.GLOBAL_FORMS_PAGE);
         break;
       case 2:
-        history.push(Routes.ACCESS_CONTROL_PAGE);
+        history.push(Routes.ACCESS_MANAGEMENT_PAGE);
         break;
       default:
         history.push(Routes.CAMPS_PAGE);
@@ -61,7 +61,7 @@ const NavBar = (): JSX.Element => {
         return 0;
       case Routes.GLOBAL_FORMS_PAGE:
         return 1;
-      case Routes.ACCESS_CONTROL_PAGE:
+      case Routes.ACCESS_MANAGEMENT_PAGE:
         return 2;
       default:
         return 0;
