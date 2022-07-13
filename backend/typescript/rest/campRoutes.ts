@@ -68,7 +68,6 @@ campRouter.post(
         ageUpper: body.ageUpper,
         campCoordinators: body.campCoordinators,
         campCounsellors: body.campCounsellors,
-        campSessions: body.campSessions,
         name: body.name,
         description: body.description,
         earlyDropoff: body.earlyDropoff,

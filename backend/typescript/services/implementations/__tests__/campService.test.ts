@@ -10,6 +10,7 @@ import {
 } from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
 import MgCamp from "../../../models/camp.model";
+import MgFees from "../../../models/fees.model";
 import MgFormQuestion from "../../../models/formQuestion.model";
 import FileStorageService from "../fileStorageService";
 import IFileStorageService from "../../interfaces/fileStorageService";
@@ -28,7 +29,6 @@ const testCamps: CreateCampDTO[] = [
     description: "description",
     location: "canada",
     fee: 25,
-    campSessions: [],
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
@@ -46,7 +46,6 @@ const testCamps: CreateCampDTO[] = [
     description: "description2",
     location: "canada",
     fee: 24,
-    campSessions: [],
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
@@ -78,6 +77,7 @@ describe("mongo campService", (): void => {
 
   beforeEach(async () => {
     campService = new CampService(fileStorageService);
+    await MgFees.create({ dropoffFee: 5, pickUpFee: 5 });
   });
 
   afterEach(async () => {
@@ -98,7 +98,6 @@ describe("mongo campService", (): void => {
       location: "canada",
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -193,7 +192,6 @@ describe("mongo campService", (): void => {
       location: "canada",
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -248,23 +246,9 @@ describe("mongo campService", (): void => {
     for (const testCamp of testCamps) {
       /* eslint-disable no-await-in-loop */
       const res = await campService.createCamp(testCamp);
-      const campSessions = await MgCampSession.find({
-        _id: { $in: res.campSessions },
-      });
       const formQuestions = await MgFormQuestion.find({
         _id: { $in: res.formQuestions },
       });
-
-      for (let i = 0; i < campSessions.length; i += 1) {
-        const campSession = campSessions[i];
-        expect(campSession.camp.toString()).toEqual(res.id);
-        expect(campSession.dates.map((date) => new Date(date))).toEqual(
-          testCamp.campSessions[i].dates.map((date) => new Date(date)),
-        );
-        expect(campSession.capacity).toEqual(testCamp.campSessions[i].capacity);
-        expect(campSession.campers).toHaveLength(0);
-        expect(campSession.waitlist).toHaveLength(0);
-      }
 
       for (let i = 0; i < formQuestions.length; i += 1) {
         const formQuestion = formQuestions[i];
@@ -321,7 +305,6 @@ describe("mongo campService", (): void => {
       location: "canada",
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -401,18 +384,15 @@ describe("mongo campService", (): void => {
           description: "Description",
         },
       ],
-      campSessions: [
-        {
-          capacity: 12,
-          dates: ["December 17, 1995 03:24:00"],
-        },
-      ],
       volunteers: [],
     });
 
+    await campService.createCampSessions(res.id, [
+      { capacity: 12, dates: ["December 17, 1995 03:24:00"] },
+    ]);
+
     const camp = await MgCamp.findById(res.id).exec();
     expect(camp).toBeInstanceOf(MgCamp); // make sure not null
-    expect(res.campSessions).toHaveLength(1);
     expect(res.formQuestions).toHaveLength(2);
 
     // delete camp

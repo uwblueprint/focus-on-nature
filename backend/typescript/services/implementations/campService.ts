@@ -20,8 +20,18 @@ import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
+import MgFees from "../../models/fees.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import {
+  createStripePrice,
+  updateStripeCampProduct,
+  createStripeCampProduct,
+  createStripeDropoffProduct,
+  createStripePickUpProduct,
+  updateStripeDropoffProduct,
+  updateStripePickUpProduct,
+} from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
 
@@ -70,6 +80,9 @@ class CampService implements ICampService {
             dates: campSession.dates.map((date) => date.toString()),
             registrations: campSession.campers.length,
             waitlist: campSession.waitlist.length,
+            campPriceId: campSession.campPriceId,
+            dropoffPriceId: campSession.dropoffPriceId,
+            pickUpPriceId: campSession.pickUpPriceId,
           }),
         );
 
@@ -89,6 +102,9 @@ class CampService implements ICampService {
           earlyDropoff: camp.earlyDropoff,
           latePickup: camp.latePickup,
           location: camp.location,
+          campProductId: camp.campProductId,
+          dropoffProductId: camp.dropoffProductId,
+          pickUpProductId: camp.pickUpProductId,
           startTime: camp.startTime,
           endTime: camp.endTime,
           fee: camp.fee,
@@ -136,12 +152,18 @@ class CampService implements ICampService {
       campCounsellors: camp.campCounsellors.map((counsellor) =>
         counsellor.toString(),
       ),
+      campProductId: camp.campProductId,
+      dropoffProductId: camp.dropoffProductId,
+      pickUpProductId: camp.pickUpProductId,
       campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
         id: campSession.id,
         capacity: campSession.capacity,
         dates: campSession.dates.map((date) => date.toString()),
         registrations: campSession.campers.length,
         waitlist: campSession.waitlist.length,
+        dropoffPriceId: campSession.dropoffPriceId,
+        pickUpPriceId: campSession.pickUpPriceId,
+        campPriceId: campSession.campPriceId,
       })),
       name: camp.name,
       description: camp.description,
@@ -169,6 +191,7 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
+    let newCamp: Camp | null;
     try {
       oldCamp = await MgCamp.findById(campId);
 
@@ -180,24 +203,128 @@ class CampService implements ICampService {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
-      await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators,
-          campCounsellors: camp.campCounsellors,
-          description: camp.description,
-          earlyDropoff: camp.earlyDropoff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          volunteers: camp.volunteers,
-          fee: camp.fee,
+      const stripeProducts: {
+        campProductId?: string;
+        dropoffProductId?: string;
+        pickUpProductId?: string;
+      } = {};
+
+      if (!oldCamp.campProductId) {
+        const stripeCampProduct = await createStripeCampProduct({
+          campName: camp.name,
+          campDescription: camp.description,
+        });
+        stripeProducts.campProductId = stripeCampProduct.id;
+      }
+
+      if (!oldCamp.dropoffProductId) {
+        const stripeDropoffProduct = await createStripeDropoffProduct(
+          camp.name,
+        );
+        stripeProducts.dropoffProductId = stripeDropoffProduct.id;
+      }
+
+      if (!oldCamp.pickUpProductId) {
+        const stripePickUpProduct = await createStripePickUpProduct(camp.name);
+        stripeProducts.pickUpProductId = stripePickUpProduct.id;
+      }
+
+      newCamp = await MgCamp.findByIdAndUpdate(
+        campId,
+        {
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropoff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            volunteers: camp.volunteers,
+            fee: camp.fee,
+            ...stripeProducts,
+          },
         },
+        { new: true },
+      ).populate({
+        path: "campSessions",
+        model: MgCampSession,
       });
+
+      if (!newCamp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+
+      // Update names of existing Stripe products
+      if (oldCamp.campProductId) {
+        updateStripeCampProduct({
+          productId: oldCamp.campProductId,
+          campName: camp.name,
+          campDescription: camp.description,
+        });
+      }
+
+      if (oldCamp.dropoffProductId) {
+        updateStripeDropoffProduct({
+          productId: oldCamp.dropoffProductId,
+          campName: camp.name,
+        });
+      }
+
+      if (oldCamp.pickUpProductId) {
+        updateStripePickUpProduct({
+          productId: oldCamp.pickUpProductId,
+          campName: camp.name,
+        });
+      }
+
+      // Create Price Objects if switching from inactive to active
+      if (!oldCamp.active && camp.active) {
+        const { campProductId, dropoffProductId, pickUpProductId } = newCamp;
+
+        const campFee = newCamp.fee;
+
+        const fees = await MgFees.findOne();
+        if (!fees) {
+          throw new Error("No fees found in Fees collection");
+        }
+
+        await Promise.all(
+          (newCamp.campSessions as CampSession[]).map(async (campSession) => {
+            const campSessionFeeInCents =
+              campFee * campSession.dates.length * 100;
+            const priceObject = await createStripePrice(
+              campProductId,
+              campSessionFeeInCents,
+            );
+
+            const dropoffPriceObject = await createStripePrice(
+              dropoffProductId,
+              fees.dropoffFee,
+            );
+
+            const pickUpPriceObject = await createStripePrice(
+              pickUpProductId,
+              fees.pickUpFee,
+            );
+
+            await MgCampSession.findByIdAndUpdate(
+              campSession.id,
+              {
+                pickUpPriceId: pickUpPriceObject.id,
+                dropoffPriceId: dropoffPriceObject.id,
+                campPriceId: priceObject.id,
+              },
+              { runValidators: true },
+            );
+          }),
+        );
+      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -220,6 +347,9 @@ class CampService implements ICampService {
       earlyDropoff: camp.earlyDropoff,
       latePickup: camp.latePickup,
       location: camp.location,
+      campProductId: newCamp?.campProductId || "",
+      dropoffProductId: newCamp?.dropoffProductId || "",
+      pickUpProductId: newCamp?.pickUpProductId || "",
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
@@ -308,8 +438,91 @@ class CampService implements ICampService {
         capacity: campSession.capacity,
         waitlist: [],
         dates: campSession.dates.sort(),
+        campPriceId: "",
+        dropoffPriceId: "",
+        pickUpPriceId: "",
       });
     });
+
+    const camp = await MgCamp.findById(campId);
+    if (!camp) {
+      throw new Error(`camp with id ${campId} not found`);
+    }
+
+    const fees = await MgFees.findOne();
+    if (!fees) {
+      throw new Error("No fees found in Fees collection");
+    }
+
+    if (camp.active) {
+      await Promise.all(
+        campSessions.map(async (campSession, i) => {
+          let priceIds = {
+            pickUpPriceId: "",
+            dropoffPriceId: "",
+            campPriceId: "",
+          };
+
+          const campSessionFeeInCents =
+            camp.fee * campSession.dates.length * 100;
+
+          try {
+            const priceObject = await createStripePrice(
+              camp.campProductId,
+              campSessionFeeInCents,
+            );
+
+            const dropoffPriceObject = await createStripePrice(
+              camp.dropoffProductId,
+              fees.dropoffFee,
+            );
+
+            const pickUpPriceObject = await createStripePrice(
+              camp.pickUpProductId,
+              fees.pickUpFee,
+            );
+
+            priceIds = {
+              pickUpPriceId: pickUpPriceObject.id,
+              dropoffPriceId: dropoffPriceObject.id,
+              campPriceId: priceObject.id,
+            };
+
+            insertCampSessions[i] = {
+              camp: campId,
+              campers: [],
+              capacity: campSession.capacity,
+              waitlist: [],
+              dates: campSession.dates.sort(),
+              ...priceIds,
+            };
+          } catch (err: unknown) {
+            Logger.error(
+              `Stripe price object creation failed. Reason = ${getErrorMessage(
+                err,
+              )}`,
+            );
+          }
+        }),
+      );
+    } else {
+      campSessions.forEach((campSession, i) => {
+        const priceIds = {
+          pickUpPriceId: "",
+          dropoffPriceId: "",
+          campPriceId: "",
+        };
+
+        insertCampSessions[i] = {
+          camp: campId,
+          campers: [],
+          capacity: campSession.capacity,
+          waitlist: [],
+          dates: campSession.dates.sort(),
+          ...priceIds,
+        };
+      });
+    }
 
     let newCampSessions: Array<CampSession> = [];
     let newCampSessionsIds: Array<string>;
@@ -354,6 +567,9 @@ class CampService implements ICampService {
           capacity: session.capacity,
           waitlist: [],
           dates: session.dates.map((date) => date.toString()),
+          campPriceId: session.campPriceId,
+          dropoffPriceId: session.dropoffPriceId,
+          pickUpPriceId: session.pickUpPriceId,
         },
     );
   }
@@ -390,6 +606,11 @@ class CampService implements ICampService {
               `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
             );
           }
+          if (oldCampSession.dates.length !== campSession.dates.length) {
+            throw new Error(
+              `Cannot change the number of dates for an active camp. Requested dates length: ${campSession.dates.length}, current number of dates ${oldCampSession.dates.length}`,
+            );
+          }
         } else {
           throw new Error(
             `CampSession with campSessionId ${campSessionId} not found.`,
@@ -419,6 +640,9 @@ class CampService implements ICampService {
         capacity: newCampSession.capacity,
         waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
         dates: newCampSession.dates.map((date) => date.toString()),
+        campPriceId: newCampSession.campPriceId,
+        dropoffPriceId: newCampSession.dropoffPriceId,
+        pickUpPriceId: newCampSession.pickUpPriceId,
       };
     } catch (error: unknown) {
       Logger.error(
@@ -572,6 +796,14 @@ class CampService implements ICampService {
           camp.fileContentType,
         );
       }
+
+      const stripeCampProduct = await createStripeCampProduct({
+        campName: camp.name,
+        campDescription: camp.description,
+      });
+      const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
+      const stripePickUpProduct = await createStripePickUpProduct(camp.name);
+
       newCamp = new MgCamp({
         name: camp.name,
         active: camp.active,
@@ -580,16 +812,36 @@ class CampService implements ICampService {
         campCoordinators: camp.campCoordinators,
         campCounsellors: camp.campCounsellors,
         description: camp.description,
+        dropoffProductId: stripeDropoffProduct.id,
         earlyDropoff: camp.earlyDropoff,
         endTime: camp.endTime,
         latePickup: camp.latePickup,
         location: camp.location,
+        campProductId: stripeCampProduct.id,
+        pickUpProductId: stripePickUpProduct.id,
         startTime: camp.startTime,
         fee: camp.fee,
         formQuestions: [],
         volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
       });
+
+      // TODO(Jason) Should be moved to another endpoint
+      /* eslint no-underscore-dangle: 0 */
+      if (camp.formQuestions) {
+        await Promise.all(
+          camp.formQuestions.map(async (formQuestion, i) => {
+            const question = await MgFormQuestion.create({
+              type: formQuestion.type,
+              question: formQuestion.question,
+              required: formQuestion.required,
+              description: formQuestion.description,
+              options: formQuestion.options,
+            });
+            newCamp.formQuestions[i] = question._id;
+          }),
+        );
+      }
 
       try {
         await newCamp.save();
@@ -647,44 +899,11 @@ class CampService implements ICampService {
       fileName: newCamp.fileName,
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
+      campProductId: newCamp.campProductId,
+      dropoffProductId: newCamp.dropoffProductId,
+      pickUpProductId: newCamp.pickUpProductId,
       volunteers: newCamp.volunteers,
     };
-  }
-
-  async editCampSessionById(
-    campSessionId: string,
-    campSession: UpdateCampSessionDTO,
-  ): Promise<CampSessionDTO> {
-    try {
-      const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
-        campSessionId,
-        {
-          capacity: campSession.capacity,
-          dates: campSession.dates,
-        },
-        { runValidators: true, new: true },
-      );
-
-      if (!newCampSession) {
-        throw new Error(
-          `CampSession with campSessionId ${campSessionId} not found.`,
-        );
-      }
-
-      return {
-        id: campSessionId,
-        camp: newCampSession.camp.toString(),
-        campers: newCampSession.campers.map((camper) => camper.toString()),
-        capacity: newCampSession.capacity,
-        waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
-        dates: newCampSession.dates.map((date) => date.toString()),
-      };
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to edit CampSession. Reason = ${getErrorMessage(error)}`,
-      );
-      throw error;
-    }
   }
 
   async generateCampersCSV(campSessionId: string): Promise<string> {
