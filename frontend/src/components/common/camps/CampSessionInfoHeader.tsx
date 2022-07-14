@@ -1,4 +1,4 @@
-import { Container, Flex, IconButton, Text } from "@chakra-ui/react";
+import { Container, Flex, IconButton, Text, Box } from "@chakra-ui/react";
 import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -80,12 +80,37 @@ const CampSessionInfoHeader = ({
         )}{" "}
         | {camp.startTime} - {camp.endTime}
       </Text>
-      <Text
-        fontWeight={textStyles.displaySmallRegular.fontWeight}
-        fontSize={textStyles.displaySmallRegular.fontSize}
-      >
-        Session Age Range: {camp.ageLower} - {camp.ageUpeer}
-      </Text>
+      <Box marginTop="16px">
+        <Flex>
+          <Text
+            fontWeight={textStyles.buttonRegular.fontWeight}
+            fontSize={textStyles.buttonRegular.fontSize}
+          >
+            Session Age Range:
+          </Text>
+          <Text
+            fontWeight={textStyles.bodyBold.fontWeight}
+            fontSize={textStyles.buttonRegular.fontSize}
+          >
+            &nbsp;{camp.ageLower} - {camp.ageUpeer}
+          </Text>
+        </Flex>
+
+        <Flex>
+          <Text
+            fontWeight={textStyles.buttonRegular.fontWeight}
+            fontSize={textStyles.buttonRegular.fontSize}
+          >
+            Camp Capacity:
+          </Text>
+          <Text
+            fontWeight={textStyles.bodyBold.fontWeight}
+            fontSize={textStyles.buttonRegular.fontSize}
+          >
+            &nbsp;{camp.campSessions[currentCampSession].capacity} campers
+          </Text>
+        </Flex>
+      </Box>
     </Container>
   );
 };
