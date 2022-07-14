@@ -10,10 +10,14 @@ interface ICamperService {
   /**
    * Create a camper
    * @param campers the campers to be created
+   * @param waitlistedCamperId the waitlistedCamperIds to be set to registered
    * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails
    */
-  createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>>;
+  createCampers(
+    campers: CreateCampersDTO,
+    waitlistedCamperId?: string,
+  ): Promise<Array<CamperDTO>>;
 
   /**
    * Get all campers and their information
@@ -84,7 +88,7 @@ interface ICamperService {
    * @param waitlistedCamperId waitlisted camper's Id
    * @throws Error if waitlisted camper's status update fails
    */
-  inviteWaitlistedCamper(waitlistedCamperId: string): Promise<any>;
+  inviteWaitlistedCamper(waitlistedCamperId: string): Promise<unknown>;
 
   /**
    * Delete waitlisted camper associated with the ID
