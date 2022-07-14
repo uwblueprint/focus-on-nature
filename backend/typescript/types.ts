@@ -109,7 +109,13 @@ export type CampDTO = {
   earlyDropoff: string;
   endTime: string;
   latePickup: string;
-  location: string;
+  location: {
+    streetAddress1: string;
+    streetAddress2?: string;
+    city: string;
+    province: string;
+    postalCode: string;
+  };
   startTime: string;
   fee: number;
   formQuestions: string[];
