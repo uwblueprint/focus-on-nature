@@ -27,7 +27,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>> {
+  async createCampers(
+    campers: CreateCampersDTO,
+    waitlistedCamperId?: string,
+  ): Promise<Array<CamperDTO>> {
+    if (waitlistedCamperId && campers.length !== 1) {
+      throw new Error(
+        "either no camper, or too many campers provided with wId",
+      );
+    }
+
     let newCamperDTOs: Array<CamperDTO> = [];
     let newCampers: Array<Camper> = [];
     let existingCampSession: CampSession | null;
@@ -136,6 +145,17 @@ class CamperService implements ICamperService {
         optionalClauses: newCamper.optionalClauses,
       };
     });
+
+    if (waitlistedCamperId) {
+      await MgWaitlistedCamper.findByIdAndUpdate(
+        waitlistedCamperId,
+        {
+          status: "Registered",
+        },
+        { runValidators: true },
+      );
+    }
+
     return newCamperDTOs;
   }
 
