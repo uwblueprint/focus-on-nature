@@ -37,8 +37,6 @@ const CampOverview = (): JSX.Element => {
     DRAFT = "Draft",
   }
 
-  const statusOptions = [Status.PUBLISHED, Status.DRAFT];
-
   const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
 
   useEffect(() => {
@@ -54,44 +52,44 @@ const CampOverview = (): JSX.Element => {
       <Container maxWidth="100vw">
         <Flex marginLeft="80px" marginRight="80px">
           <Box width="100%" mt="1rem">
-            <Stack direction="row" width="100%">
-              <Text align="left" marginBottom="8px" textStyle="displayXLarge">
+            <HStack width="100%" marginBottom="8px" alignItems="center">
+              <Text align="left" textStyle="displayXLarge" marginBottom="8px">
                 {camp?.name}
               </Text>
               <HStack>
-              <Tag
-                key={status}
-                size="md"
-                borderRadius="full"
-                colorScheme={camp?.active ? "green" : "gray"}
-              >
-                {status}
-              </Tag>
+                <Tag
+                  key={status}
+                  size="md"
+                  borderRadius="full"
+                  colorScheme={camp?.active ? "green" : "gray"}
+                >
+                  {status}
+                </Tag>
               </HStack>
-            </Stack>
-            <HStack alignItems="middle">
-            <VStack marginBottom="24px" alignItems="left">
-            <Text marginBottom="8px" textStyle="bodyRegular">
-                Camp Coordinators:
-              </Text>
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Camp Counsellors:
-              </Text>
-              <Text marginBottom="24px" textStyle="bodyRegular" width="100%">
-                Volunteers:
-              </Text>
-            </VStack>
-            <VStack marginBottom="24px" alignItems="left">
-            <Text marginBottom="8px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-              <Text marginBottom="24px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-            </VStack>
+            </HStack>
+            <HStack spacing="20px" alignItems="middle">
+              <VStack marginBottom="24px" alignItems="left">
+                <Text marginBottom="8px" textStyle="bodyRegular">
+                  Camp Coordinators:
+                </Text>
+                <Text marginBottom="8px" textStyle="bodyRegular">
+                  Camp Counsellors:
+                </Text>
+                <Text marginBottom="24px" textStyle="bodyRegular">
+                  Volunteers:
+                </Text>
+              </VStack>
+              <VStack marginBottom="24px" alignItems="left">
+                <Text marginBottom="8px" textStyle="bodyRegular">
+                  Placeholder
+                </Text>
+                <Text marginBottom="8px" textStyle="bodyRegular">
+                  Placeholder
+                </Text>
+                <Text marginBottom="24px" textStyle="bodyRegular">
+                  Placeholder
+                </Text>
+              </VStack>
             </HStack>
             {/* <HStack spacing="20px" alignItems="middle">
               <Text marginBottom="8px" textStyle="bodyRegular">
@@ -123,41 +121,41 @@ const CampOverview = (): JSX.Element => {
             <Text marginBottom="16px" textStyle="bodyRegular" width="100%">
               {camp?.description}
             </Text>
-            <Stack direction="row" alignItems="center">
-              <Image 
-                objectFit="scale-down"
-                src={costIcon} 
-                alt="Cost Icon"
-                width="32px"
-                height="32px"
-              />
-              <Text textStyle="bodyRegular" width="100%">
-                ${camp?.fee} per day
-              </Text>
-              <Image
-                marginLeft="24px"
-                objectFit="scale-down"
-                src={ageIcon}
-                alt="Capacity Range Icon"
-                width="32px"
-                height="32px"
-              />
-              <Text textStyle="bodyRegular" width="100%">
-                {camp?.ageLower} to {camp?.ageUpper}
-              </Text>
-              <Image
-                objectFit="scale-down"
-                src={locationIcon}
-                alt="Location Icon"
-                width="32px"
-                height="32px"
-              />
-              <Text textStyle="bodyRegular" width="100%">
-                {camp?.location}
-              </Text>
-            </Stack>
+            <HStack spacing="24px" alignItems="center">
+              <HStack>
+                <Image
+                  objectFit="scale-down"
+                  src={costIcon}
+                  alt="Cost Icon"
+                  width="32px"
+                  height="32px"
+                />
+                <Text textStyle="bodyRegular">${camp?.fee} per day</Text>
+              </HStack>
+              <HStack>
+                <Image
+                  objectFit="scale-down"
+                  src={ageIcon}
+                  alt="Capacity Range Icon"
+                  width="32px"
+                  height="32px"
+                />
+                <Text textStyle="bodyRegular">
+                  {camp?.ageLower} to {camp?.ageUpper}
+                </Text>
+              </HStack>
+              <HStack>
+                <Image
+                  objectFit="scale-down"
+                  src={locationIcon}
+                  alt="Location Icon"
+                  width="32px"
+                  height="32px"
+                />
+                <Text textStyle="bodyRegular">{camp?.location}</Text>
+              </HStack>
+            </HStack>
           </Box>
-
           <Image
             objectFit="scale-down"
             height="260px"
