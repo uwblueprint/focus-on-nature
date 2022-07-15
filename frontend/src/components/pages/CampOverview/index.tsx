@@ -91,30 +91,6 @@ const CampOverview = (): JSX.Element => {
                 </Text>
               </VStack>
             </HStack>
-            {/* <HStack spacing="20px" alignItems="middle">
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Camp Coordinators:
-              </Text>
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-            </HStack>
-            <HStack spacing="20px" alignItems="middle">
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Camp Counsellors:
-              </Text>
-              <Text marginBottom="8px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-            </HStack>
-            <HStack spacing="20px" alignItems="middle">
-              <Text marginBottom="24px" textStyle="bodyRegular">
-                Volunteers:
-              </Text>
-              <Text marginBottom="24px" textStyle="bodyRegular">
-                Placeholder
-              </Text>
-            </HStack> */}
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
               Camp Details
             </Text>
@@ -158,7 +134,7 @@ const CampOverview = (): JSX.Element => {
           </Box>
           <Image
             objectFit="scale-down"
-            height="260px"
+            height="260px" // fixed or variable?
             ml="5rem"
             alignSelf="flex-end"
             src={placeHolderImage}
