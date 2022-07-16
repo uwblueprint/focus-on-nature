@@ -242,7 +242,10 @@ export const updateCampDtoValidator = async (
   if (req.body.fee && !validatePrimitive(req.body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
-  if (req.body.data.volunteers && !validateArray(req.body.data.volunteers, "string")) {
+  if (
+    req.body.data.volunteers &&
+    !validateArray(req.body.data.volunteers, "string")
+  ) {
     return res
       .status(400)
       .send(getApiValidationError("volunteers", "string", true));

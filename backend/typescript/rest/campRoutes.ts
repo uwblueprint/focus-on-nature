@@ -101,7 +101,6 @@ campRouter.patch(
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
-      const oldCamp = await campService.getCampById(req.params.campId);
       const newCamp = await campService.updateCampById(req.params.campId, {
         active: body.active,
         ageLower: body.ageLower,
@@ -122,13 +121,6 @@ campRouter.patch(
       });
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
-      } else {
-        const oldPath = oldCamp.filePath;
-        var oldImage = fs.readFileSync(oldPath);
-        var newImage = fs.readFileSync(req.file?.path);
-        if(!oldImage.equals(newImage)) {
-          fs.unlinkSync(oldPath)
-        }
       }
       res.status(200).json(newCamp);
     } catch (error: unknown) {
