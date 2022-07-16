@@ -23,7 +23,7 @@ export type CampOverviewProps = {
 
 const CampOverview = (): JSX.Element => {
   const [camp, setCamp] = useState<Camp>();
-  const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now
+  const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
 
   // TODO: update the statuses
   enum Status {

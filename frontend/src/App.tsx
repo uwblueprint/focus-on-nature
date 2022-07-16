@@ -27,7 +27,7 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
-import TestCampOverview from "./components/pages/CampOverview"; // remove when done
+import CampOverview from "./components/pages/CampOverview";
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
 
@@ -103,10 +103,14 @@ const App = (): React.ReactElement => {
                   path={Routes.HOOKS_PAGE}
                   component={HooksDemo}
                 />
+                {/* TODO: change this so it's not hardcoded */}
                 <PrivateRoute
                   exact
-                  path={Routes.TEST_CAMP_OVERVIEW_PAGE} // remove when done
-                  component={TestCampOverview}
+                  path={Routes.CAMP_OVERVIEW_PAGE.replace(
+                    ":id",
+                    "62c098e7b4a7a433a7622ff4",
+                  )}
+                  component={CampOverview}
                 />
                 <Route exact path="*" component={NotFound} />
               </Switch>
