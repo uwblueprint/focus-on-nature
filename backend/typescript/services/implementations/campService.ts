@@ -180,6 +180,17 @@ class CampService implements ICampService {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
+      if (oldCamp.fileName) {
+        await this.storageService.deleteFile(oldCamp.fileName);
+      } else if (!oldCamp.fileName && camp.filePath) {
+        const newFileName = camp.filePath ? uuidv4() : "";
+        await this.storageService.updateFile(
+          newFileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      }
+
       await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
