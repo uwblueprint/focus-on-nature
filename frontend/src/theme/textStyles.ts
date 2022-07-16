@@ -61,6 +61,11 @@ const textStyles = {
     fontSize: "18px",
     lineHeight: "150%",
   },
+  bodyRegular: {
+    fontWeight: FontWeights.REGULAR,
+    fontSize: "18px",
+    lineHeight: "150%",
+  },
   caption: {
     fontWeight: FontWeights.REGULAR,
     fontSize: "16px",
