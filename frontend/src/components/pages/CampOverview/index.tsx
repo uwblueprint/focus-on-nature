@@ -1,28 +1,21 @@
 import {
+  AspectRatio,
   Box,
-  Button,
   Container,
-  Divider,
   Flex,
   HStack,
   Image,
-  Stack,
   Tag,
   Text,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import placeHolderImage from "../../../assets/germany.jpeg";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 import { Camp } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-
-import * as Routes from "../../../constants/Routes";
-import AuthContext from "../../../contexts/AuthContext";
 
 export type CampOverviewProps = {
   campId: string;
@@ -32,6 +25,7 @@ const CampOverview = (): JSX.Element => {
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now
 
+  // TODO: update the statuses
   enum Status {
     PUBLISHED = "Published",
     DRAFT = "Draft",
@@ -68,27 +62,15 @@ const CampOverview = (): JSX.Element => {
               </HStack>
             </HStack>
             <HStack spacing="20px" alignItems="middle">
-              <VStack marginBottom="24px" alignItems="left">
-                <Text marginBottom="8px" textStyle="bodyRegular">
-                  Camp Coordinators:
-                </Text>
-                <Text marginBottom="8px" textStyle="bodyRegular">
-                  Camp Counsellors:
-                </Text>
-                <Text marginBottom="24px" textStyle="bodyRegular">
-                  Volunteers:
-                </Text>
+              <VStack marginBottom="24px" alignItems="left" spacing="16px">
+                <Text textStyle="bodyRegular">Camp Coordinators:</Text>
+                <Text textStyle="bodyRegular">Camp Counsellors:</Text>
+                <Text textStyle="bodyRegular">Volunteers:</Text>
               </VStack>
-              <VStack marginBottom="24px" alignItems="left">
-                <Text marginBottom="8px" textStyle="bodyRegular">
-                  Placeholder
-                </Text>
-                <Text marginBottom="8px" textStyle="bodyRegular">
-                  Placeholder
-                </Text>
-                <Text marginBottom="24px" textStyle="bodyRegular">
-                  Placeholder
-                </Text>
+              <VStack marginBottom="24px" alignItems="left" spacing="16px">
+                <Text textStyle="bodyRegular">Placeholder</Text>
+                <Text textStyle="bodyRegular">Placeholder</Text>
+                <Text textStyle="bodyRegular">Placeholder</Text>
               </VStack>
             </HStack>
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
@@ -117,7 +99,7 @@ const CampOverview = (): JSX.Element => {
                   height="32px"
                 />
                 <Text textStyle="bodyRegular">
-                  {camp?.ageLower} to {camp?.ageUpper}
+                  {camp?.ageLower} to {camp?.ageUpper} years old
                 </Text>
               </HStack>
               <HStack>
@@ -132,14 +114,19 @@ const CampOverview = (): JSX.Element => {
               </HStack>
             </HStack>
           </Box>
-          <Image
-            objectFit="scale-down"
-            height="260px" // fixed or variable?
-            ml="5rem"
-            alignSelf="flex-end"
-            src={placeHolderImage}
-            alt="Camp Image"
-          />
+          <AspectRatio
+            marginTop="32px"
+            marginLeft="20px"
+            width="80%"
+            maxHeight="400px"
+            ratio={16 / 9}
+          >
+            <Image
+              objectFit="scale-down"
+              src={placeHolderImage}
+              alt="Camp Image"
+            />
+          </AspectRatio>
         </Flex>
       </Container>
     </>
