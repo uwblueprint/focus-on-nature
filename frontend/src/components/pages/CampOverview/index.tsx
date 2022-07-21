@@ -16,6 +16,7 @@ import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 import { Camp } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import SelectComponent from "./SelectComponent";
 
 export type CampOverviewProps = {
   campId: string;
@@ -62,15 +63,20 @@ const CampOverview = (): JSX.Element => {
               </HStack>
             </HStack>
             <HStack spacing="20px" alignItems="middle">
-              <VStack marginBottom="24px" alignItems="left" spacing="16px">
+              <VStack
+                marginBottom="24px"
+                alignItems="left"
+                spacing="16px"
+                width="30%"
+              >
                 <Text textStyle="bodyRegular">Camp Coordinators:</Text>
                 <Text textStyle="bodyRegular">Camp Counsellors:</Text>
                 <Text textStyle="bodyRegular">Volunteers:</Text>
               </VStack>
-              <VStack marginBottom="24px" alignItems="left" spacing="16px">
-                <Text textStyle="bodyRegular">Placeholder</Text>
-                <Text textStyle="bodyRegular">Placeholder</Text>
-                <Text textStyle="bodyRegular">Placeholder</Text>
+              <VStack marginBottom="24px" alignItems="left" width="100%">
+                <SelectComponent />
+                <SelectComponent />
+                <SelectComponent />
               </VStack>
             </HStack>
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
