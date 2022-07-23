@@ -15,14 +15,29 @@ import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 import { Camp } from "../../../types/CampsTypes";
+import { UserResponse } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import UserAPIClient from "../../../APIClients/UserAPIClient";
 import SelectComponent from "./SelectComponent";
+
+// dummy data for now
+const users1 = [
+  { value: "id1", label: "Michael Scott" },
+  { value: "id2", label: "Dwight Shrute" },
+];
+
+const users2 = [
+  { value: "id1", label: "Michael Scott2" },
+  { value: "id2", label: "Dwight Shrute2" },
+];
 
 export type CampOverviewProps = {
   campId: string;
 };
 
 const CampOverview = (): JSX.Element => {
+  const [users, setUsers] = React.useState([] as UserResponse[]);
+  const [dataError, setDataError] = React.useState<boolean>(false);
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
 
@@ -40,7 +55,27 @@ const CampOverview = (): JSX.Element => {
       setCamp(campResponse);
     };
     getCampInfo();
+
+    const getUsers = async () => {
+      const res = await UserAPIClient.getUsers();
+      if (res.length !== undefined) setUsers(res);
+      else setDataError(true);
+      setUsers(res);
+    };
+    getUsers();
   }, []);
+
+  // const formatUsers (function to format into the value/label thing and then pass these to the users prop)
+
+  // somehow get the type for each...and do a conditional calling to update
+  const editCampInfo = async (e: any, type: string) => {
+    // const updatedCamp = await CampsAPIClient.editCampById(camp!.id, {
+    //   campCoordinators,
+    // });
+    // campCoordinators = ["office worker"];
+    console.log("print e");
+    console.log(e);
+  };
 
   return (
     <>
@@ -74,9 +109,21 @@ const CampOverview = (): JSX.Element => {
                 <Text textStyle="bodyRegular">Volunteers:</Text>
               </VStack>
               <VStack marginBottom="24px" alignItems="left" width="100%">
-                <SelectComponent />
-                <SelectComponent />
-                <SelectComponent />
+                <SelectComponent
+                  placeholderText="Add camp coordinator(s)"
+                  users={users1}
+                  onChange={editCampInfo}
+                />
+                <SelectComponent
+                  placeholderText="Add camp counsellor(s)"
+                  users={users2}
+                  onChange={editCampInfo}
+                />
+                <SelectComponent
+                  placeholderText="Add volunteer(s)"
+                  users={users2}
+                  onChange={editCampInfo}
+                />
               </VStack>
             </HStack>
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
@@ -122,7 +169,7 @@ const CampOverview = (): JSX.Element => {
           </Box>
           <AspectRatio
             marginTop="32px"
-            marginLeft="20px"
+            marginLeft="24px"
             width="80%"
             maxHeight="400px"
             ratio={16 / 9}

@@ -19,6 +19,12 @@ export type Camp = {
   volunteers: string[];
 };
 
+export type EditCampDataType = {
+  campCoordinators?: string[];
+  campCounsellors?: string[];
+  volunteers?: string[];
+};
+
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
 export type CampSession = {
