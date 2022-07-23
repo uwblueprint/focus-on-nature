@@ -65,6 +65,11 @@ const colors = {
       100: "#C9CCCF",
     },
   },
+  waitlistCards: {
+    complete: "#C1FFBF",
+    expired: "#FFAAAA",
+    sent: "#FFE49E"
+  }
 };
 
 export default colors;
