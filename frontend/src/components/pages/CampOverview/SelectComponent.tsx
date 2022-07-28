@@ -1,5 +1,6 @@
 import { Select, OptionBase, GroupBase } from "chakra-react-select";
 import React from "react";
+import { User } from "../../../types/CampsTypes";
 
 interface CampCoordinatorOption extends OptionBase {
   value: string;
@@ -12,7 +13,7 @@ const SelectComponent = ({
   onChange,
 }: {
   placeholderText?: string;
-  users?: any;
+  users?: User[];
   onChange?: any;
 }): JSX.Element => {
   return (

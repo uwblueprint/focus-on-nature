@@ -14,7 +14,7 @@ import placeHolderImage from "../../../assets/germany.jpeg";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
-import { Camp } from "../../../types/CampsTypes";
+import { Camp, CampCoordinator, User } from "../../../types/CampsTypes";
 import { UserResponse } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
@@ -37,9 +37,9 @@ export type CampOverviewProps = {
 
 const CampOverview = (): JSX.Element => {
   const [users, setUsers] = React.useState([] as UserResponse[]);
-  const [dataError, setDataError] = React.useState<boolean>(false);
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
+  let campCoordinators: User[] = [];
 
   // TODO: update the statuses
   enum Status {
@@ -49,6 +49,18 @@ const CampOverview = (): JSX.Element => {
 
   const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
 
+  const formatUsers = (): User[] => {
+    const formattedUsers = users.map((user) => {
+      return {
+        value: user.id,
+        label: `${user.firstName} + " " + ${user.lastName}`,
+      };
+    });
+    console.log("formatted users");
+    console.log(formattedUsers);
+    return formattedUsers;
+  };
+
   useEffect(() => {
     const getCampInfo = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
@@ -57,24 +69,34 @@ const CampOverview = (): JSX.Element => {
     getCampInfo();
 
     const getUsers = async () => {
-      const res = await UserAPIClient.getUsers();
-      if (res.length !== undefined) setUsers(res);
-      else setDataError(true);
-      setUsers(res);
+      const userResponse = await UserAPIClient.getUsers();
+      setUsers(userResponse);
     };
     getUsers();
+    console.log("users");
+    console.log(users);
+    campCoordinators = formatUsers();
+
+    console.log("campCoordinators");
+    console.log(campCoordinators); // ISSUE: the async thing with fetching users but then this doesn't display in the select component
   }, []);
 
-  // const formatUsers (function to format into the value/label thing and then pass these to the users prop)
-
   // somehow get the type for each...and do a conditional calling to update
+  // ISSUE: the patch doesn't work when updating it as an array of strings...
   const editCampInfo = async (e: any, type: string) => {
-    // const updatedCamp = await CampsAPIClient.editCampById(camp!.id, {
-    //   campCoordinators,
-    // });
-    // campCoordinators = ["office worker"];
+    let campData: CampCoordinator[] = [];
+
     console.log("print e");
     console.log(e);
+    campData = e.map((campPerson: { value: any }) => campPerson.value);
+    // campData in camp session form???
+    console.log("print campData");
+    console.log(campData);
+
+    const updatedCamp = await CampsAPIClient.editCampById(camp!.id, {
+      campCoordinators: campData,
+    });
+    console.log(updatedCamp);
   };
 
   return (
@@ -111,7 +133,7 @@ const CampOverview = (): JSX.Element => {
               <VStack marginBottom="24px" alignItems="left" width="100%">
                 <SelectComponent
                   placeholderText="Add camp coordinator(s)"
-                  users={users1}
+                  users={campCoordinators}
                   onChange={editCampInfo}
                 />
                 <SelectComponent

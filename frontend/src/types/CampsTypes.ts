@@ -1,3 +1,5 @@
+import { Role } from "./AuthTypes";
+
 export type Camp = {
   id: string;
   active: boolean;
@@ -20,8 +22,8 @@ export type Camp = {
 };
 
 export type EditCampDataType = {
-  campCoordinators?: string[];
-  campCounsellors?: string[];
+  campCoordinators?: CampCoordinator[];
+  campCounsellors?: CampCoordinator[];
   volunteers?: string[];
 };
 
@@ -44,3 +46,18 @@ export type FormQuestion = {
   description?: string;
   options?: string[];
 };
+
+export type User = {
+  value: string;
+  label: string;
+};
+
+export type CampCoordinator = {
+  firstName: string;
+  lastName: string;
+  authId: string;
+  email: string;
+  role: Role;
+  active: boolean;
+  campSessions: CampSession[];
+}
