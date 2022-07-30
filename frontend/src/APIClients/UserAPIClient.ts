@@ -1,15 +1,15 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
 import baseAPIClient from "./BaseAPIClient";
-import { UserResponse } from "../types/UserTypes";
+import { User } from "../types/UserTypes";
 
-const getUsers = async (): Promise<Array<UserResponse>> => {
+const getUsers = async (): Promise<Array<User>> => {
   try {
     const { data } = await baseAPIClient.get(`/users`, {
       headers: { Authorization: BEARER_TOKEN },
     });
     return data;
   } catch (error) {
-    return error as Array<UserResponse>;
+    return error as Array<User>;
   }
 };
 

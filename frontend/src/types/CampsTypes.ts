@@ -47,9 +47,11 @@ export type FormQuestion = {
   options?: string[];
 };
 
-export type User = {
+export type UserOption = {
   value: string;
   label: string;
+  name: string;
+  email: string;
 };
 
 export type CampCoordinator = {

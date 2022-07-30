@@ -14,32 +14,20 @@ import placeHolderImage from "../../../assets/germany.jpeg";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
-import { Camp, CampCoordinator, User } from "../../../types/CampsTypes";
-import { UserResponse } from "../../../types/UserTypes";
+import { Camp, CampCoordinator, UserOption } from "../../../types/CampsTypes";
+import { User } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import SelectComponent from "./SelectComponent";
-
-// dummy data for now
-const users1 = [
-  { value: "id1", label: "Michael Scott" },
-  { value: "id2", label: "Dwight Shrute" },
-];
-
-const users2 = [
-  { value: "id1", label: "Michael Scott2" },
-  { value: "id2", label: "Dwight Shrute2" },
-];
 
 export type CampOverviewProps = {
   campId: string;
 };
 
 const CampOverview = (): JSX.Element => {
-  const [users, setUsers] = React.useState([] as UserResponse[]);
+  const [users, setUsers] = React.useState([] as User[]);
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
-  let campCoordinators: User[] = [];
 
   // TODO: update the statuses
   enum Status {
@@ -49,15 +37,15 @@ const CampOverview = (): JSX.Element => {
 
   const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
 
-  const formatUsers = (): User[] => {
+  const formatUsers = (): UserOption[] => {
     const formattedUsers = users.map((user) => {
       return {
         value: user.id,
-        label: `${user.firstName} + " " + ${user.lastName}`,
+        label: `${user.firstName} ${user.lastName}`,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
       };
     });
-    console.log("formatted users");
-    console.log(formattedUsers);
     return formattedUsers;
   };
 
@@ -73,14 +61,9 @@ const CampOverview = (): JSX.Element => {
       setUsers(userResponse);
     };
     getUsers();
-    console.log("users");
-    console.log(users);
-    campCoordinators = formatUsers();
-
-    console.log("campCoordinators");
-    console.log(campCoordinators); // ISSUE: the async thing with fetching users but then this doesn't display in the select component
   }, []);
 
+  // TODO: need to update this function after the camp API changes
   // somehow get the type for each...and do a conditional calling to update
   // ISSUE: the patch doesn't work when updating it as an array of strings...
   const editCampInfo = async (e: any, type: string) => {
@@ -133,17 +116,16 @@ const CampOverview = (): JSX.Element => {
               <VStack marginBottom="24px" alignItems="left" width="100%">
                 <SelectComponent
                   placeholderText="Add camp coordinator(s)"
-                  users={campCoordinators}
+                  users={formatUsers()}
                   onChange={editCampInfo}
                 />
                 <SelectComponent
                   placeholderText="Add camp counsellor(s)"
-                  users={users2}
+                  users={formatUsers()}
                   onChange={editCampInfo}
                 />
                 <SelectComponent
                   placeholderText="Add volunteer(s)"
-                  users={users2}
                   onChange={editCampInfo}
                 />
               </VStack>
