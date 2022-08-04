@@ -5,6 +5,7 @@ import {
   Flex,
   HStack,
   Image,
+  Input,
   Tag,
   Text,
   VStack,
@@ -82,6 +83,14 @@ const CampOverview = (): JSX.Element => {
     console.log(updatedCamp);
   };
 
+  // getting the string inputted into the volunteer field
+  const [volunteers, setVolunteers] = React.useState("");
+  const editVolunteers = (event: {
+    target: { value: React.SetStateAction<string> };
+  }) => setVolunteers(event.target.value);
+  console.log("volunteers");
+  console.log(volunteers);
+
   return (
     <>
       <Container maxWidth="100vw">
@@ -102,11 +111,12 @@ const CampOverview = (): JSX.Element => {
                 </Tag>
               </HStack>
             </HStack>
+
             <HStack spacing="20px" alignItems="middle">
               <VStack
                 marginBottom="24px"
                 alignItems="left"
-                spacing="16px"
+                spacing="24px"
                 width="30%"
               >
                 <Text textStyle="bodyRegular">Camp Coordinators:</Text>
@@ -124,12 +134,16 @@ const CampOverview = (): JSX.Element => {
                   users={formatUsers()}
                   onChange={editCampInfo}
                 />
-                <SelectComponent
-                  placeholderText="Add volunteer(s)"
-                  onChange={editCampInfo}
+                <Input
+                  onChange={editVolunteers}
+                  placeholder="Add volunteer(s)"
+                  _placeholder={{ color: "text.grey.100" }}
+                  size="md"
+                  _focusVisible={{ outline: "0" }}
                 />
               </VStack>
             </HStack>
+
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
               Camp Details
             </Text>

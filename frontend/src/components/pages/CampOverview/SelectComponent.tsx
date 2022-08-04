@@ -1,18 +1,13 @@
-import { Text, VStack } from "@chakra-ui/react";
+import { Divider, Text, VStack } from "@chakra-ui/react";
 import { Select, OptionBase, GroupBase } from "chakra-react-select";
 import React from "react";
 import { UserOption } from "../../../types/CampsTypes";
-
-interface CampCoordinatorOption extends OptionBase {
-  value: string;
-  label: string;
-}
 
 const formatOptionLabel = (user: UserOption, { context }: any) => {
   if (context === "menu") {
     return (
       <>
-        <VStack alignItems="left">
+        <VStack alignItems="left" width="100%">
           <Text textStyle="bodyRegular">{user.name}</Text>
           <Text textStyle="xSmallRegular">{user.email}</Text>
         </VStack>
@@ -36,7 +31,6 @@ const SelectComponent = ({
       <Select<UserOption, true, GroupBase<UserOption>>
         components={{
           DropdownIndicator: () => null,
-          IndicatorSeparator: () => null,
         }}
         useBasicStyles
         isMulti
