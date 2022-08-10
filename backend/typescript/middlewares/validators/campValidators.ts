@@ -3,10 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import {
   getApiValidationError,
+  getCampYearValidationError,
   getImageTypeValidationError,
   getImageSizeValidationError,
   validateArray,
   validatePrimitive,
+  validateCampYear,
   validateDate,
   validateImageType,
   validateTime,
@@ -350,5 +352,18 @@ export const createFormQuestionsValidator = async (
       .send(getApiValidationError("formQuestions", "Form question", true));
   }
 
+  return next();
+};
+
+export const getCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.query.campYear && !validateCampYear(req.query.campYear as string)) {
+    return res
+      .status(400)
+      .send(getCampYearValidationError(req.query.campYear as string));
+  }
   return next();
 };

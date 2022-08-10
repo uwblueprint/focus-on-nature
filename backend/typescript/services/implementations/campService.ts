@@ -12,6 +12,7 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
+  CampCoordinatorDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -22,6 +23,9 @@ import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import MgCampCoordinator, {
+  CampCoordinator,
+} from "../../models/campcoordinator.model";
 
 const Logger = logger(__filename);
 
@@ -33,20 +37,61 @@ class CampService implements ICampService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async getCamps(): Promise<GetCampDTO[]> {
+  async getCamps(year?: number): Promise<GetCampDTO[]> {
     try {
-      const camps: Camp[] | null = await MgCamp.find({})
+      const mgMatchQuery: Record<string, unknown[]> = { $and: [] };
+      if (year) {
+        const startYear = new Date(year, 0, 1);
+        const endYear = new Date(year, 11, 31);
+        mgMatchQuery.$and.push({
+          dates: { $gte: startCampYear, $lte: endCampYear },
+        });
+      }
+
+      let camps: Camp[] | null = await MgCamp.find({})
         .populate({
           path: "campSessions",
           model: MgCampSession,
+          match: mgMatchQuery.$and.length > 0 && mgMatchQuery,
         })
         .populate({
           path: "formQuestions",
           model: MgFormQuestion,
+        })
+        .populate({
+          path: "campCoordinators",
+          model: MgCampCoordinator,
+        })
+        .populate({
+          path: "campCounsellors",
+          model: MgCampCoordinator,
         });
 
       if (!camps) {
         return [];
+      }
+
+      if (year) {
+        // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
+        // Thus, additional filtering is required to remove additional dates
+        /* eslint-disable no-param-reassign */
+        camps = camps.map((camp) => {
+          /* eslint-disable no-param-reassign */
+          camp.campSessions = (camp.campSessions as CampSession[]).filter(
+            (campSession) => {
+              campSession.dates = campSession.dates.filter((campDate) => {
+                const startCampYearTime = new Date(year, 0, 1).getTime();
+                const endCampYearTime = new Date(year, 11, 31).getTime();
+                return (
+                  campDate.getTime() >= startCampYearTime &&
+                  campDate.getTime() <= endCampYearTime
+                );
+              });
+              return campSession;
+            },
+          );
+          return camp;
+        });
       }
 
       return camps.map((camp) => {
@@ -73,17 +118,23 @@ class CampService implements ICampService {
           }),
         );
 
+        const campCounsellors = (camp.campCounsellors as CampCoordinator[]).map(
+          (counsellor) => ({  id: counsellor.id,
+            firstName: counsellor.firstName,
+            lastName: counsellor.lastName,
+            email: string;
+            role: Role;
+            active: boolean;
+          }),
+        );
+
         return {
           id: camp.id,
           active: camp.active,
           ageLower: camp.ageLower,
           ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators.map((coordinator) =>
-            coordinator.toString(),
-          ),
-          campCounsellors: camp.campCounsellors.map((counsellor) =>
-            counsellor.toString(),
-          ),
+          // campCoordinators,
+          campCounsellors,
           name: camp.name,
           description: camp.description,
           earlyDropoff: camp.earlyDropoff,

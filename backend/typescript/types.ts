@@ -102,8 +102,8 @@ export type CampDTO = {
   active: boolean;
   ageLower: number;
   ageUpper: number;
-  campCoordinators: string[];
-  campCounsellors: string[];
+  campCoordinators: string[] | CampCoordinatorDTO[];
+  campCounsellors: string[] | CampCoordinatorDTO[];
   name: string;
   description: string;
   earlyDropoff: string;

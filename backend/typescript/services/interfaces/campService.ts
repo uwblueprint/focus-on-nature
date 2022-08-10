@@ -13,11 +13,11 @@ import {
 interface ICampService {
   /**
    * Get all camps
-   * @param
+   * @param year year camp is running
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
-  getCamps(): Promise<GetCampDTO[]>;
+  getCamps(year?: number): Promise<GetCampDTO[]>;
 
   /**
    * Get camp with the specified campId

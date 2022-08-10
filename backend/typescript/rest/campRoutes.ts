@@ -11,6 +11,7 @@ import {
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
   editFormQuestionValidator,
+  getCampDtoValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
 } from "../middlewares/validators/campValidators";
@@ -26,9 +27,10 @@ const fileStorageService: IFileStorageService = new FileStorageService(
 
 const campService: ICampService = new CampService(fileStorageService);
 /* Get all camps */
-campRouter.get("/", async (req, res) => {
+campRouter.get("/", getCampDtoValidator, async (req, res) => {
   try {
-    const camps = await campService.getCamps();
+    const { campYear } = req.query;
+    const camps = await campService.getCamps(parseInt(campYear as string, 10));
     res.status(200).json(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
