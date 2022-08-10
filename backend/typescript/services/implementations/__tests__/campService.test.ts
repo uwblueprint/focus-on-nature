@@ -447,25 +447,11 @@ describe("mongo campService", (): void => {
 
     const camp = await MgCamp.findById(res.id).exec();
     expect(camp).toBeInstanceOf(MgCamp); // make sure not null
-    expect(res.campSessions).toHaveLength(1);
-    expect(res.formQuestions).toHaveLength(2);
 
     // delete camp
     await campService.deleteCamp(res.id);
 
     const deletedCamp = await MgCamp.findById(res.id).exec();
-    const deletedCampSession = await MgCampSession.findById(
-      res.campSessions[0],
-    );
-    const deletedFirstFormQuestion = await MgFormQuestion.findById(
-      res.formQuestions[0],
-    );
-    const deletedSecondFormQuestion = await MgFormQuestion.findById(
-      res.formQuestions[1],
-    );
     expect(deletedCamp).toBeNull(); // make sure deleted
-    expect(deletedCampSession).toBeNull();
-    expect(deletedFirstFormQuestion).toBeNull();
-    expect(deletedSecondFormQuestion).toBeNull();
   });
 });

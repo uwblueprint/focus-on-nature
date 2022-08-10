@@ -192,7 +192,7 @@ class EmailService implements IEmailService {
     campSession: CampSession,
     waitlistedCamper: WaitlistedCamper,
   ): Promise<void> {
-    const link = ""; // TODO: fix link
+    const link = `${process.env.CLIENT_URL}/camp/${camp.id}/session/${campSession.id}/register?wld=${waitlistedCamper.id}`;
     await this.sendEmail(
       waitlistedCamper.contactEmail,
       "Focus on Nature Camp Registration - Invitation to Register",
@@ -202,7 +202,7 @@ class EmailService implements IEmailService {
         campSession.dates,
       )}. To register your camper, please use the following link:
       <a href=${link}>${link}</a>.<br> Please complete this registration within 
-      24 hours to confirm your spot.<br><br>
+      72 hours to confirm your spot.<br><br>
       Thanks,<br><br>
       Focus on Nature
       `,

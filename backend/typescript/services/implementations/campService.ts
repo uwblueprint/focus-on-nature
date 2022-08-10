@@ -103,6 +103,70 @@ class CampService implements ICampService {
     }
   }
 
+  async getCampById(campId: string): Promise<GetCampDTO> {
+    let camp: Camp | null;
+
+    try {
+      camp = await MgCamp.findById(campId)
+        .populate({
+          path: "campSessions",
+          model: MgCampSession,
+        })
+        .populate({
+          path: "formQuestions",
+          model: MgFormQuestion,
+        });
+
+      if (!camp) {
+        throw new Error(`Camp' with campId ${campId} not found.`);
+      }
+    } catch (error: unknown) {
+      Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+
+    return {
+      id: campId,
+      active: camp.active,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators.map((coordinator) =>
+        coordinator.toString(),
+      ),
+      campCounsellors: camp.campCounsellors.map((counsellor) =>
+        counsellor.toString(),
+      ),
+      campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
+        id: campSession.id,
+        capacity: campSession.capacity,
+        dates: campSession.dates.map((date) => date.toString()),
+        registrations: campSession.campers.length,
+        waitlist: campSession.waitlist.length,
+      })),
+      name: camp.name,
+      description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      latePickup: camp.latePickup,
+      location: camp.location,
+      startTime: camp.startTime,
+      endTime: camp.endTime,
+      fee: camp.fee,
+      formQuestions: (camp.formQuestions as FormQuestion[]).map(
+        (formQuestion: FormQuestion) => {
+          return {
+            id: formQuestion.id,
+            type: formQuestion.type,
+            question: formQuestion.question,
+            required: formQuestion.required,
+            description: formQuestion.description,
+            options: formQuestion.options,
+          };
+        },
+      ),
+      volunteers: camp.volunteers,
+    };
+  }
+
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
     try {
@@ -114,6 +178,23 @@ class CampService implements ICampService {
 
       if (oldCamp.active && camp.fee) {
         throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      const fileName = oldCamp.fileName ?? uuidv4();
+      if (camp.filePath && !oldCamp.fileName) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (camp.filePath && oldCamp.fileName) {
+        await this.storageService.updateFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (!camp.filePath && oldCamp.fileName) {
+        await this.storageService.deleteFile(oldCamp.fileName);
       }
 
       await MgCamp.findByIdAndUpdate(campId, {
@@ -132,6 +213,7 @@ class CampService implements ICampService {
           endTime: camp.endTime,
           volunteers: camp.volunteers,
           fee: camp.fee,
+          fileName: camp.filePath ? fileName : null,
         },
       });
     } catch (error: unknown) {
@@ -144,13 +226,13 @@ class CampService implements ICampService {
       active: camp.active,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
-      campCoordinators: camp.campCoordinators.map((coordinator) =>
+      campCoordinators: camp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
-      campCounsellors: camp.campCounsellors.map((counsellor) =>
+      campCounsellors: camp.campCounsellors?.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: oldCamp.campSessions.map((session) => session.toString()),
+      campSessions: oldCamp.campSessions?.map((session) => session.toString()),
       name: camp.name,
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
@@ -159,7 +241,7 @@ class CampService implements ICampService {
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
-      formQuestions: oldCamp.formQuestions.map((formQuestion) =>
+      formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),
       volunteers: camp.volunteers,
@@ -533,13 +615,6 @@ class CampService implements ICampService {
         // rollback incomplete camp creation
 
         try {
-          newCamp.formQuestions.forEach((formQuestionID) =>
-            MgFormQuestion.findByIdAndDelete(formQuestionID),
-          );
-          newCamp.campSessions.forEach((campSessionID) =>
-            MgCampSession.findByIdAndDelete(campSessionID),
-          );
-
           MgCamp.findByIdAndDelete(newCamp.id);
         } catch (rollbackError: unknown) {
           Logger.error(
