@@ -70,8 +70,35 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
-  if (!validatePrimitive(body.location, "string")) {
-    return res.status(400).send(getApiValidationError("location", "string"));
+  if (body.location) {
+    if (!validatePrimitive(body.location.streetAddress1, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress1", "string"));
+    }
+    if (
+      body.location.streetAddress2 &&
+      !validatePrimitive(body.location.streetAddress2, "string")
+    ) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress2", "string"));
+    }
+    if (!validatePrimitive(body.location.city, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.city", "string"));
+    }
+    if (!validatePrimitive(body.location.province, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.province", "string"));
+    }
+    if (!validatePrimitive(body.location.postalCode, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.postalCode", "string"));
+    }
   }
   if (!validatePrimitive(body.ageLower, "integer")) {
     return res.status(400).send(getApiValidationError("ageLower", "integer"));
@@ -171,8 +198,35 @@ export const updateCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (!validatePrimitive(body.location, "string")) {
-    return res.status(400).send(getApiValidationError("location", "string"));
+  if (body.location) {
+    if (!validatePrimitive(body.location.streetAddress1, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress1", "string"));
+    }
+    if (
+      body.location.streetAddress2 &&
+      !validatePrimitive(body.location.streetAddress2, "string")
+    ) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress2", "string"));
+    }
+    if (!validatePrimitive(body.location.city, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.city", "string"));
+    }
+    if (!validatePrimitive(body.location.province, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.province", "string"));
+    }
+    if (!validatePrimitive(body.location.postalCode, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.postalCode", "string"));
+    }
   }
   if (!validatePrimitive(body.ageLower, "integer")) {
     return res.status(400).send(getApiValidationError("ageLower", "integer"));
