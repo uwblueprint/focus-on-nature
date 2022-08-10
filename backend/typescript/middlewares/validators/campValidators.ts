@@ -76,7 +76,10 @@ export const createCampDtoValidator = async (
         .status(400)
         .send(getApiValidationError("location.streetAddress1", "string"));
     }
-    if (!validatePrimitive(body.location.streetAddress2, "string")) {
+    if (
+      body.location.streetAddress2 &&
+      !validatePrimitive(body.location.streetAddress2, "string")
+    ) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress2", "string"));
@@ -201,7 +204,10 @@ export const updateCampDtoValidator = async (
         .status(400)
         .send(getApiValidationError("location.streetAddress1", "string"));
     }
-    if (!validatePrimitive(body.location.streetAddress2, "string")) {
+    if (
+      body.location.streetAddress2 &&
+      !validatePrimitive(body.location.streetAddress2, "string")
+    ) {
       return res
         .status(400)
         .send(getApiValidationError("location.streetAddress2", "string"));
