@@ -615,13 +615,6 @@ class CampService implements ICampService {
         // rollback incomplete camp creation
 
         try {
-          newCamp.formQuestions.forEach((formQuestionID) =>
-            MgFormQuestion.findByIdAndDelete(formQuestionID),
-          );
-          newCamp.campSessions.forEach((campSessionID) =>
-            MgCampSession.findByIdAndDelete(campSessionID),
-          );
-
           MgCamp.findByIdAndDelete(newCamp.id);
         } catch (rollbackError: unknown) {
           Logger.error(
