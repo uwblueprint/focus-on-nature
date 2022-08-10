@@ -180,6 +180,23 @@ class CampService implements ICampService {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
+      const fileName = oldCamp.fileName ?? uuidv4();
+      if (camp.filePath && !oldCamp.fileName) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (camp.filePath && oldCamp.fileName) {
+        await this.storageService.updateFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (!camp.filePath && oldCamp.fileName) {
+        await this.storageService.deleteFile(oldCamp.fileName);
+      }
+
       await MgCamp.findByIdAndUpdate(campId, {
         $set: {
           name: camp.name,
@@ -196,6 +213,7 @@ class CampService implements ICampService {
           endTime: camp.endTime,
           volunteers: camp.volunteers,
           fee: camp.fee,
+          fileName: camp.filePath ? fileName : null,
         },
       });
     } catch (error: unknown) {
@@ -208,13 +226,13 @@ class CampService implements ICampService {
       active: camp.active,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
-      campCoordinators: camp.campCoordinators.map((coordinator) =>
+      campCoordinators: camp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
-      campCounsellors: camp.campCounsellors.map((counsellor) =>
+      campCounsellors: camp.campCounsellors?.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: oldCamp.campSessions.map((session) => session.toString()),
+      campSessions: oldCamp.campSessions?.map((session) => session.toString()),
       name: camp.name,
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
@@ -223,7 +241,7 @@ class CampService implements ICampService {
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
-      formQuestions: oldCamp.formQuestions.map((formQuestion) =>
+      formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),
       volunteers: camp.volunteers,
@@ -597,13 +615,6 @@ class CampService implements ICampService {
         // rollback incomplete camp creation
 
         try {
-          newCamp.formQuestions.forEach((formQuestionID) =>
-            MgFormQuestion.findByIdAndDelete(formQuestionID),
-          );
-          newCamp.campSessions.forEach((campSessionID) =>
-            MgCampSession.findByIdAndDelete(campSessionID),
-          );
-
           MgCamp.findByIdAndDelete(newCamp.id);
         } catch (rollbackError: unknown) {
           Logger.error(
