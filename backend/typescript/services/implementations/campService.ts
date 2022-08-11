@@ -125,7 +125,7 @@ class CampService implements ICampService {
 
         if (campSessionId !== waitlistedCamper.campSession.toString()) {
           throw new Error(
-            `Camp session ID ${campSessionId} does not exist or does not have an invite link.`,
+            `Given waitlisted camper is not on the waitlist for given camp session.`,
           );
         }
 
