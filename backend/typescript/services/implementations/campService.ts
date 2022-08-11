@@ -162,12 +162,14 @@ class CampService implements ICampService {
 
     if (waitlistedCamperId) {
       camp.campSessions = (camp.campSessions as CampSession[]).filter(
-        (campSession) => campSession.id === campSessionId,
+        (campSession) =>
+          campSession.id === campSessionId &&
+          campSession.capacity !== campSession.campers.length,
       );
 
       if (camp.campSessions.length === 0) {
         throw new Error(
-          `No camp session matches with session ${campSessionId}`,
+          `No camp session with space matches with session ${campSessionId}`,
         );
       }
     }
