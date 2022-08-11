@@ -48,11 +48,10 @@ campRouter.get("/:id", async (req, res) => {
     } else if (req.query?.wId || req.query?.session) {
       const error = new Error(`missing wId or session query param`);
       res.status(401).json({ error: getErrorMessage(error) });
+    } else {
+      const camp = await campService.getCampById(req.params.id);
+      res.status(200).json(camp);
     }
-
-    const camp = await campService.getCampById(req.params.id);
-
-    res.status(200).json(camp);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
