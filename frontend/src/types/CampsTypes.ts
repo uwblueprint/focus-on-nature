@@ -62,4 +62,4 @@ export type CampCoordinator = {
   role: Role;
   active: boolean;
   campSessions: CampSession[];
-}
+};
