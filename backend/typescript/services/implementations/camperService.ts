@@ -147,13 +147,22 @@ class CamperService implements ICamperService {
     });
 
     if (waitlistedCamperId) {
-      await MgWaitlistedCamper.findByIdAndUpdate(
-        waitlistedCamperId,
-        {
-          status: "Registered",
-        },
-        { runValidators: true },
-      );
+      try {
+        await MgWaitlistedCamper.findByIdAndUpdate(
+          waitlistedCamperId,
+          {
+            status: "Registered",
+          },
+          { runValidators: true },
+        );
+      } catch (error) {
+        Logger.error(
+          `Registered campers but was unable to update waitlisted camper status with id: ${waitlistedCamperId}. Error: ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
     }
 
     return newCamperDTOs;
