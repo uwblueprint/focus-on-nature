@@ -3,6 +3,8 @@ import {
   Box,
   Container,
   Flex,
+  Grid,
+  GridItem,
   HStack,
   Image,
   Input,
@@ -112,28 +114,36 @@ const CampOverview = (): JSX.Element => {
               </HStack>
             </HStack>
 
-            <HStack spacing="20px" alignItems="middle">
-              <VStack
-                marginBottom="24px"
-                alignItems="left"
-                spacing="24px"
-                width="30%"
-              >
+            <Grid
+              templateColumns="repeat(4, 1fr)"
+              gap={2}
+              alignItems="center"
+              marginBottom="24px"
+            >
+              <GridItem>
                 <Text textStyle="bodyRegular">Camp Coordinators:</Text>
-                <Text textStyle="bodyRegular">Camp Counsellors:</Text>
-                <Text textStyle="bodyRegular">Volunteers:</Text>
-              </VStack>
-              <VStack marginBottom="24px" alignItems="left" width="100%">
+              </GridItem>
+              <GridItem colSpan={3}>
                 <SelectComponent
                   placeholderText="Add camp coordinator(s)"
                   users={formatUsers()}
                   onChange={editCampInfo}
                 />
+              </GridItem>
+              <GridItem>
+                <Text textStyle="bodyRegular">Camp Counsellors:</Text>
+              </GridItem>
+              <GridItem colSpan={3}>
                 <SelectComponent
                   placeholderText="Add camp counsellor(s)"
                   users={formatUsers()}
                   onChange={editCampInfo}
                 />
+              </GridItem>
+              <GridItem>
+                <Text textStyle="bodyRegular">Volunteers:</Text>
+              </GridItem>
+              <GridItem colSpan={3}>
                 <Input
                   onChange={editVolunteers}
                   placeholder="Add volunteer(s)"
@@ -141,8 +151,8 @@ const CampOverview = (): JSX.Element => {
                   size="md"
                   _focusVisible={{ outline: "0" }}
                 />
-              </VStack>
-            </HStack>
+              </GridItem>
+            </Grid>
 
             <Text marginBottom="12px" textStyle="bodyBold" width="100%">
               Camp Details

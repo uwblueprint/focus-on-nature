@@ -34,6 +34,7 @@ const SelectComponent = ({
         }}
         useBasicStyles
         isMulti
+        isClearable={false}
         name="selectComponent"
         options={users}
         placeholder={placeholderText}
