@@ -164,7 +164,7 @@ class CampService implements ICampService {
       camp.campSessions = (camp.campSessions as CampSession[]).filter(
         (campSession) =>
           campSession.id === campSessionId &&
-          campSession.capacity !== campSession.campers.length,
+          campSession.capacity > campSession.campers.length,
       );
 
       if (camp.campSessions.length === 0) {
