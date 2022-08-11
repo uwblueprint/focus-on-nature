@@ -131,7 +131,7 @@ class CampService implements ICampService {
 
         const linkExpiryDate = new Date(waitlistedCamper.linkExpiry);
         const currentDate = new Date();
-        if (linkExpiryDate > currentDate) {
+        if (linkExpiryDate < currentDate) {
           throw new Error(
             `Invite link has expired, please contact us to resolve this issue.`,
           );
