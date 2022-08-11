@@ -111,7 +111,7 @@ class CampService implements ICampService {
     campSessionId?: string,
     waitlistedCamperId?: string,
   ): Promise<GetCampDTO> {
-    if (waitlistedCamperId) {
+    if (waitlistedCamperId && campSessionId) {
       try {
         const waitlistedCamper: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
           waitlistedCamperId,
@@ -120,6 +120,12 @@ class CampService implements ICampService {
         if (!waitlistedCamper || !waitlistedCamper?.linkExpiry) {
           throw new Error(
             `Waitlisted Camper with Id ${waitlistedCamperId} does not exist or does not have an invite link.`,
+          );
+        }
+
+        if (campSessionId !== waitlistedCamper.campSession.toString()) {
+          throw new Error(
+            `Camp session ID ${campSessionId} does not exist or does not have an invite link.`,
           );
         }
 
