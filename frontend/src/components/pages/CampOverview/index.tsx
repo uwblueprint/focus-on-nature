@@ -98,6 +98,9 @@ const CampOverview = (): JSX.Element => {
   console.log("volunteers");
   console.log(volunteers);
 
+  console.log("camp fields");
+  console.log(camp);
+
   return (
     <>
       <Container maxWidth="100vw">
@@ -209,7 +212,7 @@ const CampOverview = (): JSX.Element => {
           >
             <Image
               objectFit="scale-down"
-              src={placeHolderImage}
+              src={placeHolderImage} // TODO: replace w/ image url
               alt="Camp Image"
             />
           </AspectRatio>
