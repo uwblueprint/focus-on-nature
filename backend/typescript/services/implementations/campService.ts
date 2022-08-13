@@ -20,7 +20,6 @@ import { generateCSV } from "../../utilities/CSVUtils";
 import logger from "../../utilities/logger";
 import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
-import MgFees from "../../models/fees.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
 import {
@@ -105,6 +104,8 @@ class CampService implements ICampService {
           description: camp.description,
           earlyDropoff: camp.earlyDropoff,
           latePickup: camp.latePickup,
+          dropoffFee: camp.dropoffFee,
+          pickUpFee: camp.pickUpFee,
           location: camp.location,
           campProductId: camp.campProductId,
           dropoffProductId: camp.dropoffProductId,
@@ -225,6 +226,8 @@ class CampService implements ICampService {
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
       latePickup: camp.latePickup,
+      dropoffFee: camp.dropoffFee,
+      pickUpFee: camp.pickUpFee,
       location: camp.location,
       startTime: camp.startTime,
       endTime: camp.endTime,
@@ -363,11 +366,6 @@ class CampService implements ICampService {
 
         const campFee = newCamp.fee;
 
-        const fees = await MgFees.findOne();
-        if (!fees) {
-          throw new Error("No fees found in Fees collection");
-        }
-
         await Promise.all(
           (newCamp.campSessions as CampSession[]).map(async (campSession) => {
             const campSessionFeeInCents =
@@ -379,12 +377,12 @@ class CampService implements ICampService {
 
             const dropoffPriceObject = await createStripePrice(
               dropoffProductId,
-              fees.dropoffFee,
+              camp.dropoffFee,
             );
 
             const pickUpPriceObject = await createStripePrice(
               pickUpProductId,
-              fees.pickUpFee,
+              camp.pickUpFee,
             );
 
             await MgCampSession.findByIdAndUpdate(
@@ -420,6 +418,8 @@ class CampService implements ICampService {
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
       latePickup: camp.latePickup,
+      dropoffFee: camp.dropoffFee,
+      pickUpFee: camp.pickUpFee,
       location: camp.location,
       campProductId: newCamp?.campProductId || "",
       dropoffProductId: newCamp?.dropoffProductId || "",
@@ -523,11 +523,6 @@ class CampService implements ICampService {
       throw new Error(`camp with id ${campId} not found`);
     }
 
-    const fees = await MgFees.findOne();
-    if (!fees) {
-      throw new Error("No fees found in Fees collection");
-    }
-
     if (camp.active) {
       await Promise.all(
         campSessions.map(async (campSession, i) => {
@@ -548,12 +543,12 @@ class CampService implements ICampService {
 
             const dropoffPriceObject = await createStripePrice(
               camp.dropoffProductId,
-              fees.dropoffFee,
+              camp.dropoffFee,
             );
 
             const pickUpPriceObject = await createStripePrice(
               camp.pickUpProductId,
-              fees.pickUpFee,
+              camp.pickUpFee,
             );
 
             priceIds = {
@@ -956,6 +951,8 @@ class CampService implements ICampService {
       ),
       name: newCamp.name,
       description: newCamp.description,
+      dropoffFee: newCamp.dropoffFee,
+      pickUpFee: newCamp.pickUpFee,
       earlyDropoff: newCamp.earlyDropoff,
       latePickup: newCamp.latePickup,
       location: newCamp.location,

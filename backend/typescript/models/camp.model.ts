@@ -12,6 +12,8 @@ export interface Camp extends Document {
   campCounsellors: (User | Schema.Types.ObjectId)[];
   campSessions: (Schema.Types.ObjectId | CampSession)[];
   description: string;
+  dropoffFee: number;
+  pickUpFee: number;
   earlyDropoff: string;
   endTime: string;
   fee: number;
@@ -75,6 +77,14 @@ const CampSchema: Schema = new Schema({
   },
   description: {
     type: String,
+  },
+  dropoffFee: {
+    type: Number,
+    required: true,
+  },
+  pickUpFee: {
+    type: Number,
+    required: true,
   },
   endTime: {
     type: String,
