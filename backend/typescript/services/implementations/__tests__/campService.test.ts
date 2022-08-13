@@ -27,7 +27,12 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 30,
     name: "test camp",
     description: "description",
-    location: "canada",
+    location: {
+      streetAddress1: "123 Focus on Nature Avenue",
+      city: "Guelph",
+      province: "Ontario",
+      postalCode: "M1A 3G3",
+    },
     fee: 25,
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
@@ -44,7 +49,12 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 50,
     name: "test camp2",
     description: "description2",
-    location: "canada",
+    location: {
+      streetAddress1: "123 Focus on Nature Avenue",
+      city: "Guelph",
+      province: "Ontario",
+      postalCode: "M1A 3G3",
+    },
     fee: 24,
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
@@ -95,7 +105,12 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
-      location: "canada",
+      location: {
+        streetAddress1: "123 Focus on Nature Avenue",
+        city: "Guelph",
+        province: "Ontario",
+        postalCode: "M1A 3G3",
+      },
       fee: 25,
       formQuestions: [],
       startTime: "6:49",
@@ -189,7 +204,12 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
-      location: "canada",
+      location: {
+        streetAddress1: "123 Focus on Nature Avenue",
+        city: "Guelph",
+        province: "Ontario",
+        postalCode: "M1A 3G3",
+      },
       fee: 25,
       formQuestions: [],
       startTime: "6:49",
@@ -302,7 +322,12 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
-      location: "canada",
+      location: {
+        streetAddress1: "123 Focus on Nature Avenue",
+        city: "Guelph",
+        province: "Ontario",
+        postalCode: "M1A 3G3",
+      },
       fee: 25,
       formQuestions: [],
       startTime: "6:49",
@@ -320,7 +345,12 @@ describe("mongo campService", (): void => {
       latePickup: "8:30",
       name: "ab",
       description: "ba",
-      location: "ca",
+      location: {
+        streetAddress1: "123 Focus on Nature Avenue",
+        city: "Guelph",
+        province: "Ontario",
+        postalCode: "M1A 3G3",
+      },
       fee: 50,
       startTime: "8:49",
       endTime: "12:09",
@@ -362,7 +392,12 @@ describe("mongo campService", (): void => {
       ageUpper: 12,
       name: "Test Camp",
       description: "description",
-      location: "Canada",
+      location: {
+        streetAddress1: "123 Focus on Nature Avenue",
+        city: "Guelph",
+        province: "Ontario",
+        postalCode: "M1A 3G3",
+      },
       fee: 7,
       campCoordinators: [],
       campCounsellors: [],
@@ -399,18 +434,6 @@ describe("mongo campService", (): void => {
     await campService.deleteCamp(res.id);
 
     const deletedCamp = await MgCamp.findById(res.id).exec();
-    const deletedCampSession = await MgCampSession.findById(
-      res.campSessions[0],
-    );
-    const deletedFirstFormQuestion = await MgFormQuestion.findById(
-      res.formQuestions[0],
-    );
-    const deletedSecondFormQuestion = await MgFormQuestion.findById(
-      res.formQuestions[1],
-    );
     expect(deletedCamp).toBeNull(); // make sure deleted
-    expect(deletedCampSession).toBeNull();
-    expect(deletedFirstFormQuestion).toBeNull();
-    expect(deletedSecondFormQuestion).toBeNull();
   });
 });

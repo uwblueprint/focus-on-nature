@@ -34,6 +34,7 @@ const CampSessionSchema: Schema = new Schema({
     ],
     default: [],
     validate: [
+      // eslint-disable-next-line func-names, @typescript-eslint/no-explicit-any
       function (this: any, value: any) {
         return value.length <= this.capacity;
       },
