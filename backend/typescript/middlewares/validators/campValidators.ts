@@ -51,6 +51,12 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
+  if (body.pickUpFee && !validatePrimitive(body.pickUpFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickUpFee", "integer"));
+  }
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
   }
@@ -180,6 +186,12 @@ export const updateCampDtoValidator = async (
   }
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
+  }
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  }
+  if (body.pickUpFee && !validatePrimitive(body.pickUpFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickUpFee", "integer"));
   }
   if (body.location) {
     if (!validatePrimitive(body.location.streetAddress1, "string")) {

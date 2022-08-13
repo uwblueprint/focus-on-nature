@@ -112,6 +112,7 @@ campRouter.patch(
   upload.single("file"),
   updateCampDtoValidator,
   async (req, res) => {
+    console.log("hi");
     try {
       const body = JSON.parse(req.body.data);
       const newCamp = await campService.updateCampById(req.params.campId, {

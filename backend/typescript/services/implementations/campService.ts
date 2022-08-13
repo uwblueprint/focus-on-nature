@@ -258,7 +258,7 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      if (oldCamp.active && camp.fee) {
+      if (oldCamp.active && (camp.fee || camp.dropoffFee || camp.pickUpFee)) {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
@@ -318,6 +318,8 @@ class CampService implements ICampService {
             description: camp.description,
             earlyDropoff: camp.earlyDropoff,
             latePickup: camp.latePickup,
+            dropoffFee: camp.dropoffFee,
+            pickUpFee: camp.pickUpFee,
             location: camp.location,
             startTime: camp.startTime,
             endTime: camp.endTime,
@@ -362,7 +364,13 @@ class CampService implements ICampService {
 
       // Create Price Objects if switching from inactive to active
       if (!oldCamp.active && camp.active) {
-        const { campProductId, dropoffProductId, pickUpProductId } = newCamp;
+        const {
+          campProductId,
+          dropoffProductId,
+          pickUpProductId,
+          dropoffFee,
+          pickUpFee,
+        } = newCamp;
 
         const campFee = newCamp.fee;
 
@@ -377,12 +385,12 @@ class CampService implements ICampService {
 
             const dropoffPriceObject = await createStripePrice(
               dropoffProductId,
-              camp.dropoffFee,
+              dropoffFee,
             );
 
             const pickUpPriceObject = await createStripePrice(
               pickUpProductId,
-              camp.pickUpFee,
+              pickUpFee,
             );
 
             await MgCampSession.findByIdAndUpdate(
@@ -404,9 +412,9 @@ class CampService implements ICampService {
 
     return {
       id: campId,
-      active: camp.active,
-      ageLower: camp.ageLower,
-      ageUpper: camp.ageUpper,
+      active: newCamp.active,
+      ageLower: newCamp.ageLower,
+      ageUpper: newCamp.ageUpper,
       campCoordinators: camp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
@@ -414,19 +422,19 @@ class CampService implements ICampService {
         counsellor.toString(),
       ),
       campSessions: oldCamp.campSessions?.map((session) => session.toString()),
-      name: camp.name,
-      description: camp.description,
-      earlyDropoff: camp.earlyDropoff,
-      latePickup: camp.latePickup,
-      dropoffFee: camp.dropoffFee,
-      pickUpFee: camp.pickUpFee,
-      location: camp.location,
-      campProductId: newCamp?.campProductId || "",
-      dropoffProductId: newCamp?.dropoffProductId || "",
-      pickUpProductId: newCamp?.pickUpProductId || "",
-      startTime: camp.startTime,
-      endTime: camp.endTime,
-      fee: camp.fee,
+      name: newCamp.name,
+      description: newCamp.description,
+      earlyDropoff: newCamp.earlyDropoff,
+      latePickup: newCamp.latePickup,
+      dropoffFee: newCamp.dropoffFee,
+      pickUpFee: newCamp.pickUpFee,
+      location: newCamp.location,
+      campProductId: newCamp.campProductId,
+      dropoffProductId: newCamp.dropoffProductId,
+      pickUpProductId: newCamp.pickUpProductId,
+      startTime: newCamp.startTime,
+      endTime: newCamp.endTime,
+      fee: newCamp.fee,
       formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),

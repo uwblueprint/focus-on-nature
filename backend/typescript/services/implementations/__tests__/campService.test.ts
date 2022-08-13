@@ -107,7 +107,7 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
-      dropoffFee: 7,
+      dropoffFee: 7.1,
       pickUpFee: 6,
       location: {
         streetAddress1: "123 Focus on Nature Avenue",
