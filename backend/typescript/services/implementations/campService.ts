@@ -22,6 +22,9 @@ import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import MgWaitlistedCamper, {
+  WaitlistedCamper,
+} from "../../models/waitlistedCamper.model";
 
 const Logger = logger(__filename);
 
@@ -111,9 +114,47 @@ class CampService implements ICampService {
     }
   }
 
-  async getCampById(campId: string): Promise<GetCampDTO> {
-    let camp: Camp | null;
+  async getCampById(
+    campId: string,
+    campSessionId?: string,
+    waitlistedCamperId?: string,
+  ): Promise<GetCampDTO> {
+    if (waitlistedCamperId && campSessionId) {
+      try {
+        const waitlistedCamper: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+          waitlistedCamperId,
+        );
 
+        if (!waitlistedCamper || !waitlistedCamper?.linkExpiry) {
+          throw new Error(
+            `Waitlisted Camper with Id ${waitlistedCamperId} does not exist or does not have an invite link.`,
+          );
+        }
+
+        if (campSessionId !== waitlistedCamper.campSession.toString()) {
+          throw new Error(
+            `Given waitlisted camper is not on the waitlist for given camp session.`,
+          );
+        }
+
+        const linkExpiryDate = new Date(waitlistedCamper.linkExpiry);
+        const currentDate = new Date();
+        if (linkExpiryDate < currentDate) {
+          throw new Error(
+            `Invite link has expired, please contact us to resolve this issue.`,
+          );
+        }
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to verify waitlisted camper. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
+
+    let camp: Camp | null;
     try {
       camp = await MgCamp.findById(campId)
         .populate({
@@ -136,6 +177,20 @@ class CampService implements ICampService {
     let campPhotoUrl = "";
     if (camp.fileName) {
       campPhotoUrl = await this.storageService.getFile(camp.fileName);
+    }
+
+    if (waitlistedCamperId) {
+      camp.campSessions = (camp.campSessions as CampSession[]).filter(
+        (campSession) =>
+          campSession.id === campSessionId &&
+          campSession.capacity > campSession.campers.length,
+      );
+
+      if (camp.campSessions.length === 0) {
+        throw new Error(
+          `No camp session with space matches with session ${campSessionId}`,
+        );
+      }
     }
 
     return {
