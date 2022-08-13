@@ -883,6 +883,8 @@ class CampService implements ICampService {
         description: camp.description,
         dropoffProductId: stripeDropoffProduct.id,
         earlyDropoff: camp.earlyDropoff,
+        dropoffFee: camp.dropoffFee,
+        pickUpFee: camp.pickUpFee,
         endTime: camp.endTime,
         latePickup: camp.latePickup,
         location: camp.location,

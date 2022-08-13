@@ -10,7 +10,6 @@ import {
 } from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
 import MgCamp from "../../../models/camp.model";
-import MgFees from "../../../models/fees.model";
 import MgFormQuestion from "../../../models/formQuestion.model";
 import FileStorageService from "../fileStorageService";
 import IFileStorageService from "../../interfaces/fileStorageService";
@@ -27,6 +26,8 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 30,
     name: "test camp",
     description: "description",
+    dropoffFee: 7,
+    pickUpFee: 6,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -49,6 +50,8 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 50,
     name: "test camp2",
     description: "description2",
+    dropoffFee: 7,
+    pickUpFee: 8,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -87,7 +90,6 @@ describe("mongo campService", (): void => {
 
   beforeEach(async () => {
     campService = new CampService(fileStorageService);
-    await MgFees.create({ dropoffFee: 5, pickUpFee: 5 });
   });
 
   afterEach(async () => {
@@ -105,6 +107,8 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
+      dropoffFee: 7,
+      pickUpFee: 6,
       location: {
         streetAddress1: "123 Focus on Nature Avenue",
         city: "Guelph",
@@ -159,6 +163,8 @@ describe("mongo campService", (): void => {
     expect(camp?.ageUpper).toEqual(testCamp.ageUpper);
     expect(camp?.name).toEqual(testCamp.name);
     expect(camp?.description).toEqual(testCamp.description);
+    expect(camp?.dropoffFee).toEqual(testCamp.dropoffFee);
+    expect(camp?.pickUpFee).toEqual(testCamp.pickUpFee);
     expect(camp?.location).toEqual(testCamp.location);
     expect(camp?.fee).toEqual(testCamp.fee);
     expect(camp?.startTime).toEqual(testCamp.startTime);
@@ -202,6 +208,8 @@ describe("mongo campService", (): void => {
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
       earlyDropoff: "12:30",
       latePickup: "2:30",
+      dropoffFee: 7,
+      pickUpFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -320,6 +328,8 @@ describe("mongo campService", (): void => {
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
       earlyDropoff: "12:30",
       latePickup: "2:30",
+      dropoffFee: 7,
+      pickUpFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -343,6 +353,8 @@ describe("mongo campService", (): void => {
       campCounsellors: [],
       earlyDropoff: "2:30",
       latePickup: "8:30",
+      dropoffFee: 7,
+      pickUpFee: 6,
       name: "ab",
       description: "ba",
       location: {
@@ -369,6 +381,8 @@ describe("mongo campService", (): void => {
     expect(camp?.ageUpper).toEqual(updatedTestCamp.ageUpper);
     expect(camp?.name).toEqual(updatedTestCamp.name);
     expect(camp?.description).toEqual(updatedTestCamp.description);
+    expect(camp?.dropoffFee).toEqual(updatedTestCamp.dropoffFee);
+    expect(camp?.pickUpFee).toEqual(updatedTestCamp.pickUpFee);
     expect(camp?.location).toEqual(updatedTestCamp.location);
     expect(camp?.fee).toEqual(updatedTestCamp.fee);
     expect(camp?.startTime).toEqual(updatedTestCamp.startTime);
@@ -403,6 +417,8 @@ describe("mongo campService", (): void => {
       campCounsellors: [],
       earlyDropoff: "14:00",
       latePickup: "19:00",
+      dropoffFee: 7,
+      pickUpFee: 6,
       startTime: "15:00",
       endTime: "18:00",
       formQuestions: [
