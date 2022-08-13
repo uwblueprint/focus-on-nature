@@ -77,9 +77,17 @@ class CampService implements ICampService {
             }),
           );
 
-          let campPhotoUrl = "";
+          let campPhotoUrl;
           if (camp.fileName) {
-            campPhotoUrl = await this.storageService.getFile(camp.fileName);
+            try {
+              campPhotoUrl = await this.storageService.getFile(camp.fileName);
+            } catch (error: unknown) {
+              Logger.error(
+                `Failed to get camp photo for camp with id ${
+                  camp.id
+                }. Reason = ${getErrorMessage(error)}`,
+              );
+            }
           }
 
           return {
@@ -174,9 +182,17 @@ class CampService implements ICampService {
       throw error;
     }
 
-    let campPhotoUrl = "";
+    let campPhotoUrl;
     if (camp.fileName) {
-      campPhotoUrl = await this.storageService.getFile(camp.fileName);
+      try {
+        campPhotoUrl = await this.storageService.getFile(camp.fileName);
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to get camp photo for camp with id ${
+            camp.id
+          }. Reason = ${getErrorMessage(error)}`,
+        );
+      }
     }
 
     if (waitlistedCamperId) {
