@@ -22,10 +22,16 @@ interface ICampService {
   /**
    * Get camp with the specified campId
    * @param campId camp's id
+   * @param campSessionId request query "session" for only one camp session shown
+   * @param waitlistedCamperId request query "wId" for waitlisted campers signing up
    * @returns a CampDTO
    * @throws Error if camper retrieval fails
    */
-  getCampById(campId: string): Promise<GetCampDTO>;
+  getCampById(
+    campId: string,
+    campSessionId?: string,
+    waitlistedCamperId?: string,
+  ): Promise<GetCampDTO>;
 
   createCamp(camp: CreateCampDTO): Promise<CampDTO>;
 
