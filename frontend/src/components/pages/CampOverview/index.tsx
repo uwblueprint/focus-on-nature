@@ -61,10 +61,12 @@ const CampOverview = (): JSX.Element => {
 
     const getUsers = async () => {
       let userResponse = await UserAPIClient.getUsers();
-      userResponse = userResponse.filter((user) => {
-        return user.role === "CampCoordinator";
-      });
-      setUsers(userResponse);
+      if (userResponse) {
+        userResponse = userResponse.filter((user) => {
+          return user.role === "CampCoordinator";
+        });
+        setUsers(userResponse);
+      }
     };
     getUsers();
   }, []);
