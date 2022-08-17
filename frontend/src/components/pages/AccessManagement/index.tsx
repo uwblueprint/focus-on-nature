@@ -2,7 +2,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
   Container,
-  Flex,
+  extendTheme,
   HStack,
   IconButton,
   Input,
@@ -11,6 +11,7 @@ import {
   Select,
   Table,
   Tag,
+  TagLabel,
   Tbody,
   Td,
   Text,
@@ -19,6 +20,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import React from "react";
+import StatusLabel from "./StatusLabel";
 
 const AccessManagementPage = (): JSX.Element => {
   const testUsers = [
@@ -102,7 +104,7 @@ const AccessManagementPage = (): JSX.Element => {
     else filteredUsers = users.filter((user) => !user.active);
 
     if (!search) return filteredUsers;
-    return users.filter(
+    return filteredUsers.filter(
       (user) =>
         user.email.toLowerCase().includes(search.toLowerCase()) ||
         user.firstName
@@ -115,50 +117,55 @@ const AccessManagementPage = (): JSX.Element => {
   return (
     <Container
       maxWidth="100vw"
-      px="20"
-      py="20"
-      background="background.grey.100"
+      px="3em"
+      py="3em"
+      background="background.grey.200"
     >
-      <Text mb="40px" textStyle="displayXLarge">
+      <Text mb="35px" textStyle="displayXLarge">
         FON Staff Access Control
       </Text>
-
-      <HStack spacing={12}>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <SearchIcon color="gray.300" />
-          </InputLeftElement>
-          <Input
-            size="md"
-            enterKeyHint="enter"
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name..."
-          />
-        </InputGroup>
-        <HStack>
-          {filterOptions.map((option) => {
-            return (
-              <Tag
-                key={option}
-                size="md"
-                borderRadius="full"
-                variant={selectedFilter === option ? "solid" : "outline"}
-                colorScheme={selectedFilter === option ? "green" : "gray"}
-                px={option === Filter.ALL ? "2em" : "1em"}
-                onClick={() => setSelectedFilter(option)}
-              >
-                {option}
-              </Tag>
-            );
-          })}
+      <Container
+        py="20px"
+        maxWidth="100vw"
+        background="background.grey.300"
+        borderTopRadius="lg"
+      >
+        <HStack spacing={12}>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.300" />
+            </InputLeftElement>
+            <Input
+              size="md"
+              enterKeyHint="enter"
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name..."
+            />
+          </InputGroup>
+          <HStack spacing={3}>
+            {filterOptions.map((option) => {
+              return (
+                <Tag
+                  key={option}
+                  size="md"
+                  borderRadius="full"
+                  variant={selectedFilter === option ? "solid" : "outline"}
+                  colorScheme={selectedFilter === option ? "green" : "gray"}
+                  px={option === Filter.ALL ? "2em" : "1em"}
+                  onClick={() => setSelectedFilter(option)}
+                >
+                  <TagLabel>{option}</TagLabel>
+                </Tag>
+              );
+            })}
+          </HStack>
         </HStack>
-      </HStack>
-
+      </Container>
       <Table
         background="background.white.100"
-        variant="striped"
+        variant="simple"
         colorScheme="blackAlpha"
-        mt="30px"
+        style={{ borderCollapse: "separate" }}
       >
         <Thead>
           <Tr>
@@ -186,16 +193,10 @@ const AccessManagementPage = (): JSX.Element => {
                 </Select>
               </Td>
               <Td>
-                <Tag
-                  size="md"
-                  borderRadius="full"
-                  variant="solid"
-                  colorScheme={user.active ? "green" : "red"}
-                  width="6em"
-                  px="1.5em"
-                >
-                  {user.active ? Filter.ACTIVE : Filter.INACTIVE}
-                </Tag>
+                <StatusLabel
+                  active={user.active}
+                  value={user.active ? Filter.ACTIVE : Filter.INACTIVE}
+                />
               </Td>
               <Td>
                 <IconButton

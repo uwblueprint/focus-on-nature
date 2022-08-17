@@ -67,6 +67,14 @@ const colors = {
       100: "#C9CCCF",
     },
   },
+  label: {
+    green: {
+      100: "#D2FFCE",
+    },
+    red: {
+      100: "#FFD0D0",
+    },
+  },
 };
 
 export default colors;
