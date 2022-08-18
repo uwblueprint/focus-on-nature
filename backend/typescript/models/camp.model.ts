@@ -18,7 +18,13 @@ export interface Camp extends Document {
   fileName?: string;
   formQuestions: (Schema.Types.ObjectId | FormQuestion)[];
   latePickup: string;
-  location: string;
+  location: {
+    streetAddress1: string;
+    streetAddress2: string;
+    city: string;
+    province: string;
+    postalCode: string;
+  };
   name: string;
   startTime: string;
   productId: string;
@@ -96,8 +102,26 @@ const CampSchema: Schema = new Schema({
     type: String,
   },
   location: {
-    type: String,
-    required: true,
+    streetAddress1: {
+      type: String,
+      required: true,
+    },
+    streetAddress2: {
+      type: String,
+      required: false,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
   },
   name: {
     type: String,
