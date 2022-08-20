@@ -52,54 +52,70 @@ class CampService implements ICampService {
         return [];
       }
 
-      return camps.map((camp) => {
-        const formQuestions = (camp.formQuestions as FormQuestion[]).map(
-          (formQuestion: FormQuestion) => {
-            return {
-              id: formQuestion.id,
-              type: formQuestion.type,
-              question: formQuestion.question,
-              required: formQuestion.required,
-              description: formQuestion.description,
-              options: formQuestion.options,
-            };
-          },
-        );
+      return await Promise.all(
+        camps.map(async (camp) => {
+          const formQuestions = (camp.formQuestions as FormQuestion[]).map(
+            (formQuestion: FormQuestion) => {
+              return {
+                id: formQuestion.id,
+                type: formQuestion.type,
+                question: formQuestion.question,
+                required: formQuestion.required,
+                description: formQuestion.description,
+                options: formQuestion.options,
+              };
+            },
+          );
 
-        const campSessions = (camp.campSessions as CampSession[]).map(
-          (campSession) => ({
-            id: campSession.id,
-            capacity: campSession.capacity,
-            dates: campSession.dates.map((date) => date.toString()),
-            registrations: campSession.campers.length,
-            waitlist: campSession.waitlist.length,
-          }),
-        );
+          const campSessions = (camp.campSessions as CampSession[]).map(
+            (campSession) => ({
+              id: campSession.id,
+              capacity: campSession.capacity,
+              dates: campSession.dates.map((date) => date.toString()),
+              registrations: campSession.campers.length,
+              waitlist: campSession.waitlist.length,
+            }),
+          );
 
-        return {
-          id: camp.id,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators.map((coordinator) =>
-            coordinator.toString(),
-          ),
-          campCounsellors: camp.campCounsellors.map((counsellor) =>
-            counsellor.toString(),
-          ),
-          name: camp.name,
-          description: camp.description,
-          earlyDropoff: camp.earlyDropoff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          fee: camp.fee,
-          formQuestions,
-          campSessions,
-          volunteers: camp.volunteers,
-        };
-      });
+          let campPhotoUrl;
+          if (camp.fileName) {
+            try {
+              campPhotoUrl = await this.storageService.getFile(camp.fileName);
+            } catch (error: unknown) {
+              Logger.error(
+                `Failed to get camp photo for camp with id ${
+                  camp.id
+                }. Reason = ${getErrorMessage(error)}`,
+              );
+            }
+          }
+
+          return {
+            id: camp.id,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators.map((coordinator) =>
+              coordinator.toString(),
+            ),
+            campCounsellors: camp.campCounsellors.map((counsellor) =>
+              counsellor.toString(),
+            ),
+            name: camp.name,
+            description: camp.description,
+            earlyDropoff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            fee: camp.fee,
+            formQuestions,
+            campSessions,
+            volunteers: camp.volunteers,
+            campPhotoUrl,
+          };
+        }),
+      );
     } catch (error: unknown) {
       Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -166,6 +182,19 @@ class CampService implements ICampService {
       throw error;
     }
 
+    let campPhotoUrl;
+    if (camp.fileName) {
+      try {
+        campPhotoUrl = await this.storageService.getFile(camp.fileName);
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to get camp photo for camp with id ${
+            camp.id
+          }. Reason = ${getErrorMessage(error)}`,
+        );
+      }
+    }
+
     if (waitlistedCamperId) {
       camp.campSessions = (camp.campSessions as CampSession[]).filter(
         (campSession) =>
@@ -219,6 +248,7 @@ class CampService implements ICampService {
         },
       ),
       volunteers: camp.volunteers,
+      campPhotoUrl,
     };
   }
 
