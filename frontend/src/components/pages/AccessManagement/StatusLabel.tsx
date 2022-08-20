@@ -1,6 +1,6 @@
 import { Container, Text } from "@chakra-ui/react";
 import React from "react";
-import { StatusLabelProps } from "../../../types/AccessManagement";
+import { StatusLabelProps } from "../../../types/AccessManagementTypes";
 
 const StatusLabel = (props: StatusLabelProps) => {
   const { active, value } = props;

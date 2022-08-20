@@ -2,7 +2,6 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
   Container,
-  extendTheme,
   HStack,
   IconButton,
   Input,
@@ -21,60 +20,11 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import StatusLabel from "./StatusLabel";
+import UserAPIClient from "../../../APIClients/UserAPIClient";
+import { UserResponse } from "../../../types/UserTypes";
+import { Role } from "../../../types/AuthTypes";
 
 const AccessManagementPage = (): JSX.Element => {
-  const testUsers = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      email: "test@test.com",
-      role: "Admin",
-      active: true,
-    },
-    {
-      id: 2,
-      firstName: "Jessica",
-      lastName: "Smith",
-      email: "test@test.com",
-      role: "Camp Coordinator",
-      active: true,
-    },
-
-    {
-      id: 3,
-      firstName: "Adam",
-      lastName: "Park",
-      email: "test@test.com",
-      role: "Camp Coordinator",
-      active: true,
-    },
-    {
-      id: 4,
-      firstName: "Lee",
-      lastName: "Doe",
-      email: "test@test.com",
-      role: "Admin",
-      active: false,
-    },
-    {
-      id: 5,
-      firstName: "Jane",
-      lastName: "Doe",
-      email: "test@test.com",
-      role: "Admin",
-      active: true,
-    },
-    {
-      id: 6,
-      firstName: "Jeff",
-      lastName: "Banks",
-      email: "test@test.com",
-      role: "Admin",
-      active: false,
-    },
-  ];
-
   enum Filter {
     ALL = "All",
     ACTIVE = "Active",
@@ -87,14 +37,24 @@ const AccessManagementPage = (): JSX.Element => {
   }
 
   const filterOptions = [Filter.ALL, Filter.ACTIVE, Filter.INACTIVE];
-
   const userRoles = [UserRoles.ADMIN, UserRoles.CAMP_COORDINATOR];
 
-  const [users, setUsers] = React.useState(testUsers);
+  const [users, setUsers] = React.useState([] as UserResponse[]);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
   );
+
+  React.useEffect(() => {
+    const getUsers = async () => {
+      const res = await UserAPIClient.getAllUsers();
+      console.log(res);
+      if (res.length !== undefined) setUsers(res);
+      // else setDataError(true);
+    };
+
+    getUsers();
+  }, []);
 
   const tableData = React.useMemo(() => {
     let filteredUsers;
@@ -117,6 +77,7 @@ const AccessManagementPage = (): JSX.Element => {
   return (
     <Container
       maxWidth="100vw"
+      minHeight="100vh"
       px="3em"
       py="3em"
       background="background.grey.200"
@@ -183,16 +144,13 @@ const AccessManagementPage = (): JSX.Element => {
               <Td>{user.email}</Td>
               <Td>
                 <Select value={user.role}>
-                  {userRoles.map((role) => {
-                    return (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    );
-                  })}
+                  <option value={Role.ADMIN}>{UserRoles.ADMIN}</option>
+                  <option value={Role.CAMP_COORDINATOR}>
+                    {UserRoles.CAMP_COORDINATOR}
+                  </option>
                 </Select>
               </Td>
-              <Td>
+              <Td pl="0px">
                 <StatusLabel
                   active={user.active}
                   value={user.active ? Filter.ACTIVE : Filter.INACTIVE}
