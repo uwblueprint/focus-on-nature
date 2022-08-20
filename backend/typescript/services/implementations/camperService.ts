@@ -27,7 +27,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCampers(campers: CreateCampersDTO): Promise<Array<CamperDTO>> {
+  async createCampers(
+    campers: CreateCampersDTO,
+    waitlistedCamperId?: string,
+  ): Promise<Array<CamperDTO>> {
+    if (waitlistedCamperId && campers.length !== 1) {
+      throw new Error(
+        "either no camper, or too many campers provided with wId",
+      );
+    }
+
     let newCamperDTOs: Array<CamperDTO> = [];
     let newCampers: Array<Camper> = [];
     let existingCampSession: CampSession | null;
@@ -136,6 +145,26 @@ class CamperService implements ICamperService {
         optionalClauses: newCamper.optionalClauses,
       };
     });
+
+    if (waitlistedCamperId) {
+      try {
+        await MgWaitlistedCamper.findByIdAndUpdate(
+          waitlistedCamperId,
+          {
+            status: "Registered",
+          },
+          { runValidators: true },
+        );
+      } catch (error) {
+        Logger.error(
+          `Registered campers but was unable to update waitlisted camper status with id: ${waitlistedCamperId}. Error: ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
+
     return newCamperDTOs;
   }
 
