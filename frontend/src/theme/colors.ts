@@ -53,6 +53,7 @@ const colors = {
     },
     grey: {
       100: "#F4F6FC",
+      200: "#FAFAFA",
     },
     // TODO: to fill in
   },
@@ -68,8 +69,8 @@ const colors = {
   waitlistCards: {
     complete: "#C1FFBF",
     expired: "#FFAAAA",
-    sent: "#FFE49E"
-  }
+    sent: "#FFE49E",
+  },
 };
 
 export default colors;

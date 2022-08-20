@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import WaitlistedCampersTable from "./camps/WaitlistedCampersTable";
+import WaitlistedCampersTable from "./CampOverview/WaitlistedCampersTable";
 
 const waitlistedCampers = [
   {
@@ -10,6 +10,7 @@ const waitlistedCampers = [
     contactEmail: "mom@domain.com",
     contactNumber: "000-123-4567",
     status: "RegistrationFormSent",
+    linkExpiry: "2022-07-28T19:12:31.783+00:00",
   },
   {
     firstName: "Bob",
@@ -19,6 +20,7 @@ const waitlistedCampers = [
     contactEmail: "bobmom@domain.com",
     contactNumber: "000-123-4568",
     status: "NotRegistered",
+    linkExpiry: "2022-08-19T19:12:31.783+00:00",
   },
   {
     firstName: "Joe",
@@ -37,6 +39,7 @@ const waitlistedCampers = [
     contactEmail: "danmom@domain.com",
     contactNumber: "000-123-4560",
     status: "RegistrationFormSent",
+    linkExpiry: "2022-08-28T19:12:31.783+00:00",
   },
   {
     firstName: "Jane",
@@ -46,6 +49,7 @@ const waitlistedCampers = [
     contactEmail: "janemom@domain.com",
     contactNumber: "000-123-4561",
     status: "RegistrationFormSent",
+    linkExpiry: "2022-08-28T19:12:31.783+00:00",
   },
   {
     firstName: "Ella",
@@ -55,6 +59,7 @@ const waitlistedCampers = [
     contactEmail: "ellamom@domain.com",
     contactNumber: "000-123-4562",
     status: "RegistrationFormSent",
+    linkExpiry: "2022-08-28T19:12:31.783+00:00",
   },
   {
     firstName: "Sarah",
@@ -64,8 +69,11 @@ const waitlistedCampers = [
     contactEmail: "sarahmom@domain.com",
     contactNumber: "000-123-4565",
     status: "RegistrationFormSent",
+    linkExpiry: "2022-08-28T19:12:31.783+00:00",
   },
 ];
+
+const emptything = null;
 
 const CampsPage = (): React.ReactElement => {
   return (
