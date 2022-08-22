@@ -36,7 +36,8 @@ const CampOverview = (): JSX.Element => {
   useEffect(() => {
     const getCampInfo = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
-      setCamp(campResponse);
+      if (campResponse) setCamp(campResponse);
+      else // display an error or just let it remain null
     };
     getCampInfo();
   }, []);
