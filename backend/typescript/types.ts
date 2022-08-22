@@ -138,8 +138,7 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
     CampSessionDTO,
     "id" | "camp" | "campers" | "waitlist"
   > & { registrations: number; waitlist: number })[];
-  filePath?: string;
-  fileContentType?: string;
+  campPhotoUrl?: string;
 };
 
 export type CreateCampDTO = Omit<
