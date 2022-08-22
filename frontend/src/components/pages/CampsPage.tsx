@@ -6,7 +6,7 @@ const CampsPage = (): React.ReactElement => {
   // sample data
   const camp = {
     ageLower: 9,
-    ageUpeer: 12,
+    ageUpper: 12,
     startTime: "12:30",
     endTime: "3:00",
     campSessions: [

@@ -91,7 +91,7 @@ const CampSessionInfoHeader = ({
             fontWeight={textStyles.bodyBold.fontWeight}
             fontSize={textStyles.buttonRegular.fontSize}
           >
-            &nbsp;{camp.ageLower} - {camp.ageUpeer}
+            &nbsp;{camp.ageLower} - {camp.ageUpper}
           </Text>
         </Flex>
 
