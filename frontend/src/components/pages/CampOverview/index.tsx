@@ -23,6 +23,12 @@ import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import SelectComponent from "./SelectComponent";
 
+// TODO: update the statuses
+enum Status {
+  PUBLISHED = "Published",
+  DRAFT = "Draft",
+}
+
 export type CampOverviewProps = {
   campId: string;
 };
@@ -31,26 +37,6 @@ const CampOverview = (): JSX.Element => {
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
-
-  // TODO: update the statuses
-  enum Status {
-    PUBLISHED = "Published",
-    DRAFT = "Draft",
-  }
-
-  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
-
-  const formatUsers = (): UserOption[] => {
-    const formattedUsers = users.map((user) => {
-      return {
-        value: user.id,
-        label: `${user.firstName} ${user.lastName}`,
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-      };
-    });
-    return formattedUsers;
-  };
 
   useEffect(() => {
     const getCampInfo = async () => {
@@ -70,6 +56,20 @@ const CampOverview = (): JSX.Element => {
     };
     getUsers();
   }, []);
+
+  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
+
+  const formatUsers = (): UserOption[] => {
+    const formattedUsers = users.map((user) => {
+      return {
+        value: user.id,
+        label: `${user.firstName} ${user.lastName}`,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+      };
+    });
+    return formattedUsers;
+  };
 
   // TODO: need to update this function after the camp API changes
   // somehow get the type for each...and do a conditional calling to update

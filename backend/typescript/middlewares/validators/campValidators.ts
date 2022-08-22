@@ -129,10 +129,8 @@ export const createCampDtoValidator = async (
   if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
   }
-  if (body.volunteers && !validateArray(body.volunteers, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("volunteers", "string", true));
+  if (body.volunteers && !validatePrimitive(body.volunteers, "string")) {
+    return res.status(400).send(getApiValidationError("volunteers", "string"));
   }
   if (
     body.formQuestions &&
@@ -291,10 +289,8 @@ export const updateCampDtoValidator = async (
   if (body.fee && !validatePrimitive(body.fee, "integer")) {
     return res.status(400).send(getApiValidationError("fee", "integer"));
   }
-  if (body.volunteers && !validateArray(body.volunteers, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("volunteers", "string", true));
+  if (body.volunteers && !validatePrimitive(body.volunteers, "string")) {
+    return res.status(400).send(getApiValidationError("volunteers", "string"));
   }
   if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
