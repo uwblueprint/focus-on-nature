@@ -33,6 +33,10 @@ const CampSessionInfoHeader = ({
       );
   };
 
+  const campSession = camp.campSessions[currentCampSession];
+  const campSessionStartDate = campSession.dates[0];
+  const campSessionEndDate = campSession.dates[0];
+
   return (
     <Container maxWidth="100vw">
       <Flex direction="row" alignItems="center">
@@ -62,22 +66,16 @@ const CampSessionInfoHeader = ({
         fontWeight={textStyles.displaySmallRegular.fontWeight}
         fontSize={textStyles.displaySmallRegular.fontSize}
       >
-        {camp.campSessions[currentCampSession].dates[0].toLocaleDateString(
-          "en-us",
-          {
-            month: "short",
-            day: "numeric",
-          },
-        )}{" "}
+        {campSessionStartDate.toLocaleDateString("en-us", {
+          month: "short",
+          day: "numeric",
+        })}{" "}
         -{" "}
-        {camp.campSessions[currentCampSession].dates[1].toLocaleDateString(
-          "en-us",
-          {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          },
-        )}{" "}
+        {campSessionEndDate.toLocaleDateString("en-us", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })}{" "}
         | {camp.startTime} - {camp.endTime}
       </Text>
       <Box marginTop="16px">
@@ -107,7 +105,7 @@ const CampSessionInfoHeader = ({
             fontWeight={textStyles.bodyBold.fontWeight}
             fontSize={textStyles.buttonRegular.fontSize}
           >
-            &nbsp;{camp.campSessions[currentCampSession].capacity} campers
+            &nbsp;{campSession.capacity} campers
           </Text>
         </Flex>
       </Box>
