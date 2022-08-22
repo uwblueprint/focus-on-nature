@@ -53,6 +53,7 @@ const colors = {
     },
     grey: {
       100: "#F4F6FC",
+      200: "#FAFAFA",
     },
     // TODO: to fill in
   },
@@ -64,6 +65,11 @@ const colors = {
     secondary: {
       100: "#C9CCCF",
     },
+  },
+  camperDetailsCards: {
+    pickup: "#F1E2FF",
+    hasAllergy: "#FFD4CE",
+    additionalNeeds: "#FEFCDA",
   },
 };
 
