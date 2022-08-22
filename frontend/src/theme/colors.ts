@@ -53,6 +53,8 @@ const colors = {
     },
     grey: {
       100: "#F4F6FC",
+      200: "#F4F4F4",
+      300: "#FAFAFA",
     },
     // TODO: to fill in
   },
@@ -63,6 +65,14 @@ const colors = {
     },
     secondary: {
       100: "#C9CCCF",
+    },
+  },
+  label: {
+    green: {
+      100: "#D2FFCE",
+    },
+    red: {
+      100: "#FFD0D0",
     },
   },
 };

@@ -12,7 +12,6 @@ import NotFound from "./components/pages/NotFound";
 import UpdatePage from "./components/pages/UpdatePage";
 import CampsPage from "./components/pages/CampsPage";
 import GlobalFormsPage from "./components/pages/GlobalFormsPage";
-import AccessControlPage from "./components/pages/AccessControlPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -28,6 +27,7 @@ import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
 import CampOverview from "./components/pages/CampOverview";
+import AccessControlPage from "./components/pages/AccessControl";
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
 
@@ -75,11 +75,6 @@ const App = (): React.ReactElement => {
                 />
                 <PrivateRoute
                   exact
-                  path={Routes.ACCESS_CONTROL_PAGE}
-                  component={AccessControlPage}
-                />
-                <PrivateRoute
-                  exact
                   path={Routes.CREATE_ENTITY_PAGE}
                   component={CreatePage}
                 />
@@ -111,6 +106,11 @@ const App = (): React.ReactElement => {
                     "62c098e7b4a7a433a7622ff4",
                   )}
                   component={CampOverview}
+                />
+                <PrivateRoute
+                  exact
+                  path={Routes.ACCESS_CONTROL_PAGE}
+                  component={AccessControlPage}
                 />
                 <Route exact path="*" component={NotFound} />
               </Switch>
