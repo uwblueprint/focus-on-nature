@@ -1,4 +1,4 @@
-export interface StatusLabelProps {
+export interface UserStatusLabelProps {
   active: boolean;
   value: string;
 }

@@ -26,7 +26,7 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
-import AccessManagementPage from "./components/pages/AccessManagement";
+import AccessControlPage from "./components/pages/AccessControl";
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
 
@@ -99,8 +99,8 @@ const App = (): React.ReactElement => {
                 />
                 <PrivateRoute
                   exact
-                  path={Routes.ACCESS_MANAGEMENT_PAGE}
-                  component={AccessManagementPage}
+                  path={Routes.ACCESS_CONTROL_PAGE}
+                  component={AccessControlPage}
                 />
                 <Route exact path="*" component={NotFound} />
               </Switch>

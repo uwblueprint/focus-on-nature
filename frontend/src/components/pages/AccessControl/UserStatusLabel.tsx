@@ -1,8 +1,8 @@
-import { Container, Text } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 import React from "react";
-import { StatusLabelProps } from "../../../types/AccessManagementTypes";
+import { UserStatusLabelProps } from "../../../types/AccessManagementTypes";
 
-const StatusLabel = (props: StatusLabelProps) => {
+const UserStatusLabel = (props: UserStatusLabelProps) => {
   const { active, value } = props;
   return (
     <Container
@@ -18,4 +18,4 @@ const StatusLabel = (props: StatusLabelProps) => {
   );
 };
 
-export default StatusLabel;
+export default UserStatusLabel;

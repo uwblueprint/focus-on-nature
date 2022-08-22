@@ -19,12 +19,12 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import React from "react";
-import StatusLabel from "./StatusLabel";
+import UserStatusLabel from "./UserStatusLabel";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import { UserResponse } from "../../../types/UserTypes";
 import { Role } from "../../../types/AuthTypes";
 
-const AccessManagementPage = (): JSX.Element => {
+const AccessControlPage = (): JSX.Element => {
   enum Filter {
     ALL = "All",
     ACTIVE = "Active",
@@ -48,9 +48,7 @@ const AccessManagementPage = (): JSX.Element => {
   React.useEffect(() => {
     const getUsers = async () => {
       const res = await UserAPIClient.getAllUsers();
-      console.log(res);
       if (res.length !== undefined) setUsers(res);
-      // else setDataError(true);
     };
 
     getUsers();
@@ -100,7 +98,7 @@ const AccessManagementPage = (): JSX.Element => {
               size="md"
               enterKeyHint="enter"
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name..."
+              placeholder="Search by name or email"
             />
           </InputGroup>
           <HStack spacing={3}>
@@ -151,7 +149,7 @@ const AccessManagementPage = (): JSX.Element => {
                 </Select>
               </Td>
               <Td pl="0px">
-                <StatusLabel
+                <UserStatusLabel
                   active={user.active}
                   value={user.active ? Filter.ACTIVE : Filter.INACTIVE}
                 />
@@ -171,4 +169,4 @@ const AccessManagementPage = (): JSX.Element => {
   );
 };
 
-export default AccessManagementPage;
+export default AccessControlPage;
