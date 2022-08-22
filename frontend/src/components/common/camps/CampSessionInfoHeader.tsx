@@ -34,8 +34,18 @@ const CampSessionInfoHeader = ({
   };
 
   const campSession = camp.campSessions[currentCampSession];
-  const campSessionStartDate = campSession.dates[0];
-  const campSessionEndDate = campSession.dates[1];
+  const campSessionStartDate = campSession.dates[0].toLocaleDateString(
+    "en-us",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    },
+  );
+  const campSessionEndDate = campSession.dates[1].toLocaleDateString("en-us", {
+    month: "short",
+    day: "numeric",
+  });
 
   return (
     <Container maxWidth="100vw">
@@ -66,17 +76,8 @@ const CampSessionInfoHeader = ({
         fontWeight={textStyles.displaySmallRegular.fontWeight}
         fontSize={textStyles.displaySmallRegular.fontSize}
       >
-        {campSessionStartDate.toLocaleDateString("en-us", {
-          month: "short",
-          day: "numeric",
-        })}{" "}
-        -{" "}
-        {campSessionEndDate.toLocaleDateString("en-us", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })}{" "}
-        | {camp.startTime} - {camp.endTime}
+        {campSessionStartDate} - {campSessionEndDate} | {camp.startTime} -{" "}
+        {camp.endTime}
       </Text>
       <Box marginTop="16px">
         <Flex>
