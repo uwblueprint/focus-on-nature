@@ -35,7 +35,7 @@ const CampSessionInfoHeader = ({
 
   const campSession = camp.campSessions[currentCampSession];
   const campSessionStartDate = campSession.dates[0];
-  const campSessionEndDate = campSession.dates[0];
+  const campSessionEndDate = campSession.dates[1];
 
   return (
     <Container maxWidth="100vw">
