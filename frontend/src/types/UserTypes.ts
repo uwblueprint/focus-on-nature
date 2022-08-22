@@ -1,6 +1,6 @@
 import { Role } from "./AuthTypes";
 
-export type User = {
+export type UserResponse = {
   id: string;
   firstName: string;
   lastName: string;

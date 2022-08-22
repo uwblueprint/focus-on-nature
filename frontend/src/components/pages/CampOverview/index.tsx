@@ -18,7 +18,7 @@ import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 import { Camp, CampCoordinator, UserOption } from "../../../types/CampsTypes";
-import { User } from "../../../types/UserTypes";
+import { UserResponse } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import SelectComponent from "./SelectComponent";
@@ -28,7 +28,7 @@ export type CampOverviewProps = {
 };
 
 const CampOverview = (): JSX.Element => {
-  const [users, setUsers] = React.useState([] as User[]);
+  const [users, setUsers] = React.useState([] as UserResponse[]);
   const [camp, setCamp] = useState<Camp>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
 
@@ -60,7 +60,7 @@ const CampOverview = (): JSX.Element => {
     getCampInfo();
 
     const getUsers = async () => {
-      let userResponse = await UserAPIClient.getUsers();
+      let userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
         userResponse = userResponse.filter((user) => {
           return user.role === "CampCoordinator";
