@@ -9,7 +9,7 @@ const getCampById = async (id: string): Promise<Camp> => {
     });
     return data;
   } catch (error) {
-    return error as Camp;
+    return error as CampResponse;
   }
 };
 
