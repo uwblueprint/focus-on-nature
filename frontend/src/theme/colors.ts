@@ -54,6 +54,7 @@ const colors = {
     grey: {
       100: "#F4F6FC",
       200: "#FAFAFA",
+      300: "#D8DBDF"
     },
     // TODO: to fill in
   },

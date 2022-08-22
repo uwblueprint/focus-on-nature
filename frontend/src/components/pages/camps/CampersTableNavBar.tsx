@@ -35,6 +35,8 @@ export const CampersTableNavBar = () =>
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
+    const campCapacity = 20;
+
     const b: Camper[] = [
       {
         firstName: "Joe",
@@ -144,7 +146,7 @@ export const CampersTableNavBar = () =>
           </TabList>
           <TabPanels width="100%" marginTop="16px">
             <TabPanel padding="0">
-              <CampersTable campers={b} />
+              <CampersTable campers={b} campCapacity={campCapacity} />
             </TabPanel>
             <TabPanel>hi2</TabPanel>
             <TabPanel>hi3</TabPanel>
