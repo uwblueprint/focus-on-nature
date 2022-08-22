@@ -1,4 +1,4 @@
-export type Camp = {
+export type CampResponse = {
   id: string;
   active: boolean;
   ageLower: number;
