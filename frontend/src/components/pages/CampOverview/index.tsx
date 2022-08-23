@@ -37,7 +37,7 @@ const CampOverview = (): JSX.Element => {
     const getCampInfo = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
       if (campResponse) setCamp(campResponse);
-    }
+    };
     getCampInfo();
   }, []);
 

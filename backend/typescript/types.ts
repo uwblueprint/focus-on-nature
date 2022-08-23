@@ -109,7 +109,13 @@ export type CampDTO = {
   earlyDropoff: string;
   endTime: string;
   latePickup: string;
-  location: string;
+  location: {
+    streetAddress1: string;
+    streetAddress2?: string;
+    city: string;
+    province: string;
+    postalCode: string;
+  };
   startTime: string;
   fee: number;
   formQuestions: string[];
@@ -124,6 +130,7 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
     CampSessionDTO,
     "id" | "camp" | "campers" | "waitlist"
   > & { registrations: number; waitlist: number })[];
+  campPhotoUrl?: string;
 };
 
 export type CreateCampDTO = Omit<
@@ -139,7 +146,10 @@ export type CreateCampDTO = Omit<
 export type UpdateCampDTO = Omit<
   CampDTO,
   "id" | "formQuestions" | "campSessions"
->;
+> & {
+  filePath?: string;
+  fileContentType?: string;
+};
 
 export type CreateCampSessionsDTO = Array<
   Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">

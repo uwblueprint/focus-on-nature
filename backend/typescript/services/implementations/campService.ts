@@ -22,6 +22,9 @@ import MgCamp, { Camp } from "../../models/camp.model";
 import MgCampSession, { CampSession } from "../../models/campSession.model";
 import MgFormQuestion, { FormQuestion } from "../../models/formQuestion.model";
 import MgCamper, { Camper } from "../../models/camper.model";
+import MgWaitlistedCamper, {
+  WaitlistedCamper,
+} from "../../models/waitlistedCamper.model";
 
 const Logger = logger(__filename);
 
@@ -49,63 +52,117 @@ class CampService implements ICampService {
         return [];
       }
 
-      return camps.map((camp) => {
-        const formQuestions = (camp.formQuestions as FormQuestion[]).map(
-          (formQuestion: FormQuestion) => {
-            return {
-              id: formQuestion.id,
-              type: formQuestion.type,
-              question: formQuestion.question,
-              required: formQuestion.required,
-              description: formQuestion.description,
-              options: formQuestion.options,
-            };
-          },
-        );
+      return await Promise.all(
+        camps.map(async (camp) => {
+          const formQuestions = (camp.formQuestions as FormQuestion[]).map(
+            (formQuestion: FormQuestion) => {
+              return {
+                id: formQuestion.id,
+                type: formQuestion.type,
+                question: formQuestion.question,
+                required: formQuestion.required,
+                description: formQuestion.description,
+                options: formQuestion.options,
+              };
+            },
+          );
 
-        const campSessions = (camp.campSessions as CampSession[]).map(
-          (campSession) => ({
-            id: campSession.id,
-            capacity: campSession.capacity,
-            dates: campSession.dates.map((date) => date.toString()),
-            registrations: campSession.campers.length,
-            waitlist: campSession.waitlist.length,
-          }),
-        );
+          const campSessions = (camp.campSessions as CampSession[]).map(
+            (campSession) => ({
+              id: campSession.id,
+              capacity: campSession.capacity,
+              dates: campSession.dates.map((date) => date.toString()),
+              registrations: campSession.campers.length,
+              waitlist: campSession.waitlist.length,
+            }),
+          );
 
-        return {
-          id: camp.id,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators.map((coordinator) =>
-            coordinator.toString(),
-          ),
-          campCounsellors: camp.campCounsellors.map((counsellor) =>
-            counsellor.toString(),
-          ),
-          name: camp.name,
-          description: camp.description,
-          earlyDropoff: camp.earlyDropoff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          fee: camp.fee,
-          formQuestions,
-          campSessions,
-          volunteers: camp.volunteers,
-        };
-      });
+          let campPhotoUrl;
+          if (camp.fileName) {
+            try {
+              campPhotoUrl = await this.storageService.getFile(camp.fileName);
+            } catch (error: unknown) {
+              Logger.error(
+                `Failed to get camp photo for camp with id ${
+                  camp.id
+                }. Reason = ${getErrorMessage(error)}`,
+              );
+            }
+          }
+
+          return {
+            id: camp.id,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators.map((coordinator) =>
+              coordinator.toString(),
+            ),
+            campCounsellors: camp.campCounsellors.map((counsellor) =>
+              counsellor.toString(),
+            ),
+            name: camp.name,
+            description: camp.description,
+            earlyDropoff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            fee: camp.fee,
+            formQuestions,
+            campSessions,
+            volunteers: camp.volunteers,
+            campPhotoUrl,
+          };
+        }),
+      );
     } catch (error: unknown) {
       Logger.error(`Failed to get camps. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
-  async getCampById(campId: string): Promise<GetCampDTO> {
-    let camp: Camp | null;
+  async getCampById(
+    campId: string,
+    campSessionId?: string,
+    waitlistedCamperId?: string,
+  ): Promise<GetCampDTO> {
+    if (waitlistedCamperId && campSessionId) {
+      try {
+        const waitlistedCamper: WaitlistedCamper | null = await MgWaitlistedCamper.findById(
+          waitlistedCamperId,
+        );
 
+        if (!waitlistedCamper || !waitlistedCamper?.linkExpiry) {
+          throw new Error(
+            `Waitlisted Camper with Id ${waitlistedCamperId} does not exist or does not have an invite link.`,
+          );
+        }
+
+        if (campSessionId !== waitlistedCamper.campSession.toString()) {
+          throw new Error(
+            `Given waitlisted camper is not on the waitlist for given camp session.`,
+          );
+        }
+
+        const linkExpiryDate = new Date(waitlistedCamper.linkExpiry);
+        const currentDate = new Date();
+        if (linkExpiryDate < currentDate) {
+          throw new Error(
+            `Invite link has expired, please contact us to resolve this issue.`,
+          );
+        }
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to verify waitlisted camper. Reason = ${getErrorMessage(
+            error,
+          )}`,
+        );
+        throw error;
+      }
+    }
+
+    let camp: Camp | null;
     try {
       camp = await MgCamp.findById(campId)
         .populate({
@@ -123,6 +180,33 @@ class CampService implements ICampService {
     } catch (error: unknown) {
       Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
       throw error;
+    }
+
+    let campPhotoUrl;
+    if (camp.fileName) {
+      try {
+        campPhotoUrl = await this.storageService.getFile(camp.fileName);
+      } catch (error: unknown) {
+        Logger.error(
+          `Failed to get camp photo for camp with id ${
+            camp.id
+          }. Reason = ${getErrorMessage(error)}`,
+        );
+      }
+    }
+
+    if (waitlistedCamperId) {
+      camp.campSessions = (camp.campSessions as CampSession[]).filter(
+        (campSession) =>
+          campSession.id === campSessionId &&
+          campSession.capacity > campSession.campers.length,
+      );
+
+      if (camp.campSessions.length === 0) {
+        throw new Error(
+          `No camp session with space matches with session ${campSessionId}`,
+        );
+      }
     }
 
     return {
@@ -164,6 +248,7 @@ class CampService implements ICampService {
         },
       ),
       volunteers: camp.volunteers,
+      campPhotoUrl,
     };
   }
 
@@ -178,6 +263,23 @@ class CampService implements ICampService {
 
       if (oldCamp.active && camp.fee) {
         throw new Error(`Error - cannot update fee of active camp`);
+      }
+
+      const fileName = oldCamp.fileName ?? uuidv4();
+      if (camp.filePath && !oldCamp.fileName) {
+        await this.storageService.createFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (camp.filePath && oldCamp.fileName) {
+        await this.storageService.updateFile(
+          fileName,
+          camp.filePath,
+          camp.fileContentType,
+        );
+      } else if (!camp.filePath && oldCamp.fileName) {
+        await this.storageService.deleteFile(oldCamp.fileName);
       }
 
       await MgCamp.findByIdAndUpdate(campId, {
@@ -196,6 +298,7 @@ class CampService implements ICampService {
           endTime: camp.endTime,
           volunteers: camp.volunteers,
           fee: camp.fee,
+          fileName: camp.filePath ? fileName : null,
         },
       });
     } catch (error: unknown) {
@@ -208,13 +311,13 @@ class CampService implements ICampService {
       active: camp.active,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
-      campCoordinators: camp.campCoordinators.map((coordinator) =>
+      campCoordinators: camp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
-      campCounsellors: camp.campCounsellors.map((counsellor) =>
+      campCounsellors: camp.campCounsellors?.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: oldCamp.campSessions.map((session) => session.toString()),
+      campSessions: oldCamp.campSessions?.map((session) => session.toString()),
       name: camp.name,
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
@@ -223,7 +326,7 @@ class CampService implements ICampService {
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
-      formQuestions: oldCamp.formQuestions.map((formQuestion) =>
+      formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),
       volunteers: camp.volunteers,
@@ -597,13 +700,6 @@ class CampService implements ICampService {
         // rollback incomplete camp creation
 
         try {
-          newCamp.formQuestions.forEach((formQuestionID) =>
-            MgFormQuestion.findByIdAndDelete(formQuestionID),
-          );
-          newCamp.campSessions.forEach((campSessionID) =>
-            MgCampSession.findByIdAndDelete(campSessionID),
-          );
-
           MgCamp.findByIdAndDelete(newCamp.id);
         } catch (rollbackError: unknown) {
           Logger.error(
