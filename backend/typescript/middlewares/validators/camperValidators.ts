@@ -107,6 +107,13 @@ export const createCampersDtoValidator = async (
           .status(400)
           .send(getApiValidationError("contact phoneNumber", "string"));
       }
+      if (!validatePrimitive(contact.relationshipToCamper, "string")) {
+        return res
+          .status(400)
+          .send(
+            getApiValidationError("contact relationshipToCamper", "string"),
+          );
+      }
     }
     if (
       camper.formResponses &&
@@ -270,6 +277,13 @@ export const updateCamperDtoValidator = async (
         return res
           .status(400)
           .send(getApiValidationError("contact phoneNumber", "string"));
+      }
+      if (!validatePrimitive(contact.relationshipToCamper, "string")) {
+        return res
+          .status(400)
+          .send(
+            getApiValidationError("contact relationshipToCamper", "string"),
+          );
       }
     }
   }

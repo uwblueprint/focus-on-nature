@@ -44,6 +44,7 @@ export type CamperDTO = {
     lastName: string;
     email: string;
     phoneNumber: string;
+    relationshipToCamper: string;
   }[];
   registrationDate: string;
   hasPaid: boolean;
