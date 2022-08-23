@@ -70,7 +70,7 @@ const TableOverviewIcons = ({
         alignContent="center"
         background="background.white.100"
         border="1px"
-        borderColor="background.grey.300"
+        borderColor="background.grey.400"
         px="3"
         py="1"
         borderRadius="20"
@@ -86,7 +86,7 @@ const TableOverviewIcons = ({
           alignContent="center"
           background="background.white.100"
           border="1px"
-          borderColor="background.grey.300"
+          borderColor="background.grey.400"
           px="3"
           py="1"
           borderRadius="20"
@@ -105,7 +105,7 @@ const TableOverviewIcons = ({
           alignContent="center"
           background="background.white.100"
           border="1px"
-          borderColor="background.grey.300"
+          borderColor="background.grey.400"
           px="3"
           py="1"
           borderRadius="20"
@@ -124,7 +124,7 @@ const TableOverviewIcons = ({
           alignContent="center"
           background="background.white.100"
           border="1px"
-          borderColor="background.grey.300"
+          borderColor="background.grey.400"
           px="3"
           py="1"
           borderRadius="20"
@@ -138,7 +138,7 @@ const TableOverviewIcons = ({
           alignContent="center"
           background="background.white.100"
           border="1px"
-          borderColor="background.grey.300"
+          borderColor="background.grey.400"
           px="3"
           py="1"
           borderRadius="20"
@@ -203,7 +203,7 @@ const CamperDetailsCard = ({ camper }: { camper: Camper }) => {
   );
 };
 
-export const CampersTable = ({
+const CampersTable = ({
   campers,
   campCapacity,
 }: {

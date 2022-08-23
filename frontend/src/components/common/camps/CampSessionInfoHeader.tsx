@@ -48,7 +48,7 @@ const CampSessionInfoHeader = ({
   });
 
   return (
-    <Container maxWidth="100vw">
+    <Container maxWidth="90vw">
       <Flex direction="row" alignItems="center">
         <Text
           fontWeight={textStyles.displayXLarge.fontWeight}

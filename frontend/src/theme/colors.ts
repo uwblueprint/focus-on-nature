@@ -56,7 +56,6 @@ const colors = {
       200: "#FAFAFA",
       300: "#F4F4F4",
       400: "#D8DBDF",
-
     },
     // TODO: to fill in
   },
@@ -84,6 +83,6 @@ const colors = {
       100: "#FFD0D0",
     },
   },
-}
+};
 
 export default colors;

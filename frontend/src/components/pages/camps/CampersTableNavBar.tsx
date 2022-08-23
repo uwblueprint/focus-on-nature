@@ -23,9 +23,9 @@ import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
 import React, { useState, useEffect } from "react";
 import { Camper } from "../../../types/CamperTypes";
-import { CampersTable } from "./CampersTable";
+import CampersTable from "./CampersTable";
 
-export const CampersTableNavBar = () =>
+const CampersTableNavBar = () =>
   // inputCampers: Camper[]
   {
     enum TabType {
