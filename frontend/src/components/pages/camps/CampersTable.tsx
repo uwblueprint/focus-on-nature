@@ -9,7 +9,6 @@ import {
   Tbody,
   Tr,
   Td,
-  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -20,22 +19,10 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPerson,
-  faEnvelopesBulk,
-  faHandDots,
-  faHandshakeAngle,
-} from "@fortawesome/free-solid-svg-icons";
-
-import icon_pickup from "../../../assets/icon_custom_sunrise.svg";
-import icon_sunrise from "../../../assets/icon_sunrise.svg";
-import icon_sunset from "../../../assets/icon_sunset.svg";
-
-import textStyles from "../../../theme/textStyles";
-
 import { Camper } from "../../../types/CamperTypes";
+
+import CampersTableOverviewIconGroup from "./CampersTableOverviewIconGroup";
+import { CamperDetailsBadgeGroup } from "./CamperDetailsBadges";
 
 const ExportButton = () => {
   return (
@@ -52,186 +39,6 @@ const ExportButton = () => {
     >
       Export as .csv
     </Button>
-  );
-};
-
-const TableOverviewIcon = ({
-  customIcon,
-  icon,
-  description,
-  color,
-}: {
-  customIcon: boolean;
-  icon: any;
-  description: string;
-  color: string;
-}) => {
-  return (
-    <HStack
-      alignContent="center"
-      background="background.white.100"
-      border="1px"
-      borderColor="background.grey.400"
-      px="3"
-      py="1"
-      borderRadius="20"
-      color={color}
-    >
-      {customIcon ? (
-        <Image src={icon} alt="dropoff icon" display="inline" maxWidth="22px" />
-      ) : (
-        <FontAwesomeIcon icon={icon} />
-      )}
-      <Text fontWeight="bold">{description}</Text>
-    </HStack>
-  );
-};
-
-const TableOverviewIconGroup = ({
-  campers,
-  campCapacity,
-  camperDetailsCount,
-}: {
-  campers: Camper[];
-  campCapacity: number;
-  camperDetailsCount: { [key: string]: number };
-}) => {
-  return (
-    <HStack>
-      <TableOverviewIcon
-        customIcon={false}
-        icon={faPerson}
-        description={campers.length
-          .toString()
-          .concat("/")
-          .concat(campCapacity.toString())}
-        color="text.critical.100"
-      />
-      {camperDetailsCount.earlyDropoff && (
-        <TableOverviewIcon
-          customIcon={true}
-          icon={icon_sunset}
-          description={camperDetailsCount.earlyDropoff.toString()}
-          color="text.default.100"
-        />
-      )}
-      <HStack
-        alignContent="center"
-        background="background.white.100"
-        border="1px"
-        borderColor="background.grey.400"
-        px="3"
-        py="1"
-        borderRadius="20"
-      >
-        <Image
-          src={icon_sunset}
-          alt="dropoff icon"
-          display="inline"
-          maxWidth="22px"
-        />
-        <Text fontWeight="bold">{camperDetailsCount.earlyDropoff}</Text>
-      </HStack>
-      {camperDetailsCount.latePickup && (
-        <HStack
-          alignContent="center"
-          background="background.white.100"
-          border="1px"
-          borderColor="background.grey.400"
-          px="3"
-          py="1"
-          borderRadius="20"
-        >
-          <Image
-            src={icon_sunrise}
-            alt="pickup icon"
-            display="inline"
-            maxWidth="22px"
-          />
-          <Text fontWeight="bold">{camperDetailsCount.latePickup}</Text>
-        </HStack>
-      )}
-      {camperDetailsCount.allergies && (
-        <HStack
-          alignContent="center"
-          background="background.white.100"
-          border="1px"
-          borderColor="background.grey.400"
-          px="3"
-          py="1"
-          borderRadius="20"
-        >
-          <FontAwesomeIcon icon={faHandDots} />
-          <Text fontWeight="bold">{camperDetailsCount.allergies}</Text>
-        </HStack>
-      )}
-      {camperDetailsCount.specialNeeds && (
-        <HStack
-          alignContent="center"
-          background="background.white.100"
-          border="1px"
-          borderColor="background.grey.400"
-          px="3"
-          py="1"
-          borderRadius="20"
-        >
-          <FontAwesomeIcon icon={faHandshakeAngle} />
-          <Text fontWeight="bold">{camperDetailsCount.specialNeeds}</Text>
-        </HStack>
-      )}
-    </HStack>
-  );
-};
-
-const CamperDetailsCard = ({ camper }: { camper: Camper }) => {
-  const icon: IconProp | null = faEnvelopesBulk;
-
-  return (
-    <Container width="-webkit-fit-content" marginStart="0px">
-      <HStack>
-        {camper.latePickup && camper.earlyDropoff && (
-          <HStack
-            alignContent="center"
-            background="camperDetailsCards.pickup"
-            px="5"
-            py="2"
-            borderRadius="5"
-          >
-            <Image
-              src={icon_pickup}
-              alt="pickup icon"
-              display="inline"
-              maxWidth="22px"
-            />
-            <Text>pick-up & drop-off</Text>
-          </HStack>
-        )}
-        {camper.allergies && (
-          <HStack
-            alignContent="center"
-            background="camperDetailsCards.hasAllergy"
-            px="5"
-            py="2"
-            borderRadius="5"
-          >
-            {icon && <FontAwesomeIcon icon={faHandDots} />}
-            <Text>has allergy</Text>
-          </HStack>
-        )}
-        {camper.specialNeeds && (
-          <HStack
-            alignContent="center"
-            background="camperDetailsCards.additionalNeeds"
-            px="5"
-            py="2"
-            borderRadius="5"
-          >
-            {icon && <FontAwesomeIcon icon={faHandshakeAngle} />}
-            <Text>additional needs</Text>
-          </HStack>
-        )}
-      </HStack>
-    </Container>
   );
 };
 
@@ -297,7 +104,7 @@ const CampersTable = ({
             placeholder="Search by camper name..."
           />
         </InputGroup>
-        <TableOverviewIconGroup
+        <CampersTableOverviewIconGroup
           campers={campers}
           campCapacity={campCapacity}
           camperDetailsCount={camperDetailsCount}
@@ -350,7 +157,7 @@ const CampersTable = ({
                 </VStack>
               </Td>
               <Td pl="7px">
-                <CamperDetailsCard camper={camper} />
+                <CamperDetailsBadgeGroup camper={camper} />
               </Td>
               <Td justifyContent="flex-end" margin="0px" padding="0px">
                 <IconButton
