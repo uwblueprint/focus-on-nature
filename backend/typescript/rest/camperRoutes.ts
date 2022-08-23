@@ -138,8 +138,6 @@ camperRouter.patch(
           lastName: req.body.lastName,
           age: req.body.age,
           allergies: req.body.allergies,
-          hasCamera: req.body.hasCamera,
-          hasLaptop: req.body.hasLaptop,
           earlyDropoff: req.body.earlyDropoff,
           latePickup: req.body.latePickup,
           specialNeeds: req.body.specialNeeds,

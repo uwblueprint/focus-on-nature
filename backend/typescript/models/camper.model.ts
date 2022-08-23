@@ -7,8 +7,6 @@ export interface Camper extends Document {
   lastName: string;
   age: number;
   allergies: string;
-  hasCamera: boolean;
-  hasLaptop: boolean;
   earlyDropoff: Date[];
   latePickup: Date[];
   specialNeeds: string;
@@ -55,12 +53,6 @@ const CamperSchema: Schema = new Schema({
   },
   allergies: {
     type: String,
-  },
-  hasCamera: {
-    type: Boolean,
-  },
-  hasLaptop: {
-    type: Boolean,
   },
   earlyDropoff: [Date],
   latePickup: [Date],

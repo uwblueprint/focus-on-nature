@@ -36,8 +36,6 @@ export type CamperDTO = {
   lastName: string;
   age: number;
   allergies: string;
-  hasCamera: boolean;
-  hasLaptop: boolean;
   earlyDropoff: string[];
   latePickup: string[];
   specialNeeds: string;
