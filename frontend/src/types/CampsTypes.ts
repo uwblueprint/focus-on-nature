@@ -17,8 +17,8 @@ export type Camp = {
   fee: number;
   formQuestions: FormQuestion[];
   campSessions: CampSession[];
-  fileName?: string;
   volunteers: string[];
+  campPhotoUrl: string;
 };
 
 export type EditCampDataType = {
