@@ -103,13 +103,9 @@ const App = (): React.ReactElement => {
                   path={Routes.HOOKS_PAGE}
                   component={HooksDemo}
                 />
-                {/* TODO: change this so it's not hardcoded */}
                 <PrivateRoute
                   exact
-                  path={Routes.CAMP_OVERVIEW_PAGE.replace(
-                    ":id",
-                    "62c098e7b4a7a433a7622ff4",
-                  )}
+                  path={Routes.CAMP_OVERVIEW_PAGE}
                   component={CampOverview}
                 />
                 <Route exact path="*" component={NotFound} />

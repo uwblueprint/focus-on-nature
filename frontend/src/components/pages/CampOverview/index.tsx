@@ -14,7 +14,7 @@ import placeHolderImage from "../../../assets/germany.jpeg";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
-import { Camp } from "../../../types/CampsTypes";
+import { CampResponse } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 
 export type CampOverviewProps = {
@@ -22,16 +22,16 @@ export type CampOverviewProps = {
 };
 
 const CampOverview = (): JSX.Element => {
-  const [camp, setCamp] = useState<Camp>();
+  const [camp, setCamp] = useState<CampResponse>();
   const campId = "62c098e7b4a7a433a7622ff4"; // hardcoded for now, TODO: update this
 
   // TODO: update the statuses
-  enum Status {
+  enum CampStatus {
     PUBLISHED = "Published",
     DRAFT = "Draft",
   }
 
-  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
+  const status = camp?.active ? CampStatus.PUBLISHED : CampStatus.DRAFT;
 
   useEffect(() => {
     const getCampInfo = async () => {
