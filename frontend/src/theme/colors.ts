@@ -54,6 +54,7 @@ const colors = {
     grey: {
       100: "#F4F6FC",
       200: "#FAFAFA",
+      300: "#F4F4F4",
     },
     // TODO: to fill in
   },
@@ -70,6 +71,14 @@ const colors = {
     complete: "#C1FFBF",
     expired: "#FFAAAA",
     sent: "#FFE49E",
+  },
+  label: {
+    green: {
+      100: "#D2FFCE",
+    },
+    red: {
+      100: "#FFD0D0",
+    },
   },
 };
 
