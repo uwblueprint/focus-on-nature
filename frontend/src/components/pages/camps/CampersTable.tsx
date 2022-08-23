@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
+import textStyles from "../../../theme/textStyles";
 import { Camper } from "../../../types/CamperTypes";
 
 import CampersTableOverviewIconGroup from "./CampersTableOverviewIconGroup";
@@ -92,85 +93,96 @@ const CampersTable = ({
       background="background.grey.200"
       borderRadius="20"
     >
-      <HStack spacing={12} px="18">
-        <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <SearchIcon color="gray.300" />
-          </InputLeftElement>
-          <Input
-            size="md"
-            enterKeyHint="enter"
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by camper name..."
-          />
-        </InputGroup>
-        <CampersTableOverviewIconGroup
-          campers={campers}
-          campCapacity={campCapacity}
-          camperDetailsCount={camperDetailsCount}
-        />
-        <ExportButton />
-      </HStack>
+      {campers.length > 0 ? (
+        <>
+          <HStack spacing={12} px="18">
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                size="md"
+                enterKeyHint="enter"
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by camper name..."
+              />
+            </InputGroup>
+            <CampersTableOverviewIconGroup
+              campers={campers}
+              campCapacity={campCapacity}
+              camperDetailsCount={camperDetailsCount}
+            />
+            <ExportButton />
+          </HStack>
 
-      <Table
-        background="background.white.100"
-        colorScheme="blackAlpha"
-        variant="simple"
-        pl="5px"
-        mt="20px"
-        mb="20px"
-      >
-        <Thead margin="16px 0">
-          <Tr>
-            <Td>Camper</Td>
-            <Td>Primary Emergency Contact</Td>
-            <Td>Secondary Emergency Contact</Td>
-            <Td>Camper Details</Td>
-            <Td>&nbsp;</Td>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {tableData.map((camper, i) => (
-            <Tr key={i} margin="16px 0">
-              <Td>
-                <VStack align="start">
-                  <Text fontWeight="bold">{`${camper.firstName} ${camper.lastName}`}</Text>
-                  <Text>Age:&nbsp;{camper.age}</Text>
-                </VStack>
-              </Td>
-              <Td>
-                <VStack align="start">
-                  <Text fontWeight="bold">{`${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`}</Text>
-                  <Text>
-                    {camper.contacts[0].phoneNumber} |{" "}
-                    {camper.contacts[0].email}
-                  </Text>
-                </VStack>
-              </Td>
-              <Td>
-                <VStack align="start">
-                  <Text fontWeight="bold">{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
-                  <Text>
-                    {camper.contacts[1].phoneNumber} |{" "}
-                    {camper.contacts[1].email}
-                  </Text>
-                </VStack>
-              </Td>
-              <Td pl="7px">
-                <CamperDetailsBadgeGroup camper={camper} />
-              </Td>
-              <Td justifyContent="flex-end" margin="0px" padding="0px">
-                <IconButton
-                  aria-label="Mark as active button"
-                  icon={<FaEllipsisV />}
-                  variant=""
-                  onClick={() => console.log("3 dot button pressed!")}
-                />
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          <Table
+            background="background.white.100"
+            colorScheme="blackAlpha"
+            variant="simple"
+            pl="5px"
+            mt="20px"
+            mb="20px"
+          >
+            <Thead margin="16px 0">
+              <Tr>
+                <Td>Camper</Td>
+                <Td>Primary Emergency Contact</Td>
+                <Td>Secondary Emergency Contact</Td>
+                <Td>Camper Details</Td>
+                <Td>&nbsp;</Td>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {tableData.map((camper, i) => (
+                <Tr key={i} margin="16px 0">
+                  <Td>
+                    <VStack align="start">
+                      <Text fontWeight="bold">{`${camper.firstName} ${camper.lastName}`}</Text>
+                      <Text>Age:&nbsp;{camper.age}</Text>
+                    </VStack>
+                  </Td>
+                  <Td>
+                    <VStack align="start">
+                      <Text fontWeight="bold">{`${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`}</Text>
+                      <Text>
+                        {camper.contacts[0].phoneNumber} |{" "}
+                        {camper.contacts[0].email}
+                      </Text>
+                    </VStack>
+                  </Td>
+                  <Td>
+                    <VStack align="start">
+                      <Text fontWeight="bold">{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
+                      <Text>
+                        {camper.contacts[1].phoneNumber} |{" "}
+                        {camper.contacts[1].email}
+                      </Text>
+                    </VStack>
+                  </Td>
+                  <Td pl="7px">
+                    <CamperDetailsBadgeGroup camper={camper} />
+                  </Td>
+                  <Td justifyContent="flex-end" margin="0px" padding="0px">
+                    <IconButton
+                      aria-label="Mark as active button"
+                      icon={<FaEllipsisV />}
+                      variant=""
+                      onClick={() => console.log("3 dot button pressed!")}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </>
+      ) : (
+        <VStack pb="18px" pt="18px">
+          <Text style={textStyles.buttonSemiBold}>
+            No camper registrations yet
+          </Text>
+          <Text>Check back later!</Text>
+        </VStack>
+      )}
     </Container>
   );
 };
