@@ -15,6 +15,7 @@ export interface Camper extends Document {
     lastName: string;
     email: string;
     phoneNumber: string;
+    relationshipToCamper: string;
   }[];
   formResponses: Map<string, string>;
   registrationDate: Date;
@@ -75,6 +76,10 @@ const CamperSchema: Schema = new Schema({
           required: true,
         },
         phoneNumber: {
+          type: String,
+          required: true,
+        },
+        relationshipToCamper: {
           type: String,
           required: true,
         },
