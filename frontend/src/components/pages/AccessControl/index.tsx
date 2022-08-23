@@ -17,6 +17,7 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import UserStatusLabel from "./UserStatusLabel";
@@ -45,6 +46,8 @@ const AccessControlPage = (): JSX.Element => {
     Filter.ALL,
   );
 
+  const toast = useToast();
+
   React.useEffect(() => {
     const getUsers = async () => {
       const res = await UserAPIClient.getAllUsers();
@@ -71,6 +74,45 @@ const AccessControlPage = (): JSX.Element => {
           .includes(search.toLowerCase()),
     );
   }, [search, selectedFilter, users]);
+
+  const handleRoleChange = async (user: UserResponse, newRole: Role) => {
+    const newUserData = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: newRole,
+      active: user.active,
+    };
+    const res = await UserAPIClient.updateUserById(user.id, newUserData);
+    if (res) {
+      toast({
+        description: `${user.firstName} ${
+          user.lastName
+        }'s role has been changed to ${
+          newRole === Role.ADMIN ? UserRoles.ADMIN : UserRoles.CAMP_COORDINATOR
+        }`,
+        status: "success",
+        duration: 7000,
+        isClosable: true,
+      });
+
+      const newUsers: UserResponse[] = await users.map((u) => {
+        if (u.id === user.id) {
+          return { ...u, role: newRole };
+        }
+        return u;
+      });
+      setUsers(newUsers);
+    } else {
+      toast({
+        description: `An error occurred with changing ${user.firstName} ${user.lastName}'s role. Please try again.`,
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Container
@@ -141,7 +183,12 @@ const AccessControlPage = (): JSX.Element => {
               <Td>{`${user.firstName} ${user.lastName}`}</Td>
               <Td>{user.email}</Td>
               <Td>
-                <Select value={user.role}>
+                <Select
+                  value={user.role}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    handleRoleChange(user, e.target.value as Role)
+                  }
+                >
                   <option value={Role.ADMIN}>{UserRoles.ADMIN}</option>
                   <option value={Role.CAMP_COORDINATOR}>
                     {UserRoles.CAMP_COORDINATOR}
