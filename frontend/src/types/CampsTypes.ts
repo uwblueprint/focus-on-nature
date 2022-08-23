@@ -1,30 +1,32 @@
 import { Role } from "./AuthTypes";
 
-export type Camp = {
-  id: string;
-  active: boolean;
-  ageLower: number;
-  ageUpper: number;
-  campCoordinators: string[];
-  campCounsellors: string[];
-  name: string;
-  description: string;
-  earlyDropoff: string;
-  endTime: string;
-  latePickup: string;
-  location: string;
-  startTime: string;
-  fee: number;
-  formQuestions: FormQuestion[];
-  campSessions: CampSession[];
-  volunteers: string[];
-  campPhotoUrl: string;
+export type Location = {
+  streetAddress1: string;
+  streetAddress2?: string;
+  city: string;
+  province: string;
+  postalCode: string;
 };
 
-export type EditCampDataType = {
-  campCoordinators?: CampCoordinator[];
-  campCounsellors?: CampCoordinator[];
-  volunteers?: string[];
+export type Camp = {
+  id?: string;
+  active?: boolean;
+  ageLower?: number;
+  ageUpper?: number;
+  campCoordinators?: CampCoordinator[] | string[];
+  campCounsellors?: CampCoordinator[] | string[];
+  name?: string;
+  description?: string;
+  earlyDropoff?: string;
+  endTime?: string;
+  latePickup?: string;
+  location?: Location;
+  startTime?: string;
+  fee?: number;
+  formQuestions?: FormQuestion[];
+  campSessions?: CampSession[];
+  volunteers?: string;
+  campPhotoUrl?: string;
 };
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
@@ -45,13 +47,6 @@ export type FormQuestion = {
   required: boolean;
   description?: string;
   options?: string[];
-};
-
-export type UserOption = {
-  value: string;
-  label: string;
-  name: string;
-  email: string;
 };
 
 export type CampCoordinator = {

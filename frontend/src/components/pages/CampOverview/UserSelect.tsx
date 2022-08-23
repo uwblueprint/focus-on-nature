@@ -1,34 +1,38 @@
-import { Divider, Text, VStack } from "@chakra-ui/react";
-import { Select, OptionBase, GroupBase } from "chakra-react-select";
+import { Text, VStack } from "@chakra-ui/react";
+import { Select, GroupBase, MultiValue } from "chakra-react-select";
 import React from "react";
-import { UserOption } from "../../../types/CampsTypes";
+import { UserResponse } from "../../../types/UserTypes";
 
-const formatOptionLabel = (user: UserOption, { context }: any) => {
+// In menu, show user's name and email
+// In control, show user's name only
+const formatOptionLabel = (user: UserResponse, { context }: any) => {
   if (context === "menu") {
     return (
       <>
         <VStack alignItems="left" width="100%">
-          <Text textStyle="bodyRegular">{user.name}</Text>
+          <Text textStyle="bodyRegular">
+            {user.firstName} {user.lastName}
+          </Text>
           <Text textStyle="xSmallRegular">{user.email}</Text>
         </VStack>
       </>
     );
   }
-  return user.name;
+  return `${user.firstName} ${user.lastName}`;
 };
 
-const SelectComponent = ({
+const UserSelect = ({
   placeholderText,
   users,
   onChange,
 }: {
   placeholderText?: string;
-  users?: UserOption[];
-  onChange?: any;
+  users: UserResponse[];
+  onChange: (newVal: MultiValue<UserResponse>) => void;
 }): JSX.Element => {
   return (
     <>
-      <Select<UserOption, true, GroupBase<UserOption>>
+      <Select<UserResponse, true, GroupBase<UserResponse>>
         components={{
           DropdownIndicator: () => null,
         }}
@@ -47,4 +51,4 @@ const SelectComponent = ({
   );
 };
 
-export default SelectComponent;
+export default UserSelect;

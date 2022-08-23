@@ -11,6 +11,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { MultiValue } from "chakra-react-select";
 import React, { useEffect, useState } from "react";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
@@ -19,7 +20,8 @@ import { Camp } from "../../../types/CampsTypes";
 import { UserResponse } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
-import SelectComponent from "./SelectComponent";
+import UserSelect from "./UserSelect";
+import locationToString from "../../../utils/CampUtils";
 
 // TODO: update the statuses
 enum Status {
@@ -27,73 +29,53 @@ enum Status {
   DRAFT = "Draft",
 }
 
+const updateCamp = async (newCamp: Camp) => {
+  if (newCamp.id) {
+    await CampsAPIClient.editCampById(newCamp.id, newCamp);
+  }
+};
+
 const CampOverview = (): JSX.Element => {
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [camp, setCamp] = useState<Camp>();
-  const campId = "62574cf9e89788006c93cefe"; // with camp photo
+  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
+  const campId = "630a63450eb59852f9d01b1e"; // with camp photo
   // const campId = "62574d7ae89788006c93cf02"; // without camp photo
 
   useEffect(() => {
-    const getCampInfo = async () => {
+    const getCamp = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
       setCamp(campResponse);
     };
-    getCampInfo();
+    getCamp();
 
     const getUsers = async () => {
-      let userResponse = await UserAPIClient.getAllUsers();
+      const userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
-        userResponse = userResponse.filter((user) => {
+        const coordinators = userResponse.filter((user) => {
           return user.role === "CampCoordinator";
         });
-        setUsers(userResponse);
+        setUsers(coordinators);
       }
     };
     getUsers();
   }, []);
 
-  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
-
-  const formattedUsers = React.useMemo(
-    () =>
-      users.map((user) => {
-        return {
-          value: user.id,
-          label: `${user.firstName} ${user.lastName}`,
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-        };
-      }),
-    [users],
-  );
-
-  const handleChange = (
-    e: any,
-    field: "coordinators" | "counsellors" | "volunteers",
-  ) => {
-    const updateCamp = async (updatedFields: any) => {
-      const updatedCamp = await CampsAPIClient.editCampById(
-        camp!.id,
-        updatedFields,
-      );
-      setCamp(updatedCamp);
-    };
-
-    let updatedFields;
-    switch (field) {
-      case "coordinators":
-      case "counsellors":
-        updatedFields = {
-          [field]: e.map((coordinator: any) => coordinator.value),
-        };
-        break;
-      case "volunteers":
-      default:
-        updatedFields = { volunteers: e.target.value };
-        break;
-    }
-    updateCamp(updatedFields);
+  const handleCoordinatorChange = (newValue: MultiValue<UserResponse>) => {
+    const campCoordinators = newValue.map((user) => user.id);
+    const newCamp = { ...camp, campCoordinators };
+    setCamp(newCamp);
+    updateCamp(newCamp);
   };
+
+  const handleCounsellorChange = (newValue: MultiValue<UserResponse>) => {
+    const campCounsellors = newValue.map((user) => user.id);
+    const newCamp = { ...camp, campCounsellors };
+    setCamp(newCamp);
+    updateCamp(newCamp);
+  };
+
+  const handleVolunteerChange = (e: any) => {};
 
   return (
     <Container maxWidth="100vw">
@@ -114,7 +96,6 @@ const CampOverview = (): JSX.Element => {
               </Tag>
             </HStack>
           </HStack>
-
           <Grid
             templateColumns="repeat(4, 1fr)"
             gap={2}
@@ -125,24 +106,20 @@ const CampOverview = (): JSX.Element => {
               <Text textStyle="bodyRegular">Camp Coordinators:</Text>
             </GridItem>
             <GridItem colSpan={3}>
-              <SelectComponent
+              <UserSelect
                 placeholderText="Add camp coordinator(s)"
-                users={formattedUsers}
-                onChange={(e: any) => {
-                  handleChange(e, "coordinators");
-                }}
+                users={users}
+                onChange={handleCoordinatorChange}
               />
             </GridItem>
             <GridItem>
               <Text textStyle="bodyRegular">Camp Counsellors:</Text>
             </GridItem>
             <GridItem colSpan={3}>
-              <SelectComponent
+              <UserSelect
                 placeholderText="Add camp counsellor(s)"
-                users={formattedUsers}
-                onChange={(e: any) => {
-                  handleChange(e, "counsellors");
-                }}
+                users={users}
+                onChange={handleCounsellorChange}
               />
             </GridItem>
             <GridItem>
@@ -150,9 +127,7 @@ const CampOverview = (): JSX.Element => {
             </GridItem>
             <GridItem colSpan={3}>
               <Input
-                onChange={(e) => {
-                  handleChange(e, "volunteers");
-                }}
+                onChange={handleVolunteerChange}
                 placeholder="Add volunteer(s)"
                 _placeholder={{ color: "text.grey.100" }}
                 size="md"
@@ -160,7 +135,6 @@ const CampOverview = (): JSX.Element => {
               />
             </GridItem>
           </Grid>
-
           <Text marginBottom="12px" textStyle="bodyBold" width="100%">
             Camp Details
           </Text>
@@ -198,26 +172,26 @@ const CampOverview = (): JSX.Element => {
                 width="32px"
                 height="32px"
               />
-              <Text textStyle="bodyRegular">{camp?.location}</Text>
+              <Text textStyle="bodyRegular">{locationToString(camp?.location)}</Text>
             </HStack>
           </HStack>
         </Box>
         {camp?.campPhotoUrl && (
-        <Box width="40%">
-          <AspectRatio
-            marginTop="32px"
-            marginLeft="24px"
-            width="80%"
-            maxHeight="400px"
-            ratio={16 / 9}
-          >
-            <Image
-              objectFit="scale-down"
-              src={camp?.campPhotoUrl}
-              alt="Camp Image"
-            />
-          </AspectRatio>
-        </Box>
+          <Box width="40%">
+            <AspectRatio
+              marginTop="32px"
+              marginLeft="24px"
+              width="80%"
+              maxHeight="400px"
+              ratio={16 / 9}
+            >
+              <Image
+                objectFit="scale-down"
+                src={camp?.campPhotoUrl}
+                alt="Camp Image"
+              />
+            </AspectRatio>
+          </Box>
         )}
       </Flex>
     </Container>

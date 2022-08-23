@@ -254,6 +254,7 @@ class CampService implements ICampService {
 
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
+    let updatedCamp: Camp | null;
     try {
       oldCamp = await MgCamp.findById(campId);
 
@@ -282,25 +283,34 @@ class CampService implements ICampService {
         await this.storageService.deleteFile(oldCamp.fileName);
       }
 
-      await MgCamp.findByIdAndUpdate(campId, {
-        $set: {
-          name: camp.name,
-          active: camp.active,
-          ageLower: camp.ageLower,
-          ageUpper: camp.ageUpper,
-          campCoordinators: camp.campCoordinators,
-          campCounsellors: camp.campCounsellors,
-          description: camp.description,
-          earlyDropoff: camp.earlyDropoff,
-          latePickup: camp.latePickup,
-          location: camp.location,
-          startTime: camp.startTime,
-          endTime: camp.endTime,
-          volunteers: camp.volunteers,
-          fee: camp.fee,
-          fileName: camp.filePath ? fileName : null,
+      updatedCamp = await MgCamp.findByIdAndUpdate(
+        campId,
+        {
+          $set: {
+            name: camp.name,
+            active: camp.active,
+            ageLower: camp.ageLower,
+            ageUpper: camp.ageUpper,
+            campCoordinators: camp.campCoordinators,
+            campCounsellors: camp.campCounsellors,
+            description: camp.description,
+            earlyDropoff: camp.earlyDropoff,
+            latePickup: camp.latePickup,
+            location: camp.location,
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            volunteers: camp.volunteers,
+            fee: camp.fee,
+            fileName: camp.filePath ? fileName : null,
+          },
         },
-      });
+        { new: true },
+      );
+
+      if (!updatedCamp) {
+        Logger.error("Failed to get new camp after updating.");
+        return camp as CampDTO;
+      }
     } catch (error: unknown) {
       Logger.error(`Failed to update camp. Reason = ${getErrorMessage(error)}`);
       throw error;
@@ -308,28 +318,30 @@ class CampService implements ICampService {
 
     return {
       id: campId,
-      active: camp.active,
-      ageLower: camp.ageLower,
-      ageUpper: camp.ageUpper,
-      campCoordinators: camp.campCoordinators?.map((coordinator) =>
+      active: updatedCamp.active,
+      ageLower: updatedCamp.ageLower,
+      ageUpper: updatedCamp.ageUpper,
+      campCoordinators: updatedCamp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
-      campCounsellors: camp.campCounsellors?.map((counsellor) =>
+      campCounsellors: updatedCamp.campCounsellors?.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: oldCamp.campSessions?.map((session) => session.toString()),
-      name: camp.name,
-      description: camp.description,
-      earlyDropoff: camp.earlyDropoff,
-      latePickup: camp.latePickup,
-      location: camp.location,
-      startTime: camp.startTime,
-      endTime: camp.endTime,
-      fee: camp.fee,
-      formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
+      campSessions: updatedCamp.campSessions?.map((session) =>
+        session.toString(),
+      ),
+      name: updatedCamp.name,
+      description: updatedCamp.description,
+      earlyDropoff: updatedCamp.earlyDropoff,
+      latePickup: updatedCamp.latePickup,
+      location: updatedCamp.location,
+      startTime: updatedCamp.startTime,
+      endTime: updatedCamp.endTime,
+      fee: updatedCamp.fee,
+      formQuestions: updatedCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),
-      volunteers: camp.volunteers,
+      volunteers: updatedCamp.volunteers,
     };
   }
 

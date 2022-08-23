@@ -190,7 +190,7 @@ export const updateCampDtoValidator = async (
   next: NextFunction,
 ) => {
   const body = JSON.parse(req.body.data);
-  if (!validatePrimitive(body.name, "string")) {
+  if (body.name && !validatePrimitive(body.name, "string")) {
     return res.status(400).send(getApiValidationError("name", "string"));
   }
   if (body.description && !validatePrimitive(body.description, "string")) {
@@ -226,13 +226,13 @@ export const updateCampDtoValidator = async (
         .send(getApiValidationError("location.postalCode", "string"));
     }
   }
-  if (!validatePrimitive(body.ageLower, "integer")) {
+  if (body.ageLower && !validatePrimitive(body.ageLower, "integer")) {
     return res.status(400).send(getApiValidationError("ageLower", "integer"));
   }
-  if (!validatePrimitive(body.ageUpper, "integer")) {
+  if (body.ageUpper && !validatePrimitive(body.ageUpper, "integer")) {
     return res.status(400).send(getApiValidationError("ageUpper", "integer"));
   }
-  if (body.ageUpper < body.ageLower) {
+  if (body.ageUpper && body.ageLower && body.ageUpper < body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
   if (
@@ -248,42 +248,51 @@ export const updateCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("campCounsellors", "string", true));
   }
-
-  if (!validatePrimitive(body.earlyDropoff, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("earlyDropoff", "string"));
+  if (body.earlyDropoff) {
+    if (!validatePrimitive(body.earlyDropoff, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("earlyDropoff", "string"));
+    }
+    if (!validateTime(body.earlyDropoff)) {
+      return res
+        .status(400)
+        .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+    }
   }
-  if (!validateTime(body.earlyDropoff)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("earlyDropoff", "24 hr time string"));
+  if (body.latePickup) {
+    if (!validatePrimitive(body.latePickup, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("latePickup", "string"));
+    }
+    if (!validateTime(body.latePickup)) {
+      return res
+        .status(400)
+        .send(getApiValidationError("latePickup", "24 hr time string"));
+    }
   }
-  if (!validatePrimitive(body.latePickup, "string")) {
-    return res.status(400).send(getApiValidationError("latePickup", "string"));
+  if (body.startTime) {
+    if (!validatePrimitive(body.startTime, "string")) {
+      return res.status(400).send(getApiValidationError("startTime", "string"));
+    }
+    if (!validateTime(body.startTime)) {
+      return res
+        .status(400)
+        .send(getApiValidationError("startTime", "24 hr time string"));
+    }
   }
-  if (!validateTime(body.latePickup)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("latePickup", "24 hr time string"));
+  if (body.endTime) {
+    if (!validatePrimitive(body.endTime, "string")) {
+      return res.status(400).send(getApiValidationError("endTime", "string"));
+    }
+    if (!validateTime(body.endTime)) {
+      return res
+        .status(400)
+        .send(getApiValidationError("endTime", "24 hr time string"));
+    }
   }
-  if (!validatePrimitive(body.startTime, "string")) {
-    return res.status(400).send(getApiValidationError("startTime", "string"));
-  }
-  if (!validateTime(body.startTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("startTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(body.endTime, "string")) {
-    return res.status(400).send(getApiValidationError("endTime", "string"));
-  }
-  if (!validateTime(body.endTime)) {
-    return res
-      .status(400)
-      .send(getApiValidationError("endTime", "24 hr time string"));
-  }
-  if (!validatePrimitive(body.active, "boolean")) {
+  if (body.active !== undefined && !validatePrimitive(body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
   if (body.fee && !validatePrimitive(body.fee, "integer")) {
