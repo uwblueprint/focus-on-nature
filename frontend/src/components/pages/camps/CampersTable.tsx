@@ -40,7 +40,7 @@ const ExportButton = (): JSX.Element => {
       border="2px"
       borderColor="primary.green.100"
       borderRadius="5px"
-      minWidth="10vw"
+      minWidth="-webkit-fit-content"
     >
       Export as .csv
     </Button>
