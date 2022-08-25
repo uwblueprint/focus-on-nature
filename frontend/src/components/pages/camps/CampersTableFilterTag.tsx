@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Text, Image, HStack } from "@chakra-ui/react";
+import { Text, HStack } from "@chakra-ui/react";
 
 const CampersTableFilterTag = ({
   icon,

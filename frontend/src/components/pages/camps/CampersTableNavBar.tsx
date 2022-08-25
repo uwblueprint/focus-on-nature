@@ -47,8 +47,7 @@ const CampersTableNavBar = () => {
       firstName: "Fred",
       lastName: "McAlister",
       age: 10,
-      allergies: "Lactose",
-      earlyDropoff: [new Date()],
+      allergies: "",
       latePickup: [new Date()],
       specialNeeds: "N/A",
       contacts: [
@@ -72,7 +71,6 @@ const CampersTableNavBar = () => {
       age: 11,
       allergies: "",
       earlyDropoff: [new Date()],
-      latePickup: [new Date()],
       specialNeeds: "",
       contacts: [
         {
@@ -128,7 +126,10 @@ const CampersTableNavBar = () => {
         </TabList>
         <TabPanels width="100%" marginTop="16px">
           <TabPanel padding="0">
-            <CampersTable campers={campersTest} campSessionCapacity={campSessionCapacity} />
+            <CampersTable
+              campers={campersTest}
+              campSessionCapacity={campSessionCapacity}
+            />
           </TabPanel>
           <TabPanel>waitlist table here</TabPanel>
         </TabPanels>

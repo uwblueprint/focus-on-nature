@@ -70,9 +70,11 @@ const colors = {
   },
 
   camperDetailsCards: {
-    pickup: "#F1E2FF",
+    latePickupAndEarlyDropOff: "#F1E2FF",
     hasAllergy: "#FFD4CE",
     additionalNeeds: "#FEFCDA",
+    latePickup: "#BFD1FF",
+    earlyDropoff: "#FDEED7",
   },
 
   label: {

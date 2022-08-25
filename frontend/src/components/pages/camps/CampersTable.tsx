@@ -31,7 +31,7 @@ import {
 import { ReactComponent as SunriseIcon } from "../../../assets/icon_sunrise.svg";
 import { ReactComponent as SunsetIcon } from "../../../assets/icon_sunset.svg";
 
-import { CamperDetailsBadgeGroup } from "./CamperDetailsBadges";
+import CamperDetailsBadgeGroup from "./CamperDetailsBadgeGroup";
 import CampersTableFilterTag from "./CampersTableFilterTag";
 
 import { Camper } from "../../../types/CamperTypes";
