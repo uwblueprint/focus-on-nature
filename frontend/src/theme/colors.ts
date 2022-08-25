@@ -6,7 +6,7 @@ const colors = {
   },
   secondary: {
     critical: {
-      100: "#F8533D",
+      100: "#F85336",
     },
     warning: {
       100: "#F39E3B",
