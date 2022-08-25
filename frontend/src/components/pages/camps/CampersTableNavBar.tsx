@@ -14,97 +14,100 @@ import CampersTable from "./CampersTable";
 const CampersTableNavBar = () => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const campCapacity = 20;
+  // TODO - this is dependant on the selected camp session
+  const campSessionCapacity = 20;
+  // -----------------------------------------------------
+
   const emptyTest: Camper[] = [];
   const campersTest: Camper[] = [
     {
       firstName: "Joe",
       lastName: "Bob",
       age: 12,
-      allergies: "you",
+      allergies: "peanuts",
       earlyDropoff: [new Date()],
       latePickup: [new Date()],
       specialNeeds: "",
       contacts: [
         {
-          firstName: "Mommy",
+          firstName: "Mom",
           lastName: "Bob",
-          email: "mommyyy@gmail.com",
+          email: "momBob@gmail.com",
           phoneNumber: "123-456-7890",
         },
         {
-          firstName: "Daddy",
+          firstName: "Dad",
           lastName: "Bob",
-          email: "daddyyyy@gmail.com",
+          email: "dadBob@gmail.com",
           phoneNumber: "123-456-7890",
         },
       ],
     },
     {
-      firstName: "Thing",
-      lastName: "Bob",
+      firstName: "Fred",
+      lastName: "McAlister",
       age: 10,
-      allergies: "you",
+      allergies: "Lactose",
       earlyDropoff: [new Date()],
       latePickup: [new Date()],
-      specialNeeds: "yes",
+      specialNeeds: "N/A",
       contacts: [
         {
-          firstName: "Mommy",
-          lastName: "Yot",
-          email: "mommyyy@gmail.com",
+          firstName: "Mom",
+          lastName: "Fred",
+          email: "momFred@gmail.com",
           phoneNumber: "123-456-7890",
         },
         {
-          firstName: "Daddy",
-          lastName: "Stuff",
-          email: "daddyyyy@gmail.com",
+          firstName: "Dad",
+          lastName: "Fred",
+          email: "dadFred@gmail.com",
           phoneNumber: "123-456-7890",
         },
       ],
     },
     {
-      firstName: "Bro",
-      lastName: "Bob",
+      firstName: "Josh",
+      lastName: "Tod",
       age: 11,
-      allergies: "you",
+      allergies: "",
       earlyDropoff: [new Date()],
       latePickup: [new Date()],
       specialNeeds: "",
       contacts: [
         {
-          firstName: "Mommy",
-          lastName: "Yes",
-          email: "mommyyy@gmail.com",
+          firstName: "Mom",
+          lastName: "Tod",
+          email: "momTod@gmail.com",
           phoneNumber: "123-456-7890",
         },
         {
-          firstName: "Daddy",
-          lastName: "That",
-          email: "daddyyyy@gmail.com",
+          firstName: "Dad",
+          lastName: "Toc",
+          email: "dadTod@gmail.com",
           phoneNumber: "123-456-7890",
         },
       ],
     },
     {
-      firstName: "Sup",
-      lastName: "Bob",
+      firstName: "Felicia",
+      lastName: "Rose",
       age: 9,
-      allergies: "you",
+      allergies: "pollen",
       earlyDropoff: [new Date()],
       latePickup: [new Date()],
       specialNeeds: "",
       contacts: [
         {
-          firstName: "Mommy",
-          lastName: "Nice",
-          email: "mommyyy@gmail.com",
+          firstName: "Mom",
+          lastName: "Rose",
+          email: "momRose@gmail.com",
           phoneNumber: "123-456-7890",
         },
         {
-          firstName: "Daddy",
-          lastName: "Yoyo",
-          email: "daddyyyy@gmail.com",
+          firstName: "Dad",
+          lastName: "Rose",
+          email: "dadRose@gmail.com",
           phoneNumber: "123-456-7890",
         },
       ],
@@ -125,10 +128,9 @@ const CampersTableNavBar = () => {
         </TabList>
         <TabPanels width="100%" marginTop="16px">
           <TabPanel padding="0">
-            <CampersTable campers={campersTest} campCapacity={campCapacity} />
+            <CampersTable campers={campersTest} campSessionCapacity={campSessionCapacity} />
           </TabPanel>
-          <TabPanel>hi2</TabPanel>
-          <TabPanel>hi3</TabPanel>
+          <TabPanel>waitlist table here</TabPanel>
         </TabPanels>
       </Tabs>
     </Container>

@@ -16,14 +16,24 @@ import {
   IconButton,
   HStack,
   Button,
+  TagLabel,
+  Tag,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
-import textStyles from "../../../theme/textStyles";
-import { Camper } from "../../../types/CamperTypes";
+import {
+  faPerson,
+  faHandDots,
+  faHandshakeAngle,
+} from "@fortawesome/free-solid-svg-icons";
+import icon_sunrise from "../../../assets/icon_sunrise.svg";
+import icon_sunset from "../../../assets/icon_sunset.svg";
 
-import CampersTableOverviewIconGroup from "./CampersTableOverviewIconGroup";
 import { CamperDetailsBadgeGroup } from "./CamperDetailsBadges";
+import CampersTableFilterTag from "./CampersTableFilterTag";
+
+import { Camper } from "../../../types/CamperTypes";
+import textStyles from "../../../theme/textStyles";
 
 const ExportButton = () => {
   return (
@@ -45,16 +55,45 @@ const ExportButton = () => {
 
 const CampersTable = ({
   campers,
-  campCapacity,
+  campSessionCapacity,
 }: {
   campers: Camper[];
-  campCapacity: number;
+  campSessionCapacity: number;
 }) => {
+  enum Filter {
+    ALL = "All",
+    EARLY_DROP_OFF = "Early Drop Off",
+    LATE_PICK_UP = "Late Pick Up",
+    HAS_ALLERGIES = "Has Allergies",
+    ADDITIONAL_NEEDS = "Additional Needs",
+  }
+
+  const filterOptions = [
+    Filter.ALL,
+    Filter.EARLY_DROP_OFF,
+    Filter.LATE_PICK_UP,
+    Filter.HAS_ALLERGIES,
+    Filter.ADDITIONAL_NEEDS,
+  ];
+
   const [displayedCampers, setDisplayedCampers] = React.useState(campers);
   const [search, setSearch] = React.useState("");
+  const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
+    Filter.ALL,
+  );
 
   const tableData = React.useMemo(() => {
-    const filteredCampers = displayedCampers;
+    let filteredCampers;
+
+    if (selectedFilter === Filter.EARLY_DROP_OFF)
+      filteredCampers = campers.filter((camper) => camper.earlyDropoff);
+    else if (selectedFilter === Filter.LATE_PICK_UP)
+      filteredCampers = campers.filter((camper) => camper.latePickup);
+    else if (selectedFilter === Filter.HAS_ALLERGIES)
+      filteredCampers = campers.filter((camper) => camper.allergies);
+    else if (selectedFilter === Filter.ADDITIONAL_NEEDS)
+      filteredCampers = campers.filter((camper) => camper.specialNeeds);
+    else filteredCampers = displayedCampers;
 
     if (!search) return filteredCampers;
     return filteredCampers.filter((camper: any) =>
@@ -63,27 +102,32 @@ const CampersTable = ({
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, displayedCampers]);
+  }, [search, selectedFilter, displayedCampers]);
 
-  const camperDetailsCount: { [key: string]: number } = {};
-  campers.forEach((camper) => {
-    if (camper.earlyDropoff) {
-      if (camperDetailsCount.earlyDropoff) camperDetailsCount.earlyDropoff += 1;
-      else camperDetailsCount.earlyDropoff = 1;
-    }
-    if (camper.latePickup) {
-      if (camperDetailsCount.latePickup) camperDetailsCount.latePickup += 1;
-      else camperDetailsCount.latePickup = 1;
-    }
-    if (camper.allergies) {
-      if (camperDetailsCount.allergies) camperDetailsCount.allergies += 1;
-      else camperDetailsCount.allergies = 1;
-    }
-    if (camper.specialNeeds) {
-      if (camperDetailsCount.specialNeeds) camperDetailsCount.specialNeeds += 1;
-      else camperDetailsCount.specialNeeds = 1;
-    }
+  const [camperDetailsCount, setCamperDetailsCount] = React.useState({
+    earlyDropoff: 0,
+    latePickup: 0,
+    allergies: 0,
+    specialNeeds: 0,
   });
+
+  React.useMemo(() => {
+    const tempDetailsCount = {
+      earlyDropoff: 0,
+      latePickup: 0,
+      allergies: 0,
+      specialNeeds: 0,
+    };
+
+    campers.forEach((camper) => {
+      if (camper.earlyDropoff) tempDetailsCount.earlyDropoff += 1;
+      if (camper.latePickup) tempDetailsCount.latePickup += 1;
+      if (camper.allergies) tempDetailsCount.allergies += 1;
+      if (camper.specialNeeds) tempDetailsCount.specialNeeds += 1;
+    });
+
+    setCamperDetailsCount(tempDetailsCount);
+  }, [campers]);
 
   return (
     <Container
@@ -95,7 +139,7 @@ const CampersTable = ({
     >
       {campers.length > 0 ? (
         <>
-          <HStack spacing={12} px="18">
+          <HStack spacing={3} px="18">
             <InputGroup>
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" />
@@ -107,11 +151,72 @@ const CampersTable = ({
                 placeholder="Search by camper name..."
               />
             </InputGroup>
-            <CampersTableOverviewIconGroup
-              campers={campers}
-              campCapacity={campCapacity}
-              camperDetailsCount={camperDetailsCount}
-            />
+
+            {filterOptions.map((option) => {
+              return (
+                <Tag
+                  key={option}
+                  size="lg"
+                  borderRadius="full"
+                  minWidth="-webkit-fit-content"
+                  margin="0px"
+                  variant={selectedFilter === option ? "subtle" : "outline"}
+                  colorScheme={selectedFilter === option ? "linkedin" : "gray"}
+                  onClick={() => setSelectedFilter(option)}
+                >
+                  <TagLabel>
+                    {option === Filter.ALL && (
+                      <CampersTableFilterTag
+                        customIcon={false}
+                        icon={faPerson}
+                        description={campers.length
+                          .toString()
+                          .toString()
+                          .concat("/")
+                          .concat(campSessionCapacity.toString())}
+                        color={
+                          campSessionCapacity === campers.length
+                            ? "text.critical.100"
+                            : "text.default.100"
+                        }
+                      />
+                    )}
+                    {option === Filter.EARLY_DROP_OFF && (
+                      <CampersTableFilterTag
+                        customIcon
+                        icon={icon_sunset}
+                        description={camperDetailsCount.earlyDropoff.toString()}
+                        color="text.default.100"
+                      />
+                    )}
+                    {option === Filter.LATE_PICK_UP && (
+                      <CampersTableFilterTag
+                        customIcon
+                        icon={icon_sunrise}
+                        description={camperDetailsCount.latePickup.toString()}
+                        color="text.default.100"
+                      />
+                    )}
+                    {option === Filter.HAS_ALLERGIES && (
+                      <CampersTableFilterTag
+                        customIcon={false}
+                        icon={faHandDots}
+                        description={camperDetailsCount.allergies.toString()}
+                        color="text.default.100"
+                      />
+                    )}
+                    {option === Filter.ADDITIONAL_NEEDS && (
+                      <CampersTableFilterTag
+                        customIcon={false}
+                        icon={faHandshakeAngle}
+                        description={camperDetailsCount.specialNeeds.toString()}
+                        color="text.default.100"
+                      />
+                    )}
+                  </TagLabel>
+                </Tag>
+              );
+            })}
             <ExportButton />
           </HStack>
 
