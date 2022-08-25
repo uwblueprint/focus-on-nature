@@ -80,21 +80,30 @@ const NavBar = (): JSX.Element => {
       >
         {authenticatedUser ? (
           <>
-            <Image
-              src={FONIcon}
-              alt="FON icon"
-              display="inline"
-              width="40px"
-              height="40px"
-            />
+            <div
+              style={{
+                display: "flex",
+                flex: "1",
+                minWidth: "40px",
+              }}
+            >
+              <Image
+                src={FONIcon}
+                alt="FON icon"
+                display="inline"
+                width="40px"
+                height="40px"
+              />
+            </div>
             <Tabs
               variant="unstyled"
               onChange={navigate}
               defaultIndex={getIndex as any}
-              width="750px"
+              width="650px"
               alignContent="center"
+              isFitted
             >
-              <TabList justifyContent="space-evenly">
+              <TabList>
                 <Tab
                   id="Camps"
                   _selected={{
@@ -131,41 +140,45 @@ const NavBar = (): JSX.Element => {
                 )}
               </TabList>
             </Tabs>
-            <Popover placement="bottom-start" matchWidth>
-              {({ isOpen }) => (
-                <>
-                  <PopoverTrigger>
-                    <Button
-                      rightIcon={
-                        isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />
-                      }
-                      bg="background.white.100"
-                      _hover={{
-                        color: "none",
-                      }}
-                      _active={{
-                        color: "none",
-                      }}
-                      _focus={{
-                        color: "none",
-                      }}
-                    >
-                      {authenticatedUser?.firstName}{" "}
-                      {authenticatedUser?.lastName}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent width="inherit">
-                    <PopoverBody
-                      as={Button}
-                      bg="background.white.100"
-                      onClick={onLogOutClick}
-                    >
-                      Logout
-                    </PopoverBody>
-                  </PopoverContent>
-                </>
-              )}
-            </Popover>
+            <div
+              style={{ display: "flex", flex: "1", justifyContent: "flex-end" }}
+            >
+              <Popover placement="bottom-start" matchWidth>
+                {({ isOpen }) => (
+                  <>
+                    <PopoverTrigger>
+                      <Button
+                        rightIcon={
+                          isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />
+                        }
+                        bg="background.white.100"
+                        _hover={{
+                          color: "none",
+                        }}
+                        _active={{
+                          color: "none",
+                        }}
+                        _focus={{
+                          color: "none",
+                        }}
+                      >
+                        {authenticatedUser?.firstName}{" "}
+                        {authenticatedUser?.lastName}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent width="inherit">
+                      <PopoverBody
+                        as={Button}
+                        bg="background.white.100"
+                        onClick={onLogOutClick}
+                      >
+                        Logout
+                      </PopoverBody>
+                    </PopoverContent>
+                  </>
+                )}
+              </Popover>
+            </div>
           </>
         ) : null}
       </Flex>
