@@ -21,13 +21,15 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPerson,
   faHandDots,
   faHandshakeAngle,
 } from "@fortawesome/free-solid-svg-icons";
-import icon_sunrise from "../../../assets/icon_sunrise.svg";
-import icon_sunset from "../../../assets/icon_sunset.svg";
+
+import { ReactComponent as SunriseIcon } from "../../../assets/icon_sunrise.svg";
+import { ReactComponent as SunsetIcon } from "../../../assets/icon_sunset.svg";
 
 import { CamperDetailsBadgeGroup } from "./CamperDetailsBadges";
 import CampersTableFilterTag from "./CampersTableFilterTag";
@@ -129,6 +131,18 @@ const CampersTable = ({
     setCamperDetailsCount(tempDetailsCount);
   }, [campers]);
 
+  const capacityBadgeColor = (option: Filter): string => {
+    let color = "text.default.100";
+    if (selectedFilter === option) color = "white";
+    else if (campSessionCapacity === campers.length)
+      color = "text.critical.100";
+    return color;
+  };
+
+  const badgeColor = (option: Filter): string => {
+    return selectedFilter === option ? "white" : "text.default.100";
+  };
+
   return (
     <Container
       maxWidth="90vw"
@@ -160,57 +174,48 @@ const CampersTable = ({
                   borderRadius="full"
                   minWidth="-webkit-fit-content"
                   margin="0px"
-                  variant={selectedFilter === option ? "subtle" : "outline"}
-                  colorScheme={selectedFilter === option ? "linkedin" : "gray"}
+                  variant={selectedFilter === option ? "solid" : "outline"}
+                  colorScheme={selectedFilter === option ? "green" : "gray"}
                   onClick={() => setSelectedFilter(option)}
                 >
                   <TagLabel>
                     {option === Filter.ALL && (
                       <CampersTableFilterTag
-                        customIcon={false}
-                        icon={faPerson}
+                        icon={<FontAwesomeIcon icon={faPerson} />}
                         description={campers.length
                           .toString()
                           .toString()
                           .concat("/")
                           .concat(campSessionCapacity.toString())}
-                        color={
-                          campSessionCapacity === campers.length
-                            ? "text.critical.100"
-                            : "text.default.100"
-                        }
+                        color={capacityBadgeColor(option)}
                       />
                     )}
                     {option === Filter.EARLY_DROP_OFF && (
                       <CampersTableFilterTag
-                        customIcon
-                        icon={icon_sunset}
+                        icon={<SunsetIcon fill={badgeColor(option)} />}
                         description={camperDetailsCount.earlyDropoff.toString()}
-                        color="text.default.100"
+                        color={badgeColor(option)}
                       />
                     )}
                     {option === Filter.LATE_PICK_UP && (
                       <CampersTableFilterTag
-                        customIcon
-                        icon={icon_sunrise}
+                        icon={<SunriseIcon fill={badgeColor(option)} />}
                         description={camperDetailsCount.latePickup.toString()}
-                        color="text.default.100"
+                        color={badgeColor(option)}
                       />
                     )}
                     {option === Filter.HAS_ALLERGIES && (
                       <CampersTableFilterTag
-                        customIcon={false}
-                        icon={faHandDots}
+                        icon={<FontAwesomeIcon icon={faHandDots} />}
                         description={camperDetailsCount.allergies.toString()}
-                        color="text.default.100"
+                        color={badgeColor(option)}
                       />
                     )}
                     {option === Filter.ADDITIONAL_NEEDS && (
                       <CampersTableFilterTag
-                        customIcon={false}
-                        icon={faHandshakeAngle}
+                        icon={<FontAwesomeIcon icon={faHandshakeAngle} />}
                         description={camperDetailsCount.specialNeeds.toString()}
-                        color="text.default.100"
+                        color={badgeColor(option)}
                       />
                     )}
                   </TagLabel>
