@@ -29,7 +29,7 @@ import { Filter, filterOptions } from "./CampersTableFilterTypes";
 
 import textStyles from "../../../theme/textStyles";
 
-const ExportButton = () => {
+const ExportButton = (): JSX.Element => {
   return (
     <Button
       leftIcon={<DownloadIcon />}
@@ -53,7 +53,7 @@ const CampersTable = ({
 }: {
   campers: Camper[];
   campSessionCapacity: number;
-}) => {
+}): JSX.Element => {
   const [displayedCampers, setDisplayedCampers] = React.useState(campers);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -74,13 +74,13 @@ const CampersTable = ({
     else filteredCampers = displayedCampers;
 
     if (!search) return filteredCampers;
-    return filteredCampers.filter((camper: any) =>
+    return filteredCampers.filter((camper: Camper) =>
       camper.firstName
         .toLowerCase()
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, selectedFilter, displayedCampers]);
+  }, [search, selectedFilter, campers, displayedCampers]);
 
   const [camperDetailsCount, setCamperDetailsCount] = React.useState({
     earlyDropoff: 0,
@@ -209,7 +209,7 @@ const CampersTable = ({
                       aria-label="Mark as active button"
                       icon={<FaEllipsisV />}
                       variant=""
-                      onClick={() => console.log("3 dot button pressed!")}
+                      // onClick={() => console.log("3 dot button pressed!")}
                     />
                   </Td>
                 </Tr>

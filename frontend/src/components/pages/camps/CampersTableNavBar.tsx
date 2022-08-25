@@ -11,14 +11,14 @@ import React from "react";
 import { Camper } from "../../../types/CamperTypes";
 import CampersTable from "./CampersTable";
 
-const CampersTableNavBar = () => {
+const CampersTableNavBar = (): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   // TODO - this is dependant on the selected camp session
   const campSessionCapacity = 4;
   // -----------------------------------------------------
 
-  const emptyTest: Camper[] = [];
+  // const emptyTest: Camper[] = [];
   const campersTest: Camper[] = [
     {
       firstName: "Joe",

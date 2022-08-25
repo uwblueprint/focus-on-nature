@@ -1,5 +1,3 @@
-import { CampSession } from "./CampsTypes";
-
 export type Camper = {
   // id: string;
   // campSession: CampSession;

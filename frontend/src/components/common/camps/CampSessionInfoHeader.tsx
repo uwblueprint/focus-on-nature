@@ -9,13 +9,7 @@ import {
 
 import textStyles from "../../../theme/textStyles";
 
-type CampSessionInfoHeaderProps = {
-  camp: any;
-};
-
-const CampSessionInfoHeader = ({
-  camp,
-}: CampSessionInfoHeaderProps): React.ReactElement => {
+const CampSessionInfoHeader = ({ camp }: { camp: any }): React.ReactElement => {
   const [currentCampSession, setCurrentCampSession] = useState(0);
   const numSessions = camp.campSessions.length;
 

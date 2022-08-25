@@ -20,10 +20,10 @@ const CampersTableFilterTagItem = ({
   description,
   itemColor,
 }: {
-  icon: any;
+  icon: JSX.Element;
   description: string;
   itemColor: string;
-}) => {
+}): JSX.Element => {
   return (
     <HStack alignContent="center" color={itemColor}>
       {icon}
@@ -44,8 +44,8 @@ const CampersTableFilterTag = ({
   campers: Camper[];
   campSessionCapacity: number;
   camperDetailsCount: { [key: string]: number };
-}) => {
-  let icon: any;
+}): JSX.Element => {
+  let icon: JSX.Element;
   let description: string;
   let color = "black";
 

@@ -19,10 +19,10 @@ const CamperDetailsBadge = ({
   description,
   color,
 }: {
-  icon: any;
+  icon: JSX.Element;
   description: string;
   color: string;
-}) => {
+}): JSX.Element => {
   return (
     <HStack
       alignContent="center"
@@ -37,7 +37,11 @@ const CamperDetailsBadge = ({
   );
 };
 
-const CamperDetailsBadgeGroup = ({ camper }: { camper: Camper }) => {
+const CamperDetailsBadgeGroup = ({
+  camper,
+}: {
+  camper: Camper;
+}): JSX.Element => {
   return (
     <Container width="-webkit-fit-content" marginStart="0px">
       <HStack>

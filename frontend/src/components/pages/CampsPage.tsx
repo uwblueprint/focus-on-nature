@@ -1,4 +1,4 @@
-import { Flex, Box, Container } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 import React from "react";
 import CampSessionInfoHeader from "../common/camps/CampSessionInfoHeader";
 import CampersTableNavBar from "./camps/CampersTableNavBar";
