@@ -52,7 +52,7 @@ const CampersTableFilterTag = ({
   const capacityBadgeColor = (option: Filter): string => {
     let tempColor = "text.default.100";
     if (selectedFilter === option) tempColor = "white";
-    else if (campSessionCapacity === campers.length)
+    else if (campers.length >= campSessionCapacity)
       tempColor = "text.critical.100";
     return tempColor;
   };
