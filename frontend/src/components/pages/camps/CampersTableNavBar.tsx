@@ -15,7 +15,7 @@ const CampersTableNavBar = () => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   // TODO - this is dependant on the selected camp session
-  const campSessionCapacity = 20;
+  const campSessionCapacity = 4;
   // -----------------------------------------------------
 
   const emptyTest: Camper[] = [];

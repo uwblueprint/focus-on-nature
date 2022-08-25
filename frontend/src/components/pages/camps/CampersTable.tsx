@@ -21,20 +21,12 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPerson,
-  faHandDots,
-  faHandshakeAngle,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { ReactComponent as SunriseIcon } from "../../../assets/icon_sunrise.svg";
-import { ReactComponent as SunsetIcon } from "../../../assets/icon_sunset.svg";
-
 import CamperDetailsBadgeGroup from "./CamperDetailsBadgeGroup";
 import CampersTableFilterTag from "./CampersTableFilterTag";
 
 import { Camper } from "../../../types/CamperTypes";
+import { Filter, filterOptions } from "./CampersTableFilterTypes";
+
 import textStyles from "../../../theme/textStyles";
 
 const ExportButton = () => {
@@ -62,22 +54,6 @@ const CampersTable = ({
   campers: Camper[];
   campSessionCapacity: number;
 }) => {
-  enum Filter {
-    ALL = "All",
-    EARLY_DROP_OFF = "Early Drop Off",
-    LATE_PICK_UP = "Late Pick Up",
-    HAS_ALLERGIES = "Has Allergies",
-    ADDITIONAL_NEEDS = "Additional Needs",
-  }
-
-  const filterOptions = [
-    Filter.ALL,
-    Filter.EARLY_DROP_OFF,
-    Filter.LATE_PICK_UP,
-    Filter.HAS_ALLERGIES,
-    Filter.ADDITIONAL_NEEDS,
-  ];
-
   const [displayedCampers, setDisplayedCampers] = React.useState(campers);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -131,18 +107,6 @@ const CampersTable = ({
     setCamperDetailsCount(tempDetailsCount);
   }, [campers]);
 
-  const capacityBadgeColor = (option: Filter): string => {
-    let color = "text.default.100";
-    if (selectedFilter === option) color = "white";
-    else if (campSessionCapacity === campers.length)
-      color = "text.critical.100";
-    return color;
-  };
-
-  const badgeColor = (option: Filter): string => {
-    return selectedFilter === option ? "white" : "text.default.100";
-  };
-
   return (
     <Container
       maxWidth="90vw"
@@ -179,45 +143,13 @@ const CampersTable = ({
                   onClick={() => setSelectedFilter(option)}
                 >
                   <TagLabel>
-                    {option === Filter.ALL && (
-                      <CampersTableFilterTag
-                        icon={<FontAwesomeIcon icon={faPerson} />}
-                        description={campers.length
-                          .toString()
-                          .toString()
-                          .concat("/")
-                          .concat(campSessionCapacity.toString())}
-                        color={capacityBadgeColor(option)}
-                      />
-                    )}
-                    {option === Filter.EARLY_DROP_OFF && (
-                      <CampersTableFilterTag
-                        icon={<SunsetIcon fill={badgeColor(option)} />}
-                        description={camperDetailsCount.earlyDropoff.toString()}
-                        color={badgeColor(option)}
-                      />
-                    )}
-                    {option === Filter.LATE_PICK_UP && (
-                      <CampersTableFilterTag
-                        icon={<SunriseIcon fill={badgeColor(option)} />}
-                        description={camperDetailsCount.latePickup.toString()}
-                        color={badgeColor(option)}
-                      />
-                    )}
-                    {option === Filter.HAS_ALLERGIES && (
-                      <CampersTableFilterTag
-                        icon={<FontAwesomeIcon icon={faHandDots} />}
-                        description={camperDetailsCount.allergies.toString()}
-                        color={badgeColor(option)}
-                      />
-                    )}
-                    {option === Filter.ADDITIONAL_NEEDS && (
-                      <CampersTableFilterTag
-                        icon={<FontAwesomeIcon icon={faHandshakeAngle} />}
-                        description={camperDetailsCount.specialNeeds.toString()}
-                        color={badgeColor(option)}
-                      />
-                    )}
+                    <CampersTableFilterTag
+                      filterOption={option}
+                      selectedFilter={selectedFilter}
+                      campers={campers}
+                      campSessionCapacity={campSessionCapacity}
+                      camperDetailsCount={camperDetailsCount}
+                    />
                   </TagLabel>
                 </Tag>
               );
