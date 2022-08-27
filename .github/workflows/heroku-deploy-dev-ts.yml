@@ -28,10 +28,9 @@ jobs:
         env:
           HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
           HEROKU_EMAIL: "${{ secrets.HEROKU_EMAIL }}"
-      - name: Add Heroku git remote
-        run: heroku git:remote --app $HEROKU_APP_NAME
-        env:
-          HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+      - name: Add remote origin
+        run: |
+          git remote add heroku https://heroku:${{ secrets.DEV_PROJECT_ID }}@git.heroku.com/${{ secrets.HEROKU_API_KEY }}.git
       - name: Set Heroku config vars
         run: |
           heroku config:set MG_DATABASE_URL="${{ secrets.MG_DATABASE_URL }}" -a $HEROKU_APP_NAME && \
@@ -50,5 +49,6 @@ jobs:
           heroku config:set PREVIEW_DEPLOY=true -a $HEROKU_APP_NAME
         env:
           HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
-      - name: Push to Heroku
-        run: git push heroku `git subtree split --prefix backend/typescript`:master --force
+      - name: Deploy to Heroku
+        run: |
+          git push heroku HEAD:master -f
