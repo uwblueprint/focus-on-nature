@@ -120,6 +120,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "mom@domain.com",
     contactNumber: "000-123-4567",
     status: "Registered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-07-28T19:12:31.783+00:00"),
   },
   {
@@ -131,6 +139,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "danmom@domain.com",
     contactNumber: "000-123-4560",
     status: "Registered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-10-28T19:12:31.783+00:00"),
   },
   {
@@ -142,6 +158,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "janemom@domain.com",
     contactNumber: "000-123-4561",
     status: "Registered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
   },
   {
     id: "234",
@@ -152,6 +176,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "bobmom@domain.com",
     contactNumber: "000-123-4568",
     status: "RegistrationFormSent",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-07-19T19:12:31.783+00:00"),
   },
   {
@@ -163,6 +195,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "ellamom@domain.com",
     contactNumber: "000-123-4562",
     status: "RegistrationFormSent",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-10-28T19:12:31.783+00:00"),
   },
   {
@@ -174,6 +214,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "ellamom@domain.com",
     contactNumber: "000-123-4562",
     status: "RegistrationFormSent",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
   },
   {
     id: "345",
@@ -184,6 +232,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "joebobmom@domain.com",
     contactNumber: "000-123-4569",
     status: "NotRegistered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-07-19T19:12:31.783+00:00"),
   },
   {
@@ -195,6 +251,14 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "sarahmom@domain.com",
     contactNumber: "000-123-4565",
     status: "NotRegistered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
     linkExpiry: new Date("2022-10-28T19:12:31.783+00:00"),
   },
   {
@@ -206,5 +270,13 @@ export const waitlistedCampersTest: WaitlistedCamper[] = [
     contactEmail: "sarahmom@domain.com",
     contactNumber: "000-123-4565",
     status: "NotRegistered",
+    campSession: {
+      id: "test",
+      camp: "test",
+      capacity: 5,
+      campers: ["test1", "test2"],
+      waitlist: ["test1", "test2"],
+      dates: ["test1", "test2"],
+    },
   },
 ];
