@@ -273,8 +273,8 @@ campRouter.delete("/:id", async (req, res) => {
   }
 });
 
-campRouter.get("/", (req, res) => {
-  res.status(200).send();
+campRouter.get("/hello", (req, res) => {
+  res.status(200).send("hello");
 });
 
 export default campRouter;
