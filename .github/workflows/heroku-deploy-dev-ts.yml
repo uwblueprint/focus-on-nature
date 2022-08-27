@@ -51,4 +51,4 @@ jobs:
         env:
           HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
       - name: Push to Heroku
-        run: git subtree push --prefix backend/typescript heroku master --force
+        run: git subtree push --prefix backend/typescript heroku master
