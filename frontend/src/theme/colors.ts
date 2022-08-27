@@ -68,7 +68,11 @@ const colors = {
       100: "#C9CCCF",
     },
   },
-
+  waitlistCards: {
+    complete: "#C1FFBF",
+    expired: "#FFAAAA",
+    sent: "#FFE49E",
+  },
   camperDetailsCards: {
     latePickupAndEarlyDropOff: "#F1E2FF",
     hasAllergy: "#FFD4CE",
@@ -76,7 +80,6 @@ const colors = {
     latePickup: "#BFD1FF",
     earlyDropoff: "#FDEED7",
   },
-
   label: {
     green: {
       100: "#D2FFCE",

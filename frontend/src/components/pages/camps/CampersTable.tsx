@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
-import CamperDetailsBadgeGroup from "./CamperDetailsBadgeGroup";
+import { CamperDetailsBadgeGroup } from "./CamperDetailsBadge";
 import CampersTableFilterTag from "./CampersTableFilterTag";
 
 import { Camper } from "../../../types/CamperTypes";
@@ -177,34 +177,45 @@ const CampersTable = ({
             <Tbody>
               {tableData.map((camper, i) => (
                 <Tr key={i} margin="16px 0">
-                  <Td>
+                  <Td maxWidth="190px">
                     <VStack align="start">
-                      <Text fontWeight="bold">{`${camper.firstName} ${camper.lastName}`}</Text>
+                      <Text
+                        style={textStyles.buttonSemiBold}
+                      >{`${camper.firstName} ${camper.lastName}`}</Text>
                       <Text>Age:&nbsp;{camper.age}</Text>
                     </VStack>
                   </Td>
-                  <Td>
+                  <Td maxWidth="320px">
                     <VStack align="start">
-                      <Text fontWeight="bold">{`${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`}</Text>
+                      <Text
+                        style={textStyles.buttonSemiBold}
+                      >{`${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`}</Text>
                       <Text>
                         {camper.contacts[0].phoneNumber} |{" "}
                         {camper.contacts[0].email}
                       </Text>
                     </VStack>
                   </Td>
-                  <Td>
+                  <Td maxWidth="320px">
                     <VStack align="start">
-                      <Text fontWeight="bold">{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
+                      <Text
+                        style={textStyles.buttonSemiBold}
+                      >{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
                       <Text>
                         {camper.contacts[1].phoneNumber} |{" "}
                         {camper.contacts[1].email}
                       </Text>
                     </VStack>
                   </Td>
-                  <Td pl="7px">
+                  <Td pl="7px" maxWidth="760px">
                     <CamperDetailsBadgeGroup camper={camper} />
                   </Td>
-                  <Td justifyContent="flex-end" margin="0px" padding="0px">
+                  <Td
+                    justifyContent="flex-end"
+                    margin="0px"
+                    padding="0px"
+                    maxWidth="32px"
+                  >
                     <IconButton
                       aria-label="Mark as active button"
                       icon={<FaEllipsisV />}

@@ -8,117 +8,17 @@ import {
 } from "@chakra-ui/react";
 
 import React from "react";
-import { Camper } from "../../../types/CamperTypes";
 import CampersTable from "./CampersTable";
+import WaitlistedCampersTable from "./WaitlistedCampersTable";
+
+import {
+  campSessionCapacity,
+  campersTest,
+  waitlistedCampersTest,
+} from "./sampleData";
 
 const CampersTableNavBar = (): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
-
-  // TODO - this is dependant on the selected camp session
-  const campSessionCapacity = 4;
-  // -----------------------------------------------------
-
-  // const emptyTest: Camper[] = [];
-  const campersTest: Camper[] = [
-    {
-      firstName: "Joe",
-      lastName: "Bob",
-      age: 12,
-      allergies: "peanuts",
-      earlyDropoff: [new Date()],
-      latePickup: [new Date()],
-      specialNeeds: "",
-      contacts: [
-        {
-          firstName: "Mom",
-          lastName: "Bob",
-          email: "momBob@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-        {
-          firstName: "Dad",
-          lastName: "Bob",
-          email: "dadBob@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent ",
-        },
-      ],
-    },
-    {
-      firstName: "Fred",
-      lastName: "McAlister",
-      age: 10,
-      allergies: "",
-      latePickup: [new Date()],
-      specialNeeds: "N/A",
-      contacts: [
-        {
-          firstName: "Mom",
-          lastName: "Fred",
-          email: "momFred@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-        {
-          firstName: "Dad",
-          lastName: "Fred",
-          email: "dadFred@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-      ],
-    },
-    {
-      firstName: "Josh",
-      lastName: "Tod",
-      age: 11,
-      allergies: "",
-      earlyDropoff: [new Date()],
-      specialNeeds: "",
-      contacts: [
-        {
-          firstName: "Mom",
-          lastName: "Tod",
-          email: "momTod@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-        {
-          firstName: "Dad",
-          lastName: "Toc",
-          email: "dadTod@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-      ],
-    },
-    {
-      firstName: "Felicia",
-      lastName: "Rose",
-      age: 9,
-      allergies: "pollen",
-      earlyDropoff: [new Date()],
-      latePickup: [new Date()],
-      specialNeeds: "",
-      contacts: [
-        {
-          firstName: "Mom",
-          lastName: "Rose",
-          email: "momRose@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-        {
-          firstName: "Dad",
-          lastName: "Rose",
-          email: "dadRose@gmail.com",
-          phoneNumber: "123-456-7890",
-          relationshipToCamper: "parent",
-        },
-      ],
-    },
-  ];
 
   return (
     <Container maxW="90vw" width="100%">
@@ -127,6 +27,7 @@ const CampersTableNavBar = (): JSX.Element => {
         variant="line"
         colorScheme="green"
         outline="0"
+        marginBottom="30px"
       >
         <TabList>
           <Tab whiteSpace="nowrap">Registration List</Tab>
@@ -139,7 +40,9 @@ const CampersTableNavBar = (): JSX.Element => {
               campSessionCapacity={campSessionCapacity}
             />
           </TabPanel>
-          <TabPanel>waitlist table here</TabPanel>
+          <TabPanel padding="0">
+            <WaitlistedCampersTable waitlistedCampers={waitlistedCampersTest} />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Container>
