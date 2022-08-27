@@ -3,7 +3,7 @@ name: Deploy backend to Heroku dev environment
 on:
   push:
     branches:
-      - main
+      - feat/test_heroku
     paths:
       - "backend/typescript/**"
 
