@@ -25,7 +25,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
-// camper service to allow campers to be registered and waitlisted yay
+// camper service to allow campers to be registered and waitlisted
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCampers(
