@@ -50,5 +50,9 @@ jobs:
           heroku config:set PREVIEW_DEPLOY=true -a $HEROKU_APP_NAME
         env:
           HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+          HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
       - name: Push to Heroku
-        run: git push heroku `git subtree split --prefix backend/typescript`:main --force
+        run: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git main
+        env:
+        HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+        HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
