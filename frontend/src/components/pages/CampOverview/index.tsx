@@ -80,7 +80,7 @@ const CampOverview = (): JSX.Element => {
   return (
     <Container maxWidth="100vw">
       <Flex marginLeft="80px" marginRight="80px">
-        <Box width="60%" mt="1rem">
+        <Box width="100%" mt="1rem">
           <HStack width="100%" marginBottom="8px" alignItems="center">
             <Text align="left" textStyle="displayXLarge" marginBottom="8px">
               {camp?.name}
@@ -172,7 +172,9 @@ const CampOverview = (): JSX.Element => {
                 width="32px"
                 height="32px"
               />
-              <Text textStyle="bodyRegular">{locationToString(camp?.location)}</Text>
+              <Text textStyle="bodyRegular">
+                {locationToString(camp?.location)}
+              </Text>
             </HStack>
           </HStack>
         </Box>

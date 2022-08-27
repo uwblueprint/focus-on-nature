@@ -8,25 +8,25 @@ export type Location = {
   postalCode: string;
 };
 
-export type Camp = {
-  id?: string;
-  active?: boolean;
-  ageLower?: number;
-  ageUpper?: number;
-  campCoordinators?: CampCoordinator[] | string[];
-  campCounsellors?: CampCoordinator[] | string[];
-  name?: string;
-  description?: string;
-  earlyDropoff?: string;
-  endTime?: string;
-  latePickup?: string;
-  location?: Location;
-  startTime?: string;
-  fee?: number;
+export type CampResponse = {
+  id: string;
+  active: boolean;
+  ageLower: number;
+  ageUpper: number;
+  campCoordinators: CampCoordinator[] | string[];
+  campCounsellors: CampCoordinator[] | string[];
+  name: string;
+  description: string;
+  earlyDropoff: string;
+  endTime: string;
+  latePickup: string;
+  location: Location;
+  startTime: string;
+  fee: number;
   formQuestions?: FormQuestion[];
   campSessions?: CampSession[];
-  volunteers?: string;
-  campPhotoUrl?: string;
+  volunteers: string;
+  campPhotoUrl: string;
 };
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";

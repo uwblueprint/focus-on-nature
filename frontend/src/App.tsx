@@ -109,6 +109,11 @@ const App = (): React.ReactElement => {
                 />
                 <PrivateRoute
                   exact
+                  path={Routes.CAMP_OVERVIEW_PAGE}
+                  component={CampOverview}
+                />
+                <PrivateRoute
+                  exact
                   path={Routes.ACCESS_CONTROL_PAGE}
                   component={AccessControlPage}
                 />

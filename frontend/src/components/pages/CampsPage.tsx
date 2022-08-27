@@ -1,6 +1,7 @@
-import { Flex } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 import React from "react";
 import CampSessionInfoHeader from "../common/camps/CampSessionInfoHeader";
+import CampersTableNavBar from "./camps/CampersTableNavBar";
 
 const CampsPage = (): React.ReactElement => {
   // sample data
@@ -42,12 +43,12 @@ const CampsPage = (): React.ReactElement => {
   };
 
   return (
-    <div>
-      <h2>Camps Page</h2>
-      <Flex margin="10px">
+    <Box backgroundColor="grey.200">
+      <Container maxW="90vw" width="100%" my="20px">
         <CampSessionInfoHeader camp={camp} />
-      </Flex>
-    </div>
+      </Container>
+      <CampersTableNavBar />
+    </Box>
   );
 };
 
