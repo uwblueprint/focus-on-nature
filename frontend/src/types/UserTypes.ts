@@ -18,3 +18,9 @@ export type UserResponse = {
   role: Role;
   active: boolean;
 };
+
+export type UserSelectOption = {
+  label: string;
+  email: string;
+  value: string;
+};

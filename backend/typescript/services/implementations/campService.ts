@@ -279,8 +279,6 @@ class CampService implements ICampService {
           camp.filePath,
           camp.fileContentType,
         );
-      } else if (!camp.filePath && oldCamp.fileName) {
-        await this.storageService.deleteFile(oldCamp.fileName);
       }
 
       updatedCamp = await MgCamp.findByIdAndUpdate(
@@ -301,7 +299,7 @@ class CampService implements ICampService {
             endTime: camp.endTime,
             volunteers: camp.volunteers,
             fee: camp.fee,
-            fileName: camp.filePath ? fileName : null,
+            fileName: camp.filePath || oldCamp.fileName ? fileName : null,
           },
         },
         { new: true },

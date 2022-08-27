@@ -1,5 +1,11 @@
 import { Role } from "./AuthTypes";
 
+export enum CampStatus {
+  DRAFT = "Draft",
+  PAST = "Past",
+  PUBLISHED = "Published",
+}
+
 export type Location = {
   streetAddress1: string;
   streetAddress2?: string;
@@ -13,8 +19,8 @@ export type CampResponse = {
   active: boolean;
   ageLower: number;
   ageUpper: number;
-  campCoordinators: CampCoordinator[] | string[];
-  campCounsellors: CampCoordinator[] | string[];
+  campCoordinators: string[];
+  campCounsellors: string[];
   name: string;
   description: string;
   earlyDropoff: string;
@@ -49,12 +55,12 @@ export type FormQuestion = {
   options?: string[];
 };
 
-export type CampCoordinator = {
-  firstName: string;
-  lastName: string;
-  authId: string;
-  email: string;
-  role: Role;
-  active: boolean;
-  campSessions: CampSession[];
-};
+// export type CampCoordinator = {
+//   firstName: string;
+//   lastName: string;
+//   authId: string;
+//   email: string;
+//   role: Role;
+//   active: boolean;
+//   campSessions: CampSession[];
+// };

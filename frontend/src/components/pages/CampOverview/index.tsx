@@ -12,35 +12,67 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MultiValue } from "chakra-react-select";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
-import { Camp } from "../../../types/CampsTypes";
-import { UserResponse } from "../../../types/UserTypes";
+import { CampResponse, CampStatus } from "../../../types/CampsTypes";
+import { UserResponse, UserSelectOption } from "../../../types/UserTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import UserSelect from "./UserSelect";
 import locationToString from "../../../utils/CampUtils";
 
-// TODO: update the statuses
-enum Status {
-  PUBLISHED = "Published",
-  DRAFT = "Draft",
-}
-
-const updateCamp = async (newCamp: Camp) => {
-  if (newCamp.id) {
-    await CampsAPIClient.editCampById(newCamp.id, newCamp);
-  }
-};
-
-const CampOverview = (): JSX.Element => {
-  const [users, setUsers] = React.useState([] as UserResponse[]);
-  const [camp, setCamp] = useState<Camp>();
-  const status = camp?.active ? Status.PUBLISHED : Status.DRAFT;
+const CampOverviewPage = (): JSX.Element => {
+  const [users, setUsers] = useState([] as UserResponse[]);
+  const [camp, setCamp] = useState<CampResponse>({
+    id: "",
+    active: false,
+    ageLower: 0,
+    ageUpper: 0,
+    campCoordinators: [],
+    campCounsellors: [],
+    name: "",
+    description: "",
+    earlyDropoff: "",
+    endTime: "",
+    latePickup: "",
+    location: {
+      streetAddress1: "",
+      city: "",
+      province: "",
+      postalCode: "",
+    },
+    startTime: "",
+    fee: 0,
+    volunteers: "",
+    campPhotoUrl: "",
+  });
+  const status = camp?.active ? CampStatus.PUBLISHED : CampStatus.DRAFT;
   const campId = "630a63450eb59852f9d01b1e"; // with camp photo
   // const campId = "62574d7ae89788006c93cf02"; // without camp photo
+
+  const userSelectOptions = useMemo(() => {
+    return users.map(user => { return {
+      label: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      value: user.id,
+    }});
+  }, [users])
+
+  const selectedCoordinators = useMemo(() => {
+    if (camp) {
+      return userSelectOptions.filter(user => camp.campCoordinators.indexOf(user.value) !== -1);
+    }
+    return [];
+  }, [camp, userSelectOptions]);
+
+  const selectedCounsellors = useMemo(() => {
+    if (camp) {
+      return userSelectOptions.filter(user => camp.campCounsellors.indexOf(user.value) !== -1);
+    }
+    return [];
+  }, [camp, userSelectOptions]);
 
   useEffect(() => {
     const getCamp = async () => {
@@ -52,35 +84,59 @@ const CampOverview = (): JSX.Element => {
     const getUsers = async () => {
       const userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
-        const coordinators = userResponse.filter((user) => {
-          return user.role === "CampCoordinator";
-        });
+        const coordinators = userResponse.filter((user) => 
+          user.role === "CampCoordinator"
+        );
         setUsers(coordinators);
       }
     };
     getUsers();
   }, []);
 
-  const handleCoordinatorChange = (newValue: MultiValue<UserResponse>) => {
-    const campCoordinators = newValue.map((user) => user.id);
-    const newCamp = { ...camp, campCoordinators };
-    setCamp(newCamp);
-    updateCamp(newCamp);
+  const updateCamp = async (newCamp: CampResponse) => {
+    console.log('updateCamp');
+    if (newCamp.id) {
+      await CampsAPIClient.editCampById(newCamp.id, newCamp);
+    }
   };
 
-  const handleCounsellorChange = (newValue: MultiValue<UserResponse>) => {
-    const campCounsellors = newValue.map((user) => user.id);
-    const newCamp = { ...camp, campCounsellors };
-    setCamp(newCamp);
-    updateCamp(newCamp);
+  const handleCoordinatorChange = (newValue: MultiValue<UserSelectOption>) => {
+    const coordinators = newValue.map((user) => user.value);
+    if (camp) {
+      const newCamp = { ...camp, campCoordinators: coordinators };
+      setCamp(newCamp);
+      updateCamp(newCamp);
+    }
   };
 
-  const handleVolunteerChange = (e: any) => {};
+  const handleCounsellorChange = (newValue: MultiValue<UserSelectOption>) => {
+    const counsellors = newValue.map((user) => user.value);
+    if (camp) {
+      const newCamp = { ...camp, campCounsellors: counsellors };
+      setCamp(newCamp);
+      updateCamp(newCamp);
+    }
+  };
+
+  useEffect(() => {
+    if (camp) {
+
+    const timeOutId = setTimeout(() => updateCamp(camp), 500);
+    return () => clearTimeout(timeOutId);
+    }
+    return () => {};
+  }, [camp]);
+
+  const handleVolunteerChange = (e: any) => {
+    if (camp) {
+      setCamp({...camp, volunteers: e.target.value});
+    }
+  }
 
   return (
     <Container maxWidth="100vw">
       <Flex marginLeft="80px" marginRight="80px">
-        <Box width="100%" mt="1rem">
+        <Box width="60%" mt="1rem">
           <HStack width="100%" marginBottom="8px" alignItems="center">
             <Text align="left" textStyle="displayXLarge" marginBottom="8px">
               {camp?.name}
@@ -108,8 +164,9 @@ const CampOverview = (): JSX.Element => {
             <GridItem colSpan={3}>
               <UserSelect
                 placeholderText="Add camp coordinator(s)"
-                users={users}
+                options={userSelectOptions}
                 onChange={handleCoordinatorChange}
+                value={selectedCoordinators}
               />
             </GridItem>
             <GridItem>
@@ -118,8 +175,9 @@ const CampOverview = (): JSX.Element => {
             <GridItem colSpan={3}>
               <UserSelect
                 placeholderText="Add camp counsellor(s)"
-                users={users}
+                options={userSelectOptions}
                 onChange={handleCounsellorChange}
+                value={selectedCounsellors}
               />
             </GridItem>
             <GridItem>
@@ -132,6 +190,7 @@ const CampOverview = (): JSX.Element => {
                 _placeholder={{ color: "text.grey.100" }}
                 size="md"
                 _focusVisible={{ outline: "0" }}
+                value={camp.volunteers}
               />
             </GridItem>
           </Grid>
@@ -139,7 +198,7 @@ const CampOverview = (): JSX.Element => {
             Camp Details
           </Text>
           <Text marginBottom="16px" textStyle="bodyRegular" width="100%">
-            {camp?.description}
+            {camp.description}
           </Text>
           <HStack spacing="24px" alignItems="center">
             <HStack>
@@ -150,7 +209,7 @@ const CampOverview = (): JSX.Element => {
                 width="32px"
                 height="32px"
               />
-              <Text textStyle="bodyRegular">${camp?.fee} per day</Text>
+              <Text textStyle="bodyRegular">${camp.fee} per day</Text>
             </HStack>
             <HStack>
               <Image
@@ -161,7 +220,7 @@ const CampOverview = (): JSX.Element => {
                 height="32px"
               />
               <Text textStyle="bodyRegular">
-                {camp?.ageLower} to {camp?.ageUpper} years old
+                {camp.ageLower} to {camp.ageUpper} years old
               </Text>
             </HStack>
             <HStack>
@@ -173,12 +232,12 @@ const CampOverview = (): JSX.Element => {
                 height="32px"
               />
               <Text textStyle="bodyRegular">
-                {locationToString(camp?.location)}
+                {locationToString(camp.location)}
               </Text>
             </HStack>
           </HStack>
         </Box>
-        {camp?.campPhotoUrl && (
+        {camp.campPhotoUrl && (
           <Box width="40%">
             <AspectRatio
               marginTop="32px"
@@ -189,7 +248,7 @@ const CampOverview = (): JSX.Element => {
             >
               <Image
                 objectFit="scale-down"
-                src={camp?.campPhotoUrl}
+                src={camp.campPhotoUrl}
                 alt="Camp Image"
               />
             </AspectRatio>
@@ -200,4 +259,4 @@ const CampOverview = (): JSX.Element => {
   );
 };
 
-export default CampOverview;
+export default CampOverviewPage;

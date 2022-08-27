@@ -1,46 +1,49 @@
 import { Text, VStack } from "@chakra-ui/react";
 import { Select, GroupBase, MultiValue } from "chakra-react-select";
 import React from "react";
-import { UserResponse } from "../../../types/UserTypes";
+import { UserResponse, UserSelectOption } from "../../../types/UserTypes";
 
 // In menu, show user's name and email
 // In control, show user's name only
-const formatOptionLabel = (user: UserResponse, { context }: any) => {
+const formatOptionLabel = (user: UserSelectOption, { context }: any) => {
   if (context === "menu") {
     return (
       <>
         <VStack alignItems="left" width="100%">
           <Text textStyle="bodyRegular">
-            {user.firstName} {user.lastName}
+            {user.label}
           </Text>
           <Text textStyle="xSmallRegular">{user.email}</Text>
         </VStack>
       </>
     );
   }
-  return `${user.firstName} ${user.lastName}`;
+  return user.label;
 };
 
 const UserSelect = ({
-  placeholderText,
-  users,
   onChange,
+  placeholderText,
+  options,
+  value,
 }: {
   placeholderText?: string;
-  users: UserResponse[];
-  onChange: (newVal: MultiValue<UserResponse>) => void;
+  onChange: (newVal: MultiValue<UserSelectOption>) => void;
+  options: UserSelectOption[];
+  value: UserSelectOption[]
 }): JSX.Element => {
   return (
     <>
-      <Select<UserResponse, true, GroupBase<UserResponse>>
+      <Select<UserSelectOption, true, GroupBase<UserSelectOption>>
         components={{
           DropdownIndicator: () => null,
         }}
+        value={value}
         useBasicStyles
         isMulti
         isClearable={false}
         name="selectComponent"
-        options={users}
+        options={options}
         placeholder={placeholderText}
         closeMenuOnSelect={false}
         size="md"
