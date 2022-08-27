@@ -9,6 +9,7 @@ on:
 
 jobs:
   deploy:
+    if: ${{ true }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
