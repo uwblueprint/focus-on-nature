@@ -23,7 +23,10 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
     const campers = req.body as CreateCampersDTO;
-    const newCampers = await camperService.createCampers(campers);
+    const newCampers = await camperService.createCampers(
+      campers,
+      req.query?.wId as string,
+    );
     res.status(201).json(newCampers);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
@@ -135,8 +138,6 @@ camperRouter.patch(
           lastName: req.body.lastName,
           age: req.body.age,
           allergies: req.body.allergies,
-          hasCamera: req.body.hasCamera,
-          hasLaptop: req.body.hasLaptop,
           earlyDropoff: req.body.earlyDropoff,
           latePickup: req.body.latePickup,
           specialNeeds: req.body.specialNeeds,

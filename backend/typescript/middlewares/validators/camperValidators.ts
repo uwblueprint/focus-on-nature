@@ -44,16 +44,6 @@ export const createCampersDtoValidator = async (
     if (camper.allergies && !validatePrimitive(camper.allergies, "string")) {
       return res.status(400).send(getApiValidationError("allergies", "string"));
     }
-    if (camper.hasCamera && !validatePrimitive(camper.hasCamera, "boolean")) {
-      return res
-        .status(400)
-        .send(getApiValidationError("hasCamera", "boolean"));
-    }
-    if (camper.hasLaptop && !validatePrimitive(camper.hasLaptop, "boolean")) {
-      return res
-        .status(400)
-        .send(getApiValidationError("hasLaptop", "boolean"));
-    }
     if (!Array.isArray(camper.earlyDropoff)) {
       return res.status(400).send("early dropoff is not an array");
     }
@@ -116,6 +106,13 @@ export const createCampersDtoValidator = async (
         return res
           .status(400)
           .send(getApiValidationError("contact phoneNumber", "string"));
+      }
+      if (!validatePrimitive(contact.relationshipToCamper, "string")) {
+        return res
+          .status(400)
+          .send(
+            getApiValidationError("contact relationshipToCamper", "string"),
+          );
       }
     }
     if (
@@ -214,12 +211,6 @@ export const updateCamperDtoValidator = async (
   if (req.body.allergies && !validatePrimitive(req.body.allergies, "string")) {
     return res.status(400).send(getApiValidationError("allergies", "string"));
   }
-  if (req.body.hasCamera && !validatePrimitive(req.body.hasCamera, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasCamera", "boolean"));
-  }
-  if (req.body.hasLaptop && !validatePrimitive(req.body.hasLaptop, "boolean")) {
-    return res.status(400).send(getApiValidationError("hasLaptop", "boolean"));
-  }
   if (!Array.isArray(req.body.earlyDropoff)) {
     return res.status(400).send("early dropoff is not an array");
   }
@@ -286,6 +277,13 @@ export const updateCamperDtoValidator = async (
         return res
           .status(400)
           .send(getApiValidationError("contact phoneNumber", "string"));
+      }
+      if (!validatePrimitive(contact.relationshipToCamper, "string")) {
+        return res
+          .status(400)
+          .send(
+            getApiValidationError("contact relationshipToCamper", "string"),
+          );
       }
     }
   }
