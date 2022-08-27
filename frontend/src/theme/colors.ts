@@ -55,6 +55,7 @@ const colors = {
       100: "#F4F6FC",
       200: "#FAFAFA",
       300: "#F4F4F4",
+      400: "#D8DBDF",
     },
     // TODO: to fill in
   },
@@ -71,6 +72,13 @@ const colors = {
     complete: "#C1FFBF",
     expired: "#FFAAAA",
     sent: "#FFE49E",
+  },
+  camperDetailsCards: {
+    latePickupAndEarlyDropOff: "#F1E2FF",
+    hasAllergy: "#FFD4CE",
+    additionalNeeds: "#FEFCDA",
+    latePickup: "#BFD1FF",
+    earlyDropoff: "#FDEED7",
   },
   label: {
     green: {
