@@ -195,3 +195,7 @@ camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
 });
 
 export default camperRouter;
+
+camperRouter.get("/hello", async (req, res) => {
+  res.status(200).send("hello");
+});
