@@ -9,7 +9,7 @@ import {
 
 import React from "react";
 import CampersTable from "./CampersTable";
-import WaitlistedCampersTable from "../CampOverview/WaitlistedCampersTable";
+import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 import {
   campSessionCapacity,

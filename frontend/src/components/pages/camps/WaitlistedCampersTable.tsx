@@ -11,78 +11,23 @@ import {
   Tbody,
   Td,
   Text,
-  Th,
   Thead,
   Tr,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPerson,
-  faEnvelopesBulk,
-  faHourglassEnd,
-  faUserCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPerson } from "@fortawesome/free-solid-svg-icons";
 import textStyles from "../../../theme/textStyles";
+import { WaitlistedCamper } from "../../../types/WaitlistedCamperTypes";
 
-const WaitlistStatusCard = ({ status, linkExpiry }: any) => {
-  let bkgColor = "";
-  let statusText = "";
-  let icon: IconProp | null = faEnvelopesBulk;
-  let validStatus = true;
-  let pastExpiration = false;
-  const expirationDate = new Date(linkExpiry);
+import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
 
-  if (status === "RegistrationFormSent") {
-    bkgColor = "waitlistCards.sent";
-    statusText = "registration form sent";
-    icon = faEnvelopesBulk;
-  } else if (status === "Registered") {
-    bkgColor = "waitlistCards.complete";
-    statusText = "registration complete";
-    icon = faUserCheck;
-  } else {
-    validStatus = false;
-  }
-
-  if (linkExpiry && expirationDate.getTime() < Date.now())
-    pastExpiration = true;
-
-  return (
-    <Container width="-webkit-fit-content" marginStart="0px">
-      <HStack>
-        {validStatus && (
-          <HStack
-            alignContent="center"
-            background={bkgColor}
-            px="5"
-            py="2"
-            borderRadius="5"
-          >
-            {icon && <FontAwesomeIcon icon={icon} />}
-            <Text>{statusText}</Text>
-          </HStack>
-        )}
-        {linkExpiry && pastExpiration && (
-          <HStack
-            alignContent="center"
-            background="waitlistCards.expired"
-            px="5"
-            py="2"
-            borderRadius="5"
-          >
-            <FontAwesomeIcon icon={faHourglassEnd} />
-            <Text>registration expired</Text>
-          </HStack>
-        )}
-      </HStack>
-    </Container>
-  );
-};
-
-const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
+const WaitlistedCampersTable = ({
+  waitlistedCampers,
+}: {
+  waitlistedCampers: WaitlistedCamper[];
+}): JSX.Element => {
   const [campers, setCampers] = React.useState(waitlistedCampers);
   const [search, setSearch] = React.useState("");
 
@@ -90,7 +35,7 @@ const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
     const filteredCampers = campers;
 
     if (!search) return filteredCampers;
-    return filteredCampers.filter((camper: any) =>
+    return filteredCampers.filter((camper: WaitlistedCamper) =>
       camper.firstName
         .toLowerCase()
         .concat(" ", camper.lastName.toLowerCase())
@@ -106,7 +51,7 @@ const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
       background="background.grey.200"
       borderRadius="20"
     >
-      {waitlistedCampers ? (
+      {waitlistedCampers.length > 0 ? (
         <>
           <HStack spacing={12} px="18">
             <InputGroup>
@@ -139,19 +84,19 @@ const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
             mt="20px"
             mb="20px"
           >
-            <Thead>
+            <Thead margin="16px 0">
               <Tr>
-                <Th color="text.default.100">Camper Name and Age</Th>
-                <Th color="text.default.100">Camper Contact Information</Th>
-                <Th color="text.default.100">&nbsp;</Th>
-                <Th color="text.default.100">&nbsp;</Th>
-                <Th color="text.default.100">&nbsp;</Th>
+                <Td>Camper</Td>
+                <Td>Camper Contact Information</Td>
+                <Td>&nbsp;</Td>
+                <Td>&nbsp;</Td>
+                <Td>&nbsp;</Td>
               </Tr>
             </Thead>
             <Tbody>
-              {tableData.map((camper: any, key: any) => (
-                <Tr key={key}>
-                  <Td>
+              {tableData.map((camper, i) => (
+                <Tr key={i} margin="16px 0">
+                  <Td maxWidth="210px">
                     <VStack align="start">
                       <Text style={textStyles.buttonSemiBold}>
                         {camper.firstName}&nbsp;{camper.lastName}
@@ -159,7 +104,7 @@ const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
                       <Text>Age:&nbsp;{camper.age}</Text>
                     </VStack>
                   </Td>
-                  <Td paddingRight="0px">
+                  <Td paddingRight="0px" maxWidth="320px">
                     <VStack align="start">
                       <Text style={textStyles.buttonSemiBold}>
                         {camper.contactName}
@@ -169,21 +114,26 @@ const WaitlistedCampersTable = ({ waitlistedCampers }: any): JSX.Element => {
                       </Text>
                     </VStack>
                   </Td>
-                  <Td paddingLeft="0px">
-                    <WaitlistStatusCard
+                  <Td paddingLeft="0px" maxWidth="790px">
+                    <WaitlistDetailsBadgeGroup
                       status={camper.status}
                       linkExpiry={camper.linkExpiry}
                     />
                   </Td>
-                  <Td width="10vw">
+                  <Td minWidth="20vw">
                     <Text>&nbsp;</Text>
                   </Td>
-                  <Td justifyContent="flex-end" margin="0px" padding="0px">
+                  <Td
+                    justifyContent="flex-end"
+                    margin="0px"
+                    padding="0px"
+                    maxWidth="32px"
+                  >
                     <IconButton
                       aria-label="Mark as active button"
                       icon={<FaEllipsisV />}
                       variant=""
-                      onClick={() => console.log("3 dot button pressed!")}
+                      // onClick={() => console.log("3 dot button pressed!")}
                     />
                   </Td>
                 </Tr>
