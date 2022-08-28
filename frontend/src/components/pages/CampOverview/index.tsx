@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { MultiValue } from "chakra-react-select";
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import costIcon from "../../../assets/coin.svg";
 import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
@@ -24,6 +25,7 @@ import UserSelect from "./UserSelect";
 import locationToString from "../../../utils/CampUtils";
 
 const CampOverviewPage = (): JSX.Element => {
+  const {id}: any = useParams();
   const [users, setUsers] = useState([] as UserResponse[]);
   const [camp, setCamp] = useState<CampResponse>({
     id: "",
@@ -45,12 +47,12 @@ const CampOverviewPage = (): JSX.Element => {
     },
     startTime: "",
     fee: 0,
+    formQuestions: [],
+    campSessions: [],
     volunteers: "",
     campPhotoUrl: "",
   });
   const status = camp?.active ? CampStatus.PUBLISHED : CampStatus.DRAFT;
-  const campId = "630a63450eb59852f9d01b1e"; // with camp photo
-  // const campId = "62574d7ae89788006c93cf02"; // without camp photo
 
   const userSelectOptions = useMemo(() => {
     return users.map((user) => {
@@ -63,26 +65,20 @@ const CampOverviewPage = (): JSX.Element => {
   }, [users]);
 
   const selectedCoordinators = useMemo(() => {
-    if (camp) {
       return userSelectOptions.filter(
-        (user) => camp.campCoordinators.indexOf(user.value) !== -1,
+        (user) => camp.campCoordinators?.indexOf(user.value) !== -1,
       );
-    }
-    return [];
   }, [camp, userSelectOptions]);
 
   const selectedCounsellors = useMemo(() => {
-    if (camp) {
       return userSelectOptions.filter(
-        (user) => camp.campCounsellors.indexOf(user.value) !== -1,
+        (user) => camp.campCounsellors?.indexOf(user.value) !== -1,
       );
-    }
-    return [];
   }, [camp, userSelectOptions]);
 
   useEffect(() => {
     const getCamp = async () => {
-      const campResponse = await CampsAPIClient.getCampById(campId);
+      const campResponse = await CampsAPIClient.getCampById(camp.id);
       setCamp(campResponse);
     };
     getCamp();

@@ -19,7 +19,7 @@ const editCampById = async (
 ): Promise<CampResponse> => {
   try {
     // Formquestions and campsessions are omitted
-    const fieldsToUpdate = { ...camp };
+    const fieldsToUpdate: Partial<CampResponse> = { ...camp };
     delete fieldsToUpdate.formQuestions;
     delete fieldsToUpdate.campSessions;
 

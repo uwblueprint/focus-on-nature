@@ -29,8 +29,8 @@ export type CampResponse = {
   location: Location;
   startTime: string;
   fee: number;
-  formQuestions?: FormQuestion[];
-  campSessions?: CampSession[];
+  formQuestions: FormQuestion[];
+  campSessions: CampSession[];
   volunteers: string;
   campPhotoUrl: string;
 };
@@ -54,13 +54,3 @@ export type FormQuestion = {
   description?: string;
   options?: string[];
 };
-
-// export type CampCoordinator = {
-//   firstName: string;
-//   lastName: string;
-//   authId: string;
-//   email: string;
-//   role: Role;
-//   active: boolean;
-//   campSessions: CampSession[];
-// };
