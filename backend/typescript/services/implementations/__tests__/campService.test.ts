@@ -26,6 +26,8 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 30,
     name: "test camp",
     description: "description",
+    dropoffFee: 7,
+    pickupFee: 6,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -33,7 +35,6 @@ const testCamps: CreateCampDTO[] = [
       postalCode: "M1A 3G3",
     },
     fee: 25,
-    campSessions: [],
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
@@ -49,6 +50,8 @@ const testCamps: CreateCampDTO[] = [
     ageUpper: 50,
     name: "test camp2",
     description: "description2",
+    dropoffFee: 7,
+    pickupFee: 8,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -56,7 +59,6 @@ const testCamps: CreateCampDTO[] = [
       postalCode: "M1A 3G3",
     },
     fee: 24,
-    campSessions: [],
     formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
@@ -105,6 +107,8 @@ describe("mongo campService", (): void => {
       latePickup: "2:30",
       name: "test camp",
       description: "description",
+      dropoffFee: 7.1,
+      pickupFee: 6,
       location: {
         streetAddress1: "123 Focus on Nature Avenue",
         city: "Guelph",
@@ -113,7 +117,6 @@ describe("mongo campService", (): void => {
       },
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -160,6 +163,8 @@ describe("mongo campService", (): void => {
     expect(camp?.ageUpper).toEqual(testCamp.ageUpper);
     expect(camp?.name).toEqual(testCamp.name);
     expect(camp?.description).toEqual(testCamp.description);
+    expect(camp?.dropoffFee).toEqual(testCamp.dropoffFee);
+    expect(camp?.pickupFee).toEqual(testCamp.pickupFee);
     expect(camp?.location).toEqual(testCamp.location);
     expect(camp?.fee).toEqual(testCamp.fee);
     expect(camp?.startTime).toEqual(testCamp.startTime);
@@ -203,6 +208,8 @@ describe("mongo campService", (): void => {
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
       earlyDropoff: "12:30",
       latePickup: "2:30",
+      dropoffFee: 7,
+      pickupFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -213,7 +220,6 @@ describe("mongo campService", (): void => {
       },
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -268,23 +274,9 @@ describe("mongo campService", (): void => {
     for (const testCamp of testCamps) {
       /* eslint-disable no-await-in-loop */
       const res = await campService.createCamp(testCamp);
-      const campSessions = await MgCampSession.find({
-        _id: { $in: res.campSessions },
-      });
       const formQuestions = await MgFormQuestion.find({
         _id: { $in: res.formQuestions },
       });
-
-      for (let i = 0; i < campSessions.length; i += 1) {
-        const campSession = campSessions[i];
-        expect(campSession.camp.toString()).toEqual(res.id);
-        expect(campSession.dates.map((date) => new Date(date))).toEqual(
-          testCamp.campSessions[i].dates.map((date) => new Date(date)),
-        );
-        expect(campSession.capacity).toEqual(testCamp.campSessions[i].capacity);
-        expect(campSession.campers).toHaveLength(0);
-        expect(campSession.waitlist).toHaveLength(0);
-      }
 
       for (let i = 0; i < formQuestions.length; i += 1) {
         const formQuestion = formQuestions[i];
@@ -336,6 +328,8 @@ describe("mongo campService", (): void => {
       campCounsellors: ["61fb3d34272ea0002ad6a24d"],
       earlyDropoff: "12:30",
       latePickup: "2:30",
+      dropoffFee: 7,
+      pickupFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -346,7 +340,6 @@ describe("mongo campService", (): void => {
       },
       fee: 25,
       formQuestions: [],
-      campSessions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: ["jason"],
@@ -360,6 +353,8 @@ describe("mongo campService", (): void => {
       campCounsellors: [],
       earlyDropoff: "2:30",
       latePickup: "8:30",
+      dropoffFee: 7,
+      pickupFee: 6,
       name: "ab",
       description: "ba",
       location: {
@@ -386,6 +381,8 @@ describe("mongo campService", (): void => {
     expect(camp?.ageUpper).toEqual(updatedTestCamp.ageUpper);
     expect(camp?.name).toEqual(updatedTestCamp.name);
     expect(camp?.description).toEqual(updatedTestCamp.description);
+    expect(camp?.dropoffFee).toEqual(updatedTestCamp.dropoffFee);
+    expect(camp?.pickupFee).toEqual(updatedTestCamp.pickupFee);
     expect(camp?.location).toEqual(updatedTestCamp.location);
     expect(camp?.fee).toEqual(updatedTestCamp.fee);
     expect(camp?.startTime).toEqual(updatedTestCamp.startTime);
@@ -420,30 +417,17 @@ describe("mongo campService", (): void => {
       campCounsellors: [],
       earlyDropoff: "14:00",
       latePickup: "19:00",
+      dropoffFee: 7,
+      pickupFee: 6,
       startTime: "15:00",
       endTime: "18:00",
-      formQuestions: [
-        {
-          type: "Text",
-          question: "how is it going",
-          required: true,
-          description: "asdfasdf",
-        },
-        {
-          type: "Text",
-          question: "Hi",
-          required: true,
-          description: "Description",
-        },
-      ],
-      campSessions: [
-        {
-          capacity: 12,
-          dates: ["December 17, 1995 03:24:00"],
-        },
-      ],
+      formQuestions: [],
       volunteers: [],
     });
+
+    await campService.createCampSessions(res.id, [
+      { capacity: 12, dates: ["December 17, 1995 03:24:00"] },
+    ]);
 
     const camp = await MgCamp.findById(res.id).exec();
     expect(camp).toBeInstanceOf(MgCamp); // make sure not null

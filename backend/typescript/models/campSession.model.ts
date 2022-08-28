@@ -8,7 +8,7 @@ export interface CampSession extends Document {
   capacity: number;
   campers: (Camper | Schema.Types.ObjectId | string)[];
   dates: Date[];
-  priceId: string;
+  campPriceId: string;
   waitlist: (WaitlistedCamper | Schema.Types.ObjectId)[];
 }
 
@@ -43,7 +43,7 @@ const CampSessionSchema: Schema = new Schema({
     type: [Date],
     required: true,
   },
-  priceId: {
+  campPriceId: {
     type: String,
   },
   waitlist: {

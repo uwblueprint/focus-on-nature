@@ -51,6 +51,12 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
+  if (!validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
+  }
+  if (!validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
   }
@@ -148,24 +154,7 @@ export const createCampDtoValidator = async (
   }
 
   if (body.campSessions) {
-    for (let i = 0; i < body.campSessions.length; i += 1) {
-      const campSession = body.campSessions[i];
-      if (!validatePrimitive(campSession.capacity, "integer")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("capacity", "integer"));
-      }
-      if (campSession.dates && !validateArray(campSession.dates, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "string", true));
-      }
-      if (!campSession.dates.every(validateDate)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "Date string"));
-      }
-    }
+    return res.status(400).send("campSessions should be empty");
   }
   if (body.campers) {
     return res.status(400).send("campers should be empty");
@@ -197,6 +186,12 @@ export const updateCampDtoValidator = async (
   }
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
+  }
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  }
+  if (body.pickupFee && !validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
   }
   if (body.location) {
     if (!validatePrimitive(body.location.streetAddress1, "string")) {
@@ -348,6 +343,8 @@ export const createCampSessionsDtoValidator = async (
         return res.status(400).send("waitlist should be empty");
       }
     }
+  } else {
+    return res.status(400).send("campSessions are required");
   }
   return next();
 };
