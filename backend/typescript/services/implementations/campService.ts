@@ -871,8 +871,6 @@ class CampService implements ICampService {
             lastName: camper.lastName,
             age: camper.age,
             allergies: camper.allergies,
-            hasCamera: camper.hasCamera,
-            hasLaptop: camper.hasLaptop,
             earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
             latePickup: camper.latePickup.map((date) => date.toString()),
             specialNeeds: camper.specialNeeds,
