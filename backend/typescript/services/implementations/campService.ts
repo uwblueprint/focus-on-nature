@@ -542,12 +542,6 @@ class CampService implements ICampService {
     if (camp.active) {
       await Promise.all(
         campSessions.map(async (campSession, i) => {
-          let priceIds = {
-            pickupPriceId: "",
-            dropoffPriceId: "",
-            campPriceId: "",
-          };
-
           const campSessionFeeInCents =
             camp.fee * campSession.dates.length * 100;
 
@@ -556,30 +550,13 @@ class CampService implements ICampService {
               camp.campProductId,
               campSessionFeeInCents,
             );
-
-            const dropoffPriceObject = await createStripePrice(
-              camp.dropoffProductId,
-              camp.dropoffFee,
-            );
-
-            const pickupPriceObject = await createStripePrice(
-              camp.pickupProductId,
-              camp.pickupFee,
-            );
-
-            priceIds = {
-              pickupPriceId: pickupPriceObject.id,
-              dropoffPriceId: dropoffPriceObject.id,
-              campPriceId: priceObject.id,
-            };
-
             insertCampSessions[i] = {
               camp: campId,
               campers: [],
               capacity: campSession.capacity,
               waitlist: [],
               dates: campSession.dates.sort(),
-              ...priceIds,
+              campPriceId: priceObject.id,
             };
           } catch (err: unknown) {
             Logger.error(
@@ -592,19 +569,13 @@ class CampService implements ICampService {
       );
     } else {
       campSessions.forEach((campSession, i) => {
-        const priceIds = {
-          pickupPriceId: "",
-          dropoffPriceId: "",
-          campPriceId: "",
-        };
-
         insertCampSessions[i] = {
           camp: campId,
           campers: [],
           capacity: campSession.capacity,
           waitlist: [],
           dates: campSession.dates.sort(),
-          ...priceIds,
+          campPriceId: "",
         };
       });
     }
@@ -883,6 +854,24 @@ class CampService implements ICampService {
       const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
       const stripePickupProduct = await createStripePickupProduct(camp.name);
 
+      let priceIds = { dropoffPriceId: "", pickupPriceId: "" };
+      if (camp.active) {
+        const dropoffPriceObject = await createStripePrice(
+          stripeDropoffProduct.id,
+          camp.dropoffFee * 100,
+        );
+
+        const pickupPriceObject = await createStripePrice(
+          stripePickupProduct.id,
+          camp.pickupFee * 100,
+        );
+
+        priceIds = {
+          dropoffPriceId: dropoffPriceObject.id,
+          pickupPriceId: pickupPriceObject.id,
+        };
+      }
+
       newCamp = new MgCamp({
         name: camp.name,
         active: camp.active,
@@ -905,6 +894,7 @@ class CampService implements ICampService {
         formQuestions: [],
         volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
+        ...priceIds,
       });
 
       try {
