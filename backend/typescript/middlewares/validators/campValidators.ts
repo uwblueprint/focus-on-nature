@@ -141,7 +141,7 @@ export const createCampDtoValidator = async (
       .send(getApiValidationError("volunteers", "string", true));
   }
   if (body.formQuestions) {
-    return res.status(400).send("formQuestions shoudl be empty");
+    return res.status(400).send("formQuestions should be empty");
   }
   if (body.campSessions) {
     return res.status(400).send("campSessions should be empty");
