@@ -25,7 +25,7 @@ const UserSelect = ({
   options,
   value,
 }: {
-  placeholderText?: string;
+  placeholderText: string;
   onChange: (newVal: MultiValue<UserSelectOption>) => void;
   options: UserSelectOption[];
   value: UserSelectOption[];

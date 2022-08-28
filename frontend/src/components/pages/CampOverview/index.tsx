@@ -25,7 +25,7 @@ import UserSelect from "./UserSelect";
 import locationToString from "../../../utils/CampUtils";
 
 const CampOverviewPage = (): JSX.Element => {
-  const {id}: any = useParams();
+  const { id }: any = useParams();
   const [users, setUsers] = useState([] as UserResponse[]);
   const [camp, setCamp] = useState<CampResponse>({
     id: "",
@@ -52,7 +52,7 @@ const CampOverviewPage = (): JSX.Element => {
     volunteers: "",
     campPhotoUrl: "",
   });
-  const status = camp?.active ? CampStatus.PUBLISHED : CampStatus.DRAFT;
+  const status = camp.active ? CampStatus.PUBLISHED : CampStatus.DRAFT; // To update - Anne
 
   const userSelectOptions = useMemo(() => {
     return users.map((user) => {
@@ -64,21 +64,17 @@ const CampOverviewPage = (): JSX.Element => {
     });
   }, [users]);
 
-  const selectedCoordinators = useMemo(() => {
-      return userSelectOptions.filter(
-        (user) => camp.campCoordinators?.indexOf(user.value) !== -1,
-      );
-  }, [camp, userSelectOptions]);
+  const selectedCoordinators = userSelectOptions.filter(
+    (user) => camp.campCoordinators?.indexOf(user.value) !== -1,
+  );
 
-  const selectedCounsellors = useMemo(() => {
-      return userSelectOptions.filter(
-        (user) => camp.campCounsellors?.indexOf(user.value) !== -1,
-      );
-  }, [camp, userSelectOptions]);
+  const selectedCounsellors = userSelectOptions.filter(
+    (user) => camp.campCounsellors?.indexOf(user.value) !== -1,
+  );
 
   useEffect(() => {
     const getCamp = async () => {
-      const campResponse = await CampsAPIClient.getCampById(camp.id);
+      const campResponse = await CampsAPIClient.getCampById(id);
       setCamp(campResponse);
     };
     getCamp();
@@ -95,43 +91,32 @@ const CampOverviewPage = (): JSX.Element => {
     getUsers();
   }, []);
 
-  const updateCamp = async (newCamp: CampResponse) => {
-    console.log("updateCamp");
-    if (newCamp.id) {
-      await CampsAPIClient.editCampById(newCamp.id, newCamp);
-    }
-  };
-
-  const handleCoordinatorChange = (newValue: MultiValue<UserSelectOption>) => {
-    const coordinators = newValue.map((user) => user.value);
-    if (camp) {
-      const newCamp = { ...camp, campCoordinators: coordinators };
-      setCamp(newCamp);
-      updateCamp(newCamp);
-    }
-  };
-
-  const handleCounsellorChange = (newValue: MultiValue<UserSelectOption>) => {
-    const counsellors = newValue.map((user) => user.value);
-    if (camp) {
-      const newCamp = { ...camp, campCounsellors: counsellors };
-      setCamp(newCamp);
-      updateCamp(newCamp);
-    }
-  };
-
   useEffect(() => {
-    if (camp) {
+    const updateCamp = async (newCamp: CampResponse) => {
+      await CampsAPIClient.editCampById(newCamp.id, newCamp);
+    };
+
+    if (camp.id) {
       const timeOutId = setTimeout(() => updateCamp(camp), 500);
       return () => clearTimeout(timeOutId);
     }
     return () => {};
   }, [camp]);
 
+  const handleCoordinatorChange = (newValue: MultiValue<UserSelectOption>) => {
+    const campCoordinators = newValue.map((user) => user.value);
+    const newCamp = { ...camp, campCoordinators };
+    setCamp(newCamp);
+  };
+
+  const handleCounsellorChange = (newValue: MultiValue<UserSelectOption>) => {
+    const campCounsellors = newValue.map((user) => user.value);
+    const newCamp = { ...camp, campCounsellors };
+    setCamp(newCamp);
+  };
+
   const handleVolunteerChange = (e: any) => {
-    if (camp) {
-      setCamp({ ...camp, volunteers: e.target.value });
-    }
+    setCamp({ ...camp, volunteers: e.target.value });
   };
 
   return (
