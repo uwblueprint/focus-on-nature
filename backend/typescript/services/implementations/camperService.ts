@@ -12,6 +12,7 @@ import {
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
   UpdateCamperDTO,
+  FON_ADMIN_EMAIL,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -671,9 +672,9 @@ class CamperService implements ICamperService {
         diffInMilliseconds / (1000 * 60 * 60 * 24),
       );
 
-      if (daysUntilStartOfCamp < 30 && campSession.waitlist.length === 0) {
+      if (daysUntilStartOfCamp < 30) {
         throw new Error(
-          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days and the waitlist is empty.`,
+          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days. Contact FON at ${FON_ADMIN_EMAIL} for a refund.`,
         );
       }
 
