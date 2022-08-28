@@ -567,17 +567,6 @@ class CampService implements ICampService {
           }
         }),
       );
-    } else {
-      campSessions.forEach((campSession, i) => {
-        insertCampSessions[i] = {
-          camp: campId,
-          campers: [],
-          capacity: campSession.capacity,
-          waitlist: [],
-          dates: campSession.dates.sort(),
-          campPriceId: "",
-        };
-      });
     }
 
     let newCampSessions: Array<CampSession> = [];
@@ -949,9 +938,9 @@ class CampService implements ICampService {
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
       campProductId: newCamp.campProductId,
-      dropoffPriceId: "",
+      dropoffPriceId: newCamp.dropoffPriceId,
       dropoffProductId: newCamp.dropoffProductId,
-      pickupPriceId: "",
+      pickupPriceId: newCamp.pickupPriceId,
       pickupProductId: newCamp.pickupProductId,
       volunteers: newCamp.volunteers,
     };
