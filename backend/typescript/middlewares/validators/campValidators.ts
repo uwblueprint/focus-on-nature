@@ -51,10 +51,10 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
-  if (body.pickUpFee && !validatePrimitive(body.pickUpFee, "integer")) {
-    return res.status(400).send(getApiValidationError("pickUpFee", "integer"));
+  if (!validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
   }
-  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
+  if (!validatePrimitive(body.dropoffFee, "integer")) {
     return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
   }
   if (!validatePrimitive(body.startTime, "string")) {
@@ -153,7 +153,7 @@ export const createCampDtoValidator = async (
       .send(getApiValidationError("formQuestion", "string", true));
   }
 
-  if (req.body.campSessions) {
+  if (body.campSessions) {
     return res.status(400).send("campSessions should be empty");
   }
   if (body.campers) {
@@ -190,8 +190,8 @@ export const updateCampDtoValidator = async (
   if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
     return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
   }
-  if (body.pickUpFee && !validatePrimitive(body.pickUpFee, "integer")) {
-    return res.status(400).send(getApiValidationError("pickUpFee", "integer"));
+  if (body.pickupFee && !validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
   }
   if (body.location) {
     if (!validatePrimitive(body.location.streetAddress1, "string")) {

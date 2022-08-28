@@ -27,7 +27,7 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp",
     description: "description",
     dropoffFee: 7,
-    pickUpFee: 6,
+    pickupFee: 6,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -51,7 +51,7 @@ const testCamps: CreateCampDTO[] = [
     name: "test camp2",
     description: "description2",
     dropoffFee: 7,
-    pickUpFee: 8,
+    pickupFee: 8,
     location: {
       streetAddress1: "123 Focus on Nature Avenue",
       city: "Guelph",
@@ -108,7 +108,7 @@ describe("mongo campService", (): void => {
       name: "test camp",
       description: "description",
       dropoffFee: 7.1,
-      pickUpFee: 6,
+      pickupFee: 6,
       location: {
         streetAddress1: "123 Focus on Nature Avenue",
         city: "Guelph",
@@ -164,7 +164,7 @@ describe("mongo campService", (): void => {
     expect(camp?.name).toEqual(testCamp.name);
     expect(camp?.description).toEqual(testCamp.description);
     expect(camp?.dropoffFee).toEqual(testCamp.dropoffFee);
-    expect(camp?.pickUpFee).toEqual(testCamp.pickUpFee);
+    expect(camp?.pickupFee).toEqual(testCamp.pickupFee);
     expect(camp?.location).toEqual(testCamp.location);
     expect(camp?.fee).toEqual(testCamp.fee);
     expect(camp?.startTime).toEqual(testCamp.startTime);
@@ -209,7 +209,7 @@ describe("mongo campService", (): void => {
       earlyDropoff: "12:30",
       latePickup: "2:30",
       dropoffFee: 7,
-      pickUpFee: 6,
+      pickupFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -329,7 +329,7 @@ describe("mongo campService", (): void => {
       earlyDropoff: "12:30",
       latePickup: "2:30",
       dropoffFee: 7,
-      pickUpFee: 6,
+      pickupFee: 6,
       name: "test camp",
       description: "description",
       location: {
@@ -354,7 +354,7 @@ describe("mongo campService", (): void => {
       earlyDropoff: "2:30",
       latePickup: "8:30",
       dropoffFee: 7,
-      pickUpFee: 6,
+      pickupFee: 6,
       name: "ab",
       description: "ba",
       location: {
@@ -382,7 +382,7 @@ describe("mongo campService", (): void => {
     expect(camp?.name).toEqual(updatedTestCamp.name);
     expect(camp?.description).toEqual(updatedTestCamp.description);
     expect(camp?.dropoffFee).toEqual(updatedTestCamp.dropoffFee);
-    expect(camp?.pickUpFee).toEqual(updatedTestCamp.pickUpFee);
+    expect(camp?.pickupFee).toEqual(updatedTestCamp.pickupFee);
     expect(camp?.location).toEqual(updatedTestCamp.location);
     expect(camp?.fee).toEqual(updatedTestCamp.fee);
     expect(camp?.startTime).toEqual(updatedTestCamp.startTime);
@@ -418,7 +418,7 @@ describe("mongo campService", (): void => {
       earlyDropoff: "14:00",
       latePickup: "19:00",
       dropoffFee: 7,
-      pickUpFee: 6,
+      pickupFee: 6,
       startTime: "15:00",
       endTime: "18:00",
       formQuestions: [

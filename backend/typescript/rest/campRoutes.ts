@@ -84,7 +84,7 @@ campRouter.post(
         description: body.description,
         earlyDropoff: body.earlyDropoff,
         dropoffFee: body.dropoffFee,
-        pickUpFee: body.pickUpFee,
+        pickupFee: body.pickupFee,
         latePickup: body.latePickup,
         location: body.location,
         fee: body.fee,
@@ -112,7 +112,6 @@ campRouter.patch(
   upload.single("file"),
   updateCampDtoValidator,
   async (req, res) => {
-    console.log("hi");
     try {
       const body = JSON.parse(req.body.data);
       const newCamp = await campService.updateCampById(req.params.campId, {
@@ -124,7 +123,7 @@ campRouter.patch(
         name: body.name,
         description: body.description,
         dropoffFee: body.dropoffFee,
-        pickUpFee: body.pickUpFee,
+        pickupFee: body.pickupFee,
         earlyDropoff: body.earlyDropoff,
         latePickup: body.latePickup,
         location: body.location,

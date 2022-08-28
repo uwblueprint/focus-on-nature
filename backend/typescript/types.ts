@@ -109,7 +109,7 @@ export type CampDTO = {
   campCounsellors: string[];
   dropoffProductId: string;
   dropoffFee: number;
-  pickUpFee: number;
+  pickupFee: number;
   name: string;
   description: string;
   earlyDropoff: string;

@@ -119,7 +119,7 @@ class CampService implements ICampService {
             earlyDropoff: camp.earlyDropoff,
             latePickup: camp.latePickup,
             dropoffFee: camp.dropoffFee,
-            pickUpFee: camp.pickUpFee,
+            pickupFee: camp.pickupFee,
             location: camp.location,
             campProductId: camp.campProductId,
             dropoffProductId: camp.dropoffProductId,
@@ -256,7 +256,7 @@ class CampService implements ICampService {
       earlyDropoff: camp.earlyDropoff,
       latePickup: camp.latePickup,
       dropoffFee: camp.dropoffFee,
-      pickUpFee: camp.pickUpFee,
+      pickupFee: camp.pickupFee,
       location: camp.location,
       startTime: camp.startTime,
       endTime: camp.endTime,
@@ -288,7 +288,7 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      if (oldCamp.active && (camp.fee || camp.dropoffFee || camp.pickUpFee)) {
+      if (oldCamp.active && (camp.fee || camp.dropoffFee || camp.pickupFee)) {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
@@ -349,7 +349,7 @@ class CampService implements ICampService {
             earlyDropoff: camp.earlyDropoff,
             latePickup: camp.latePickup,
             dropoffFee: camp.dropoffFee,
-            pickUpFee: camp.pickUpFee,
+            pickupFee: camp.pickupFee,
             location: camp.location,
             startTime: camp.startTime,
             endTime: camp.endTime,
@@ -399,7 +399,7 @@ class CampService implements ICampService {
           dropoffProductId,
           pickUpProductId,
           dropoffFee,
-          pickUpFee,
+          pickupFee,
         } = newCamp;
 
         const campFee = newCamp.fee;
@@ -415,12 +415,12 @@ class CampService implements ICampService {
 
             const dropoffPriceObject = await createStripePrice(
               dropoffProductId,
-              dropoffFee,
+              dropoffFee * 100,
             );
 
             const pickUpPriceObject = await createStripePrice(
               pickUpProductId,
-              pickUpFee,
+              pickupFee * 100,
             );
 
             await MgCampSession.findByIdAndUpdate(
@@ -445,19 +445,19 @@ class CampService implements ICampService {
       active: newCamp.active,
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
-      campCoordinators: camp.campCoordinators?.map((coordinator) =>
+      campCoordinators: newCamp.campCoordinators?.map((coordinator) =>
         coordinator.toString(),
       ),
-      campCounsellors: camp.campCounsellors?.map((counsellor) =>
+      campCounsellors: newCamp.campCounsellors?.map((counsellor) =>
         counsellor.toString(),
       ),
-      campSessions: oldCamp.campSessions?.map((session) => session.toString()),
+      campSessions: newCamp.campSessions?.map((session) => session.toString()),
       name: newCamp.name,
       description: newCamp.description,
       earlyDropoff: newCamp.earlyDropoff,
       latePickup: newCamp.latePickup,
       dropoffFee: newCamp.dropoffFee,
-      pickUpFee: newCamp.pickUpFee,
+      pickupFee: newCamp.pickupFee,
       location: newCamp.location,
       campProductId: newCamp.campProductId,
       dropoffProductId: newCamp.dropoffProductId,
@@ -465,10 +465,10 @@ class CampService implements ICampService {
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
       fee: newCamp.fee,
-      formQuestions: oldCamp.formQuestions?.map((formQuestion) =>
+      formQuestions: newCamp.formQuestions?.map((formQuestion) =>
         formQuestion.toString(),
       ),
-      volunteers: camp.volunteers,
+      volunteers: newCamp.volunteers,
     };
   }
 
@@ -586,7 +586,7 @@ class CampService implements ICampService {
 
             const pickUpPriceObject = await createStripePrice(
               camp.pickUpProductId,
-              camp.pickUpFee,
+              camp.pickupFee,
             );
 
             priceIds = {
@@ -922,7 +922,7 @@ class CampService implements ICampService {
         dropoffProductId: stripeDropoffProduct.id,
         earlyDropoff: camp.earlyDropoff,
         dropoffFee: camp.dropoffFee,
-        pickUpFee: camp.pickUpFee,
+        pickupFee: camp.pickupFee,
         endTime: camp.endTime,
         latePickup: camp.latePickup,
         location: camp.location,
@@ -934,23 +934,6 @@ class CampService implements ICampService {
         volunteers: camp.volunteers,
         ...(camp.filePath && { fileName }),
       });
-
-      // TODO(Jason) Should be moved to another endpoint
-      /* eslint no-underscore-dangle: 0 */
-      if (camp.formQuestions) {
-        await Promise.all(
-          camp.formQuestions.map(async (formQuestion, i) => {
-            const question = await MgFormQuestion.create({
-              type: formQuestion.type,
-              question: formQuestion.question,
-              required: formQuestion.required,
-              description: formQuestion.description,
-              options: formQuestion.options,
-            });
-            newCamp.formQuestions[i] = question._id;
-          }),
-        );
-      }
 
       try {
         await newCamp.save();
@@ -992,7 +975,7 @@ class CampService implements ICampService {
       name: newCamp.name,
       description: newCamp.description,
       dropoffFee: newCamp.dropoffFee,
-      pickUpFee: newCamp.pickUpFee,
+      pickupFee: newCamp.pickupFee,
       earlyDropoff: newCamp.earlyDropoff,
       latePickup: newCamp.latePickup,
       location: newCamp.location,
