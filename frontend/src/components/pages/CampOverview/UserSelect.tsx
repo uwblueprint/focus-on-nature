@@ -1,7 +1,7 @@
 import { Text, VStack } from "@chakra-ui/react";
 import { Select, GroupBase, MultiValue } from "chakra-react-select";
 import React from "react";
-import { UserResponse, UserSelectOption } from "../../../types/UserTypes";
+import { UserSelectOption } from "../../../types/UserTypes";
 
 // In menu, show user's name and email
 // In control, show user's name only
