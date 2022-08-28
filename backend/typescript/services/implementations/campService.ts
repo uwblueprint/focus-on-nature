@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import Stripe from "stripe";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
   CreateCampDTO,
@@ -35,7 +36,6 @@ import {
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
-import Stripe from "stripe";
 
 const Logger = logger(__filename);
 

@@ -144,7 +144,13 @@ const CampSchema: Schema = new Schema({
   campProductId: {
     type: String,
   },
+  dropoffPriceId: {
+    type: String,
+  },
   dropoffProductId: {
+    type: String,
+  },
+  pickupPriceId: {
     type: String,
   },
   pickupProductId: {
