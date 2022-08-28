@@ -421,20 +421,7 @@ describe("mongo campService", (): void => {
       pickupFee: 6,
       startTime: "15:00",
       endTime: "18:00",
-      formQuestions: [
-        {
-          type: "Text",
-          question: "how is it going",
-          required: true,
-          description: "asdfasdf",
-        },
-        {
-          type: "Text",
-          question: "Hi",
-          required: true,
-          description: "Description",
-        },
-      ],
+      formQuestions: [],
       volunteers: [],
     });
 
@@ -444,7 +431,6 @@ describe("mongo campService", (): void => {
 
     const camp = await MgCamp.findById(res.id).exec();
     expect(camp).toBeInstanceOf(MgCamp); // make sure not null
-    expect(res.formQuestions).toHaveLength(2);
 
     // delete camp
     await campService.deleteCamp(res.id);
