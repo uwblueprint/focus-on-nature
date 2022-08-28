@@ -25,7 +25,7 @@ import UserSelect from "./UserSelect";
 import locationToString from "../../../utils/CampUtils";
 
 const CampOverviewPage = (): JSX.Element => {
-  const { id }: any = useParams();
+  const { id: campId }: any = useParams();
   const [users, setUsers] = useState([] as UserResponse[]);
   const [camp, setCamp] = useState<CampResponse>({
     id: "",
@@ -64,40 +64,40 @@ const CampOverviewPage = (): JSX.Element => {
     });
   }, [users]);
 
-  const selectedCoordinators = userSelectOptions.filter(
-    (user) => camp.campCoordinators?.indexOf(user.value) !== -1,
+  const selectedCoordinators = userSelectOptions.filter((user) =>
+    camp.campCoordinators?.includes(user.value),
   );
-
-  const selectedCounsellors = userSelectOptions.filter(
-    (user) => camp.campCounsellors?.indexOf(user.value) !== -1,
+  const selectedCounsellors = userSelectOptions.filter((user) =>
+    camp.campCounsellors?.includes(user.value),
   );
 
   useEffect(() => {
     const getCamp = async () => {
-      const campResponse = await CampsAPIClient.getCampById(id);
-      setCamp(campResponse);
+      const campResponse = await CampsAPIClient.getCampById(campId);
+      if (campResponse) {
+        setCamp(campResponse);
+      }
     };
     getCamp();
 
     const getUsers = async () => {
       const userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
-        const coordinators = userResponse.filter(
-          (user) => user.role === "CampCoordinator",
-        );
-        setUsers(coordinators);
+        setUsers(userResponse);
       }
     };
     getUsers();
   }, []);
 
+  // send request for updating the camp 500ms after last change to camp state.
+  // this is to prevent sending many requests while the user types out volunteers.
   useEffect(() => {
-    const updateCamp = async (newCamp: CampResponse) => {
-      await CampsAPIClient.editCampById(newCamp.id, newCamp);
+    const updateCamp = async () => {
+      await CampsAPIClient.editCampById(camp.id, camp);
     };
 
     if (camp.id) {
-      const timeOutId = setTimeout(() => updateCamp(camp), 500);
+      const timeOutId = setTimeout(() => updateCamp(), 500);
       return () => clearTimeout(timeOutId);
     }
     return () => {};
@@ -105,14 +105,12 @@ const CampOverviewPage = (): JSX.Element => {
 
   const handleCoordinatorChange = (newValue: MultiValue<UserSelectOption>) => {
     const campCoordinators = newValue.map((user) => user.value);
-    const newCamp = { ...camp, campCoordinators };
-    setCamp(newCamp);
+    setCamp({ ...camp, campCoordinators });
   };
 
   const handleCounsellorChange = (newValue: MultiValue<UserSelectOption>) => {
     const campCounsellors = newValue.map((user) => user.value);
-    const newCamp = { ...camp, campCounsellors };
-    setCamp(newCamp);
+    setCamp({ ...camp, campCounsellors });
   };
 
   const handleVolunteerChange = (e: any) => {
@@ -125,14 +123,14 @@ const CampOverviewPage = (): JSX.Element => {
         <Box width="60%" mt="1rem">
           <HStack width="100%" marginBottom="8px" alignItems="center">
             <Text align="left" textStyle="displayXLarge" marginBottom="8px">
-              {camp?.name}
+              {camp.name}
             </Text>
             <HStack>
               <Tag
                 key={status}
                 size="md"
                 borderRadius="full"
-                colorScheme={camp?.active ? "green" : "gray"}
+                colorScheme={camp.active ? "green" : "gray"}
               >
                 {status}
               </Tag>

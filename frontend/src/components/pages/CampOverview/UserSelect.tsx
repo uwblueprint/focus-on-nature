@@ -31,24 +31,22 @@ const UserSelect = ({
   value: UserSelectOption[];
 }): JSX.Element => {
   return (
-    <>
-      <Select<UserSelectOption, true, GroupBase<UserSelectOption>>
-        components={{
-          DropdownIndicator: () => null,
-        }}
-        value={value}
-        useBasicStyles
-        isMulti
-        isClearable={false}
-        name="selectComponent"
-        options={options}
-        placeholder={placeholderText}
-        closeMenuOnSelect={false}
-        size="md"
-        onChange={onChange}
-        formatOptionLabel={formatOptionLabel}
-      />
-    </>
+    <Select<UserSelectOption, true, GroupBase<UserSelectOption>>
+      components={{
+        DropdownIndicator: () => null,
+      }}
+      value={value}
+      useBasicStyles
+      isMulti
+      isClearable={false}
+      name="selectComponent"
+      options={options}
+      placeholder={placeholderText}
+      closeMenuOnSelect={false}
+      size="md"
+      onChange={onChange}
+      formatOptionLabel={formatOptionLabel}
+    />
   );
 };
 
