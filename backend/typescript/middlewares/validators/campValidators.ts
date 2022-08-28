@@ -370,7 +370,7 @@ export const editFormQuestionValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.body.formQuestion && !validateFormQuestion(req.body.formQuestion)) {
+  if (!validateFormQuestion(req.body.formQuestion)) {
     return res
       .status(400)
       .send(getApiValidationError("formQuestion", "Form question"));
@@ -385,8 +385,8 @@ export const createFormQuestionsValidator = async (
   next: NextFunction,
 ) => {
   if (
-    req.body.formQuestions &&
-    Array.isArray(req.body.formQuestions) &&
+    !req.body.formQuestions ||
+    !Array.isArray(req.body.formQuestions) ||
     !req.body.formQuestions.every(validateFormQuestion)
   ) {
     return res
