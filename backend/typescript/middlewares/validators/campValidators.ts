@@ -140,19 +140,9 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("volunteers", "string", true));
   }
-  if (
-    body.formQuestions &&
-    Array.isArray(body.formQuestions) &&
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    !body.formQuestions.every((formQuestion: { [key: string]: any }) => {
-      return validateFormQuestion(formQuestion);
-    })
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("formQuestion", "string", true));
+  if (body.formQuestions) {
+    return res.status(400).send("formQuestions shoudl be empty");
   }
-
   if (body.campSessions) {
     return res.status(400).send("campSessions should be empty");
   }
