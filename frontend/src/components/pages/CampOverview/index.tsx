@@ -53,23 +53,29 @@ const CampOverviewPage = (): JSX.Element => {
   // const campId = "62574d7ae89788006c93cf02"; // without camp photo
 
   const userSelectOptions = useMemo(() => {
-    return users.map(user => { return {
-      label: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      value: user.id,
-    }});
-  }, [users])
+    return users.map((user) => {
+      return {
+        label: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        value: user.id,
+      };
+    });
+  }, [users]);
 
   const selectedCoordinators = useMemo(() => {
     if (camp) {
-      return userSelectOptions.filter(user => camp.campCoordinators.indexOf(user.value) !== -1);
+      return userSelectOptions.filter(
+        (user) => camp.campCoordinators.indexOf(user.value) !== -1,
+      );
     }
     return [];
   }, [camp, userSelectOptions]);
 
   const selectedCounsellors = useMemo(() => {
     if (camp) {
-      return userSelectOptions.filter(user => camp.campCounsellors.indexOf(user.value) !== -1);
+      return userSelectOptions.filter(
+        (user) => camp.campCounsellors.indexOf(user.value) !== -1,
+      );
     }
     return [];
   }, [camp, userSelectOptions]);
@@ -84,8 +90,8 @@ const CampOverviewPage = (): JSX.Element => {
     const getUsers = async () => {
       const userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
-        const coordinators = userResponse.filter((user) => 
-          user.role === "CampCoordinator"
+        const coordinators = userResponse.filter(
+          (user) => user.role === "CampCoordinator",
         );
         setUsers(coordinators);
       }
@@ -94,7 +100,7 @@ const CampOverviewPage = (): JSX.Element => {
   }, []);
 
   const updateCamp = async (newCamp: CampResponse) => {
-    console.log('updateCamp');
+    console.log("updateCamp");
     if (newCamp.id) {
       await CampsAPIClient.editCampById(newCamp.id, newCamp);
     }
@@ -120,18 +126,17 @@ const CampOverviewPage = (): JSX.Element => {
 
   useEffect(() => {
     if (camp) {
-
-    const timeOutId = setTimeout(() => updateCamp(camp), 500);
-    return () => clearTimeout(timeOutId);
+      const timeOutId = setTimeout(() => updateCamp(camp), 500);
+      return () => clearTimeout(timeOutId);
     }
     return () => {};
   }, [camp]);
 
   const handleVolunteerChange = (e: any) => {
     if (camp) {
-      setCamp({...camp, volunteers: e.target.value});
+      setCamp({ ...camp, volunteers: e.target.value });
     }
-  }
+  };
 
   return (
     <Container maxWidth="100vw">

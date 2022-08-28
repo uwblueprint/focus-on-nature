@@ -18,7 +18,7 @@ const editCampById = async (
   camp: CampResponse,
 ): Promise<CampResponse> => {
   try {
-    // Explicity writing out the fields to update since formquestions and campsessions are omitted
+    // Formquestions and campsessions are omitted
     const fieldsToUpdate = { ...camp };
     delete fieldsToUpdate.formQuestions;
     delete fieldsToUpdate.campSessions;

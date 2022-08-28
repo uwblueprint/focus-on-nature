@@ -10,9 +10,7 @@ const formatOptionLabel = (user: UserSelectOption, { context }: any) => {
     return (
       <>
         <VStack alignItems="left" width="100%">
-          <Text textStyle="bodyRegular">
-            {user.label}
-          </Text>
+          <Text textStyle="bodyRegular">{user.label}</Text>
           <Text textStyle="xSmallRegular">{user.email}</Text>
         </VStack>
       </>
@@ -30,7 +28,7 @@ const UserSelect = ({
   placeholderText?: string;
   onChange: (newVal: MultiValue<UserSelectOption>) => void;
   options: UserSelectOption[];
-  value: UserSelectOption[]
+  value: UserSelectOption[];
 }): JSX.Element => {
   return (
     <>
