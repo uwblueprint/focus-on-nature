@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 });
 
 const dropoffProductName = "Early Drop Off Fees";
-const pickUpProductName = "Late Pick Up Fees";
+const pickupProductName = "Late Pick Up Fees";
 
 export async function createStripeCampProduct({
   campName,
@@ -30,13 +30,13 @@ export async function createStripeDropoffProduct(
   return dropoffProduct;
 }
 
-export async function createStripePickUpProduct(
+export async function createStripePickupProduct(
   campName: string,
 ): Promise<Stripe.Response<Stripe.Product>> {
-  const pickUpProduct = await stripe.products.create({
-    name: `${campName} - ${pickUpProductName}`,
+  const pickupProduct = await stripe.products.create({
+    name: `${campName} - ${pickupProductName}`,
   });
-  return pickUpProduct;
+  return pickupProduct;
 }
 
 export async function updateStripeCampProduct({
@@ -66,7 +66,7 @@ export async function updateStripeDropoffProduct({
   });
 }
 
-export async function updateStripePickUpProduct({
+export async function updateStripePickupProduct({
   productId,
   campName,
 }: {
@@ -74,7 +74,7 @@ export async function updateStripePickUpProduct({
   campName?: string;
 }): Promise<void> {
   await stripe.products.update(productId, {
-    ...(campName && { name: `${campName} - ${pickUpProductName}` }),
+    ...(campName && { name: `${campName} - ${pickupProductName}` }),
   });
 }
 

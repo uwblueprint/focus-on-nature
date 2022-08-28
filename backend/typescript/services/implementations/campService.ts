@@ -27,14 +27,15 @@ import {
   updateStripeCampProduct,
   createStripeCampProduct,
   createStripeDropoffProduct,
-  createStripePickUpProduct,
+  createStripePickupProduct,
   updateStripeDropoffProduct,
-  updateStripePickUpProduct,
+  updateStripePickupProduct,
 } from "../../utilities/stripeUtils";
 
 import MgWaitlistedCamper, {
   WaitlistedCamper,
 } from "../../models/waitlistedCamper.model";
+import Stripe from "stripe";
 
 const Logger = logger(__filename);
 
@@ -85,8 +86,6 @@ class CampService implements ICampService {
               registrations: campSession.campers.length,
               waitlist: campSession.waitlist.length,
               campPriceId: campSession.campPriceId,
-              dropoffPriceId: campSession.dropoffPriceId,
-              pickUpPriceId: campSession.pickUpPriceId,
             }),
           );
 
@@ -122,8 +121,10 @@ class CampService implements ICampService {
             pickupFee: camp.pickupFee,
             location: camp.location,
             campProductId: camp.campProductId,
+            dropoffPriceId: camp.dropoffPriceId,
             dropoffProductId: camp.dropoffProductId,
-            pickUpProductId: camp.pickUpProductId,
+            pickupPriceId: camp.pickupPriceId,
+            pickupProductId: camp.pickupProductId,
             startTime: camp.startTime,
             endTime: camp.endTime,
             fee: camp.fee,
@@ -239,16 +240,16 @@ class CampService implements ICampService {
         counsellor.toString(),
       ),
       campProductId: camp.campProductId,
+      dropoffPriceId: camp.dropoffPriceId,
       dropoffProductId: camp.dropoffProductId,
-      pickUpProductId: camp.pickUpProductId,
+      pickupPriceId: camp.pickupPriceId,
+      pickupProductId: camp.pickupProductId,
       campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
         id: campSession.id,
         capacity: campSession.capacity,
         dates: campSession.dates.map((date) => date.toString()),
         registrations: campSession.campers.length,
         waitlist: campSession.waitlist.length,
-        dropoffPriceId: campSession.dropoffPriceId,
-        pickUpPriceId: campSession.pickUpPriceId,
         campPriceId: campSession.campPriceId,
       })),
       name: camp.name,
@@ -281,6 +282,7 @@ class CampService implements ICampService {
   async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
     let oldCamp: Camp | null;
     let newCamp: Camp | null;
+
     try {
       oldCamp = await MgCamp.findById(campId);
 
@@ -290,32 +292,6 @@ class CampService implements ICampService {
 
       if (oldCamp.active && (camp.fee || camp.dropoffFee || camp.pickupFee)) {
         throw new Error(`Error - cannot update fee of active camp`);
-      }
-
-      const stripeProducts: {
-        campProductId?: string;
-        dropoffProductId?: string;
-        pickUpProductId?: string;
-      } = {};
-
-      if (!oldCamp.campProductId) {
-        const stripeCampProduct = await createStripeCampProduct({
-          campName: camp.name,
-          campDescription: camp.description,
-        });
-        stripeProducts.campProductId = stripeCampProduct.id;
-      }
-
-      if (!oldCamp.dropoffProductId) {
-        const stripeDropoffProduct = await createStripeDropoffProduct(
-          camp.name,
-        );
-        stripeProducts.dropoffProductId = stripeDropoffProduct.id;
-      }
-
-      if (!oldCamp.pickUpProductId) {
-        const stripePickUpProduct = await createStripePickUpProduct(camp.name);
-        stripeProducts.pickUpProductId = stripePickUpProduct.id;
       }
 
       const fileName = oldCamp.fileName ?? uuidv4();
@@ -356,7 +332,6 @@ class CampService implements ICampService {
             volunteers: camp.volunteers,
             fee: camp.fee,
             fileName: camp.filePath ? fileName : null,
-            ...stripeProducts,
           },
         },
         { new: true },
@@ -385,9 +360,9 @@ class CampService implements ICampService {
         });
       }
 
-      if (oldCamp.pickUpProductId) {
-        updateStripePickUpProduct({
-          productId: oldCamp.pickUpProductId,
+      if (oldCamp.pickupProductId) {
+        updateStripePickupProduct({
+          productId: oldCamp.pickupProductId,
           campName: camp.name,
         });
       }
@@ -397,12 +372,27 @@ class CampService implements ICampService {
         const {
           campProductId,
           dropoffProductId,
-          pickUpProductId,
+          pickupProductId,
           dropoffFee,
           pickupFee,
         } = newCamp;
 
         const campFee = newCamp.fee;
+
+        const dropoffPriceObject = await createStripePrice(
+          dropoffProductId,
+          dropoffFee * 100,
+        );
+
+        const pickupPriceObject = await createStripePrice(
+          pickupProductId,
+          pickupFee * 100,
+        );
+
+        await MgCamp.findByIdAndUpdate(campId, {
+          dropoffPriceId: dropoffPriceObject.id,
+          pickupPriceId: pickupPriceObject.id,
+        });
 
         await Promise.all(
           (newCamp.campSessions as CampSession[]).map(async (campSession) => {
@@ -413,21 +403,9 @@ class CampService implements ICampService {
               campSessionFeeInCents,
             );
 
-            const dropoffPriceObject = await createStripePrice(
-              dropoffProductId,
-              dropoffFee * 100,
-            );
-
-            const pickUpPriceObject = await createStripePrice(
-              pickUpProductId,
-              pickupFee * 100,
-            );
-
             await MgCampSession.findByIdAndUpdate(
               campSession.id,
               {
-                pickUpPriceId: pickUpPriceObject.id,
-                dropoffPriceId: dropoffPriceObject.id,
                 campPriceId: priceObject.id,
               },
               { runValidators: true },
@@ -460,8 +438,10 @@ class CampService implements ICampService {
       pickupFee: newCamp.pickupFee,
       location: newCamp.location,
       campProductId: newCamp.campProductId,
+      dropoffPriceId: newCamp.dropoffPriceId,
       dropoffProductId: newCamp.dropoffProductId,
-      pickUpProductId: newCamp.pickUpProductId,
+      pickupPriceId: newCamp.pickupPriceId,
+      pickupProductId: newCamp.pickupProductId,
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
       fee: newCamp.fee,
@@ -551,8 +531,6 @@ class CampService implements ICampService {
         waitlist: [],
         dates: campSession.dates.sort(),
         campPriceId: "",
-        dropoffPriceId: "",
-        pickUpPriceId: "",
       });
     });
 
@@ -565,7 +543,7 @@ class CampService implements ICampService {
       await Promise.all(
         campSessions.map(async (campSession, i) => {
           let priceIds = {
-            pickUpPriceId: "",
+            pickupPriceId: "",
             dropoffPriceId: "",
             campPriceId: "",
           };
@@ -584,13 +562,13 @@ class CampService implements ICampService {
               camp.dropoffFee,
             );
 
-            const pickUpPriceObject = await createStripePrice(
-              camp.pickUpProductId,
+            const pickupPriceObject = await createStripePrice(
+              camp.pickupProductId,
               camp.pickupFee,
             );
 
             priceIds = {
-              pickUpPriceId: pickUpPriceObject.id,
+              pickupPriceId: pickupPriceObject.id,
               dropoffPriceId: dropoffPriceObject.id,
               campPriceId: priceObject.id,
             };
@@ -615,7 +593,7 @@ class CampService implements ICampService {
     } else {
       campSessions.forEach((campSession, i) => {
         const priceIds = {
-          pickUpPriceId: "",
+          pickupPriceId: "",
           dropoffPriceId: "",
           campPriceId: "",
         };
@@ -675,8 +653,6 @@ class CampService implements ICampService {
           waitlist: [],
           dates: session.dates.map((date) => date.toString()),
           campPriceId: session.campPriceId,
-          dropoffPriceId: session.dropoffPriceId,
-          pickUpPriceId: session.pickUpPriceId,
         },
     );
   }
@@ -748,8 +724,6 @@ class CampService implements ICampService {
         waitlist: newCampSession.waitlist.map((camper) => camper.toString()),
         dates: newCampSession.dates.map((date) => date.toString()),
         campPriceId: newCampSession.campPriceId,
-        dropoffPriceId: newCampSession.dropoffPriceId,
-        pickUpPriceId: newCampSession.pickUpPriceId,
       };
     } catch (error: unknown) {
       Logger.error(
@@ -907,7 +881,7 @@ class CampService implements ICampService {
         campDescription: camp.description,
       });
       const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
-      const stripePickUpProduct = await createStripePickUpProduct(camp.name);
+      const stripePickupProduct = await createStripePickupProduct(camp.name);
 
       newCamp = new MgCamp({
         name: camp.name,
@@ -925,7 +899,7 @@ class CampService implements ICampService {
         latePickup: camp.latePickup,
         location: camp.location,
         campProductId: stripeCampProduct.id,
-        pickUpProductId: stripePickUpProduct.id,
+        pickupProductId: stripePickupProduct.id,
         startTime: camp.startTime,
         fee: camp.fee,
         formQuestions: [],
@@ -985,8 +959,10 @@ class CampService implements ICampService {
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
       campProductId: newCamp.campProductId,
+      dropoffPriceId: "",
       dropoffProductId: newCamp.dropoffProductId,
-      pickUpProductId: newCamp.pickUpProductId,
+      pickupPriceId: "",
+      pickupProductId: newCamp.pickupProductId,
       volunteers: newCamp.volunteers,
     };
   }
