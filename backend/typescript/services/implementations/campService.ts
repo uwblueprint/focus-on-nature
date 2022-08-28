@@ -262,7 +262,7 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      if (oldCamp.active && camp.fee) {
+      if (oldCamp.active && camp.fee !== oldCamp.fee) {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
