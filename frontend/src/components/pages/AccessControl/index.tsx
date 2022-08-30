@@ -7,6 +7,10 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   Table,
   Tag,
@@ -114,6 +118,10 @@ const AccessControlPage = (): JSX.Element => {
     }
   };
 
+  const handleStatusChange = () => {
+    // onOpen();
+  };
+
   return (
     <Container
       maxWidth="100vw"
@@ -202,11 +210,25 @@ const AccessControlPage = (): JSX.Element => {
                 />
               </Td>
               <Td>
-                <IconButton
-                  aria-label="Mark as active button"
-                  icon={<FaEllipsisV />}
-                  variant=""
-                />
+                <Popover>
+                  <PopoverTrigger>
+                    <IconButton
+                      aria-label="Mark as active button"
+                      icon={<FaEllipsisV />}
+                      variant=""
+                      onClick={handleStatusChange}
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent>
+                  <PopoverBody
+                        as={Button}
+                        bg="background.white.100"
+            
+                      >
+                        Logout
+                      </PopoverBody>
+                  </PopoverContent>
+                </Popover>
               </Td>
             </Tr>
           ))}
