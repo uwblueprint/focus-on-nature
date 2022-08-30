@@ -2,6 +2,11 @@ export type Role = "Admin" | "CampCoordinator";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
+export type QuestionCategory =
+  | "PersonalInfo"
+  | "CampSpecific"
+  | "EmergencyContact";
+
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
 export type Token = {
@@ -20,6 +25,7 @@ export type UserDTO = {
 
 export type FormQuestionDTO = {
   id: string;
+  category: QuestionCategory;
   type: QuestionType;
   question: string;
   required: boolean;

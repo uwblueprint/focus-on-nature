@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import Stripe from "stripe";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
   CreateCampDTO,
@@ -69,6 +68,7 @@ class CampService implements ICampService {
             (formQuestion: FormQuestion) => {
               return {
                 id: formQuestion.id,
+                category: formQuestion.category,
                 type: formQuestion.type,
                 question: formQuestion.question,
                 required: formQuestion.required,
@@ -266,6 +266,7 @@ class CampService implements ICampService {
         (formQuestion: FormQuestion) => {
           return {
             id: formQuestion.id,
+            category: formQuestion.category,
             type: formQuestion.type,
             question: formQuestion.question,
             required: formQuestion.required,
@@ -991,6 +992,7 @@ class CampService implements ICampService {
       await Promise.all(
         formQuestions.map(async (formQuestion) => {
           const question = await MgFormQuestion.create({
+            category: formQuestion.category,
             type: formQuestion.type,
             question: formQuestion.question,
             required: formQuestion.required,
@@ -1031,6 +1033,7 @@ class CampService implements ICampService {
       const newFormQuestion: FormQuestion | null = await MgFormQuestion.findByIdAndUpdate(
         formQuestionId,
         {
+          category: formQuestion.category,
           type: formQuestion.type,
           question: formQuestion.question,
           required: formQuestion.required,
@@ -1048,6 +1051,7 @@ class CampService implements ICampService {
 
       return {
         id: formQuestionId,
+        category: newFormQuestion.category,
         type: newFormQuestion.type,
         question: newFormQuestion.question,
         required: newFormQuestion.required,
@@ -1113,6 +1117,7 @@ class CampService implements ICampService {
       await Promise.all(
         formQuestions.map(async (formQuestion) => {
           const question = await MgFormQuestion.create({
+            category: formQuestion.category,
             type: formQuestion.type,
             question: formQuestion.question,
             required: formQuestion.required,
