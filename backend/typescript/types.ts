@@ -134,7 +134,7 @@ export type CampDTO = {
   formQuestions: string[];
   campSessions: string[];
   fileName?: string;
-  volunteers: string[];
+  volunteers: string;
 };
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {

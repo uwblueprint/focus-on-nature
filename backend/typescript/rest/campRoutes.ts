@@ -130,9 +130,9 @@ campRouter.patch(
         fee: body.fee,
         filePath: req.file?.path,
         fileContentType: req.file?.mimetype,
-        endTime: "",
-        startTime: "",
-        volunteers: [],
+        startTime: body.startTime,
+        endTime: body.endTime,
+        volunteers: body.volunteers,
       });
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);

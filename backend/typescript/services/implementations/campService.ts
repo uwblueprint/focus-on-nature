@@ -291,7 +291,12 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      if (oldCamp.active && (camp.fee || camp.dropoffFee || camp.pickupFee)) {
+      if (
+        oldCamp.active &&
+        (camp.fee !== oldCamp.fee ||
+          camp.dropoffFee !== oldCamp.dropoffFee ||
+          camp.pickupFee !== oldCamp.dropoffFee)
+      ) {
         throw new Error(`Error - cannot update fee of active camp`);
       }
 
@@ -308,8 +313,6 @@ class CampService implements ICampService {
           camp.filePath,
           camp.fileContentType,
         );
-      } else if (!camp.filePath && oldCamp.fileName) {
-        await this.storageService.deleteFile(oldCamp.fileName);
       }
 
       newCamp = await MgCamp.findByIdAndUpdate(
@@ -332,7 +335,7 @@ class CampService implements ICampService {
             endTime: camp.endTime,
             volunteers: camp.volunteers,
             fee: camp.fee,
-            fileName: camp.filePath ? fileName : null,
+            fileName: camp.filePath || oldCamp.fileName ? fileName : null,
           },
         },
         { new: true },

@@ -34,7 +34,7 @@ export interface Camp extends Document {
   dropoffProductId: string;
   pickupPriceId: string;
   pickupProductId: string;
-  volunteers: string[];
+  volunteers: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -161,12 +161,7 @@ const CampSchema: Schema = new Schema({
     required: true,
   },
   volunteers: {
-    type: [
-      {
-        type: String,
-      },
-    ],
-    default: [],
+    type: String,
   },
 });
 

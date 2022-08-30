@@ -42,7 +42,7 @@ const testCamps: CreateCampDTO[] = [
     latePickup: "2:30",
     startTime: "6:49",
     endTime: "16:09",
-    volunteers: ["jason"],
+    volunteers: "jason",
   },
   {
     active: true,
@@ -66,7 +66,7 @@ const testCamps: CreateCampDTO[] = [
     latePickup: "2:30",
     startTime: "6:49",
     endTime: "16:09",
-    volunteers: ["jason"],
+    volunteers: "jason",
   },
 ];
 
@@ -119,7 +119,7 @@ describe("mongo campService", (): void => {
       formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
-      volunteers: ["jason"],
+      volunteers: "jason",
     };
 
     const testCampSessions: CreateCampSessionsDTO = [
@@ -222,7 +222,7 @@ describe("mongo campService", (): void => {
       formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
-      volunteers: ["jason"],
+      volunteers: "jason",
     };
 
     const testCampSessions: CreateCampSessionsDTO = [
@@ -342,7 +342,7 @@ describe("mongo campService", (): void => {
       formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
-      volunteers: ["jason"],
+      volunteers: "jason",
     };
 
     const updatedTestCamp: UpdateCampDTO = {
@@ -366,7 +366,7 @@ describe("mongo campService", (): void => {
       fee: 50,
       startTime: "8:49",
       endTime: "12:09",
-      volunteers: ["jason", "elon"],
+      volunteers: "jason, elon",
     };
 
     // create camp
@@ -422,7 +422,7 @@ describe("mongo campService", (): void => {
       startTime: "15:00",
       endTime: "18:00",
       formQuestions: [],
-      volunteers: [],
+      volunteers: "",
     });
 
     await campService.createCampSessions(res.id, [
