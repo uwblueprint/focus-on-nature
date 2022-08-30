@@ -8,12 +8,10 @@ import { UserSelectOption } from "../../../types/UserTypes";
 const formatOptionLabel = (user: UserSelectOption, { context }: any) => {
   if (context === "menu") {
     return (
-      <>
-        <VStack alignItems="left" width="100%">
-          <Text textStyle="bodyRegular">{user.label}</Text>
-          <Text textStyle="xSmallRegular">{user.email}</Text>
-        </VStack>
-      </>
+      <VStack alignItems="left" width="100%">
+        <Text textStyle="bodyRegular">{user.label}</Text>
+        <Text textStyle="xSmallRegular">{user.email}</Text>
+      </VStack>
     );
   }
   return user.label;
