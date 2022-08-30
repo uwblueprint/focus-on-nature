@@ -2,6 +2,11 @@ export type Role = "Admin" | "CampCoordinator";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
+export type QuestionCategory =
+  | "PersonalInfo"
+  | "CampSpecific"
+  | "EmergencyContact";
+
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
 export type Token = {
@@ -20,6 +25,7 @@ export type UserDTO = {
 
 export type FormQuestionDTO = {
   id: string;
+  category: QuestionCategory;
   type: QuestionType;
   question: string;
   required: boolean;
@@ -92,8 +98,9 @@ export type CampSessionDTO = {
   camp: string;
   capacity: number;
   campers: string[];
-  waitlist: string[];
+  campPriceId: string;
   dates: string[];
+  waitlist: string[];
 };
 
 export type CampDTO = {
@@ -103,6 +110,11 @@ export type CampDTO = {
   ageUpper: number;
   campCoordinators: string[];
   campCounsellors: string[];
+  campProductId: string;
+  dropoffPriceId: string;
+  dropoffProductId: string;
+  dropoffFee: number;
+  pickupFee: number;
   name: string;
   description: string;
   earlyDropoff: string;
@@ -115,6 +127,8 @@ export type CampDTO = {
     province: string;
     postalCode: string;
   };
+  pickupPriceId: string;
+  pickupProductId: string;
   startTime: string;
   fee: number;
   formQuestions: string[];
@@ -134,29 +148,42 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
 
 export type CreateCampDTO = Omit<
   CampDTO,
-  "id" | "formQuestions" | "campSessions"
+  | "id"
+  | "formQuestions"
+  | "campSessions"
+  | "campProductId"
+  | "dropoffPriceId"
+  | "dropoffProductId"
+  | "pickupPriceId"
+  | "pickupProductId"
 > & {
   formQuestions: Omit<FormQuestionDTO, "id">[];
-  campSessions: Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">[];
   filePath?: string;
   fileContentType?: string;
 };
 
 export type UpdateCampDTO = Omit<
   CampDTO,
-  "id" | "formQuestions" | "campSessions"
+  | "id"
+  | "formQuestions"
+  | "campSessions"
+  | "campProductId"
+  | "dropoffPriceId"
+  | "dropoffProductId"
+  | "pickupPriceId"
+  | "pickupProductId"
 > & {
   filePath?: string;
   fileContentType?: string;
 };
 
 export type CreateCampSessionsDTO = Array<
-  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist">
+  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
 
 export type UpdateCampSessionDTO = Omit<
   CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist"
+  "id" | "camp" | "campers" | "waitlist" | "campPriceId"
 >;
 
 export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];

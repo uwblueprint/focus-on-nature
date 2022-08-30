@@ -51,6 +51,12 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
+  if (!validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
+  }
+  if (!validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
   }
@@ -132,38 +138,11 @@ export const createCampDtoValidator = async (
   if (body.volunteers && !validatePrimitive(body.volunteers, "string")) {
     return res.status(400).send(getApiValidationError("volunteers", "string"));
   }
-  if (
-    body.formQuestions &&
-    Array.isArray(body.formQuestions) &&
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    !body.formQuestions.every((formQuestion: { [key: string]: any }) => {
-      return validateFormQuestion(formQuestion);
-    })
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("formQuestion", "string", true));
+  if (body.formQuestions) {
+    return res.status(400).send("formQuestions should be empty");
   }
-
   if (body.campSessions) {
-    for (let i = 0; i < body.campSessions.length; i += 1) {
-      const campSession = body.campSessions[i];
-      if (!validatePrimitive(campSession.capacity, "integer")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("capacity", "integer"));
-      }
-      if (campSession.dates && !validateArray(campSession.dates, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "string", true));
-      }
-      if (!campSession.dates.every(validateDate)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "Date string"));
-      }
-    }
+    return res.status(400).send("campSessions should be empty");
   }
   if (body.campers) {
     return res.status(400).send("campers should be empty");
@@ -196,33 +175,41 @@ export const updateCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (!validatePrimitive(body.location.streetAddress1, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("location.streetAddress1", "string"));
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
   }
-  if (
-    body.location.streetAddress2 &&
-    !validatePrimitive(body.location.streetAddress2, "string")
-  ) {
-    return res
-      .status(400)
-      .send(getApiValidationError("location.streetAddress2", "string"));
+  if (body.pickupFee && !validatePrimitive(body.pickupFee, "integer")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
   }
-  if (!validatePrimitive(body.location.city, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("location.city", "string"));
-  }
-  if (!validatePrimitive(body.location.province, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("location.province", "string"));
-  }
-  if (!validatePrimitive(body.location.postalCode, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("location.postalCode", "string"));
+  if (body.location) {
+    if (!validatePrimitive(body.location.streetAddress1, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress1", "string"));
+    }
+    if (
+      body.location.streetAddress2 &&
+      !validatePrimitive(body.location.streetAddress2, "string")
+    ) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.streetAddress2", "string"));
+    }
+    if (!validatePrimitive(body.location.city, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.city", "string"));
+    }
+    if (!validatePrimitive(body.location.province, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.province", "string"));
+    }
+    if (!validatePrimitive(body.location.postalCode, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("location.postalCode", "string"));
+    }
   }
   if (!validatePrimitive(body.ageLower, "integer")) {
     return res.status(400).send(getApiValidationError("ageLower", "integer"));
@@ -341,6 +328,8 @@ export const createCampSessionsDtoValidator = async (
         return res.status(400).send("waitlist should be empty");
       }
     }
+  } else {
+    return res.status(400).send("campSessions are required");
   }
   return next();
 };
@@ -376,7 +365,7 @@ export const editFormQuestionValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.body.formQuestion && !validateFormQuestion(req.body.formQuestion)) {
+  if (!validateFormQuestion(req.body.formQuestion)) {
     return res
       .status(400)
       .send(getApiValidationError("formQuestion", "Form question"));
@@ -391,8 +380,8 @@ export const createFormQuestionsValidator = async (
   next: NextFunction,
 ) => {
   if (
-    req.body.formQuestions &&
-    Array.isArray(req.body.formQuestions) &&
+    !req.body.formQuestions ||
+    !Array.isArray(req.body.formQuestions) ||
     !req.body.formQuestions.every(validateFormQuestion)
   ) {
     return res
