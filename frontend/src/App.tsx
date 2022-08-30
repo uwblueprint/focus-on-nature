@@ -26,7 +26,7 @@ import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
-import CampOverview from "./components/pages/CampOverview";
+import CampOverviewPage from "./components/pages/CampOverview";
 import AccessControlPage from "./components/pages/AccessControl";
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
@@ -101,7 +101,7 @@ const App = (): React.ReactElement => {
                 <PrivateRoute
                   exact
                   path={Routes.CAMP_OVERVIEW_PAGE}
-                  component={CampOverview}
+                  component={CampOverviewPage}
                 />
                 <PrivateRoute
                   exact

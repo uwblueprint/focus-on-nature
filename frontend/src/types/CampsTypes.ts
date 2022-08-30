@@ -1,3 +1,19 @@
+import { Role } from "./AuthTypes";
+
+export enum CampStatus {
+  DRAFT = "Draft",
+  PAST = "Past",
+  PUBLISHED = "Published",
+}
+
+export type Location = {
+  streetAddress1: string;
+  streetAddress2?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+};
+
 export type CampResponse = {
   id: string;
   active: boolean;
@@ -10,13 +26,13 @@ export type CampResponse = {
   earlyDropoff: string;
   endTime: string;
   latePickup: string;
-  location: string;
+  location: Location;
   startTime: string;
   fee: number;
   formQuestions: FormQuestion[];
   campSessions: CampSession[];
-  fileName?: string;
-  volunteers: string[];
+  volunteers: string;
+  campPhotoUrl: string;
 };
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
