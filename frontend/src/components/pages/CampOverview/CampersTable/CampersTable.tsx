@@ -54,7 +54,6 @@ const CampersTable = ({
   campers: Camper[];
   campSessionCapacity: number;
 }): JSX.Element => {
-  const [displayedCampers, setDisplayedCampers] = React.useState(campers);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
@@ -71,7 +70,7 @@ const CampersTable = ({
       filteredCampers = campers.filter((camper) => camper.allergies);
     else if (selectedFilter === Filter.ADDITIONAL_NEEDS)
       filteredCampers = campers.filter((camper) => camper.specialNeeds);
-    else filteredCampers = displayedCampers;
+    else filteredCampers = campers;
 
     if (!search) return filteredCampers;
     return filteredCampers.filter((camper: Camper) =>
@@ -80,7 +79,7 @@ const CampersTable = ({
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, selectedFilter, campers, displayedCampers]);
+  }, [search, selectedFilter, campers]);
 
   const [camperDetailsCount, setCamperDetailsCount] = React.useState({
     earlyDropoff: 0,

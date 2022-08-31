@@ -10,6 +10,7 @@ import CampersTables from "./CampersTable/CampersTables";
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
+  const [currentCampSession, setCurrentCampSession] = useState(0);
   const [camp, setCamp] = useState<CampResponse>({
     id: "",
     active: false,
@@ -35,6 +36,7 @@ const CampOverviewPage = (): JSX.Element => {
     volunteers: "",
     campPhotoUrl: "",
   });
+  const numSessions = camp.campSessions.length;
 
   useEffect(() => {
     const getCamp = async () => {
@@ -45,6 +47,20 @@ const CampOverviewPage = (): JSX.Element => {
     };
     getCamp();
   }, []);
+
+  const onNextSession = () => {
+    if (numSessions >= 2)
+      setCurrentCampSession(
+        currentCampSession === numSessions - 1 ? 0 : currentCampSession + 1,
+      );
+  };
+
+  const onPrevSession = () => {
+    if (numSessions >= 2)
+      setCurrentCampSession(
+        currentCampSession === 0 ? numSessions - 1 : currentCampSession - 1,
+      );
+  };
 
   return (
     <Container
@@ -58,8 +74,15 @@ const CampOverviewPage = (): JSX.Element => {
         <Divider borderColor="background.grey.400" marginY="40px" />
         {camp.campSessions.length > 0 ? (
           <>
-            <CampSessionInfoHeader camp={camp} />
-            <CampersTables />
+            <CampSessionInfoHeader
+              camp={camp}
+              currentCampSession={currentCampSession}
+              onNextSession={onNextSession}
+              onPrevSession={onPrevSession}
+            />
+            <CampersTables
+              campSession={camp.campSessions[currentCampSession]}
+            />
           </>
         ) : (
           <EmptyCampSessionState />

@@ -10,39 +10,32 @@ import {
 import textStyles from "../../../theme/textStyles";
 import { CampResponse } from "../../../types/CampsTypes";
 
+type CampSessionInfoHeaderProps = {
+  camp: CampResponse;
+  currentCampSession: number;
+  onNextSession: () => void;
+  onPrevSession: () => void;
+};
+
 const CampSessionInfoHeader = ({
   camp,
-}: {
-  camp: CampResponse;
-}): React.ReactElement => {
-  const [currentCampSession, setCurrentCampSession] = useState(0);
+  currentCampSession,
+  onNextSession,
+  onPrevSession,
+}: CampSessionInfoHeaderProps): React.ReactElement => {
   const numSessions = camp.campSessions.length;
-
-  const nextSession = () => {
-    if (numSessions >= 2)
-      setCurrentCampSession(
-        currentCampSession === numSessions - 1 ? 0 : currentCampSession + 1,
-      );
-  };
-
-  const prevSession = () => {
-    if (numSessions >= 2)
-      setCurrentCampSession(
-        currentCampSession === 0 ? numSessions - 1 : currentCampSession - 1,
-      );
-  };
-
   const campSession = camp.campSessions[currentCampSession];
+
   const campSessionStartDate = new Date(
     campSession.dates[0],
   ).toLocaleDateString("en-us", {
-    year: "numeric",
     month: "short",
     day: "numeric",
   });
   const campSessionEndDate = new Date(campSession.dates[1]).toLocaleDateString(
     "en-us",
     {
+      year: "numeric",
       month: "short",
       day: "numeric",
     },
@@ -61,7 +54,7 @@ const CampSessionInfoHeader = ({
           icon={<FontAwesomeIcon icon={faChevronLeft} />}
           size="lg"
           aria-label="back-button"
-          onClick={prevSession}
+          onClick={onPrevSession}
           backgroundColor="background.white.100"
           marginStart="2.5"
         />
@@ -69,7 +62,7 @@ const CampSessionInfoHeader = ({
           icon={<FontAwesomeIcon icon={faChevronRight} />}
           size="lg"
           aria-label="next-button"
-          onClick={nextSession}
+          onClick={onNextSession}
           backgroundColor="background.white.100"
         />
       </Flex>

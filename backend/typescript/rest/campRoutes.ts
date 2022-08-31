@@ -88,7 +88,6 @@ campRouter.post(
         latePickup: body.latePickup,
         location: body.location,
         fee: body.fee,
-        formQuestions: body.formQuestions,
         filePath: req.file?.path,
         fileContentType: req.file?.mimetype,
         startTime: body.startTime,
