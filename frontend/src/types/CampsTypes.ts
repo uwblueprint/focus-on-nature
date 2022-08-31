@@ -1,4 +1,5 @@
-import { Role } from "./AuthTypes";
+import { Camper } from "./CamperTypes";
+import { WaitlistedCamper } from "./WaitlistedCamperTypes";
 
 export enum CampStatus {
   DRAFT = "Draft",
@@ -41,8 +42,8 @@ export type CampSession = {
   id: string;
   camp: string;
   capacity: number;
-  campers: string[];
-  waitlist: string[];
+  campers: Camper[];
+  waitlist: WaitlistedCamper[];
   dates: string[];
 };
 
