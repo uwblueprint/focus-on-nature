@@ -42,7 +42,7 @@ const ConfirmStatusChangeModal = ({
         </ModalBody>
         <ModalFooter>
           <HStack>
-            <Button onClick={onChangeStatus} padding="20px">
+            <Button onClick={onClose} padding="20px">
               Cancel
             </Button>
             <Button
