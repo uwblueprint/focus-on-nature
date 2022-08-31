@@ -33,10 +33,12 @@ import { Role } from "../../../types/AuthTypes";
 import ConfirmStatusChangeModal from "./ConfirmStatusChangeModal";
 
 const AccessControlPage = (): JSX.Element => {
-  enum Filter {
+  enum UserStatusStates {
     ALL = "All",
-    ACTIVE = "Active",
-    INACTIVE = "Inactive",
+    ACTIVE_CAPITALIZED = "Active",
+    INACTIVE_CAPITALIZED = "Inactive",
+    ACTIVE_NO_CAP = "active",
+    INACTIVE_NO_CAP = "inactive",
   }
 
   enum UserRoles {
@@ -44,13 +46,17 @@ const AccessControlPage = (): JSX.Element => {
     CAMP_COORDINATOR = "Camp Coordinator",
   }
 
-  const filterOptions = [Filter.ALL, Filter.ACTIVE, Filter.INACTIVE];
+  const filterOptions = [
+    UserStatusStates.ALL,
+    UserStatusStates.ACTIVE_CAPITALIZED,
+    UserStatusStates.INACTIVE_CAPITALIZED,
+  ];
   const userRoles = [UserRoles.ADMIN, UserRoles.CAMP_COORDINATOR];
 
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [search, setSearch] = React.useState("");
-  const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
-    Filter.ALL,
+  const [selectedFilter, setSelectedFilter] = React.useState<UserStatusStates>(
+    UserStatusStates.ALL,
   );
   const [
     userToChangeStatus,
@@ -71,8 +77,8 @@ const AccessControlPage = (): JSX.Element => {
 
   const tableData = React.useMemo(() => {
     let filteredUsers;
-    if (selectedFilter === Filter.ALL) filteredUsers = users;
-    else if (selectedFilter === Filter.ACTIVE)
+    if (selectedFilter === UserStatusStates.ALL) filteredUsers = users;
+    else if (selectedFilter === UserStatusStates.ACTIVE_CAPITALIZED)
       filteredUsers = users.filter((user) => user.active);
     else filteredUsers = users.filter((user) => !user.active);
 
@@ -188,14 +194,22 @@ const AccessControlPage = (): JSX.Element => {
       <ConfirmStatusChangeModal
         title={`Mark ${userToChangeStatus?.firstName} ${
           userToChangeStatus?.lastName
-        } as ${userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE}`}
+        } as ${
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
+        }`}
         bodyText={`Are you sure you want to mark ${
           userToChangeStatus?.firstName
         } ${userToChangeStatus?.lastName} as ${
-          userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
         }?`}
         buttonLabel={`Mark as ${
-          userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
         }`}
         buttonColor={userToChangeStatus?.active ? "red" : "green"}
         isOpen={isOpen}
@@ -232,7 +246,7 @@ const AccessControlPage = (): JSX.Element => {
                   borderRadius="full"
                   variant={selectedFilter === option ? "solid" : "outline"}
                   colorScheme={selectedFilter === option ? "green" : "gray"}
-                  px={option === Filter.ALL ? "2em" : "1em"}
+                  px={option === UserStatusStates.ALL ? "2em" : "1em"}
                   onClick={() => setSelectedFilter(option)}
                 >
                   <TagLabel>{option}</TagLabel>
@@ -278,7 +292,11 @@ const AccessControlPage = (): JSX.Element => {
               <Td pl="0px">
                 <UserStatusLabel
                   active={user.active}
-                  value={user.active ? Filter.ACTIVE : Filter.INACTIVE}
+                  value={
+                    user.active
+                      ? UserStatusStates.ACTIVE_CAPITALIZED
+                      : UserStatusStates.INACTIVE_CAPITALIZED
+                  }
                 />
               </Td>
               <Td>
@@ -296,7 +314,10 @@ const AccessControlPage = (): JSX.Element => {
                       bg="background.white.100"
                       onClick={(e) => handleStatusChangePopoverTrigger(user)}
                     >
-                      Mark as {user.active ? Filter.INACTIVE : Filter.ACTIVE}
+                      Mark as{" "}
+                      {user.active
+                        ? UserStatusStates.INACTIVE_NO_CAP
+                        : UserStatusStates.ACTIVE_NO_CAP}
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
