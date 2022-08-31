@@ -33,11 +33,11 @@ const ConfirmStatusChangeModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent py="22px" px="16px">
+      <ModalContent>
         <ModalHeader>
           <Text textStyle="heading">{title}</Text>
         </ModalHeader>
-        <ModalBody textStyle="mobileBody" color="hubbard.100">
+        <ModalBody textStyle="bodyRegular" color="text.default.100">
           {bodyText}
         </ModalBody>
         <ModalFooter>
