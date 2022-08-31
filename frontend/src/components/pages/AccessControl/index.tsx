@@ -1,6 +1,7 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
+  Button,
   Container,
   HStack,
   IconButton,
@@ -21,6 +22,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React from "react";
@@ -28,6 +30,7 @@ import UserStatusLabel from "./UserStatusLabel";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import { UserResponse } from "../../../types/UserTypes";
 import { Role } from "../../../types/AuthTypes";
+import ConfirmStatusChangeModal from "./ConfirmStatusChangeModal";
 
 const AccessControlPage = (): JSX.Element => {
   enum Filter {
@@ -49,8 +52,13 @@ const AccessControlPage = (): JSX.Element => {
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
   );
+  const [
+    userToChangeStatus,
+    setUserToChangeStatus,
+  ] = React.useState<UserResponse | null>(null);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   React.useEffect(() => {
     const getUsers = async () => {
@@ -118,8 +126,55 @@ const AccessControlPage = (): JSX.Element => {
     }
   };
 
-  const handleStatusChange = () => {
-    // onOpen();
+  const handleStatusChangePopoverTrigger = (user: UserResponse) => {
+    setUserToChangeStatus(user);
+    onOpen();
+  };
+
+  const handleStatusChange = async (user: UserResponse | null) => {
+    const newUserData = {
+      id: user!.id,
+      firstName: user!.firstName,
+      lastName: user!.lastName,
+      email: user!.email,
+      role: user!.role,
+      active: !user!.active,
+    };
+
+    const res = await UserAPIClient.updateUserById(user!.id, newUserData);
+    if (res) {
+      toast({
+        description: newUserData.active
+          ? `${user!.firstName} ${
+              user!.lastName
+            } can now access the Camp Management Tool`
+          : `${user!.firstName} ${
+              user!.lastName
+            } can no longer access the Camp Management Tool`,
+        status: "success",
+        duration: 7000,
+        isClosable: true,
+      });
+
+      const newUsers: UserResponse[] = await users.map((u) => {
+        if (u.id === user!.id) {
+          return { ...u, active: newUserData.active };
+        }
+        return u;
+      });
+      setUsers(newUsers);
+    } else {
+      toast({
+        description: `An error occurred with changing ${user!.firstName} ${
+          user!.lastName
+        }'s status. Please try again.`,
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+    }
+    onClose();
+    setUserToChangeStatus(null);
   };
 
   return (
@@ -130,6 +185,23 @@ const AccessControlPage = (): JSX.Element => {
       py="3em"
       background="background.grey.200"
     >
+      <ConfirmStatusChangeModal
+        title={`Mark ${userToChangeStatus?.firstName} ${
+          userToChangeStatus?.lastName
+        } as ${userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE}`}
+        bodyText={`Are you sure you want to mark ${
+          userToChangeStatus?.firstName
+        } ${userToChangeStatus?.lastName} as ${
+          userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE
+        }?`}
+        buttonLabel={`Mark as ${
+          userToChangeStatus?.active ? Filter.INACTIVE : Filter.ACTIVE
+        }`}
+        buttonColor={userToChangeStatus?.active ? "red" : "green"}
+        isOpen={isOpen}
+        onClose={onClose}
+        onChangeStatus={() => handleStatusChange(userToChangeStatus)}
+      />
       <Text mb="35px" textStyle="displayXLarge">
         FON Staff Access Control
       </Text>
@@ -216,17 +288,16 @@ const AccessControlPage = (): JSX.Element => {
                       aria-label="Mark as active button"
                       icon={<FaEllipsisV />}
                       variant=""
-                      onClick={handleStatusChange}
                     />
                   </PopoverTrigger>
-                  <PopoverContent>
-                  <PopoverBody
-                        as={Button}
-                        bg="background.white.100"
-            
-                      >
-                        Logout
-                      </PopoverBody>
+                  <PopoverContent width="inherit">
+                    <PopoverBody
+                      as={Button}
+                      bg="background.white.100"
+                      onClick={(e) => handleStatusChangePopoverTrigger(user)}
+                    >
+                      Mark as {user.active ? Filter.INACTIVE : Filter.ACTIVE}
+                    </PopoverBody>
                   </PopoverContent>
                 </Popover>
               </Td>
