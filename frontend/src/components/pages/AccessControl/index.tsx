@@ -300,7 +300,7 @@ const AccessControlPage = (): JSX.Element => {
                 />
               </Td>
               <Td>
-                <Popover>
+                <Popover placement="bottom-end">
                   <PopoverTrigger>
                     <IconButton
                       aria-label="Mark as active button"
@@ -314,10 +314,12 @@ const AccessControlPage = (): JSX.Element => {
                       bg="background.white.100"
                       onClick={(e) => handleStatusChangePopoverTrigger(user)}
                     >
-                      Mark as{" "}
-                      {user.active
-                        ? UserStatusStates.INACTIVE_NO_CAP
-                        : UserStatusStates.ACTIVE_NO_CAP}
+                      <Text textStyle="buttonRegular">
+                        Mark as{" "}
+                        {user.active
+                          ? UserStatusStates.INACTIVE_NO_CAP
+                          : UserStatusStates.ACTIVE_NO_CAP}
+                      </Text>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
