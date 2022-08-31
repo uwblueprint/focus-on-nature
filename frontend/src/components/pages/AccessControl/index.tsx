@@ -1,12 +1,17 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
+  Button,
   Container,
   HStack,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   Table,
   Tag,
@@ -17,6 +22,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React from "react";
@@ -24,12 +30,15 @@ import UserStatusLabel from "./UserStatusLabel";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 import { UserResponse } from "../../../types/UserTypes";
 import { Role } from "../../../types/AuthTypes";
+import ConfirmStatusChangeModal from "./ConfirmStatusChangeModal";
 
 const AccessControlPage = (): JSX.Element => {
-  enum Filter {
+  enum UserStatusStates {
     ALL = "All",
-    ACTIVE = "Active",
-    INACTIVE = "Inactive",
+    ACTIVE_CAPITALIZED = "Active",
+    INACTIVE_CAPITALIZED = "Inactive",
+    ACTIVE_NO_CAP = "active",
+    INACTIVE_NO_CAP = "inactive",
   }
 
   enum UserRoles {
@@ -37,16 +46,25 @@ const AccessControlPage = (): JSX.Element => {
     CAMP_COORDINATOR = "Camp Coordinator",
   }
 
-  const filterOptions = [Filter.ALL, Filter.ACTIVE, Filter.INACTIVE];
+  const filterOptions = [
+    UserStatusStates.ALL,
+    UserStatusStates.ACTIVE_CAPITALIZED,
+    UserStatusStates.INACTIVE_CAPITALIZED,
+  ];
   const userRoles = [UserRoles.ADMIN, UserRoles.CAMP_COORDINATOR];
 
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [search, setSearch] = React.useState("");
-  const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
-    Filter.ALL,
+  const [selectedFilter, setSelectedFilter] = React.useState<UserStatusStates>(
+    UserStatusStates.ALL,
   );
+  const [
+    userToChangeStatus,
+    setUserToChangeStatus,
+  ] = React.useState<UserResponse | null>(null);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   React.useEffect(() => {
     const getUsers = async () => {
@@ -59,8 +77,8 @@ const AccessControlPage = (): JSX.Element => {
 
   const tableData = React.useMemo(() => {
     let filteredUsers;
-    if (selectedFilter === Filter.ALL) filteredUsers = users;
-    else if (selectedFilter === Filter.ACTIVE)
+    if (selectedFilter === UserStatusStates.ALL) filteredUsers = users;
+    else if (selectedFilter === UserStatusStates.ACTIVE_CAPITALIZED)
       filteredUsers = users.filter((user) => user.active);
     else filteredUsers = users.filter((user) => !user.active);
 
@@ -114,6 +132,57 @@ const AccessControlPage = (): JSX.Element => {
     }
   };
 
+  const handleStatusChangePopoverTrigger = (user: UserResponse) => {
+    setUserToChangeStatus(user);
+    onOpen();
+  };
+
+  const handleStatusChange = async (user: UserResponse | null) => {
+    const newUserData = {
+      id: user!.id,
+      firstName: user!.firstName,
+      lastName: user!.lastName,
+      email: user!.email,
+      role: user!.role,
+      active: !user!.active,
+    };
+
+    const res = await UserAPIClient.updateUserById(user!.id, newUserData);
+    if (res) {
+      toast({
+        description: newUserData.active
+          ? `${user!.firstName} ${
+              user!.lastName
+            } can now access the Camp Management Tool`
+          : `${user!.firstName} ${
+              user!.lastName
+            } can no longer access the Camp Management Tool`,
+        status: "success",
+        duration: 7000,
+        isClosable: true,
+      });
+
+      const newUsers: UserResponse[] = await users.map((u) => {
+        if (u.id === user!.id) {
+          return { ...u, active: newUserData.active };
+        }
+        return u;
+      });
+      setUsers(newUsers);
+    } else {
+      toast({
+        description: `An error occurred with changing ${user!.firstName} ${
+          user!.lastName
+        }'s status. Please try again.`,
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+    }
+    onClose();
+    setUserToChangeStatus(null);
+  };
+
   return (
     <Container
       maxWidth="100vw"
@@ -122,6 +191,31 @@ const AccessControlPage = (): JSX.Element => {
       py="3em"
       background="background.grey.200"
     >
+      <ConfirmStatusChangeModal
+        title={`Mark ${userToChangeStatus?.firstName} ${
+          userToChangeStatus?.lastName
+        } as ${
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
+        }`}
+        bodyText={`Are you sure you want to mark ${
+          userToChangeStatus?.firstName
+        } ${userToChangeStatus?.lastName} as ${
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
+        }?`}
+        buttonLabel={`Mark as ${
+          userToChangeStatus?.active
+            ? UserStatusStates.INACTIVE_NO_CAP
+            : UserStatusStates.ACTIVE_NO_CAP
+        }`}
+        buttonColor={userToChangeStatus?.active ? "red" : "green"}
+        isOpen={isOpen}
+        onClose={onClose}
+        onChangeStatus={() => handleStatusChange(userToChangeStatus)}
+      />
       <Text mb="35px" textStyle="displayXLarge">
         FON Staff Access Control
       </Text>
@@ -152,7 +246,7 @@ const AccessControlPage = (): JSX.Element => {
                   borderRadius="full"
                   variant={selectedFilter === option ? "solid" : "outline"}
                   colorScheme={selectedFilter === option ? "green" : "gray"}
-                  px={option === Filter.ALL ? "2em" : "1em"}
+                  px={option === UserStatusStates.ALL ? "2em" : "1em"}
                   onClick={() => setSelectedFilter(option)}
                 >
                   <TagLabel>{option}</TagLabel>
@@ -198,15 +292,37 @@ const AccessControlPage = (): JSX.Element => {
               <Td pl="0px">
                 <UserStatusLabel
                   active={user.active}
-                  value={user.active ? Filter.ACTIVE : Filter.INACTIVE}
+                  value={
+                    user.active
+                      ? UserStatusStates.ACTIVE_CAPITALIZED
+                      : UserStatusStates.INACTIVE_CAPITALIZED
+                  }
                 />
               </Td>
               <Td>
-                <IconButton
-                  aria-label="Mark as active button"
-                  icon={<FaEllipsisV />}
-                  variant=""
-                />
+                <Popover placement="bottom-end">
+                  <PopoverTrigger>
+                    <IconButton
+                      aria-label="Mark as active button"
+                      icon={<FaEllipsisV />}
+                      variant=""
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent width="inherit">
+                    <PopoverBody
+                      as={Button}
+                      bg="background.white.100"
+                      onClick={(e) => handleStatusChangePopoverTrigger(user)}
+                    >
+                      <Text textStyle="buttonRegular">
+                        Mark as{" "}
+                        {user.active
+                          ? UserStatusStates.INACTIVE_NO_CAP
+                          : UserStatusStates.ACTIVE_NO_CAP}
+                      </Text>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
               </Td>
             </Tr>
           ))}
