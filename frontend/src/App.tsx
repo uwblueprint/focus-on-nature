@@ -47,7 +47,7 @@ const App = (): React.ReactElement => {
     sampleContextReducer,
     DEFAULT_SAMPLE_CONTEXT,
   );
-// pls work
+
   return (
     <ChakraProvider theme={customTheme}>
       <SampleContext.Provider value={sampleContext}>
