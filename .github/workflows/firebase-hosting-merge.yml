@@ -6,7 +6,7 @@ name: Deploy frontend to Firebase Hosting
 on:
   push:
     branches:
-      - feat/test_workflow
+      - main
     paths:
       - "frontend/**"
 
