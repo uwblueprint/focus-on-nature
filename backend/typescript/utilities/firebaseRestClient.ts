@@ -110,6 +110,7 @@ const FirebaseRestClient = {
   signInWithGoogleOAuth: async (
     idToken: string,
   ): Promise<OAuthSignInResponse> => {
+    console.log(process.env.FIREBASE_REQUEST_URI);
     const response: Response = await fetch(
       `${FIREBASE_OAUTH_SIGN_IN_URL}?key=${process.env.FIREBASE_WEB_API_KEY}`,
       {
@@ -142,7 +143,7 @@ const FirebaseRestClient = {
 
       throw new Error("Failed to sign-in via Firebase REST API");
     }
-
+    console.log("HELLO JUST IN CASE");
     return responseJson as OAuthSignInResponse;
   },
 

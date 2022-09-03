@@ -40,6 +40,7 @@ authRouter.post("/login", loginRequestValidator, async (req, res) => {
       .status(200)
       .json(rest);
   } catch (error: unknown) {
+    console.log(error);
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
