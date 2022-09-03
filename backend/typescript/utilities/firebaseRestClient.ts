@@ -137,6 +137,7 @@ const FirebaseRestClient = {
         "error message =",
         (responseJson as RequestError).error.message,
       ];
+      console.log(errorMessage.join(" "));
       Logger.error(errorMessage.join(" "));
 
       throw new Error("Failed to sign-in via Firebase REST API");
