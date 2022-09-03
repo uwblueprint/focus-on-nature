@@ -18,10 +18,7 @@ dotenv.config();
 
 const CORS_ALLOW_LIST = [
   "http://localhost:3000",
-  "https://uw-blueprint-starter-code.firebaseapp.com",
-  "https://uw-blueprint-starter-code.web.app",
-  /^https:\/\/uw-blueprint-starter-code--pr.*\.web\.app$/,
-  /^https:\/\/focus-on-nature-6c0b1--staging-*\.web\.app$/,
+  /^https:\/\/focus-on-nature-6c0b1--staging-.*\.web\.app$/,
 ];
 
 const CORS_OPTIONS: cors.CorsOptions = {
