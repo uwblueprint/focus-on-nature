@@ -31,7 +31,7 @@ jobs:
       - name: Add Heroku git remote
         run: heroku git:remote --app $HEROKU_APP_NAME
         env:
-          HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+          HEROKU_APP_NAME: "${{ secrets.HEROKU_APP_NAME }}"
       - name: Set Heroku config vars
         run: |
           heroku config:set MG_DATABASE_URL="${{ secrets.MG_DATABASE_URL }}" -a $HEROKU_APP_NAME && \
@@ -49,6 +49,6 @@ jobs:
           heroku config:set STRIPE_SECRET_TEST_KEY="${{ secrets.STRIPE_SECRET_TEST_KEY }}" -a $HEROKU_APP_NAME && \
           heroku config:set PREVIEW_DEPLOY=true -a $HEROKU_APP_NAME
         env:
-          HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+          HEROKU_APP_NAME: "${{ secrets.HEROKU_APP_NAME }}"
       - name: Push to Heroku
         run: git subtree push --prefix backend/typescript heroku master
