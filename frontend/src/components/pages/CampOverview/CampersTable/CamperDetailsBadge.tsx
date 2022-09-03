@@ -30,12 +30,12 @@ const CamperDetailsBadge = ({
     <HStack
       alignContent="center"
       background={color}
-      px="5"
+      px="3"
       py="2"
       borderRadius="5"
     >
       {icon}
-      <Text>{description}</Text>
+      <Text textStyle="bodyRegular">{description}</Text>
     </HStack>
   );
 };

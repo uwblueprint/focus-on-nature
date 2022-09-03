@@ -63,12 +63,24 @@ const CampersTableFilterTag = ({
 
   switch (filterOption) {
     case Filter.EARLY_DROP_OFF:
-      icon = <SunsetIcon fill={badgeColor(filterOption)} />;
+      icon = (
+        <SunsetIcon
+          width="1.5em"
+          height="1.5em"
+          fill={badgeColor(filterOption)}
+        />
+      );
       description = camperDetailsCount.earlyDropoff.toString();
       color = badgeColor(filterOption);
       break;
     case Filter.LATE_PICK_UP:
-      icon = <SunriseIcon fill={badgeColor(filterOption)} />;
+      icon = (
+        <SunriseIcon
+          width="1.5em"
+          height="1.5em"
+          fill={badgeColor(filterOption)}
+        />
+      );
       description = camperDetailsCount.latePickup.toString();
       color = badgeColor(filterOption);
       break;

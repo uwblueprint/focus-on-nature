@@ -1,5 +1,5 @@
-import { Container, Flex, IconButton, Text, Box } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Flex, IconButton, Text, Box } from "@chakra-ui/react";
+import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,17 +32,16 @@ const CampSessionInfoHeader = ({
     month: "short",
     day: "numeric",
   });
-  const campSessionEndDate = new Date(campSession.dates[1]).toLocaleDateString(
-    "en-us",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  );
+  const campSessionEndDate = new Date(
+    campSession.dates[campSession.dates.length - 1],
+  ).toLocaleDateString("en-us", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   return (
-    <Container maxWidth="90vw">
+    <Box marginBottom="20px">
       <Flex direction="row" alignItems="center">
         <Text
           fontWeight={textStyles.displayXLarge.fontWeight}
@@ -55,7 +54,7 @@ const CampSessionInfoHeader = ({
           size="lg"
           aria-label="back-button"
           onClick={onPrevSession}
-          backgroundColor="background.white.100"
+          backgroundColor="background.grey.200"
           marginStart="2.5"
         />
         <IconButton
@@ -63,24 +62,16 @@ const CampSessionInfoHeader = ({
           size="lg"
           aria-label="next-button"
           onClick={onNextSession}
-          backgroundColor="background.white.100"
+          backgroundColor="background.grey.200"
         />
       </Flex>
-      <Text
-        fontWeight={textStyles.displaySmallRegular.fontWeight}
-        fontSize={textStyles.displaySmallRegular.fontSize}
-      >
+      <Text textStyle="displaySmallRegular">
         {campSessionStartDate} - {campSessionEndDate} | {camp.startTime} -{" "}
         {camp.endTime}
       </Text>
       <Box marginTop="16px">
         <Flex>
-          <Text
-            fontWeight={textStyles.buttonRegular.fontWeight}
-            fontSize={textStyles.buttonRegular.fontSize}
-          >
-            Session Age Range:
-          </Text>
+          <Text textStyle="buttonRegular">Session Age Range:</Text>
           <Text
             fontWeight={textStyles.bodyBold.fontWeight}
             fontSize={textStyles.buttonRegular.fontSize}
@@ -88,14 +79,8 @@ const CampSessionInfoHeader = ({
             &nbsp;{camp.ageLower} - {camp.ageUpper}
           </Text>
         </Flex>
-
         <Flex>
-          <Text
-            fontWeight={textStyles.buttonRegular.fontWeight}
-            fontSize={textStyles.buttonRegular.fontSize}
-          >
-            Camp Capacity:
-          </Text>
+          <Text textStyle="buttonRegular">Camp Capacity:</Text>
           <Text
             fontWeight={textStyles.bodyBold.fontWeight}
             fontSize={textStyles.buttonRegular.fontSize}
@@ -104,7 +89,7 @@ const CampSessionInfoHeader = ({
           </Text>
         </Flex>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

@@ -1,12 +1,14 @@
-import { Box, Container, Divider } from "@chakra-ui/react";
+import { Box, Container, Divider, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { CampResponse } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
+import * as Routes from "../../../constants/Routes";
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
@@ -46,7 +48,7 @@ const CampOverviewPage = (): JSX.Element => {
       }
     };
     getCamp();
-  }, []);
+  }, [campId]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -67,11 +69,17 @@ const CampOverviewPage = (): JSX.Element => {
       maxWidth="100vw"
       minHeight="100vh"
       background="background.grey.200"
+      paddingTop="5px"
     >
-      <Box marginTop="1rem" marginX="80px">
-        <></>
+      <Box marginTop="1rem" marginX="40px">
+        <Text marginBottom="15px" textStyle="informative">
+          <Link to={Routes.CAMPS_PAGE}>
+            <ChevronLeftIcon />
+            Back to camp list
+          </Link>
+        </Text>
         <CampDetails camp={camp} setCamp={setCamp} />
-        <Divider borderColor="background.grey.400" marginY="40px" />
+        <Divider borderColor="background.grey.400" marginY="32px" />
         {camp.campSessions.length > 0 ? (
           <>
             <CampSessionInfoHeader

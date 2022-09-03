@@ -151,7 +151,7 @@ const NavBar = (): JSX.Element => {
                         rightIcon={
                           isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />
                         }
-                        bg="background.white.100"
+                        bg="background.grey.100"
                         _hover={{
                           color: "none",
                         }}
@@ -169,7 +169,7 @@ const NavBar = (): JSX.Element => {
                     <PopoverContent width="inherit">
                       <PopoverBody
                         as={Button}
-                        bg="background.white.100"
+                        bg="background.grey.100"
                         onClick={onLogOutClick}
                       >
                         Logout

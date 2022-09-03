@@ -2,7 +2,6 @@ import React from "react";
 import { FaEllipsisV } from "react-icons/fa";
 
 import {
-  Container,
   Table,
   Text,
   Thead,
@@ -18,6 +17,7 @@ import {
   Button,
   TagLabel,
   Tag,
+  Box,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
@@ -41,6 +41,7 @@ const ExportButton = (): JSX.Element => {
       borderColor="primary.green.100"
       borderRadius="5px"
       minWidth="-webkit-fit-content"
+      fontSize={textStyles.bodyRegular.fontSize}
     >
       Export as .csv
     </Button>
@@ -107,17 +108,11 @@ const CampersTable = ({
   }, [campers]);
 
   return (
-    <Container
-      maxWidth="90vw"
-      px="-5"
-      py="5"
-      background="background.grey.200"
-      borderRadius="20"
-    >
+    <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {campers.length > 0 ? (
         <>
-          <HStack spacing={3} px="18">
-            <InputGroup>
+          <HStack spacing={1} px="18">
+            <InputGroup marginRight="40px">
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" />
               </InputLeftElement>
@@ -133,7 +128,7 @@ const CampersTable = ({
               return (
                 <Tag
                   key={option}
-                  size="lg"
+                  size="md"
                   borderRadius="full"
                   minWidth="-webkit-fit-content"
                   margin="0px"
@@ -141,7 +136,7 @@ const CampersTable = ({
                   colorScheme={selectedFilter === option ? "green" : "gray"}
                   onClick={() => setSelectedFilter(option)}
                 >
-                  <TagLabel>
+                  <TagLabel textStyle="xSmallRegular">
                     <CampersTableFilterTag
                       filterOption={option}
                       selectedFilter={selectedFilter}
@@ -163,6 +158,7 @@ const CampersTable = ({
             pl="5px"
             mt="20px"
             mb="20px"
+            textStyle="bodyRegular"
           >
             <Thead margin="16px 0">
               <Tr>
@@ -235,7 +231,7 @@ const CampersTable = ({
           <Text>Check back later!</Text>
         </VStack>
       )}
-    </Container>
+    </Box>
   );
 };
 

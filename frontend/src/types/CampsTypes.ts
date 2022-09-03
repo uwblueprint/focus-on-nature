@@ -2,9 +2,9 @@ import { Camper } from "./CamperTypes";
 import { WaitlistedCamper } from "./WaitlistedCamperTypes";
 
 export enum CampStatus {
-  DRAFT = "Draft",
-  PAST = "Past",
-  PUBLISHED = "Published",
+  COMPLETED = "completed",
+  DRAFT = "draft",
+  PUBLISHED = "published",
 }
 
 export type Location = {

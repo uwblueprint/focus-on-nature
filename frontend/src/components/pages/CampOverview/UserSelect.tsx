@@ -41,7 +41,7 @@ const UserSelect = ({
       options={options}
       placeholder={placeholderText}
       closeMenuOnSelect={false}
-      size="md"
+      size="sm"
       onChange={onChange}
       formatOptionLabel={formatOptionLabel}
     />

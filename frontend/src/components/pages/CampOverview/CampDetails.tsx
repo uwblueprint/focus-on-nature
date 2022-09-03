@@ -12,7 +12,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import { CampResponse, CampStatus } from "../../../types/CampsTypes";
+import { CampResponse } from "../../../types/CampsTypes";
 import { UserResponse, UserSelectOption } from "../../../types/UserTypes";
 import UserAPIClient from "../../../APIClients/UserAPIClient";
 
@@ -21,8 +21,9 @@ import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 
 import UserSelect from "./UserSelect";
-import locationToString from "../../../utils/CampUtils";
+import { locationString, campStatus } from "../../../utils/CampUtils";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import colors from "../../../theme/colors";
 
 type CampDetailsProps = {
   camp: CampResponse;
@@ -31,7 +32,7 @@ type CampDetailsProps = {
 
 const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   const [users, setUsers] = useState([] as UserResponse[]);
-  const status = camp.active ? CampStatus.PUBLISHED : CampStatus.DRAFT; // To update - Anne
+  const status = campStatus(camp);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -100,14 +101,14 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
               key={status}
               size="md"
               borderRadius="full"
-              colorScheme={camp.active ? "green" : "gray"}
+              colorScheme={colors.campStatuses[status]}
             >
               {status}
             </Tag>
           </HStack>
         </HStack>
         <Grid
-          templateColumns="repeat(4, 1fr)"
+          templateColumns="repeat(5, 1fr)"
           gap={2}
           alignItems="center"
           marginBottom="24px"
@@ -115,7 +116,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           <GridItem>
             <Text textStyle="bodyRegular">Camp Coordinators:</Text>
           </GridItem>
-          <GridItem colSpan={3}>
+          <GridItem colSpan={4}>
             <UserSelect
               placeholderText="Add camp coordinator(s)"
               options={userSelectOptions}
@@ -126,7 +127,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           <GridItem>
             <Text textStyle="bodyRegular">Camp Counsellors:</Text>
           </GridItem>
-          <GridItem colSpan={3}>
+          <GridItem colSpan={4}>
             <UserSelect
               placeholderText="Add camp counsellor(s)"
               options={userSelectOptions}
@@ -137,12 +138,12 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           <GridItem>
             <Text textStyle="bodyRegular">Volunteers:</Text>
           </GridItem>
-          <GridItem colSpan={3}>
+          <GridItem colSpan={4}>
             <Input
               onChange={handleVolunteerChange}
               placeholder="Add volunteer(s)"
               _placeholder={{ color: "text.grey.100" }}
-              size="md"
+              size="sm"
               _focusVisible={{ outline: "0" }}
               value={camp.volunteers}
             />
@@ -160,8 +161,8 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
               objectFit="scale-down"
               src={costIcon}
               alt="Cost Icon"
-              width="32px"
-              height="32px"
+              width="24px"
+              height="24px"
             />
             <Text textStyle="bodyRegular">${camp.fee} per day</Text>
           </HStack>
@@ -170,8 +171,8 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
               objectFit="scale-down"
               src={ageIcon}
               alt="Capacity Range Icon"
-              width="32px"
-              height="32px"
+              width="24px"
+              height="24px"
             />
             <Text textStyle="bodyRegular">
               {camp.ageLower} to {camp.ageUpper} years old
@@ -182,23 +183,16 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
               objectFit="scale-down"
               src={locationIcon}
               alt="Location Icon"
-              width="32px"
-              height="32px"
+              width="24px"
+              height="24px"
             />
-            <Text textStyle="bodyRegular">
-              {locationToString(camp.location)}
-            </Text>
+            <Text textStyle="bodyRegular">{locationString(camp.location)}</Text>
           </HStack>
         </HStack>
       </Box>
       {camp.campPhotoUrl && (
         <Box width="40%">
-          <AspectRatio
-            marginTop="32px"
-            marginLeft="24px"
-            width="100%"
-            ratio={16 / 9}
-          >
+          <AspectRatio marginLeft="24px" ratio={16 / 9}>
             <Image
               objectFit="scale-down"
               src={camp.campPhotoUrl}

@@ -1,13 +1,7 @@
-import {
-  Container,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-} from "@chakra-ui/react";
+import { Tabs, TabList, Tab, TabPanels, TabPanel, Box } from "@chakra-ui/react";
 
 import React from "react";
+import textStyles from "../../../../theme/textStyles";
 import { CampSession } from "../../../../types/CampsTypes";
 import CampersTable from "./CampersTable";
 import WaitlistedCampersTable from "./WaitlistedCampersTable";
@@ -20,7 +14,7 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   return (
-    <Container maxW="90vw" width="100%">
+    <Box>
       <Tabs
         onChange={(index) => setTabIndex(index)}
         variant="line"
@@ -29,8 +23,16 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
         marginBottom="30px"
       >
         <TabList>
-          <Tab whiteSpace="nowrap">Registration List</Tab>
-          <Tab>Waitlist</Tab>
+          <Tab
+            fontSize={textStyles.bodyRegular.fontSize}
+            paddingX={0}
+            marginRight="24px"
+          >
+            Registration List
+          </Tab>
+          <Tab fontSize={textStyles.bodyRegular.fontSize} paddingX={0}>
+            Waitlist
+          </Tab>
         </TabList>
         <TabPanels width="100%" marginTop="16px">
           <TabPanel padding="0">
@@ -44,7 +46,7 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </Container>
+    </Box>
   );
 };
 
