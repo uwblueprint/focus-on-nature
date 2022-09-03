@@ -48,7 +48,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   }, []);
 
   // send request for updating the camp 500ms after last change to camp state.
-  // this is to prevent sending many requests while the user types out volunteers.
+  // this is to prevent sending requests while the user is still typing out volunteers.
   useEffect(() => {
     const updateCamp = async () => {
       await CampsAPIClient.editCampById(camp.id, camp);
