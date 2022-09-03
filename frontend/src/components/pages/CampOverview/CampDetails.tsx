@@ -100,7 +100,12 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
             {camp.name}
           </Text>
           <HStack>
-            <Tag key={status} size="md" borderRadius="full" colorScheme="green">
+            <Tag
+              key={status}
+              size="md"
+              borderRadius="full"
+              colorScheme={CampStatusColor[status]}
+            >
               {status}
             </Tag>
           </HStack>
