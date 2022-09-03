@@ -42,7 +42,7 @@ app.use("/admin", adminRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 mongo.connect();
-
+console.log(process.env.FIREBASE_PROJECT_ID);
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
