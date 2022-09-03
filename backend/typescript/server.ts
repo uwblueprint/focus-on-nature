@@ -18,6 +18,7 @@ dotenv.config();
 
 const CORS_ALLOW_LIST = [
   "http://localhost:3000",
+  // Staging
   /^https:\/\/focus-on-nature-6c0b1--staging-.*\.web\.app$/,
 ];
 
