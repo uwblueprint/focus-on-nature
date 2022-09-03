@@ -1,7 +1,10 @@
 import fetch, { Response } from "node-fetch";
+import * as dotenv from "dotenv";
 
 import { Token } from "../types";
 import logger from "./logger";
+
+dotenv.config();
 
 const Logger = logger(__filename);
 
