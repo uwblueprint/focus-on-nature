@@ -31,7 +31,7 @@ jobs:
       - name: Add Heroku git remote
         run: heroku git:remote --app $HEROKU_APP_NAME
         env:
-          HEROKU_APP_NAME: "${{ secrets.DEV_PROJECT_ID }}"
+          HEROKU_APP_NAME: "${{ secrets.HEROKU_PROJECT_ID }}"
       - name: Set Heroku config vars
         run: |
           heroku config:set MG_DATABASE_URL="${{ secrets.MG_DATABASE_URL }}" -a $HEROKU_APP_NAME && \
