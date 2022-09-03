@@ -4,8 +4,6 @@ export type DropOffType = "EarlyDropOff" | "LatePickUp";
 
 export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 
-// heroku test
-
 export type Token = {
   accessToken: string;
   refreshToken: string;
