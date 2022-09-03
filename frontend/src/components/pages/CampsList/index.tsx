@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import CampsNavigationHeader from "./CampsNavigationHeader";
+import CampsNavigationHeading from "./CampsNavigationHeading";
 
 const CampsListPage = (): React.ReactElement => {
   const [year, setYear] = useState(2022);
   return (
     <>
-      <CampsNavigationHeader
+      <CampsNavigationHeading
         year={year}
         onNavigateLeft={() => setYear(year - 1)}
         onNavigateRight={() => setYear(year + 1)}

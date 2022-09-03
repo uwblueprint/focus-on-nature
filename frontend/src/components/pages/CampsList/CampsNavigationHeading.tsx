@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import textStyles from "../../../theme/textStyles";
 
-const CampsNavigationHeader = ({
+const CampsNavigationHeading = ({
   year,
   onNavigateLeft,
   onNavigateRight,
@@ -74,4 +74,4 @@ const CampsNavigationHeader = ({
   );
 };
 
-export default CampsNavigationHeader;
+export default CampsNavigationHeading;
