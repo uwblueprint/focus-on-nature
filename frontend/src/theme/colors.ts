@@ -80,11 +80,6 @@ const colors = {
     latePickup: "#BFD1FF",
     earlyDropoff: "#FDEED7",
   },
-  campStatuses: {
-    completed: "red",
-    draft: "yellow",
-    published: "green",
-  },
   label: {
     green: {
       100: "#D2FFCE",

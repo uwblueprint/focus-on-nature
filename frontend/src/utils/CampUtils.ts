@@ -5,6 +5,12 @@ import {
   Location,
 } from "../types/CampsTypes";
 
+export const CampStatusColor = {
+  [CampStatus.DRAFT]: "yellow",
+  [CampStatus.COMPLETED]: "red",
+  [CampStatus.PUBLISHED]: "green",
+};
+
 export const locationString = (location: Location): string => {
   if (!location) {
     return "";

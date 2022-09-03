@@ -21,9 +21,12 @@ import locationIcon from "../../../assets/location.svg";
 import ageIcon from "../../../assets/person.svg";
 
 import UserSelect from "./UserSelect";
-import { locationString, campStatus } from "../../../utils/CampUtils";
+import {
+  locationString,
+  campStatus,
+  CampStatusColor,
+} from "../../../utils/CampUtils";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import colors from "../../../theme/colors";
 
 type CampDetailsProps = {
   camp: CampResponse;
@@ -97,12 +100,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
             {camp.name}
           </Text>
           <HStack>
-            <Tag
-              key={status}
-              size="md"
-              borderRadius="full"
-              colorScheme={colors.campStatuses[status]}
-            >
+            <Tag key={status} size="md" borderRadius="full" colorScheme="green">
               {status}
             </Tag>
           </HStack>
