@@ -4,6 +4,7 @@ import express from "express";
 import * as firebaseAdmin from "firebase-admin";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import * as dotenv from "dotenv";
 
 import { mongo } from "./models";
 import authRouter from "./rest/authRoutes";
@@ -13,11 +14,12 @@ import campRouter from "./rest/campRoutes";
 import camperRouter from "./rest/camperRoutes";
 import adminRouter from "./rest/adminRoutes";
 
+dotenv.config();
+
 const CORS_ALLOW_LIST = [
   "http://localhost:3000",
-  "https://uw-blueprint-starter-code.firebaseapp.com",
-  "https://uw-blueprint-starter-code.web.app",
-  /^https:\/\/uw-blueprint-starter-code--pr.*\.web\.app$/,
+  // Staging
+  /^https:\/\/focus-on-nature-6c0b1--staging-.*\.web\.app$/,
 ];
 
 const CORS_OPTIONS: cors.CorsOptions = {
