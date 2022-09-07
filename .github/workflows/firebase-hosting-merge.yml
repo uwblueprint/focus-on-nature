@@ -6,9 +6,9 @@ name: Deploy frontend to Firebase Hosting
 on:
   push:
     branches:
-      - staging-cleanup
-    # paths:
-    #   - "frontend/**"
+      - main
+    paths:
+      - "frontend/**"
 
 defaults:
   run:
