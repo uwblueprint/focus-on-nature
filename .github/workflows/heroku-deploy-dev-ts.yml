@@ -3,9 +3,9 @@ name: Deploy backend to Heroku dev environment
 on:
   push:
     branches:
-      - main
-    paths:
-      - "backend/typescript/**"
+      - staging-cleanup
+    # paths:
+    #   - "backend/typescript/**"
 
 jobs:
   deploy:
