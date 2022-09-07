@@ -3,9 +3,9 @@ name: Deploy backend to Heroku dev environment
 on:
   push:
     branches:
-      - main
-    paths:
-      - "backend/typescript/**"
+      - staging-cleanup
+    # paths:
+    #   - "backend/typescript/**"
 
 jobs:
   deploy:
@@ -38,7 +38,7 @@ jobs:
           heroku config:set FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}" -a $HEROKU_APP_NAME && \
           heroku config:set FIREBASE_REQUEST_URI="${{ secrets.FIREBASE_REQUEST_URI }}" -a $HEROKU_APP_NAME && \
           heroku config:set FIREBASE_STORAGE_DEFAULT_BUCKET="${{ secrets.FIREBASE_STORAGE_DEFAULT_BUCKET }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_PROJECT_ID="${{ secrets.DEV_PROJECT_ID }}" -a $HEROKU_APP_NAME && \
+          heroku config:set FIREBASE_PROJECT_ID="${{ secrets.FIREBASE_PROJECT_ID }}" -a $HEROKU_APP_NAME && \
           heroku config:set FIREBASE_SVC_ACCOUNT_PRIVATE_KEY="${{ secrets.FIREBASE_SVC_ACCOUNT_PRIVATE_KEY }}" -a $HEROKU_APP_NAME && \
           heroku config:set FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL="${{ secrets.FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL }}" -a $HEROKU_APP_NAME && \
           heroku config:set MAILER_USER="${{ secrets.MAILER_USER }}" -a $HEROKU_APP_NAME && \
