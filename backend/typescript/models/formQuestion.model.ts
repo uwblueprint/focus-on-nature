@@ -1,9 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-import { QuestionType } from "../types";
+import { QuestionCategory, QuestionType } from "../types";
 
 export interface FormQuestion extends Document {
   id: string;
+  category: QuestionCategory;
   type: QuestionType;
   question: string;
   required: boolean;
@@ -12,6 +13,11 @@ export interface FormQuestion extends Document {
 }
 
 const FormQuestionSchema: Schema = new Schema({
+  category: {
+    type: String,
+    required: true,
+    enum: ["PersonalInfo", "CampSpecific", "EmergencyContact"],
+  },
   type: {
     type: String,
     required: true,
