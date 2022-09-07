@@ -3,10 +3,10 @@
 
 name: Deploy frontend to Firebase Hosting preview
 
-# on:
-#   pull_request:
-#     paths:
-#       - "frontend/**"
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
 
 defaults:
   run:
