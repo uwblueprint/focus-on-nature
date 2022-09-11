@@ -97,10 +97,10 @@ export type CampSessionDTO = {
   id: string;
   camp: string;
   capacity: number;
-  campers: string[];
+  campers: CamperDTO[] | string[];
   campPriceId: string;
   dates: string[];
-  waitlist: string[];
+  waitlist: WaitlistedCamperDTO[] | string[];
 };
 
 export type CampDTO = {
@@ -139,10 +139,7 @@ export type CampDTO = {
 
 export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   formQuestions: FormQuestionDTO[];
-  campSessions: (Omit<
-    CampSessionDTO,
-    "id" | "camp" | "campers" | "waitlist"
-  > & { registrations: number; waitlist: number })[];
+  campSessions: CampSessionDTO[];
   campPhotoUrl?: string;
 };
 
@@ -157,7 +154,6 @@ export type CreateCampDTO = Omit<
   | "pickupPriceId"
   | "pickupProductId"
 > & {
-  formQuestions: Omit<FormQuestionDTO, "id">[];
   filePath?: string;
   fileContentType?: string;
 };

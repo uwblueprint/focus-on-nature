@@ -10,12 +10,12 @@ import {
   faUserCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { ReactComponent as PickupIcon } from "../../../assets/icon_custom_sunrise.svg";
-import { ReactComponent as SunriseIcon } from "../../../assets/icon_sunrise.svg";
-import { ReactComponent as SunsetIcon } from "../../../assets/icon_sunset.svg";
+import { ReactComponent as PickupIcon } from "../../../../assets/icon_custom_sunrise.svg";
+import { ReactComponent as SunriseIcon } from "../../../../assets/icon_sunrise.svg";
+import { ReactComponent as SunsetIcon } from "../../../../assets/icon_sunset.svg";
 
-import { Camper } from "../../../types/CamperTypes";
-import { WaitlistedCamperStatus } from "../../../types/WaitlistedCamperTypes";
+import { Camper } from "../../../../types/CamperTypes";
+import { WaitlistedCamperStatus } from "../../../../types/WaitlistedCamperTypes";
 
 const CamperDetailsBadge = ({
   icon,
@@ -30,12 +30,12 @@ const CamperDetailsBadge = ({
     <HStack
       alignContent="center"
       background={color}
-      px="5"
+      px="3"
       py="2"
       borderRadius="5"
     >
       {icon}
-      <Text>{description}</Text>
+      <Text textStyle="bodyRegular">{description}</Text>
     </HStack>
   );
 };

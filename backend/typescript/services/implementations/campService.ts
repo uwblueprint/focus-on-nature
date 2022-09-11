@@ -12,6 +12,8 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
+  CamperDTO,
+  WaitlistedCamperDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -52,6 +54,10 @@ class CampService implements ICampService {
         .populate({
           path: "campSessions",
           model: MgCampSession,
+          populate: [
+            { path: "campers", model: MgCamper },
+            { path: "waitlist", model: MgWaitlistedCamper },
+          ],
         })
         .populate({
           path: "formQuestions",
@@ -79,14 +85,58 @@ class CampService implements ICampService {
           );
 
           const campSessions = (camp.campSessions as CampSession[]).map(
-            (campSession) => ({
-              id: campSession.id,
-              capacity: campSession.capacity,
-              dates: campSession.dates.map((date) => date.toString()),
-              registrations: campSession.campers.length,
-              waitlist: campSession.waitlist.length,
-              campPriceId: campSession.campPriceId,
-            }),
+            (campSession) => {
+              const campers = (campSession.campers as Camper[]).map(
+                (camper) => {
+                  return {
+                    id: camper.id,
+                    campSession: campSession.id,
+                    firstName: camper.firstName,
+                    lastName: camper.lastName,
+                    age: camper.age,
+                    allergies: camper.allergies,
+                    earlyDropoff: camper.earlyDropoff.map((date) =>
+                      date.toString(),
+                    ),
+                    latePickup: camper.latePickup.map((date) =>
+                      date.toString(),
+                    ),
+                    specialNeeds: camper.specialNeeds,
+                    contacts: camper.contacts,
+                    registrationDate: camper.registrationDate.toString(),
+                    hasPaid: camper.hasPaid,
+                    chargeId: camper.chargeId,
+                    formResponses: camper.formResponses,
+                    charges: camper.charges,
+                    optionalClauses: camper.optionalClauses,
+                  };
+                },
+              );
+              const waitlist = (campSession.waitlist as WaitlistedCamper[]).map(
+                (waitlistedCamper) => {
+                  return {
+                    id: waitlistedCamper.id,
+                    campSession: campSession.id,
+                    firstName: waitlistedCamper.firstName,
+                    lastName: waitlistedCamper.lastName,
+                    age: waitlistedCamper.age,
+                    contactName: waitlistedCamper.contactName,
+                    contactEmail: waitlistedCamper.contactEmail,
+                    contactNumber: waitlistedCamper.contactNumber,
+                    status: waitlistedCamper.status,
+                  };
+                },
+              );
+              return {
+                id: campSession.id,
+                camp: camp.id,
+                capacity: campSession.capacity,
+                dates: campSession.dates.map((date) => date.toString()),
+                campPriceId: campSession.campPriceId,
+                campers,
+                waitlist,
+              };
+            },
           );
 
           let campPhotoUrl;
@@ -187,6 +237,10 @@ class CampService implements ICampService {
         .populate({
           path: "campSessions",
           model: MgCampSession,
+          populate: [
+            { path: "campers", model: MgCamper },
+            { path: "waitlist", model: MgWaitlistedCamper },
+          ],
         })
         .populate({
           path: "formQuestions",
@@ -200,6 +254,55 @@ class CampService implements ICampService {
       Logger.error(`Failed to get camp. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
+
+    const campSessions = (camp.campSessions as CampSession[]).map(
+      (campSession) => {
+        const campers = (campSession.campers as Camper[]).map((camper) => {
+          return {
+            id: camper.id,
+            campSession: campSession.id,
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            allergies: camper.allergies,
+            earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+            latePickup: camper.latePickup.map((date) => date.toString()),
+            specialNeeds: camper.specialNeeds,
+            contacts: camper.contacts,
+            registrationDate: camper.registrationDate.toString(),
+            hasPaid: camper.hasPaid,
+            chargeId: camper.chargeId,
+            formResponses: camper.formResponses,
+            charges: camper.charges,
+            optionalClauses: camper.optionalClauses,
+          };
+        });
+        const waitlist = (campSession.waitlist as WaitlistedCamper[]).map(
+          (waitlistedCamper) => {
+            return {
+              id: waitlistedCamper.id,
+              campSession: campSession.id,
+              firstName: waitlistedCamper.firstName,
+              lastName: waitlistedCamper.lastName,
+              age: waitlistedCamper.age,
+              contactName: waitlistedCamper.contactName,
+              contactEmail: waitlistedCamper.contactEmail,
+              contactNumber: waitlistedCamper.contactNumber,
+              status: waitlistedCamper.status,
+            };
+          },
+        );
+        return {
+          id: campSession.id,
+          camp: campId,
+          capacity: campSession.capacity,
+          dates: campSession.dates.map((date) => date.toString()),
+          campPriceId: campSession.campPriceId,
+          campers,
+          waitlist,
+        };
+      },
+    );
 
     let campPhotoUrl;
     if (camp.fileName) {
@@ -244,14 +347,6 @@ class CampService implements ICampService {
       dropoffProductId: camp.dropoffProductId,
       pickupPriceId: camp.pickupPriceId,
       pickupProductId: camp.pickupProductId,
-      campSessions: (camp.campSessions as CampSession[]).map((campSession) => ({
-        id: campSession.id,
-        capacity: campSession.capacity,
-        dates: campSession.dates.map((date) => date.toString()),
-        registrations: campSession.campers.length,
-        waitlist: campSession.waitlist.length,
-        campPriceId: campSession.campPriceId,
-      })),
       name: camp.name,
       description: camp.description,
       earlyDropoff: camp.earlyDropoff,
@@ -262,6 +357,7 @@ class CampService implements ICampService {
       startTime: camp.startTime,
       endTime: camp.endTime,
       fee: camp.fee,
+      campSessions,
       formQuestions: (camp.formQuestions as FormQuestion[]).map(
         (formQuestion: FormQuestion) => {
           return {

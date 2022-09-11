@@ -35,7 +35,6 @@ const testCamps: CreateCampDTO[] = [
       postalCode: "M1A 3G3",
     },
     fee: 25,
-    formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
     earlyDropoff: "12:30",
@@ -59,7 +58,6 @@ const testCamps: CreateCampDTO[] = [
       postalCode: "M1A 3G3",
     },
     fee: 24,
-    formQuestions: [],
     campCoordinators: ["61fb3d34272ea0002ad6a24d"],
     campCounsellors: ["61fb3d34272ea0002ad6a24d"],
     earlyDropoff: "12:30",
@@ -116,7 +114,6 @@ describe("mongo campService", (): void => {
         postalCode: "M1A 3G3",
       },
       fee: 25,
-      formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: "jason",
@@ -219,7 +216,6 @@ describe("mongo campService", (): void => {
         postalCode: "M1A 3G3",
       },
       fee: 25,
-      formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: "jason",
@@ -274,35 +270,6 @@ describe("mongo campService", (): void => {
     for (const testCamp of testCamps) {
       /* eslint-disable no-await-in-loop */
       const res = await campService.createCamp(testCamp);
-      const formQuestions = await MgFormQuestion.find({
-        _id: { $in: res.formQuestions },
-      });
-
-      for (let i = 0; i < formQuestions.length; i += 1) {
-        const formQuestion = formQuestions[i];
-
-        expect(formQuestion.type).toEqual(testCamp.formQuestions[i].type);
-        expect(formQuestion.question).toEqual(
-          testCamp.formQuestions[i].question,
-        );
-        expect(formQuestion.required).toEqual(
-          testCamp.formQuestions[i].required,
-        );
-        expect(formQuestion.description).toEqual(
-          testCamp.formQuestions[i].description,
-        );
-        const testOptions = testCamp.formQuestions[i].options;
-        if (testOptions) {
-          expect(formQuestion.options).toHaveLength(testOptions.length);
-          if (formQuestion.options) {
-            for (let j = 0; j < formQuestion?.options?.length; j += 1) {
-              const option = formQuestion?.options[j];
-              if (testOptions) expect(option).toEqual(testOptions[j]);
-            }
-          }
-        }
-      }
-
       expect(res.ageLower).toEqual(testCamp.ageLower);
       expect(res.ageUpper).toEqual(testCamp.ageUpper);
       expect(res.name).toEqual(testCamp.name);
@@ -339,7 +306,6 @@ describe("mongo campService", (): void => {
         postalCode: "M1A 3G3",
       },
       fee: 25,
-      formQuestions: [],
       startTime: "6:49",
       endTime: "16:09",
       volunteers: "jason",
@@ -421,7 +387,6 @@ describe("mongo campService", (): void => {
       pickupFee: 6,
       startTime: "15:00",
       endTime: "18:00",
-      formQuestions: [],
       volunteers: "",
     });
 

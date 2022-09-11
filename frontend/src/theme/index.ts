@@ -9,6 +9,13 @@ import Button from "./components/Button";
 import textStyles from "./textStyles";
 
 const customTheme = extendTheme({
+  styles: {
+    global: () => ({
+      body: {
+        bg: "background.grey.100",
+      },
+    }),
+  },
   fonts: {
     heading: `'Noto Sans', sans-serif`,
     body: `'Noto Sans', sans-serif`,

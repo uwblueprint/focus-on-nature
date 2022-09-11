@@ -1,5 +1,3 @@
-import { CampSession } from "./CampsTypes";
-
 export type WaitlistedCamperStatus =
   | "NotRegistered"
   | "RegistrationFormSent"
@@ -14,6 +12,6 @@ export type WaitlistedCamper = {
   contactEmail: string;
   contactNumber: string;
   status: WaitlistedCamperStatus;
-  campSession: CampSession;
+  campSession: string;
   linkExpiry?: Date;
 };

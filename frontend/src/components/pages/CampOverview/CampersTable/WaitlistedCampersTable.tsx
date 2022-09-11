@@ -1,6 +1,7 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
+  Box,
   Container,
   HStack,
   IconButton,
@@ -18,8 +19,8 @@ import {
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPerson } from "@fortawesome/free-solid-svg-icons";
-import textStyles from "../../../theme/textStyles";
-import { WaitlistedCamper } from "../../../types/WaitlistedCamperTypes";
+import textStyles from "../../../../theme/textStyles";
+import { WaitlistedCamper } from "../../../../types/WaitlistedCamperTypes";
 
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
 
@@ -44,13 +45,7 @@ const WaitlistedCampersTable = ({
   }, [search, campers]);
 
   return (
-    <Container
-      maxWidth="90vw"
-      px="-5"
-      py="5"
-      background="background.grey.200"
-      borderRadius="20"
-    >
+    <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
           <HStack spacing={12} px="18">
@@ -149,7 +144,7 @@ const WaitlistedCampersTable = ({
           <Text>Check back later!</Text>
         </VStack>
       )}
-    </Container>
+    </Box>
   );
 };
 

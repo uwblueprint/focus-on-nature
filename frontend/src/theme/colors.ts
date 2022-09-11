@@ -52,8 +52,8 @@ const colors = {
       100: "#FFFFFF",
     },
     grey: {
-      100: "#F4F6FC",
-      200: "#FAFAFA",
+      100: "#FAFAFA",
+      200: "#F5F5F5",
       300: "#F4F4F4",
       400: "#D8DBDF",
     },
