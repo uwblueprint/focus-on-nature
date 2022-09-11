@@ -19,11 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: echo "REACT_APP_BACKEND_URL=${{ secrets.PREVIEW_BACKEND_URL }}" > .env
-      - run: echo "REACT_APP_OAUTH_CLIENT_ID=${{ secrets.DEV_OAUTH_CLIENT_ID }}" >> .env
+      - run: echo "REACT_APP_OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}" >> .env
       - run: rm -rf node_modules && yarn install --frozen-lockfile && yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS_ON_NATURE_6C0B1 }}"
-          projectId: "${{ secrets.FIREBASE_DEV_PROJECT_ID }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS_ON_NATURE }}"
+          projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
           entryPoint: ./frontend
