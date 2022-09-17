@@ -20,12 +20,7 @@ const CampsNavigationHeading = ({
 }): React.ReactElement => {
   return (
     <Box>
-      <Text
-        fontWeight={textStyles.displayXLarge.fontWeight}
-        fontSize={textStyles.displayXLarge.fontSize}
-      >
-        FON Camps
-      </Text>
+      <Text textStyle="displayXLarge">FON Camps</Text>
       <Flex
         direction="row"
         marginTop="16px"
