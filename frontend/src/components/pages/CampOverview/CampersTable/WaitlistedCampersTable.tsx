@@ -148,7 +148,7 @@ const WaitlistedCampersTable = ({
               )
               .concat(" from the waitlist?")}
             bodyNote="Note: this action is irreversible."
-            buttonLabel="Delete user"
+            buttonLabel="Remove"
             isOpen={isOpen}
             onClose={onClose}
             onDelete={() => confirmDeleteWaitlistedCamper(camperToDelete)}
