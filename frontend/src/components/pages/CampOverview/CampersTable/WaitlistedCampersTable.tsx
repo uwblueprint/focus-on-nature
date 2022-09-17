@@ -33,7 +33,7 @@ import {
 } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
-import GeneralDeleteShiftModal from "../../../common/GeneralDeleteShiftModal";
+import GeneralDeleteCamperModal from "../../../common/GeneralDeleteCamperModal";
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
@@ -128,10 +128,20 @@ const WaitlistedCampersTable = ({
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
-          <GeneralDeleteShiftModal
-            title="Delete a user"
-            bodyText="Are you sure you want to delete this user? This will remove all
-              linked occurences, including related donations and/or check-ins."
+          <GeneralDeleteCamperModal
+            title={"Remove ".concat(
+              camperToDelete
+                ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
+                : "FirstName LastName",
+            )}
+            bodyText={"Are you sure you want to remove "
+              .concat(
+                camperToDelete
+                  ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
+                  : "FirstName LastName",
+              )
+              .concat(" from the waitlist?")}
+            bodyNote="Note: this action is irreversible."
             buttonLabel="Delete user"
             isOpen={isOpen}
             onClose={onClose}
