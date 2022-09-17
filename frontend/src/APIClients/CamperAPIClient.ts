@@ -36,7 +36,21 @@ const updateCamperRegistrationStatus = async (
   }
 };
 
+const deleteWaitlistedCamperById = async (
+  id: string,
+): Promise<WaitlistedCamper> => {
+  try {
+    const { data } = await baseAPIClient.delete(`/campers/waitlist/${id}`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return data;
+  } catch (error) {
+    return error as WaitlistedCamper;
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
+  deleteWaitlistedCamperById,
 };

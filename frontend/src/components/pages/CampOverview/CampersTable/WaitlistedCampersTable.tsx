@@ -19,6 +19,7 @@ import {
   Text,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -32,6 +33,7 @@ import {
 } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
+import GeneralDeleteShiftModal from "../../../common/GeneralDeleteShiftModal";
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
@@ -40,6 +42,10 @@ const WaitlistedCampersTable = ({
 }): JSX.Element => {
   const [campers, setCampers] = React.useState(waitlistedCampers);
   const [search, setSearch] = React.useState("");
+  const [
+    camperToDelete,
+    setCamperToDelete,
+  ] = React.useState<WaitlistedCamper | null>(null);
 
   const tableData = React.useMemo(() => {
     const filteredCampers = campers;
@@ -54,6 +60,7 @@ const WaitlistedCampersTable = ({
   }, [search, campers]);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const updateCamperRegistrationStatus = async (
     waitlistedCamper: WaitlistedCamper,
@@ -83,10 +90,53 @@ const WaitlistedCampersTable = ({
     }
   };
 
+  const deleteWaitlistedCameper = async (
+    waitlistedCamper: WaitlistedCamper,
+  ) => {
+    setCamperToDelete(waitlistedCamper);
+    onOpen();
+  };
+
+  const confirmDeleteWaitlistedCamper = async (
+    waitlistedCamper: WaitlistedCamper | null,
+  ) => {
+    if (waitlistedCamper) {
+      const deletedWaitlistedCamperResponse: WaitlistedCamper = await CamperAPIClient.deleteWaitlistedCamperById(
+        waitlistedCamper.id,
+      );
+      onClose();
+      if (deletedWaitlistedCamperResponse.id) {
+        toast({
+          description: "Waitlisted camper has been deleted.",
+          status: "success",
+          duration: 7000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          description:
+            "Waitlisted camper could not be deleted, please try again.",
+          status: "error",
+          duration: 7000,
+          isClosable: true,
+        });
+      }
+    }
+  };
+
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
+          <GeneralDeleteShiftModal
+            title="Delete a user"
+            bodyText="Are you sure you want to delete this user? This will remove all
+              linked occurences, including related donations and/or check-ins."
+            buttonLabel="Delete user"
+            isOpen={isOpen}
+            onClose={onClose}
+            onDelete={() => confirmDeleteWaitlistedCamper(camperToDelete)}
+          />
           <HStack spacing={12} px="18">
             <InputGroup>
               <InputLeftElement pointerEvents="none">
@@ -184,7 +234,7 @@ const WaitlistedCampersTable = ({
                         <PopoverBody
                           as={Button}
                           bg="background.white.100"
-                          onClick={() => console.log("remove")}
+                          onClick={() => deleteWaitlistedCameper(camper)}
                         >
                           <Text
                             textStyle="buttonRegular"
