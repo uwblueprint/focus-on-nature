@@ -26,6 +26,7 @@ import AccessControlPage from "./components/pages/AccessControl";
 import NavBar from "./components/common/NavBar";
 import GlobalFormsPage from "./components/pages/GlobalForms";
 import CampCreationPage from "./components/pages/CampCreation";
+import CampsList from './components/pages/CampsList/index';
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -66,7 +67,7 @@ const App = (): React.ReactElement => {
                 <PrivateRoute
                   exact
                   path={Routes.CAMPS_PAGE}
-                  component={CampsPage}
+                  component={CampsList}
                 />
                 <PrivateRoute
                   exact
