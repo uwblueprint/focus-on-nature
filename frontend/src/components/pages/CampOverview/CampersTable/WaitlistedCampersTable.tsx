@@ -2,12 +2,17 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
   Box,
-  Container,
+  Button,
   HStack,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Table,
   Tbody,
   Td,
@@ -20,8 +25,11 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPerson } from "@fortawesome/free-solid-svg-icons";
 import textStyles from "../../../../theme/textStyles";
-import { WaitlistedCamper } from "../../../../types/WaitlistedCamperTypes";
-
+import {
+  WaitlistedCamper,
+  UpdateWaitlistedStatusType,
+} from "../../../../types/CamperTypes";
+import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
 
 const WaitlistedCampersTable = ({
@@ -43,6 +51,18 @@ const WaitlistedCampersTable = ({
         .includes(search.toLowerCase()),
     );
   }, [search, campers]);
+
+  const updateCamperRegistrationStatus = async (
+    waitlistedCamper: WaitlistedCamper,
+  ) => {
+    const newWaitlistStatus: UpdateWaitlistedStatusType = {
+      status: "RegistrationFormSent",
+    };
+    const updatedCamperRegistrationStatusResponse: WaitlistedCamper = await CamperAPIClient.updateCamperRegistrationStatus(
+      waitlistedCamper.id,
+      newWaitlistStatus,
+    );
+  };
 
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
@@ -124,12 +144,38 @@ const WaitlistedCampersTable = ({
                     padding="0px"
                     maxWidth="32px"
                   >
-                    <IconButton
-                      aria-label="Mark as active button"
-                      icon={<FaEllipsisV />}
-                      variant=""
-                      // onClick={() => console.log("3 dot button pressed!")}
-                    />
+                    <Popover placement="bottom-end">
+                      <PopoverTrigger>
+                        <IconButton
+                          aria-label="Mark as active button"
+                          icon={<FaEllipsisV />}
+                          variant=""
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent width="inherit">
+                        <PopoverHeader
+                          as={Button}
+                          bg="background.white.100"
+                          onClick={() => updateCamperRegistrationStatus(camper)}
+                        >
+                          <Text textStyle="buttonRegular">
+                            Send registration form
+                          </Text>
+                        </PopoverHeader>
+                        <PopoverBody
+                          as={Button}
+                          bg="background.white.100"
+                          onClick={() => console.log("remove")}
+                        >
+                          <Text
+                            textStyle="buttonRegular"
+                            textColor="text.critical.100"
+                          >
+                            Remove
+                          </Text>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
                   </Td>
                 </Tr>
               ))}
