@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CampsNavigationHeading from "./CampsNavigationHeading";
 
 const CampsListPage = (): React.ReactElement => {
-  const [year, setYear] = useState(2022);
+  const [year, setYear] = useState(new Date().getFullYear());
   return (
     <>
       <CampsNavigationHeading
