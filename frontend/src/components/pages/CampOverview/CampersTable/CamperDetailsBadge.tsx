@@ -14,8 +14,7 @@ import { ReactComponent as PickupIcon } from "../../../../assets/icon_custom_sun
 import { ReactComponent as SunriseIcon } from "../../../../assets/icon_sunrise.svg";
 import { ReactComponent as SunsetIcon } from "../../../../assets/icon_sunset.svg";
 
-import { Camper } from "../../../../types/CamperTypes";
-import { WaitlistedCamperStatus } from "../../../../types/WaitlistedCamperTypes";
+import { Camper, WaitlistedCamperStatus } from "../../../../types/CamperTypes";
 
 const CamperDetailsBadge = ({
   icon,
