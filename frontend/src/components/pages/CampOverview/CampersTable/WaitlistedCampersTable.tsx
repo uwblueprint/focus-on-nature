@@ -104,9 +104,19 @@ const WaitlistedCampersTable = ({
       const deletedCamperName: string = camperToDelete
         ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
         : "FirstName LastName";
-      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
-        waitlistedCamper.id,
-      );
+
+      let deletedWaitlistedCamperResponse = false;
+
+      if (
+        waitlistedCamper.status === "NotRegistered" ||
+        (waitlistedCamper.status === "RegistrationFormSent" &&
+          waitlistedCamper.linkExpiry &&
+          waitlistedCamper.linkExpiry.getTime() < Date.now())
+      ) {
+        deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
+          waitlistedCamper.id,
+        );
+      }
       onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
@@ -120,7 +130,7 @@ const WaitlistedCampersTable = ({
       } else {
         toast({
           description: deletedCamperName.concat(
-            " could not be deleted from this camp session. Please try again later.",
+            " could not be deleted from this camp session.",
           ),
           status: "error",
           duration: 7000,
@@ -250,7 +260,10 @@ const WaitlistedCampersTable = ({
                         <PopoverBody
                           as={Button}
                           bg="background.white.100"
-                          onClick={() => deleteWaitlistedCameper(camper)}
+                          onClick={() => {
+                            console.log(camper);
+                            deleteWaitlistedCameper(camper);
+                          }}
                         >
                           <Text
                             textStyle="buttonRegular"
