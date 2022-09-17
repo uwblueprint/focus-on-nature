@@ -79,6 +79,12 @@ docker exec -it scv2_ts_backend /bin/bash -c "yarn fix"
 docker exec -it scv2_ts_backend /bin/bash -c "yarn test"
 ```
 
+## Deployments
+### Staging
+**Backend (Heroku):** https://focus-on-nature.herokuapp.com/  
+**Frontend (Firebase):** https://focus-on-nature.web.app/  
+Whenever a PR is merged our github actions will push the updated main branch to the staging environments.  
+
 ## Version Control Guide
 
 ### Branching
