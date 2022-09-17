@@ -101,21 +101,27 @@ const WaitlistedCampersTable = ({
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
     if (waitlistedCamper) {
-      const deletedWaitlistedCamperResponse: WaitlistedCamper = await CamperAPIClient.deleteWaitlistedCamperById(
+      const deletedCamperName: string = camperToDelete
+        ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
+        : "FirstName LastName";
+      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
         waitlistedCamper.id,
       );
       onClose();
-      if (deletedWaitlistedCamperResponse.id) {
+      if (deletedWaitlistedCamperResponse) {
         toast({
-          description: "Waitlisted camper has been deleted.",
+          description: deletedCamperName.concat(
+            " has been removed from the waitlist for this camp session.",
+          ),
           status: "success",
           duration: 7000,
           isClosable: true,
         });
       } else {
         toast({
-          description:
-            "Waitlisted camper could not be deleted, please try again.",
+          description: deletedCamperName.concat(
+            " could not be deleted from this camp session. Please try again later.",
+          ),
           status: "error",
           duration: 7000,
           isClosable: true,
