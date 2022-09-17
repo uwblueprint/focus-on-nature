@@ -19,6 +19,7 @@ import {
   Text,
   Thead,
   Tr,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
@@ -52,6 +53,8 @@ const WaitlistedCampersTable = ({
     );
   }, [search, campers]);
 
+  const toast = useToast();
+
   const updateCamperRegistrationStatus = async (
     waitlistedCamper: WaitlistedCamper,
   ) => {
@@ -62,6 +65,22 @@ const WaitlistedCampersTable = ({
       waitlistedCamper.id,
       newWaitlistStatus,
     );
+    if (updatedCamperRegistrationStatusResponse.id) {
+      toast({
+        description:
+          "Registration link has been sent and they will be notified.",
+        status: "success",
+        duration: 7000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        description: "Registration link cannot be sent. Please try again.",
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
