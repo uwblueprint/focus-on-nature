@@ -3,7 +3,7 @@ name: Deploy backend to Heroku dev environment
 on:
   push:
     branches:
-      - main
+      - dev
     paths:
       - "backend/typescript/**"
 
@@ -51,4 +51,4 @@ jobs:
         env:
           HEROKU_APP_NAME: "${{ secrets.HEROKU_APP_NAME }}"
       - name: Push to Heroku
-        run: git subtree push --prefix backend/typescript heroku main
+        run: git subtree push --prefix backend/typescript heroku dev
