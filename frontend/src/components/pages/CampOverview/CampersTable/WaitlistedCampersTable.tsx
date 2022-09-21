@@ -234,7 +234,7 @@ const WaitlistedCampersTable = ({
                     <Popover placement="bottom-end">
                       <PopoverTrigger>
                         <IconButton
-                          aria-label="Mark as active button"
+                          aria-label="Waitlisted camper 3 dot button"
                           icon={<FaEllipsisV />}
                           variant=""
                         />
