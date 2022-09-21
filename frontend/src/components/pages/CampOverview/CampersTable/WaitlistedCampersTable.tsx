@@ -105,18 +105,10 @@ const WaitlistedCampersTable = ({
         ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
         : "FirstName LastName";
 
-      let deletedWaitlistedCamperResponse = false;
+      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
+        waitlistedCamper.id,
+      );
 
-      if (
-        waitlistedCamper.status === "NotRegistered" ||
-        (waitlistedCamper.status === "RegistrationFormSent" &&
-          waitlistedCamper.linkExpiry &&
-          waitlistedCamper.linkExpiry.getTime() < Date.now())
-      ) {
-        deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
-          waitlistedCamper.id,
-        );
-      }
       onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
