@@ -38,7 +38,7 @@ const CampOverviewPage = (): JSX.Element => {
     volunteers: "",
     campPhotoUrl: "",
   });
-  const numSessions = camp.campSessions.length;
+  const numSessions = camp.campSessions?.length;
 
   useEffect(() => {
     const getCamp = async () => {
@@ -80,7 +80,7 @@ const CampOverviewPage = (): JSX.Element => {
         </Text>
         <CampDetails camp={camp} setCamp={setCamp} />
         <Divider borderColor="background.grey.400" marginY="32px" />
-        {camp.campSessions.length > 0 ? (
+        {camp.campSessions?.length > 0 ? (
           <>
             <CampSessionInfoHeader
               camp={camp}
