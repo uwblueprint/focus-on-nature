@@ -9,7 +9,7 @@ const getAllUsers = async (): Promise<Array<UserResponse>> => {
     });
     return data;
   } catch (error) {
-    return error as UserResponse[];
+    return [];
   }
 };
 
