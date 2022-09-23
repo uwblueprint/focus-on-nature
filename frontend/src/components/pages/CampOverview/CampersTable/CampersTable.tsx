@@ -18,6 +18,10 @@ import {
   TagLabel,
   Tag,
   Box,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
@@ -28,6 +32,7 @@ import { Camper } from "../../../../types/CamperTypes";
 import { Filter, filterOptions } from "./CampersTableFilterTypes";
 
 import textStyles from "../../../../theme/textStyles";
+import CampersTableMenu from "./CampersTableMenu";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -211,12 +216,7 @@ const CampersTable = ({
                     padding="0px"
                     maxWidth="32px"
                   >
-                    <IconButton
-                      aria-label="Mark as active button"
-                      icon={<FaEllipsisV />}
-                      variant=""
-                      // onClick={() => console.log("3 dot button pressed!")}
-                    />
+                    <CampersTableMenu />
                   </Td>
                 </Tr>
               ))}
