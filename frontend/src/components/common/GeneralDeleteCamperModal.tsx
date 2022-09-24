@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   HStack,
   Modal,
@@ -39,8 +40,9 @@ const GeneralDeleteCamperModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text textStyle="bodyRegular">{bodyText}</Text>
-          <br />
+          <Box paddingBottom="3">
+            <Text textStyle="bodyRegular">{bodyText}</Text>
+          </Box>
           {bodyNote && <Text textStyle="bodyBold">{bodyNote}</Text>}
         </ModalBody>
         <ModalFooter>

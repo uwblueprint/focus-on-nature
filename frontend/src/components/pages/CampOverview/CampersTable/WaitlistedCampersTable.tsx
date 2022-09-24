@@ -62,6 +62,10 @@ const WaitlistedCampersTable = ({
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const camperToDeleteName: string = camperToDelete
+    ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
+    : "FirstName LastName";
+
   const updateCamperRegistrationStatus = async (
     waitlistedCamper: WaitlistedCamper,
   ) => {
@@ -90,9 +94,7 @@ const WaitlistedCampersTable = ({
     }
   };
 
-  const deleteWaitlistedCameper = async (
-    waitlistedCamper: WaitlistedCamper,
-  ) => {
+  const deleteWaitlistedCamper = async (waitlistedCamper: WaitlistedCamper) => {
     setCamperToDelete(waitlistedCamper);
     onOpen();
   };
@@ -101,10 +103,6 @@ const WaitlistedCampersTable = ({
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
     if (waitlistedCamper) {
-      const deletedCamperName: string = camperToDelete
-        ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
-        : "FirstName LastName";
-
       const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
         waitlistedCamper.id,
       );
@@ -112,7 +110,7 @@ const WaitlistedCampersTable = ({
       onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
-          description: deletedCamperName.concat(
+          description: camperToDeleteName.concat(
             " has been removed from the waitlist for this camp session.",
           ),
           status: "success",
@@ -121,7 +119,7 @@ const WaitlistedCampersTable = ({
         });
       } else {
         toast({
-          description: deletedCamperName.concat(
+          description: camperToDeleteName.concat(
             " could not be deleted from this camp session.",
           ),
           status: "error",
@@ -137,18 +135,8 @@ const WaitlistedCampersTable = ({
       {waitlistedCampers.length > 0 ? (
         <>
           <GeneralDeleteCamperModal
-            title={"Remove ".concat(
-              camperToDelete
-                ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
-                : "FirstName LastName",
-            )}
-            bodyText={"Are you sure you want to remove "
-              .concat(
-                camperToDelete
-                  ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
-                  : "FirstName LastName",
-              )
-              .concat(" from the waitlist?")}
+            title={`Remove ${camperToDeleteName}`}
+            bodyText={`Are you sure you want to remove ${camperToDeleteName} from the waitlist?`}
             bodyNote="Note: this action is irreversible."
             buttonLabel="Remove"
             isOpen={isOpen}
@@ -253,7 +241,7 @@ const WaitlistedCampersTable = ({
                           as={Button}
                           bg="background.white.100"
                           onClick={() => {
-                            deleteWaitlistedCameper(camper);
+                            deleteWaitlistedCamper(camper);
                           }}
                         >
                           <Text
