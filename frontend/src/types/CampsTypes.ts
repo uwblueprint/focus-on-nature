@@ -1,5 +1,4 @@
-import { Camper } from "./CamperTypes";
-import { WaitlistedCamper } from "./WaitlistedCamperTypes";
+import { Camper, WaitlistedCamper } from "./CamperTypes";
 
 export enum CampStatus {
   COMPLETED = "Completed",
