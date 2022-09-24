@@ -22,7 +22,7 @@ interface GeneralDeleteCamperModalProps {
   onClose: () => void;
   onDelete: () => void;
 }
-const GeneralDeleteCamperModal = ({
+const RemoveCamperModal = ({
   title,
   bodyText,
   bodyNote,
@@ -60,4 +60,4 @@ const GeneralDeleteCamperModal = ({
   );
 };
 
-export default GeneralDeleteCamperModal;
+export default RemoveCamperModal;

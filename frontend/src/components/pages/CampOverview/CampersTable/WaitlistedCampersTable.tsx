@@ -33,7 +33,7 @@ import {
 } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
-import GeneralDeleteCamperModal from "../../../common/GeneralDeleteCamperModal";
+import RemoveCamperModal from "../../../common/RemoveCamperModal";
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
@@ -63,7 +63,7 @@ const WaitlistedCampersTable = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const camperToDeleteName: string = camperToDelete
-    ? `${camperToDelete.firstName}`.concat(` ${camperToDelete.lastName}`)
+    ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
     : "FirstName LastName";
 
   const updateCamperRegistrationStatus = async (
@@ -103,25 +103,23 @@ const WaitlistedCampersTable = ({
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
     if (waitlistedCamper) {
-      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
-        waitlistedCamper.id,
-      );
+      // const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
+      //   waitlistedCamper.id,
+      // );
+
+      const deletedWaitlistedCamperResponse = false;
 
       onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
-          description: camperToDeleteName.concat(
-            " has been removed from the waitlist for this camp session.",
-          ),
+          description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
           status: "success",
           duration: 7000,
           isClosable: true,
         });
       } else {
         toast({
-          description: camperToDeleteName.concat(
-            " could not be deleted from this camp session.",
-          ),
+          description: `${camperToDeleteName} could not be deleted from this camp session.`,
           status: "error",
           duration: 7000,
           isClosable: true,
@@ -134,7 +132,7 @@ const WaitlistedCampersTable = ({
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
-          <GeneralDeleteCamperModal
+          <RemoveCamperModal
             title={`Remove ${camperToDeleteName}`}
             bodyText={`Are you sure you want to remove ${camperToDeleteName} from the waitlist?`}
             bodyNote="Note: this action is irreversible."
