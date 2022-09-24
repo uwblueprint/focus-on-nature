@@ -19,6 +19,7 @@ import {
   Text,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -32,6 +33,7 @@ import {
 } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
+import RemoveCamperModal from "../../../common/RemoveCamperModal";
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
@@ -40,6 +42,10 @@ const WaitlistedCampersTable = ({
 }): JSX.Element => {
   const [campers, setCampers] = React.useState(waitlistedCampers);
   const [search, setSearch] = React.useState("");
+  const [
+    camperToDelete,
+    setCamperToDelete,
+  ] = React.useState<WaitlistedCamper | null>(null);
 
   const tableData = React.useMemo(() => {
     const filteredCampers = campers;
@@ -54,6 +60,11 @@ const WaitlistedCampersTable = ({
   }, [search, campers]);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const camperToDeleteName: string = camperToDelete
+    ? `${camperToDelete.firstName} ${camperToDelete.lastName}`
+    : "FirstName LastName";
 
   const updateCamperRegistrationStatus = async (
     waitlistedCamper: WaitlistedCamper,
@@ -83,10 +94,51 @@ const WaitlistedCampersTable = ({
     }
   };
 
+  const deleteWaitlistedCamper = async (waitlistedCamper: WaitlistedCamper) => {
+    setCamperToDelete(waitlistedCamper);
+    onOpen();
+  };
+
+  const confirmDeleteWaitlistedCamper = async (
+    waitlistedCamper: WaitlistedCamper | null,
+  ) => {
+    if (waitlistedCamper) {
+      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
+        waitlistedCamper.id,
+      );
+
+      onClose();
+      if (deletedWaitlistedCamperResponse) {
+        toast({
+          description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
+          status: "success",
+          duration: 7000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          description: `${camperToDeleteName} could not be deleted from this camp session.`,
+          status: "error",
+          duration: 7000,
+          isClosable: true,
+        });
+      }
+    }
+  };
+
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
+          <RemoveCamperModal
+            title={`Remove ${camperToDeleteName}`}
+            bodyText={`Are you sure you want to remove ${camperToDeleteName} from the waitlist?`}
+            bodyNote="Note: this action is irreversible."
+            buttonLabel="Remove"
+            isOpen={isOpen}
+            onClose={onClose}
+            onRemove={() => confirmDeleteWaitlistedCamper(camperToDelete)}
+          />
           <HStack spacing={12} px="18">
             <InputGroup>
               <InputLeftElement pointerEvents="none">
@@ -184,7 +236,9 @@ const WaitlistedCampersTable = ({
                         <PopoverBody
                           as={Button}
                           bg="background.white.100"
-                          onClick={() => console.log("remove")}
+                          onClick={() => {
+                            deleteWaitlistedCamper(camper);
+                          }}
                         >
                           <Text
                             textStyle="buttonRegular"
