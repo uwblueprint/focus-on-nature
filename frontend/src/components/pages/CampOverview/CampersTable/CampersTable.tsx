@@ -1,5 +1,4 @@
 import React from "react";
-import { FaEllipsisV } from "react-icons/fa";
 
 import {
   Table,
@@ -12,12 +11,12 @@ import {
   InputGroup,
   InputLeftElement,
   VStack,
-  IconButton,
   HStack,
   Button,
   TagLabel,
   Tag,
   Box,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
@@ -28,6 +27,8 @@ import { Camper } from "../../../../types/CamperTypes";
 import { Filter, filterOptions } from "./CampersTableFilterTypes";
 
 import textStyles from "../../../../theme/textStyles";
+import CampersTableKebabMenu from "./CampersTableKebabMenu";
+import EditCamperModal from "../EditCamperModal";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -59,6 +60,12 @@ const CampersTable = ({
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
   );
+
+  const {
+    isOpen: editModalIsOpen,
+    onOpen: editModalOnOpen,
+    onClose: editModalOnClose,
+  } = useDisclosure();
 
   const tableData = React.useMemo(() => {
     let filteredCampers;
@@ -211,17 +218,31 @@ const CampersTable = ({
                     padding="0px"
                     maxWidth="32px"
                   >
-                    <IconButton
-                      aria-label="Mark as active button"
-                      icon={<FaEllipsisV />}
-                      variant=""
-                      // onClick={() => console.log("3 dot button pressed!")}
+                    <CampersTableKebabMenu
+                      editCamperFunc={editModalOnOpen}
+                      viewDetailsFunc={() => {
+                        console.log("Viewing Camper");
+                      }}
+                      moveCamperFunc={() => {
+                        console.log("Moving Camper");
+                      }}
+                      removeCamperFunc={() => {
+                        console.log("Removing Camper");
+                      }}
                     />
                   </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
+
+          {/* Add the registered camper action modals here  */}
+
+          <EditCamperModal
+            camperId="hi"
+            editCamperModalIsOpen={editModalIsOpen}
+            editCamperOnClose={editModalOnClose}
+          />
         </>
       ) : (
         <VStack pb="18px" pt="18px">

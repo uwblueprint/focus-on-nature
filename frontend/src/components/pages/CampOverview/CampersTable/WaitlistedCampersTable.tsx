@@ -253,7 +253,6 @@ const WaitlistedCampersTable = ({
                           as={Button}
                           bg="background.white.100"
                           onClick={() => {
-                            console.log(camper);
                             deleteWaitlistedCameper(camper);
                           }}
                         >

@@ -79,16 +79,22 @@ docker exec -it scv2_ts_backend /bin/bash -c "yarn fix"
 docker exec -it scv2_ts_backend /bin/bash -c "yarn test"
 ```
 
+## Deployments
+### Staging
+**Backend (Heroku):** https://focus-on-nature.herokuapp.com/  
+**Frontend (Firebase):** https://focus-on-nature.web.app/  
+Whenever a PR is merged our github actions will push the updated dev branch to the staging environments.  
+
 ## Version Control Guide
 
 ### Branching
 
-- Branch off of `main` for all feature work and bug fixes, creating a "feature branch". Prefix the feature branch name with your name. The branch name should be in kebab case and it should be short and descriptive. E.g. `sherry/readme-update`
-- To integrate changes on `main` into your feature branch, **use rebase instead of merge**
+- Branch off of `dev` for all feature work and bug fixes, creating a "feature branch". Prefix the feature branch name with your name. The branch name should be in kebab case and it should be short and descriptive. E.g. `sherry/readme-update`
+- To integrate changes on `dev` into your feature branch, **use rebase instead of merge**
 
 ```bash
-# currently working on feature branch, there are new commits on main
-git pull origin main --rebase
+# currently working on feature branch, there are new commits on dev
+git pull origin dev --rebase
 
 # if there are conflicts, resolve them and then:
 git add .

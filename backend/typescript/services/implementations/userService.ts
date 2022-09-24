@@ -116,34 +116,33 @@ class UserService implements IUserService {
   }
 
   async getUsers(): Promise<Array<UserDTO>> {
-    let userDtos: Array<UserDTO> = [];
+    const userDtos: Array<UserDTO> = [];
 
     try {
       const users: Array<User> = await MgUser.find();
-
-      userDtos = await Promise.all(
-        users.map(async (user) => {
-          let firebaseUser: firebaseAdmin.auth.UserRecord;
-
-          try {
-            firebaseUser = await firebaseAdmin.auth().getUser(user.authId);
-          } catch (error) {
-            Logger.error(
-              `user with authId ${user.authId} could not be fetched from Firebase`,
-            );
-            throw error;
-          }
-
-          return {
+      for (let i = 0; i < users.length; i += 1) {
+        const user = users[i];
+        let firebaseUser: firebaseAdmin.auth.UserRecord | undefined;
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          firebaseUser = await firebaseAdmin.auth().getUser(user.authId);
+        } catch (error) {
+          Logger.error(
+            `user with authId ${user.authId} could not be fetched from Firebase`,
+          );
+        }
+        if (firebaseUser) {
+          userDtos.push({
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: firebaseUser.email ?? "",
             role: user.role,
             active: user.active,
-          };
-        }),
-      );
+          });
+        }
+      }
+      return userDtos;
     } catch (error: unknown) {
       Logger.error(`Failed to get users. Reason = ${getErrorMessage(error)}`);
       throw error;
