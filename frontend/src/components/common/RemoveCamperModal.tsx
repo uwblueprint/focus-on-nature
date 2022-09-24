@@ -20,7 +20,7 @@ interface GeneralDeleteCamperModalProps {
   buttonLabel: string;
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  onRemove: () => void;
 }
 const RemoveCamperModal = ({
   title,
@@ -29,7 +29,7 @@ const RemoveCamperModal = ({
   buttonLabel,
   isOpen,
   onClose,
-  onDelete,
+  onRemove,
 }: GeneralDeleteCamperModalProps): JSX.Element => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -50,7 +50,7 @@ const RemoveCamperModal = ({
             <Button mr={3} onClick={onClose}>
               <Text>Cancel</Text>
             </Button>
-            <Button colorScheme="red" onClick={onDelete}>
+            <Button colorScheme="red" onClick={onRemove}>
               {buttonLabel}
             </Button>
           </HStack>

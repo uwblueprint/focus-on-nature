@@ -103,11 +103,9 @@ const WaitlistedCampersTable = ({
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
     if (waitlistedCamper) {
-      // const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
-      //   waitlistedCamper.id,
-      // );
-
-      const deletedWaitlistedCamperResponse = false;
+      const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
+        waitlistedCamper.id,
+      );
 
       onClose();
       if (deletedWaitlistedCamperResponse) {
@@ -139,7 +137,7 @@ const WaitlistedCampersTable = ({
             buttonLabel="Remove"
             isOpen={isOpen}
             onClose={onClose}
-            onDelete={() => confirmDeleteWaitlistedCamper(camperToDelete)}
+            onRemove={() => confirmDeleteWaitlistedCamper(camperToDelete)}
           />
           <HStack spacing={12} px="18">
             <InputGroup>
