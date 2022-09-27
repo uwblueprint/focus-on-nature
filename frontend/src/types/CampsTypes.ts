@@ -46,6 +46,8 @@ export type CampSession = {
   dates: string[];
 };
 
+export type ManageCampSessionDetails = Omit<CampSession, "camp" | "campers" | "waitlist"> & { registeredCampers: number};
+
 export type FormQuestion = {
   id: string;
   type: QuestionType;

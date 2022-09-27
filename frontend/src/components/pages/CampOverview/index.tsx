@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Text } from "@chakra-ui/react";
+import { Box, Container, Divider, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
@@ -9,6 +9,7 @@ import CampDetails from "./CampDetails";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
+import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
@@ -40,6 +41,8 @@ const CampOverviewPage = (): JSX.Element => {
   });
   const numSessions = camp.campSessions?.length;
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   useEffect(() => {
     const getCamp = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
@@ -64,6 +67,8 @@ const CampOverviewPage = (): JSX.Element => {
       );
   };
 
+  const openManageSessionsModal = () => onOpen();
+
   return (
     <Container
       maxWidth="100vw"
@@ -87,9 +92,23 @@ const CampOverviewPage = (): JSX.Element => {
               currentCampSession={currentCampSession}
               onNextSession={onNextSession}
               onPrevSession={onPrevSession}
+              onClickManageSessions={openManageSessionsModal}
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
+            />
+            <ManageSessionsModal
+              sessions={camp.campSessions.map((session) => {
+                return {
+                  id: session.id,
+                  capacity: session.capacity,
+                  dates: session.dates,
+                  registeredCampers: session.campers.length,
+                }
+              })}
+              onDeleteSessions={() => console.log("delete")}
+              isOpen={isOpen}
+              onClose={onClose}
             />
           </>
         ) : (
