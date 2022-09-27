@@ -12,8 +12,6 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
-  CamperDTO,
-  WaitlistedCamperDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -849,6 +847,111 @@ class CampService implements ICampService {
         existingCampers.slice(numberOfCampersDeleted),
       ];
       Logger.error(errorMessage.join(" "));
+    }
+  }
+
+  async deleteCampSessionsByIds(
+    campId: string,
+    campSessionIds: Array<string>,
+  ): Promise<void> {
+    try {
+      const campSessions: Array<CampSession> | null = await MgCampSession.find({
+        _id: {
+          $in: campSessionIds,
+        },
+        camp: {
+          _id: campId,
+        },
+      });
+
+      if (
+        campSessions == null ||
+        campSessions.length !== campSessionIds.length
+      ) {
+        throw new Error(
+          `Could not find all camp sessions with IDs in [${campSessionIds}] and belonging to camp with ID ${campId}.`,
+        );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campId);
+      if (!camp) {
+        throw new Error(`Camp with campId ${campId} not found.`);
+      }
+
+      // This is an edge case, where the camp session has a campId but the the session does not appear on that camp
+      const currentCampSessionsSet = new Set(
+        camp.campSessions.map((sessionObjectId) => sessionObjectId.toString()),
+      );
+
+      campSessionIds.forEach((sessionId) => {
+        if (!currentCampSessionsSet.has(sessionId)) {
+          throw new Error(
+            `Not all camp sessions with IDs in [${campSessionIds}] were found in camp with ID ${campId}.`,
+          );
+        }
+      });
+
+      const oldCampSessions = camp.campSessions; // clone the full array of campers for rollback
+
+      try {
+        // delete camper IDs from the array of campers in the camp session
+        const sessionsToDeleteSet = new Set(campSessionIds);
+
+        const newCampSessions = camp.campSessions.filter(
+          (session) => !sessionsToDeleteSet.has(session.toString()),
+        );
+
+        camp.campSessions = newCampSessions;
+        const updatedCampSessionCampers = await camp.save();
+
+        if (!updatedCampSessionCampers) {
+          throw new Error(`Failed to update ${camp} with deleted campers.`);
+        }
+      } catch (mongoDbError: unknown) {
+        try {
+          camp.campSessions = oldCampSessions;
+          await camp.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB update to camp to restore deleted campSessionIds. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB campSessionIdsthat could not be restored in the camp Session=",
+            campSessionIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+      }
+
+      // deleting campers from the camper table
+      try {
+        await MgCampSession.deleteMany({
+          _id: {
+            $in: campSessionIds,
+          },
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's campers deletion
+        try {
+          await MgCamper.create(campSessionIds);
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB camp session deletion. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camp session that could not be re-created =",
+            campSessionIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete camp sessions with camper IDs [${campSessionIds}]. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
     }
   }
 
