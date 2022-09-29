@@ -18,6 +18,7 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
+import { createStripeCheckoutSession } from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -164,6 +165,73 @@ class CamperService implements ICamperService {
     }
 
     return newCamperDTOs;
+  }
+
+  async createCampersCheckoutSession(
+    campers: CreateCampersDTO,
+  ): Promise<string> {
+    let existingCampSession: CampSession | null;
+    let checkoutSessionUrl = "";
+
+    try {
+      if (campers.length > 0) {
+        existingCampSession = await MgCampSession.findById(
+          campers[0].campSession,
+        );
+
+        if (!existingCampSession) {
+          throw new Error(`Camp session ${campers[0].campSession} not found.`);
+        }
+
+        const camp = await MgCamp.findById(existingCampSession.camp);
+        if (!camp) {
+          throw new Error(`Camp ${existingCampSession.camp} not found.`);
+        }
+
+        let earlyDropOffQuantity = 0;
+        let latePickupQuantity = 0;
+
+        campers.forEach((camper) => {
+          earlyDropOffQuantity += camper.earlyDropoff.length;
+          latePickupQuantity += camper.latePickup.length;
+        });
+
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+          { price: existingCampSession.campPriceId, quantity: campers.length },
+        ];
+
+        if (earlyDropOffQuantity > 0) {
+          lineItems.push({
+            price: camp.dropoffPriceId,
+            quantity: earlyDropOffQuantity,
+          });
+        }
+
+        if (latePickupQuantity > 0) {
+          lineItems.push({
+            price: camp.pickupPriceId,
+            quantity: latePickupQuantity,
+          });
+        }
+
+        const createStripeCheckoutSessionResponse = await createStripeCheckoutSession(
+          lineItems,
+        );
+
+        if (!createStripeCheckoutSessionResponse) {
+          throw new Error(`Failed to create checkout session.`);
+        } else {
+          checkoutSessionUrl = createStripeCheckoutSessionResponse;
+        }
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+
+    return checkoutSessionUrl;
   }
 
   async getAllCampers(): Promise<Array<CamperDTO>> {

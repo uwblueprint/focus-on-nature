@@ -20,6 +20,14 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
+   * Create a checkout session for the camper
+   * @param campers the campers that are being registered
+   * @returns a url string to the stripe checkout page
+   * @throws Error if the checkout session creation fails
+   */
+  createCampersCheckoutSession(campers: CreateCampersDTO): Promise<string>;
+
+  /**
    * Get all campers and their information
    * @returns array of CamperDTOs
    * @throws Error if camper retrieval fails

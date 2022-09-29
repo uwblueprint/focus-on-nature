@@ -1,9 +1,10 @@
 import { getBearerToken } from "../constants/AuthConstants";
 import {
+  Camper,
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
   EditCamperInfoFields,
-  Camper,
+  CreateCamperRequest,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -109,6 +110,19 @@ const getCampersByChargeIdAndSessionId = async (
   }
 };
 
+const registerCampers = async (
+  campers: CreateCamperRequest[],
+): Promise<void> => {
+  try {
+    await baseAPIClient.post(`/campers/register`, campers, {
+      withCredentials: false,
+      headers: { Autorization: BEARER_TOKEN },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
@@ -116,4 +130,5 @@ export default {
   updateCampersById,
   getCampersByChargeIdAndSessionId,
   deleteMultipleCampersById,
+  registerCampers,
 };

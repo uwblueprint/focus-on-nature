@@ -32,6 +32,8 @@ export type Camper = {
   }[];
 };
 
+export type CreateCamperRequest = Omit<Camper, "id">;
+
 export type EditCamperInfoFields = Omit<
   Camper,
   | "earlyDropoff"
