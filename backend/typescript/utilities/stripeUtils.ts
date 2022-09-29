@@ -89,3 +89,35 @@ export async function createStripePrice(
   });
   return priceObject;
 }
+
+export async function createStripeCheckoutSession(
+  campSessionPriceId: string,
+  campEarlyDropoffPriceId: string,
+  campLatePickupPriceId: string,
+  camperQuantity: number,
+  earlyDropOffQuantity: number,
+  latePickupQuantity: number,
+): Promise<void> {
+  const checkoutSession = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        // camp
+        price: campSessionPriceId,
+        quantity: camperQuantity,
+      },
+      {
+        // early dropoff
+        price: campEarlyDropoffPriceId,
+        quantity: earlyDropOffQuantity,
+      },
+      {
+        // late pickup
+        price: campLatePickupPriceId,
+        quantity: latePickupQuantity,
+      },
+    ],
+    mode: "payment",
+    success_url: `http://localhost:3000/success.html`,
+    cancel_url: `http://localhost:3000/cancel.html`,
+  });
+}
