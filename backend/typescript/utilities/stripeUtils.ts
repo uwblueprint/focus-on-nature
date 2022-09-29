@@ -89,3 +89,17 @@ export async function createStripePrice(
   });
   return priceObject;
 }
+
+export async function createStripeCheckoutSession(
+  lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
+  campId: string,
+): Promise<string | null> {
+  const checkoutSession = await stripe.checkout.sessions.create({
+    line_items: lineItems,
+    mode: "payment",
+    success_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=success`,
+    cancel_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=cancel`,
+  });
+
+  return checkoutSession.url;
+}
