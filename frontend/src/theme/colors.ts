@@ -19,7 +19,13 @@ const colors = {
     },
   },
   overlay: {
-    // TODO: to fill in
+    dark: {
+      50: "#00000080",
+      20: "#00000033",
+    },
+    blue: {
+      500: "#88CBFC80",
+    },
   },
   text: {
     default: {
