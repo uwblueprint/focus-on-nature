@@ -33,7 +33,16 @@ import ViewCamperModal from "../ViewCamperModal/index";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import RemoveCamperModal from "../RemoveCamperModal/index";
 
-const ExportButton = (): JSX.Element => {
+import CampsAPIClient from "../../../../APIClients/CampsAPIClient";
+
+import { downloadCSV } from "../../../../utils/CSVUtils";
+
+const generateCsv = async (campSessionId: string) => {
+  const csvResponse = await CampsAPIClient.getCampSessionCsv(campSessionId);
+  downloadCSV(csvResponse, "Campers_Information");
+}
+
+const ExportButton = ({campSessionId,}: {campSessionId: string}): JSX.Element => {
   return (
     <Button
       leftIcon={<DownloadIcon />}
@@ -46,6 +55,7 @@ const ExportButton = (): JSX.Element => {
       borderRadius="5px"
       minWidth="-webkit-fit-content"
       fontSize={textStyles.bodyRegular.fontSize}
+      onClick={() => generateCsv(campSessionId)}
     >
       Export as .csv
     </Button>
@@ -57,11 +67,13 @@ const CampersTable = ({
   campSessionCapacity,
   formQuestions,
   handleRefetch,
+  campSessionId,
 }: {
   campers: Camper[];
   campSessionCapacity: number;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
+  campSessionId: string;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -178,7 +190,7 @@ const CampersTable = ({
                 </Tag>
               );
             })}
-            <ExportButton />
+            <ExportButton campSessionId={campSessionId} />
           </HStack>
 
           <Table

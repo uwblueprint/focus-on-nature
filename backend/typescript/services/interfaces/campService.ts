@@ -65,11 +65,11 @@ interface ICampService {
 
   /**
    * Get all campers associated with camps of id campId
-   * @param campId camp's id
+   * @param campSessionId camp's session id
    * @returns array of CamperCSVInfoDTO object containing campers information
    * @throws Error if camper retrieval fails
    */
-  getCampersByCampSessionId(campId: string): Promise<CamperCSVInfoDTO[]>;
+  getCampersByCampSessionId(campSessionId: string): Promise<CamperCSVInfoDTO[]>;
 
   /**
    * Generates CSV string containg all the campers associated with a camp

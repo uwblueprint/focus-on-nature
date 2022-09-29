@@ -39,6 +39,7 @@ const CampersTables = ({
               formQuestions={formQuestions}
               campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
+              campSessionId={campSession.id}
             />
           </TabPanel>
           <TabPanel padding="0">
