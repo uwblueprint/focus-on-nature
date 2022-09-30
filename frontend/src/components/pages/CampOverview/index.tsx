@@ -48,6 +48,7 @@ const CampOverviewPage = (): JSX.Element => {
     const getCamp = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
       if (campResponse) {
+        // console.log(campResponse)
         setCamp(campResponse);
       }
     };

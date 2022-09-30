@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Table,
@@ -234,8 +234,8 @@ const CampersTable = ({
                   >
                     <CampersTableKebabMenu
                       editCamperFunc={() => {
-                        setSelectedCamper(camper);
-                        editModalOnOpen();
+                        setSelectedCamper(camper)
+                        editModalOnOpen()
                       }}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);
@@ -256,14 +256,6 @@ const CampersTable = ({
 
           {/* Add the registered camper action modals here  */}
 
-          {selectedCamper && (
-            <ViewCamperModal
-              camper={selectedCamper}
-              viewCamperModalIsOpen={viewModalIsOpen}
-              viewCamperOnClose={viewModalOnClose}
-            />
-          )}
-
           {selectedCamper ? (
             <EditCamperModal
               camper={selectedCamper}
@@ -272,6 +264,13 @@ const CampersTable = ({
               editCamperOnClose={editModalOnClose}
             />
           ) : null}
+          { selectedCamper ?
+          (<EditCamperModal
+            camper={selectedCamper}
+            formQuestions={formQuestions}
+            editCamperModalIsOpen={editModalIsOpen}
+            editCamperOnClose={editModalOnClose}
+          />) : null}
         </>
       ) : (
         <VStack pb="18px" pt="18px">
