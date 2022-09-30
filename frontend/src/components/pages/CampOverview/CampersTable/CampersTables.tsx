@@ -2,12 +2,13 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel, Box } from "@chakra-ui/react";
 
 import React from "react";
 import textStyles from "../../../../theme/textStyles";
-import { CampSession } from "../../../../types/CampsTypes";
+import { CampSession, FormQuestion } from "../../../../types/CampsTypes";
 import CampersTable from "./CampersTable";
 import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 type CampersTablesProps = {
   campSession: CampSession;
+  formQuestions: FormQuestion[];
 };
 
 const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
@@ -30,6 +31,7 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
           <TabPanel padding="0">
             <CampersTable
               campers={campSession.campers}
+              formQuestions={formQuestions}
               campSessionCapacity={campSession.capacity}
             />
           </TabPanel>

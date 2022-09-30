@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Table,
@@ -30,6 +30,7 @@ import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
 import ViewCamperModal from "../ViewCamperModal/index";
+import { FormQuestion } from "../../../../types/CampsTypes";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -53,9 +54,11 @@ const ExportButton = (): JSX.Element => {
 const CampersTable = ({
   campers,
   campSessionCapacity,
+  formQuestions,
 }: {
   campers: Camper[];
   campSessionCapacity: number;
+  formQuestions: FormQuestion[]
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -231,8 +234,8 @@ const CampersTable = ({
                   >
                     <CampersTableKebabMenu
                       editCamperFunc={() => {
-                        setSelectedCamper(camper);
-                        editModalOnOpen();
+                        setSelectedCamper(camper)
+                        editModalOnOpen()
                       }}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);
@@ -252,14 +255,7 @@ const CampersTable = ({
           </Table>
 
           {/* Add the registered camper action modals here  */}
-          {selectedCamper && (
-            <EditCamperModal
-              camper={selectedCamper}
-              editCamperModalIsOpen={editModalIsOpen}
-              editCamperOnClose={editModalOnClose}
-            />
-          )}
-
+          
           {selectedCamper && (
             <ViewCamperModal
               camper={selectedCamper}
@@ -267,6 +263,14 @@ const CampersTable = ({
               viewCamperOnClose={viewModalOnClose}
             />
           )}
+
+          { selectedCamper ?
+          (<EditCamperModal
+            camper={selectedCamper}
+            formQuestions={formQuestions}
+            editCamperModalIsOpen={editModalIsOpen}
+            editCamperOnClose={editModalOnClose}
+          />) : null}
         </>
       ) : (
         <VStack pb="18px" pt="18px">
