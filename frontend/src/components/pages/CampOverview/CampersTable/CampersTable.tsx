@@ -233,7 +233,10 @@ const CampersTable = ({
                     maxWidth="32px"
                   >
                     <CampersTableKebabMenu
-                      editCamperFunc={editModalOnOpen}
+                      editCamperFunc={() => {
+                        setSelectedCamper(camper)
+                        editModalOnOpen()
+                      }}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);
                         viewModalOnOpen();
@@ -246,36 +249,18 @@ const CampersTable = ({
                       }}
                     />
                   </Td>
-
-                  <EditCamperModal
-                    camper={camper}
-                    formQuestions={formQuestions}
-                    editCamperModalIsOpen={editModalIsOpen}
-                    editCamperOnClose={editModalOnClose}
-                  />
-                  
                 </Tr>
               ))}
             </Tbody>
           </Table>
-
-          {/* Add the registered camper action modals here  */}
-
-          {selectedCamper ? (
+          {selectedCamper && (
             <EditCamperModal
               camper={selectedCamper}
               formQuestions={formQuestions}
               editCamperModalIsOpen={editModalIsOpen}
               editCamperOnClose={editModalOnClose}
             />
-          ) : null}
-          { selectedCamper ?
-          (<EditCamperModal
-            camper={selectedCamper}
-            formQuestions={formQuestions}
-            editCamperModalIsOpen={editModalIsOpen}
-            editCamperOnClose={editModalOnClose}
-          />) : null}
+          )}
         </>
       ) : (
         <VStack pb="18px" pt="18px">
