@@ -81,15 +81,15 @@ const WaitlistedCampersTable = ({
         description:
           "Registration link has been sent and they will be notified.",
         status: "success",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
     } else {
       toast({
         description: "Registration link cannot be sent. Please try again.",
         status: "error",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
     }
   };
@@ -112,15 +112,15 @@ const WaitlistedCampersTable = ({
         toast({
           description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
           status: "success",
-          duration: 7000,
-          isClosable: true,
+          variant: "subtle",
+          duration: 3000,
         });
       } else {
         toast({
           description: `${camperToDeleteName} could not be deleted from this camp session.`,
           status: "error",
-          duration: 7000,
-          isClosable: true,
+          variant: "subtle",
+          duration: 3000,
         });
       }
     }

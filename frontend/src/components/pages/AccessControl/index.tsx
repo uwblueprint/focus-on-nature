@@ -111,8 +111,8 @@ const AccessControlPage = (): JSX.Element => {
           newRole === Role.ADMIN ? UserRoles.ADMIN : UserRoles.CAMP_COORDINATOR
         }`,
         status: "success",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
 
       const newUsers: UserResponse[] = await users.map((u) => {
@@ -126,8 +126,8 @@ const AccessControlPage = (): JSX.Element => {
       toast({
         description: `An error occurred with changing ${user.firstName} ${user.lastName}'s role. Please try again.`,
         status: "error",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
     }
   };
@@ -158,8 +158,8 @@ const AccessControlPage = (): JSX.Element => {
               user!.lastName
             } can no longer access the Camp Management Tool`,
         status: "success",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
 
       const newUsers: UserResponse[] = await users.map((u) => {
@@ -175,8 +175,8 @@ const AccessControlPage = (): JSX.Element => {
           user!.lastName
         }'s status. Please try again.`,
         status: "error",
-        duration: 7000,
-        isClosable: true,
+        variant: "subtle",
+        duration: 3000,
       });
     }
     onClose();
