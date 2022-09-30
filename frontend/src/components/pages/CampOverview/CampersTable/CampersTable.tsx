@@ -233,10 +233,7 @@ const CampersTable = ({
                     maxWidth="32px"
                   >
                     <CampersTableKebabMenu
-                      editCamperFunc={() => {
-                        setSelectedCamper(camper)
-                        editModalOnOpen()
-                      }}
+                      editCamperFunc={editModalOnOpen}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);
                         viewModalOnOpen();
@@ -249,6 +246,14 @@ const CampersTable = ({
                       }}
                     />
                   </Td>
+
+                  <EditCamperModal
+                    camper={camper}
+                    formQuestions={formQuestions}
+                    editCamperModalIsOpen={editModalIsOpen}
+                    editCamperOnClose={editModalOnClose}
+                  />
+                  
                 </Tr>
               ))}
             </Tbody>

@@ -16,6 +16,21 @@ const Button = {
       py: "20px",
       px: "35px",
     },
+    editModalCancel: {
+      background: "background.grey.100",
+      padding: "12px, 25px, 12px, 25px",
+      radius: "6px",
+      width: "109px",
+      height: "48px",
+    },
+    editModalSave: {
+      background: "primary.green.100",
+      padding: "12px, 25px, 12px, 25px",
+      radius: "6px",
+      width: "91px",
+      height: "48px",
+      color: "text.white.100"
+    }
   },
 };
 
