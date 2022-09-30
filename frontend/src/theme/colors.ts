@@ -19,7 +19,13 @@ const colors = {
     },
   },
   overlay: {
-    // TODO: to fill in
+    dark: {
+      50: "#00000080",
+      20: "#00000033",
+    },
+    blue: {
+      500: "#88CBFC80",
+    },
   },
   text: {
     default: {
@@ -57,15 +63,52 @@ const colors = {
       300: "#F4F4F4",
       400: "#D8DBDF",
     },
-    // TODO: to fill in
+    interactive: {
+      100: "#D3E9D3",
+    },
+    inactive: {
+      100: "#E4E5E7",
+    },
+    critical: {
+      100: "#FFF4F4",
+    },
+    warning: {
+      100: "#FFF5EA",
+    },
+    success: {
+      100: "#F1F8F5",
+    },
+    informative: {
+      100: "#EBF9FC",
+    },
+    tooltip: {
+      100: "#CDD5DF",
+    },
+    primary: {
+      100: "#D3E9D3",
+    },
   },
   border: {
-    // TODO: to fill in
     default: {
       100: "#8C9196",
     },
     secondary: {
       100: "#C9CCCF",
+    },
+    input: {
+      100: "#D8DBDF",
+    },
+    critical: {
+      100: "#E0B3B2",
+    },
+    warning: {
+      100: "#E1B878",
+    },
+    success: {
+      100: "#95C9B4",
+    },
+    informative: {
+      100: "#98C6CD",
     },
   },
   waitlistCards: {
