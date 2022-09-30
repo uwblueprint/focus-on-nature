@@ -185,7 +185,7 @@ const EditCamperModalForm = ({
 }) : JSX.Element => {
 
   return (
-    <FormControl isRequired>
+    <FormControl>
       <HStack>
         <VStack align="start" flexGrow="1">
           <FormLabel><b>First name</b></FormLabel>
@@ -237,6 +237,7 @@ const EditCamperModal = ({
   editCamperModalIsOpen,
   editCamperOnClose,
 }: EditCamperModalProps): JSX.Element => {
+  
   return (
     <Modal 
       isOpen={editCamperModalIsOpen} 
@@ -257,8 +258,8 @@ const EditCamperModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={editCamperOnClose}>Close</Button>
-          <Button variant="ghost">Secondary Action</Button>
+          <Button onClick={editCamperOnClose} variant="editModalCancel">Cancel</Button>
+          <Button variant="editModalSave">Save</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
