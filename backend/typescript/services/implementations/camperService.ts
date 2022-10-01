@@ -196,19 +196,32 @@ class CamperService implements ICamperService {
           latePickupQuantity += camper.latePickup.length;
         });
 
-        const createStripeCheckoutSessionRes = await createStripeCheckoutSession(
-          existingCampSession.campPriceId,
-          camp.dropoffPriceId,
-          camp.pickupPriceId,
-          campers.length,
-          earlyDropOffQuantity,
-          latePickupQuantity,
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+          { price: existingCampSession.campPriceId, quantity: campers.length },
+        ];
+
+        if (earlyDropOffQuantity > 0) {
+          lineItems.push({
+            price: camp.dropoffPriceId,
+            quantity: earlyDropOffQuantity,
+          });
+        }
+
+        if (latePickupQuantity > 0) {
+          lineItems.push({
+            price: camp.pickupPriceId,
+            quantity: latePickupQuantity,
+          });
+        }
+
+        const createStripeCheckoutSessionResponse = await createStripeCheckoutSession(
+          lineItems,
         );
 
-        if (!createStripeCheckoutSessionRes) {
+        if (!createStripeCheckoutSessionResponse) {
           throw new Error(`Failed to create checkout session.`);
         } else {
-          checkoutSessionUrl = createStripeCheckoutSessionRes;
+          checkoutSessionUrl = createStripeCheckoutSessionResponse;
         }
       }
     } catch (error: unknown) {

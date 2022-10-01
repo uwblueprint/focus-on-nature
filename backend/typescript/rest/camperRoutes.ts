@@ -23,11 +23,6 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
     const campers = req.body as CreateCampersDTO;
-    // const newCampers = await camperService.createCampers(
-    //   campers,
-    //   req.query?.wId as string,
-    // );
-    // res.status(201).json(newCampers);
     const checkoutSessionUrl = await camperService.createCampersCheckoutSession(
       campers,
     );
