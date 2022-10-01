@@ -97,27 +97,26 @@ export async function createStripeCheckoutSession(
   camperQuantity: number,
   earlyDropOffQuantity: number,
   latePickupQuantity: number,
-): Promise<void> {
+): Promise<string | null> {
   const checkoutSession = await stripe.checkout.sessions.create({
     line_items: [
       {
-        // camp
         price: campSessionPriceId,
         quantity: camperQuantity,
       },
       {
-        // early dropoff
         price: campEarlyDropoffPriceId,
         quantity: earlyDropOffQuantity,
       },
       {
-        // late pickup
         price: campLatePickupPriceId,
         quantity: latePickupQuantity,
       },
     ],
     mode: "payment",
-    success_url: `http://localhost:3000/success.html`,
-    cancel_url: `http://localhost:3000/cancel.html`,
+    success_url: `${process.env.CLIENT_URL}/success.html`,
+    cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
   });
+
+  return checkoutSession.url;
 }

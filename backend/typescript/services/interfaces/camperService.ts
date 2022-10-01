@@ -20,6 +20,14 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
+   * Create a checkout sessoin for the camper
+   * @param campers the campers to be created
+   * @returns an array of CamperDTO with the created campers' information
+   * @throws Error if user creation fails
+   */
+  createCampersCheckoutSession(campers: CreateCampersDTO): Promise<string>;
+
+  /**
    * Get all campers and their information
    * @returns array of CamperDTOs
    * @throws Error if camper retrieval fails

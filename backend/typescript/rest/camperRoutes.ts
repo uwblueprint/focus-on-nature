@@ -23,11 +23,15 @@ const camperService: ICamperService = new CamperService();
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
     const campers = req.body as CreateCampersDTO;
-    const newCampers = await camperService.createCampers(
+    // const newCampers = await camperService.createCampers(
+    //   campers,
+    //   req.query?.wId as string,
+    // );
+    // res.status(201).json(newCampers);
+    const checkoutSessionUrl = await camperService.createCampersCheckoutSession(
       campers,
-      req.query?.wId as string,
     );
-    res.status(201).json(newCampers);
+    res.redirect(303, checkoutSessionUrl);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
