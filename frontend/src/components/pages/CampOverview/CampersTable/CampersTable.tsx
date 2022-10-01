@@ -189,8 +189,6 @@ const CampersTable = ({
             </Thead>
             <Tbody>
               {tableData.map((camper, i) => (
-                <>
-
                 <Tr key={i} margin="16px 0">
                   <Td maxWidth="190px">
                     <VStack align="start">
@@ -237,8 +235,8 @@ const CampersTable = ({
                         editModalOnOpen();
                       }}
                       viewDetailsFunc={() => {
-                        console.log(camper)
-                        viewModalOnOpen()
+                        setSelectedCamper(camper);
+                        viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
                         console.log("Moving Camper");
@@ -249,25 +247,24 @@ const CampersTable = ({
                     />
                   </Td>
                   </Tr>
-
-                  <ViewCamperModal
-                    viewCamperModalIsOpen={viewModalIsOpen}
-                    viewCamperOnClose={viewModalOnClose}
-                    camper={camper}
-                  />
-
-                </>
               ))}
             </Tbody>
           </Table>
 
           {/* Add the registered camper action modals here  */}
-
           {selectedCamper && (
             <EditCamperModal
               camper={selectedCamper}
               editCamperModalIsOpen={editModalIsOpen}
               editCamperOnClose={editModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <ViewCamperModal
+              camper={selectedCamper}
+              viewCamperModalIsOpen={viewModalIsOpen}
+              viewCamperOnClose={viewModalOnClose}
             />
           )}
         </>
