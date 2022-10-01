@@ -19,7 +19,7 @@ interface ManageSessionsModalProps {
   sessions: Array<ManageCampSessionDetails>;
   onSaveChanges: (
     deletedSessions: Set<string>,
-    updatedCapacities: Map<string, number | undefined>,
+    updatedCapacities: Map<string, string>,
   ) => void;
   isOpen: boolean;
   onClose: () => void;
@@ -37,7 +37,7 @@ const ManageSessionsModal = ({
     Set<string>
   >(new Set());
   const [updatedSessionIdCapacity, setUpdatedSessionIdCapacity] = useState<
-    Map<string, number | undefined>
+    Map<string, string>
   >(new Map());
 
   const closeModalAndClearChanges = () => {
@@ -49,7 +49,7 @@ const ManageSessionsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={closeModalAndClearChanges} isCentered>
       <ModalOverlay />
-      <ModalContent pt={5} minW="800px">
+      <ModalContent pt={5} minW="1000px" maxH="600px">
         <ModalHeader ml={6} textStyle="heading">
           <Text>Manage Camp Sessions</Text>
         </ModalHeader>
@@ -69,9 +69,7 @@ const ManageSessionsModal = ({
                   new Map(
                     updatedSessionIdCapacity.set(
                       updatedSession.id,
-                      updatedCapacity
-                        ? parseInt(updatedCapacity, 10)
-                        : undefined,
+                      updatedCapacity,
                     ),
                   ),
                 );
@@ -99,7 +97,6 @@ const ManageSessionsModal = ({
             >
               <Text>Cancel</Text>
             </Button>
-            {/* TODO implement onSave */}
             <Button
               colorScheme="green"
               onClick={() => {

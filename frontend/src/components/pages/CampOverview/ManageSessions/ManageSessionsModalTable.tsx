@@ -50,7 +50,7 @@ interface ManageSessionsModalTableProps {
   campEndTime: string;
   sessions: Array<ManageCampSessionDetails>;
   deletedSessions: Set<string>;
-  updatedCapacities: Map<string, number | undefined>;
+  updatedCapacities: Map<string, string>;
   onEditCapacity: (
     updatedSessionId: ManageCampSessionDetails,
     updatedCapacity: string,
@@ -75,10 +75,10 @@ const ManageSessionsModalTable = ({
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th textTransform="none">
+            <Th textTransform="none" color="text.default.100">
               <Text textStyle="bodyRegular">Camp Session</Text>
             </Th>
-            <Th textTransform="none">
+            <Th textTransform="none" color="text.default.100">
               <Text textStyle="bodyRegular">Camp Capacity</Text>
             </Th>
             <Th>{}</Th>
@@ -95,15 +95,15 @@ const ManageSessionsModalTable = ({
                     <SessionRowTitle session={session} index={index} />
                     {sessionIsFull(session) ? (
                       <Tag colorScheme="orange" borderRadius="full" size="sm">
-                        Session Full
+                        Session full
                       </Tag>
                     ) : (
                       <Tag colorScheme="green" borderRadius="full" size="sm">
-                        Spots Available
+                        Session available
                       </Tag>
                     )}
                   </HStack>
-                  <Text textStyle="bodyRegular">
+                  <Text textStyle="bodyRegular" color="text.default.100">
                     {getFormattedSessionDatetime(
                       session.dates,
                       campStartTime,
@@ -124,6 +124,7 @@ const ManageSessionsModalTable = ({
                       disabled={deletedSessions.has(session.id)}
                       textStyle="bodyRegular"
                       placeholder={`${session.capacity}`}
+                      type="number"
                       value={updatedCapacities.get(session.id) ?? ""}
                       onChange={(event) =>
                         onEditCapacity(session, event.target.value)

@@ -56,12 +56,13 @@ const CampSessionInfoHeader = ({
           />
         </Flex>
         <Button
-          background="background.grey.200"
           color="primary.green.100"
+          variant="outline"
           border="1px"
           borderColor="primary.green.100"
           borderRadius="5px"
-          fontSize={textStyles.displaySmallRegular.fontSize}
+          size="lg"
+          textStyle="button.semibold"
           onClick={onClickManageSessions}
         >
           Manage Sessions
@@ -77,19 +78,13 @@ const CampSessionInfoHeader = ({
       <Box marginTop="16px">
         <Flex>
           <Text textStyle="buttonRegular">Session Age Range:</Text>
-          <Text
-            fontWeight={textStyles.bodyBold.fontWeight}
-            fontSize={textStyles.buttonRegular.fontSize}
-          >
+          <Text textStyle="buttonSemiBold">
             &nbsp;{camp.ageLower} - {camp.ageUpper}
           </Text>
         </Flex>
         <Flex>
           <Text textStyle="buttonRegular">Camp Capacity:</Text>
-          <Text
-            fontWeight={textStyles.bodyBold.fontWeight}
-            fontSize={textStyles.buttonRegular.fontSize}
-          >
+          <Text textStyle="buttonSemiBold">
             &nbsp;{campSession.capacity} campers
           </Text>
         </Flex>
