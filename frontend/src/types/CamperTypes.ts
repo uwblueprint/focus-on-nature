@@ -1,5 +1,5 @@
 export type Camper = {
-  // id: string;
+  id: string;
   // campSession: CampSession;
   firstName: string;
   lastName: string;
@@ -15,21 +15,21 @@ export type Camper = {
     phoneNumber: string;
     relationshipToCamper: string;
   }[];
-  // formResponses?: Map<string, string>;
-  // registrationDate: Date;
-  // hasPaid: boolean;
-  // chargeId: string;
-  // charges: {
-  //   camp: number;
-  //   earlyDropoff: number;
-  //   latePickup: number;
-  // };
-  // optionalClauses?: [
-  //   {
-  //     clause: string;
-  //     agreed: boolean;
-  //   },
-  // ];
+  formResponses?: Map<string, string>;
+  registrationDate: Date;
+  hasPaid: boolean;
+  chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
+  optionalClauses?: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 };
 
 export type UpdateWaitlistedStatusType = {

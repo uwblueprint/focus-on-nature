@@ -29,6 +29,7 @@ import { Filter, filterOptions } from "./CampersTableFilterTypes";
 import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
+import ViewCamperModal from "../ViewCamperModal";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -65,6 +66,12 @@ const CampersTable = ({
     isOpen: editModalIsOpen,
     onOpen: editModalOnOpen,
     onClose: editModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: viewModalIsOpen,
+    onOpen: viewModalOnOpen,
+    onClose: viewModalOnClose,
   } = useDisclosure();
 
   const tableData = React.useMemo(() => {
@@ -178,6 +185,8 @@ const CampersTable = ({
             </Thead>
             <Tbody>
               {tableData.map((camper, i) => (
+                <>
+
                 <Tr key={i} margin="16px 0">
                   <Td maxWidth="190px">
                     <VStack align="start">
@@ -221,7 +230,8 @@ const CampersTable = ({
                     <CampersTableKebabMenu
                       editCamperFunc={editModalOnOpen}
                       viewDetailsFunc={() => {
-                        console.log("Viewing Camper");
+                        console.log(camper)
+                        viewModalOnOpen()
                       }}
                       moveCamperFunc={() => {
                         console.log("Moving Camper");
@@ -231,7 +241,15 @@ const CampersTable = ({
                       }}
                     />
                   </Td>
-                </Tr>
+                  </Tr>
+
+                  <ViewCamperModal
+                    viewCamperModalIsOpen={viewModalIsOpen}
+                    viewCamperOnClose={viewModalOnClose}
+                    camper={camper}
+                  />
+
+                </>
               ))}
             </Tbody>
           </Table>
@@ -243,6 +261,8 @@ const CampersTable = ({
             editCamperModalIsOpen={editModalIsOpen}
             editCamperOnClose={editModalOnClose}
           />
+
+
         </>
       ) : (
         <VStack pb="18px" pt="18px">
