@@ -103,6 +103,10 @@ const CampersTable = ({
     specialNeeds: 0,
   });
 
+  const [selectedCamper, setSelectedCamper] = React.useState<
+    Camper | undefined
+  >();
+
   React.useMemo(() => {
     const tempDetailsCount = {
       earlyDropoff: 0,
@@ -228,7 +232,10 @@ const CampersTable = ({
                     maxWidth="32px"
                   >
                     <CampersTableKebabMenu
-                      editCamperFunc={editModalOnOpen}
+                      editCamperFunc={() => {
+                        setSelectedCamper(camper);
+                        editModalOnOpen();
+                      }}
                       viewDetailsFunc={() => {
                         console.log(camper)
                         viewModalOnOpen()
@@ -256,13 +263,13 @@ const CampersTable = ({
 
           {/* Add the registered camper action modals here  */}
 
-          <EditCamperModal
-            camperId="hi"
-            editCamperModalIsOpen={editModalIsOpen}
-            editCamperOnClose={editModalOnClose}
-          />
-
-
+          {selectedCamper && (
+            <EditCamperModal
+              camper={selectedCamper}
+              editCamperModalIsOpen={editModalIsOpen}
+              editCamperOnClose={editModalOnClose}
+            />
+          )}
         </>
       ) : (
         <VStack pb="18px" pt="18px">

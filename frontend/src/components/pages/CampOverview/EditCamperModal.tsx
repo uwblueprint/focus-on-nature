@@ -10,15 +10,16 @@ import {
   ModalFooter,
   Button,
 } from "@chakra-ui/react";
+import { Camper } from "../../../types/CamperTypes";
 
 type EditCamperModalProps = {
-  camperId: string;
+  camper: Camper;
   editCamperModalIsOpen: boolean;
   editCamperOnClose: () => void;
 };
 
 const EditCamperModal = ({
-  camperId,
+  camper,
   editCamperModalIsOpen,
   editCamperOnClose,
 }: EditCamperModalProps): JSX.Element => {
@@ -28,7 +29,7 @@ const EditCamperModal = ({
       <ModalContent>
         <ModalHeader>Modal Title</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>{camperId}</ModalBody>
+        <ModalBody>{camper.firstName}</ModalBody>
 
         <ModalFooter>
           <Button onClick={editCamperOnClose}>Close</Button>
