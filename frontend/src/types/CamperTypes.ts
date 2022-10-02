@@ -34,6 +34,29 @@ export type Camper = {
   ];
 };
 
+
+export type EditModalFormVariables = Omit<
+  Camper, 
+  | "earlyDropoff"
+  | "latePickup"
+  | "registrationDate"
+  | "hasPaid"
+  | "chargeId"
+  | "charges"
+  | "optionalClauses"
+>
+
+export type EditModalSetterFunctions = {
+  setFirstName : (firstName: string) => void;
+  setLastName : (lastName: string) => void;
+  setAge : (age: number) => void;
+  setAllergies : (allergies: string | undefined) => void;
+  setSpecialNeeds: (sn: string | undefined) => void;
+  setFormResponses : (formResponses: Map<string, string> | undefined) => void;
+  setEmergencyContacts: (contacts: EmergencyContact[]) => void;
+}
+
+
 export type UpdateWaitlistedStatusType = {
   status: WaitlistedCamperStatus;
 };
