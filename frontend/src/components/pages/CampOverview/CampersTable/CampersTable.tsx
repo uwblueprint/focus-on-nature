@@ -246,7 +246,7 @@ const CampersTable = ({
                       }}
                     />
                   </Td>
-                  </Tr>
+                </Tr>
               ))}
             </Tbody>
           </Table>
