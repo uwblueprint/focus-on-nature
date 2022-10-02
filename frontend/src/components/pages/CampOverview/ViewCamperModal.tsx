@@ -31,19 +31,13 @@ const ViewCamperModal = ({
   viewCamperOnClose,
   camper,
 }: ViewCamperModalProps): JSX.Element => {
-  const map1: Map<string, string> = new Map();
-
-  map1.set("Any other details?", "No");
-  map1.set("Favourite color", "Purple");
-  map1.set("What is 2 + 2", "Four");
-
   return (
     <Modal
       isOpen={viewCamperModalIsOpen}
       onClose={viewCamperOnClose}
       isCentered
+      preserveScrollBarGap
     >
-      {console.log(camper)}
       <ModalOverlay />
       <ModalContent maxWidth="600px" maxHeight="75%">
         <TableContainer ml={8} pr={8} overflowY="auto">
@@ -71,7 +65,6 @@ const ViewCamperModal = ({
                   <Text textStyle="displaySmallBold" pb={2}>
                     Earliest Drop-off and Latest Pick-up
                   </Text>
-
                   <TableContainer>
                     <Table variant="unstyled">
                       <Tbody>
@@ -154,19 +147,17 @@ const ViewCamperModal = ({
                   <Text textStyle="displaySmallBold">
                     Camp Specific Questions
                   </Text>
-
-                  {/* Need to review how formResponses is implemented with the Camper DTO, this is just a mock map */}
-                  {Array.from(map1).map((response, i) => {
-                    return (
-                      <Box as="span" key={i}>
-                        <Text textStyle="bodyBold" pt={4}>
-                          {response[0]}
-                        </Text>
-                        <Text textStyle="bodyRegular">{response[1]}</Text>
-                      </Box>
-                    );
-                  })}
-
+                  {camper.formResponses &&
+                    Object.entries(camper.formResponses).map((response, i) => {
+                      return (
+                        <Box as="span" key={i}>
+                          <Text textStyle="bodyBold" pt={4}>
+                            {response[0]}
+                          </Text>
+                          <Text textStyle="bodyRegular">{response[1]}</Text>
+                        </Box>
+                      );
+                    })}
                 </Td>
               </Tr>
             </Tbody>
