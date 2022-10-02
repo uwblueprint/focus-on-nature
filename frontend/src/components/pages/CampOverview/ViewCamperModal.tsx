@@ -147,7 +147,8 @@ const ViewCamperModal = ({
                   <Text textStyle="displaySmallBold">
                     Camp Specific Questions
                   </Text>
-                  {(camper.formResponses && Object.entries(camper.formResponses).length > 0)?
+                  {camper.formResponses &&
+                  Object.entries(camper.formResponses).length > 0 ? (
                     Object.entries(camper.formResponses).map((response, i) => {
                       return (
                         <Box as="span" key={i}>
@@ -157,11 +158,10 @@ const ViewCamperModal = ({
                           <Text textStyle="bodyRegular">{response[1]}</Text>
                         </Box>
                       );
-                    } 
-                    ): 
+                    })
+                  ) : (
                     <Text textStyle="bodyRegular">No responses specified.</Text>
-                    }
-
+                  )}
                 </Td>
               </Tr>
             </Tbody>
