@@ -20,10 +20,10 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
-   * Create a checkout sessoin for the camper
-   * @param campers the campers to be created
-   * @returns an array of CamperDTO with the created campers' information
-   * @throws Error if user creation fails
+   * Create a checkout session for the camper
+   * @param campers the campers that are being registered
+   * @returns a url string to the stripe checkout page
+   * @throws Error if the checkout session creation fails
    */
   createCampersCheckoutSession(campers: CreateCampersDTO): Promise<string>;
 
