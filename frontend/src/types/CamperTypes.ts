@@ -1,6 +1,9 @@
+// eslint-disable-next-line import/no-cycle
+import { CampSession } from "./CampsTypes";
+
 export type Camper = {
   // id: string;
-  // campSession: CampSession;
+  campSession: string;
   firstName: string;
   lastName: string;
   age: number;
@@ -15,21 +18,21 @@ export type Camper = {
     phoneNumber: string;
     relationshipToCamper: string;
   }[];
-  // formResponses?: Map<string, string>;
-  // registrationDate: Date;
-  // hasPaid: boolean;
-  // chargeId: string;
-  // charges: {
-  //   camp: number;
-  //   earlyDropoff: number;
-  //   latePickup: number;
-  // };
-  // optionalClauses?: [
-  //   {
-  //     clause: string;
-  //     agreed: boolean;
-  //   },
-  // ];
+  formResponses?: Map<string, string>;
+  registrationDate: Date;
+  hasPaid: boolean;
+  chargeId: string;
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
+  optionalClauses?: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 };
 
 export type UpdateWaitlistedStatusType = {

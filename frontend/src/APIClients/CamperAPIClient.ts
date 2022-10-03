@@ -1,5 +1,6 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
 import {
+  Camper,
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
 } from "../types/CamperTypes";
@@ -47,8 +48,20 @@ const deleteWaitlistedCamperById = async (id: string): Promise<boolean> => {
   }
 };
 
+const registerCampers = async (campers: Camper[]): Promise<void> => {
+  try {
+    await baseAPIClient.post(`/campers/register`, campers, {
+      withCredentials: false,
+      headers: { Autorization: BEARER_TOKEN },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
+  registerCampers,
 };
