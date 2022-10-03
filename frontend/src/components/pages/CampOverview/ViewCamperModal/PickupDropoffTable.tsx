@@ -44,16 +44,18 @@ const PickupDropoffTable = ({
       <Table variant="unstyled">
         <Tbody>
           {weekdaysToMap.size > 0 ? (
-            Array.from(weekdaysToMap).map((weekday) => {
-              return (
-                <PickupDropoffTableRow
-                  key={`weekday_${weekday}`}
-                  date={weekday}
-                  earlyDropoff={parsedEarlyDropoff}
-                  latePickup={parsedLatePickup}
-                />
-              );
-            })
+            Array.from(weekdaysToMap)
+              .sort()
+              .map((weekday) => {
+                return (
+                  <PickupDropoffTableRow
+                    key={`weekday_${weekday}`}
+                    date={weekday}
+                    earlyDropoff={parsedEarlyDropoff}
+                    latePickup={parsedLatePickup}
+                  />
+                );
+              })
           ) : (
             <Tr>
               <Td textStyle="bodyRegular" pl={0} pt={2} pb={0}>
