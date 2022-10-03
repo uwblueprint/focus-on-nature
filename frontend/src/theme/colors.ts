@@ -123,6 +123,10 @@ const colors = {
     latePickup: "#BFD1FF",
     earlyDropoff: "#FDEED7",
   },
+  camperModals: {
+    footer: "#FAFAFA",
+    disabled: "#C4C4C4",
+  },
   label: {
     green: {
       100: "#D2FFCE",

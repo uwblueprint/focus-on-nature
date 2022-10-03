@@ -16,9 +16,9 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 
-import { Camper } from "../../../types/CamperTypes";
-import { CamperDetailsBadgeGroup } from "./CampersTable/CamperDetailsBadge";
-import PickupDropoffTableRow from "./PickupDropoffTableRow";
+import { Camper } from "../../../../types/CamperTypes";
+import { CamperDetailsBadgeGroup } from "../CampersTable/CamperDetailsBadge";
+import PickupDropoffTable from "./PickupDropoffTable";
 
 type ViewCamperModalProps = {
   viewCamperModalIsOpen: boolean;
@@ -46,15 +46,16 @@ const ViewCamperModal = ({
               <Tr>
                 <Td pl={0} pr={0} pt={8} borderBottom="2px">
                   <Text textStyle="displayLarge">
-                    {camper.firstName} {camper.lastName}{" "}
+                    {`${camper.firstName} ${camper.lastName}`}
                     <Text as="span" fontWeight="400">
-                      {" "}
-                      | Age: {camper.age}
+                      | {`Age: ${camper.age}`}
                     </Text>
                   </Text>
                   <Text textStyle="displaySmallRegular" pb={2}>
                     Amount Paid: $
-                    {Object.values(camper.charges).reduce((a, b) => a + b)}
+                    {Object.values(camper.charges).reduce(
+                      (prevTotal, curCharge) => prevTotal + curCharge,
+                    )}
                   </Text>
                   <CamperDetailsBadgeGroup camper={camper} paddingLeft="0px" />
                 </Td>
@@ -65,37 +66,10 @@ const ViewCamperModal = ({
                   <Text textStyle="displaySmallBold" pb={2}>
                     Earliest Drop-off and Latest Pick-up
                   </Text>
-                  <TableContainer>
-                    <Table variant="unstyled">
-                      <Tbody>
-                        <PickupDropoffTableRow
-                          date={1}
-                          earlyDropoff={camper.earlyDropoff}
-                          latePickup={camper.latePickup}
-                        />
-                        <PickupDropoffTableRow
-                          date={2}
-                          earlyDropoff={camper.earlyDropoff}
-                          latePickup={camper.latePickup}
-                        />
-                        <PickupDropoffTableRow
-                          date={3}
-                          earlyDropoff={camper.earlyDropoff}
-                          latePickup={camper.latePickup}
-                        />
-                        <PickupDropoffTableRow
-                          date={4}
-                          earlyDropoff={camper.earlyDropoff}
-                          latePickup={camper.latePickup}
-                        />
-                        <PickupDropoffTableRow
-                          date={5}
-                          earlyDropoff={camper.earlyDropoff}
-                          latePickup={camper.latePickup}
-                        />
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                  <PickupDropoffTable
+                    earlyDropoff={camper.earlyDropoff}
+                    latePickup={camper.latePickup}
+                  />
                 </Td>
               </Tr>
 
@@ -112,7 +86,7 @@ const ViewCamperModal = ({
                     textStyle="bodyRegular"
                     size="sm"
                     resize="none"
-                    borderColor="#C4C4C4"
+                    borderColor="camperModals.disabled"
                     color="black"
                     placeholder={
                       camper.allergies
@@ -122,15 +96,14 @@ const ViewCamperModal = ({
                     _placeholder={{ color: "black" }}
                   />
                   <Text textStyle="bodyBold" pt={4} pb={2}>
-                    Please indicate if your child requires additional needs or
-                    assistance
+                    Special Needs
                   </Text>
                   <Textarea
                     isDisabled
                     textStyle="bodyRegular"
                     size="sm"
                     resize="none"
-                    borderColor="#C4C4C4"
+                    borderColor="camperModals.disabled"
                     color="black"
                     placeholder={
                       camper.specialNeeds
@@ -151,7 +124,7 @@ const ViewCamperModal = ({
                   Object.entries(camper.formResponses).length > 0 ? (
                     Object.entries(camper.formResponses).map((response, i) => {
                       return (
-                        <Box as="span" key={i}>
+                        <Box as="span" key={`formResponse_${i}`}>
                           <Text textStyle="bodyBold" pt={4}>
                             {response[0]}
                           </Text>
@@ -160,14 +133,14 @@ const ViewCamperModal = ({
                       );
                     })
                   ) : (
-                    <Text textStyle="bodyRegular">No responses specified.</Text>
+                    <Text textStyle="bodyRegular">No responses found.</Text>
                   )}
                 </Td>
               </Tr>
             </Tbody>
           </Table>
         </TableContainer>
-        <ModalFooter bg="#FAFAFA" borderRadius="8px">
+        <ModalFooter bg="camperModals.footer" borderRadius="8px">
           <Button
             variant="outline"
             colorScheme="green"
