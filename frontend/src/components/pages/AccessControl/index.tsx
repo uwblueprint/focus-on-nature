@@ -51,7 +51,6 @@ const AccessControlPage = (): JSX.Element => {
     UserStatusStates.ACTIVE_CAPITALIZED,
     UserStatusStates.INACTIVE_CAPITALIZED,
   ];
-  const userRoles = [UserRoles.ADMIN, UserRoles.CAMP_COORDINATOR];
 
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [search, setSearch] = React.useState("");

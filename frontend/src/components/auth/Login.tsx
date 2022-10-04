@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -45,7 +45,6 @@ const Login = (): React.ReactElement => {
   const [loginErrorMessage, setLoginErrorMessage] = useState<string>(
     LoginErrorMessages.Invalid,
   );
-  const history = useHistory();
 
   const onGoogleLoginSuccess = async (tokenId: string) => {
     const res: AuthenticatedUser | string = await authAPIClient.loginWithGoogle(

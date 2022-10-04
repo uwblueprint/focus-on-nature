@@ -29,7 +29,7 @@ const ConfirmStatusChangeModal = ({
   isOpen,
   onClose,
   onChangeStatus,
-}: ConfirmStatusChangeModalProps) => {
+}: ConfirmStatusChangeModalProps): JSX.Element => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
