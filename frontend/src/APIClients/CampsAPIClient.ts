@@ -36,7 +36,19 @@ const editCampById = async (
   }
 };
 
+const deleteCamp = async (id: string): Promise<boolean> => {
+  try {
+    await baseAPIClient.delete(`/camp/${id}`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
   getCampById,
   editCampById,
+  deleteCamp,
 };
