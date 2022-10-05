@@ -38,6 +38,7 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
           <TabPanel padding="0">
             <CampersTable
               campers={campSession.campers}
+              campSession={campSession}
               campSessionCapacity={campSession.capacity}
             />
           </TabPanel>

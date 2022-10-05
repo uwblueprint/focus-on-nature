@@ -288,12 +288,14 @@ class CamperService implements ICamperService {
           lastName: camper.lastName,
           age: camper.age,
           allergies: camper.allergies,
-          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
-          latePickup: camper.latePickup.map((date) => date.toString()),
+          earlyDropoff: camper.earlyDropoff.map((date) => date?.toString()),
+          latePickup: camper.latePickup.map((date) => date?.toString()),
           specialNeeds: camper.specialNeeds,
           contacts: camper.contacts,
           formResponses: camper.formResponses,
-          registrationDate: camper.registrationDate.toString(),
+          registrationDate: camper.registrationDate
+            ? camper.registrationDate.toString()
+            : "",
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           charges: camper.charges,

@@ -2,6 +2,7 @@ import { BEARER_TOKEN } from "../constants/AuthConstants";
 import {
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
+  Camper,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -47,8 +48,20 @@ const deleteWaitlistedCamperById = async (id: string): Promise<boolean> => {
   }
 };
 
+const getCampersByChargeId = async (chargeId: string): Promise<Camper[]> => {
+  try {
+    const { data } = await baseAPIClient.get(`/campers/?chargeId=${chargeId}`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return data;
+  } catch (error) {
+    return error as Camper[];
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
+  getCampersByChargeId,
 };

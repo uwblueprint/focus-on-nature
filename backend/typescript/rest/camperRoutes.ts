@@ -33,24 +33,10 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   }
 });
 
-/* Get all campers, optionally filter by camp ID */
+/* Get all campers, optionally filter by camp ID or charge ID */
 camperRouter.get("/", async (req, res) => {
-  const { campId } = req.query;
+  const { campId, chargeId } = req.query;
   const contentType = req.headers["content-type"];
-  if (!campId) {
-    // get all campers from all camps
-    try {
-      const campers = await camperService.getAllCampers();
-      await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
-    } catch (error: unknown) {
-      await sendResponseByMimeType(res, 500, contentType, [
-        {
-          error: getErrorMessage(error),
-        },
-      ]);
-    }
-    return;
-  }
 
   if (campId) {
     if (typeof campId !== "string") {
@@ -72,6 +58,39 @@ camperRouter.get("/", async (req, res) => {
         ]);
       }
     }
+    return;
+  }
+
+  if (chargeId) {
+    if (typeof chargeId !== "string") {
+      res
+        .status(400)
+        .json({ error: "chargeId query parameter must be a string." });
+    } else {
+      try {
+        const campers = await camperService.getCampersByChargeId(chargeId);
+        await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
+      } catch (error: unknown) {
+        await sendResponseByMimeType(res, 500, contentType, [
+          {
+            error: getErrorMessage(error),
+          },
+        ]);
+      }
+    }
+    return;
+  }
+
+  // get all campers from all camps
+  try {
+    const campers = await camperService.getAllCampers();
+    await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
+  } catch (error: unknown) {
+    await sendResponseByMimeType(res, 500, contentType, [
+      {
+        error: getErrorMessage(error),
+      },
+    ]);
   }
 });
 
