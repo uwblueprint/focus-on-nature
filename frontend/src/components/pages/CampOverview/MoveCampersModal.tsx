@@ -11,10 +11,7 @@ import {
   Button,
   Checkbox,
   Stack,
-  CheckboxGroup,
-  useCheckboxGroup,
   Select,
-  HStack,
 } from "@chakra-ui/react";
 import { CampSession } from "../../../types/CampsTypes";
 import { Camper } from "../../../types/CamperTypes";
