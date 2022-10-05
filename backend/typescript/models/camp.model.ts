@@ -35,6 +35,8 @@ export interface Camp extends Document {
   pickupPriceId: string;
   pickupProductId: string;
   volunteers: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const CampSchema: Schema = new Schema({
@@ -163,6 +165,8 @@ const CampSchema: Schema = new Schema({
   volunteers: {
     type: String,
   },
-});
+},
+{timestamps: true});
+
 
 export default model<Camp>("Camp", CampSchema);

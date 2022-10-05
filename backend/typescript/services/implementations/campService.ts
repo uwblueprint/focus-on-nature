@@ -48,9 +48,12 @@ class CampService implements ICampService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async getCamps(): Promise<GetCampDTO[]> {
+  async getCamps(year: number): Promise<GetCampDTO[]> {
     try {
-      const camps: Camp[] | null = await MgCamp.find({})
+      const startYear = new Date(year, 0, 1);
+      const endYear = new Date(year, 11, 31);
+
+      let camps: Camp[] | null = await MgCamp.find({ })
         .populate({
           path: "campSessions",
           model: MgCampSession,
@@ -66,6 +69,32 @@ class CampService implements ICampService {
 
       if (!camps) {
         return [];
+      }
+
+      if (year) {
+        // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
+        // Thus, additional filtering is required to remove additional dates
+        /* eslint-disable no-param-reassign */
+        camps = camps.filter((camp) => {
+          const creationDate = camp.createdAt;
+
+          /* eslint-disable no-param-reassign */
+          camp.campSessions = (camp.campSessions as CampSession[]).filter(
+            (campSession) => {
+              return campSession.dates.every((campDate) => {
+                const startCampYearTime = new Date(year, 0, 1).getTime();
+                const endCampYearTime = new Date(year, 11, 31).getTime();
+                return (
+                  campDate.getTime() >= startCampYearTime &&
+                  campDate.getTime() <= endCampYearTime
+                );
+              });
+            },
+          );
+
+          // After filtering all the campSessions that have the wanted year, return all camps that have campSessions in the year or were created in the year
+          if (camp.campSessions.length > 0 || new Date(camp.createdAt).getFullYear() === year) return camp;
+        });
       }
 
       return await Promise.all(
@@ -86,6 +115,7 @@ class CampService implements ICampService {
 
           const campSessions = (camp.campSessions as CampSession[]).map(
             (campSession) => {
+           
               const campers = (campSession.campers as Camper[]).map(
                 (camper) => {
                   return {

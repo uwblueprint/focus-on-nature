@@ -11,8 +11,24 @@ import {
   validateImageType,
   validateTime,
   validateImageSize,
+  validateCampYear,
+  getCampYearValidationError,
 } from "./util";
 import { getErrorMessage } from "../../utilities/errorUtils";
+
+
+export const getCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.query.campYear && !validateCampYear(req.query.campYear as string)) {
+    return res
+      .status(400)
+      .send(getCampYearValidationError(req.query.campYear as string));
+  }
+  return next();
+};
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
