@@ -29,6 +29,8 @@ import { Filter, filterOptions } from "./CampersTableFilterTypes";
 import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
+import MoveCamperModal from "../MoveCampersModal";
+import { CampSession } from "../../../../types/CampsTypes";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -51,15 +53,23 @@ const ExportButton = (): JSX.Element => {
 
 const CampersTable = ({
   campers,
+  campSession,
   campSessionCapacity,
 }: {
   campers: Camper[];
+  campSession: CampSession;
   campSessionCapacity: number;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
   );
+
+  const {
+    isOpen: moveModalIsOpen,
+    onOpen: moveModalOnOpen,
+    onClose: moveModalOnClose,
+  } = useDisclosure();
 
   const {
     isOpen: editModalIsOpen,
@@ -231,7 +241,8 @@ const CampersTable = ({
                         console.log("Viewing Camper");
                       }}
                       moveCamperFunc={() => {
-                        console.log("Moving Camper");
+                        setSelectedCamper(camper);
+                        moveModalOnOpen();
                       }}
                       removeCamperFunc={() => {
                         console.log("Removing Camper");
@@ -244,13 +255,20 @@ const CampersTable = ({
           </Table>
 
           {/* Add the registered camper action modals here  */}
-
           {selectedCamper && (
-            <EditCamperModal
-              camper={selectedCamper}
-              editCamperModalIsOpen={editModalIsOpen}
-              editCamperOnClose={editModalOnClose}
-            />
+            <>
+              <MoveCamperModal
+                camper={selectedCamper}
+                campSession={campSession}
+                moveCamperModalIsOpen={moveModalIsOpen}
+                moveCamperModalOnClose={moveModalOnClose}
+              />
+              <EditCamperModal
+                camper={selectedCamper}
+                editCamperModalIsOpen={editModalIsOpen}
+                editCamperOnClose={editModalOnClose}
+              />
+            </>
           )}
         </>
       ) : (

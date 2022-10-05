@@ -9,6 +9,7 @@ import CampDetails from "./CampDetails";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
+import "./CampOverview.css";
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();

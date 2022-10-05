@@ -1,6 +1,6 @@
 export type Camper = {
-  // id: string;
-  // campSession: CampSession;
+  id: string;
+  campSession: string;
   firstName: string;
   lastName: string;
   age: number;
@@ -18,7 +18,7 @@ export type Camper = {
   // formResponses?: Map<string, string>;
   // registrationDate: Date;
   // hasPaid: boolean;
-  // chargeId: string;
+  chargeId: string;
   // charges: {
   //   camp: number;
   //   earlyDropoff: number;
