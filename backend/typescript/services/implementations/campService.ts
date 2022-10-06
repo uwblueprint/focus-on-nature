@@ -67,10 +67,10 @@ class CampService implements ICampService {
       }
 
       if (year) {
-        // note: mongoose "match" returns full array of dates when atleast one of the element satisfies the condition
-        // Thus, additional filtering is required to remove additional dates
+        // Filter out camps that have camp sessions in the desired year
         /* eslint-disable no-param-reassign */
         camps = camps.filter((camp) => {
+          // Go through every camp session in a camp. If it has the desired year, include it in the results.
           /* eslint-disable no-param-reassign */
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
