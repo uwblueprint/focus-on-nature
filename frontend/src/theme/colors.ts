@@ -126,6 +126,7 @@ const colors = {
   camperModals: {
     footer: "#FAFAFA",
     disabled: "#C4C4C4",
+    border: "#D8D8D8",
   },
   label: {
     green: {

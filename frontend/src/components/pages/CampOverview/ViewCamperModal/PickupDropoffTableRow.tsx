@@ -52,7 +52,7 @@ const PickupDropoffTime = ({
   const color = time === "XX:XX" ? "silver" : "black";
 
   return (
-    <Td p={0} color={color}>
+    <Td pl={0} pt={2} pb={0} color={color}>
       <HStack>
         {pickup ? <SunriseIcon fill={color} /> : <SunsetIcon fill={color} />}
         <Text textStyle="bodyRegular" color={color}>
@@ -79,12 +79,8 @@ const PickupDropoffTableRow = ({
       <Td textStyle="bodyBold" pl={0} pt={2} pb={0}>
         {weekdayMap[date]}
       </Td>
-      <Td pl={0} pt={2} pb={0}>
-        <PickupDropoffTime time={findTime(earlyDropoff, date)} pickup={false} />
-      </Td>
-      <Td pl={0} pt={2} pb={0}>
-        <PickupDropoffTime time={findTime(latePickup, date)} pickup />
-      </Td>
+      <PickupDropoffTime time={findTime(earlyDropoff, date)} pickup={false} />
+      <PickupDropoffTime time={findTime(latePickup, date)} pickup />
     </Tr>
   );
 };
