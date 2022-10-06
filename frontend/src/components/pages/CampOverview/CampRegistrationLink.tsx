@@ -20,7 +20,6 @@ const CampRegistrationLink = ({
 
   return (
     <HStack justifyContent="left" marginBottom="8px">
-      {/* <div></div> */}
       <InputGroup backgroundColor="white" pointerEvents="none" size="sm">
         <InputLeftElement>
           <LinkIcon color="gray.300" />
