@@ -6,6 +6,7 @@ import { CampResponse } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
+import Footer from "./Footer";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
@@ -96,6 +97,7 @@ const CampOverviewPage = (): JSX.Element => {
           <EmptyCampSessionState />
         )}
       </Box>
+      <Footer camp={camp} />
     </Container>
   );
 };
