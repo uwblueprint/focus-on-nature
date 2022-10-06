@@ -12,8 +12,6 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
-  CamperDTO,
-  WaitlistedCamperDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -50,10 +48,7 @@ class CampService implements ICampService {
   /* eslint-disable class-methods-use-this */
   async getCamps(year: number): Promise<GetCampDTO[]> {
     try {
-      const startYear = new Date(year, 0, 1);
-      const endYear = new Date(year, 11, 31);
-
-      let camps: Camp[] | null = await MgCamp.find({ })
+      let camps: Camp[] | null = await MgCamp.find({})
         .populate({
           path: "campSessions",
           model: MgCampSession,
@@ -76,8 +71,6 @@ class CampService implements ICampService {
         // Thus, additional filtering is required to remove additional dates
         /* eslint-disable no-param-reassign */
         camps = camps.filter((camp) => {
-          const creationDate = camp.createdAt;
-
           /* eslint-disable no-param-reassign */
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
@@ -93,7 +86,10 @@ class CampService implements ICampService {
           );
 
           // After filtering all the campSessions that have the wanted year, return all camps that have campSessions in the year or were created in the year
-          if (camp.campSessions.length > 0 || new Date(camp.createdAt).getFullYear() === year) return camp;
+          return (
+            camp.campSessions.length > 0 ||
+            new Date(camp.createdAt).getFullYear() === year
+          );
         });
       }
 
@@ -115,7 +111,6 @@ class CampService implements ICampService {
 
           const campSessions = (camp.campSessions as CampSession[]).map(
             (campSession) => {
-           
               const campers = (campSession.campers as Camper[]).map(
                 (camper) => {
                   return {

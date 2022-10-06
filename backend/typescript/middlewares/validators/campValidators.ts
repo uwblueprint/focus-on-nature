@@ -16,7 +16,6 @@ import {
 } from "./util";
 import { getErrorMessage } from "../../utilities/errorUtils";
 
-
 export const getCampDtoValidator = async (
   req: Request,
   res: Response,
