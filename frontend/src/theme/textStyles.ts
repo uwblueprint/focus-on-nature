@@ -31,6 +31,11 @@ const textStyles = {
     fontSize: "20px",
     lineHeight: "150%",
   },
+  displaySmallBold: {
+    fontWeight: FontWeights.BOLD,
+    fontSize: "18px",
+    lineHeight: "150%",
+  },
   displaySmallRegular: {
     fontWeight: FontWeights.REGULAR,
     fontSize: "18px",

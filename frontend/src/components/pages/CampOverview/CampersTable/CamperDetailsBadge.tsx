@@ -41,11 +41,13 @@ const CamperDetailsBadge = ({
 
 export const CamperDetailsBadgeGroup = ({
   camper,
+  paddingLeft = "16px",
 }: {
   camper: Camper;
+  paddingLeft?: string;
 }): JSX.Element => {
   return (
-    <Container width="-webkit-fit-content" marginStart="0px">
+    <Container width="-webkit-fit-content" marginStart="0px" pl={paddingLeft}>
       <HStack>
         {camper.latePickup && camper.earlyDropoff && (
           <CamperDetailsBadge
