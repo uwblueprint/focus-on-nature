@@ -63,7 +63,7 @@ const FooterDeleteModal = ({
             }}
           />
         )}
-        <ModalHeader>{`Delete ${camp.name}`}</ModalHeader>
+        <ModalHeader>Delete {camp.name}</ModalHeader>
         <ModalBody>
           {`Are you sure you want to delete ${camp.name}?`}
           <br />
