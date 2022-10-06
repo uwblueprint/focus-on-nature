@@ -2,7 +2,7 @@ import React from "react";
 
 import { HStack, VStack, Input, Textarea, Divider, FormControl, FormLabel, } from "@chakra-ui/react";
 
-import {EditModalFormVariables, EditModalSetterFunctions } from "../../../../types/CamperTypes";
+import {EditCamperInfoFields, EditModalSetterFunctions } from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
 // import EditCamperContactSection from "./EditCamperContactSection";
 import EditCamperFormResponseSection from "./EditCamperFormResponseSection";
@@ -13,7 +13,7 @@ const EditCamperModalForm = ({
     setStateFuncs
   }: {
     formQuestions: FormQuestion[];
-    formStateVariables: EditModalFormVariables;
+    formStateVariables: EditCamperInfoFields;
     setStateFuncs: EditModalSetterFunctions;
   }) : JSX.Element => {
   
@@ -71,7 +71,7 @@ const EditCamperModalForm = ({
             />
           </FormControl>
         </VStack>
-        {/* <br/>
+        <br/>
         {formStateVariables.formResponses && (
           <EditCamperFormResponseSection 
             formQuestions={formQuestions}
@@ -79,13 +79,6 @@ const EditCamperModalForm = ({
             setFormResponses={setStateFuncs.setFormResponses}
           />
         )}
-        <Divider/>
-        <br/>
-        <EditCamperContactSection 
-          contacts={formStateVariables.contacts} 
-          camperName={formStateVariables.firstName}
-          setContacts={setStateFuncs.setEmergencyContacts}
-        /> */}
       </>
     );
 }

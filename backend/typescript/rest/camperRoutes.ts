@@ -138,14 +138,14 @@ camperRouter.patch(
           lastName: req.body.lastName,
           age: req.body.age,
           allergies: req.body.allergies,
-          earlyDropoff: req.body.earlyDropoff,
-          latePickup: req.body.latePickup,
+          // earlyDropoff: req.body.earlyDropoff,
+          // latePickup: req.body.latePickup,
           specialNeeds: req.body.specialNeeds,
-          contacts: req.body.contacts,
+          // contacts: req.body.contacts,
           campSession: req.body.campSession,
           formResponses: req.body.formResponses,
           hasPaid: req.body.hasPaid,
-          optionalClauses: req.body.optionalClauses,
+          // optionalClauses: req.body.optionalClauses,
         },
       );
       res.status(200).json(updatedCampers);

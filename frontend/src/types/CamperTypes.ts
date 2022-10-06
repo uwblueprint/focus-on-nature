@@ -34,16 +34,16 @@ export type Camper = {
   ];
 };
 
-
-export type EditModalFormVariables = Omit<
+export type EditCamperInfoFields = Omit<
   Camper, 
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
-  | "hasPaid"
+  | "contacts"
   | "chargeId"
   | "charges"
   | "optionalClauses"
+  | "id"
 >
 
 export type EditModalSetterFunctions = {
@@ -53,7 +53,6 @@ export type EditModalSetterFunctions = {
   setAllergies : (allergies: string | undefined) => void;
   setSpecialNeeds: (sn: string | undefined) => void;
   setFormResponses : (formResponses: Map<string, string> | undefined) => void;
-  setEmergencyContacts: (contacts: EmergencyContact[]) => void;
 }
 
 

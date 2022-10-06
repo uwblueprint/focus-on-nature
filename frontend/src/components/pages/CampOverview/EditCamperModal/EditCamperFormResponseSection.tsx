@@ -1,6 +1,6 @@
 import React from "react";
 
-import { VStack, RadioGroup, Stack, Radio, Textarea, CheckboxGroup, Checkbox, FormLabel, FormControl } from "@chakra-ui/react";
+import { VStack, RadioGroup, Stack, Radio, Textarea, CheckboxGroup, Checkbox, FormLabel, FormControl} from "@chakra-ui/react";
 import { FormQuestion } from "../../../../types/CampsTypes";
 
 
@@ -15,7 +15,7 @@ const EditCamperFormResponseSection = ({
   }): JSX.Element => {
   
     const updateFormResponse = (question: string, option: string) => {
-      const newCamperResponse = camperResponses;
+      const newCamperResponse = new Map(Object.entries(camperResponses));
       newCamperResponse.set(question, option);
       setFormResponses(newCamperResponse);
     }

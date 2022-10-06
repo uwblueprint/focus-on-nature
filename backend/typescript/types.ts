@@ -197,7 +197,14 @@ export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
-  "id" | "registrationDate" | "chargeId" | "charges"
+  "id" 
+  | "registrationDate" 
+  | "chargeId" 
+  | "charges"
+  | "earlyDropoff"
+  | "latePickup"
+  | "contacts"
+  | "optionalClauses"
 >;
 
 export type AuthDTO = Token & UserDTO;
