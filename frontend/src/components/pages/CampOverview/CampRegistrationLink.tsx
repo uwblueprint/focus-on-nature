@@ -9,7 +9,13 @@ import {
 import { LinkIcon } from "@chakra-ui/icons";
 import React from "react";
 
-const CampRegistrationLink = ({ p }: { p: string }): JSX.Element => {
+const CampRegistrationLink = ({
+  p,
+  isDisabled,
+}: {
+  p: string;
+  isDisabled: boolean;
+}): JSX.Element => {
   const toast = useToast();
 
   return (
@@ -25,6 +31,7 @@ const CampRegistrationLink = ({ p }: { p: string }): JSX.Element => {
         colorScheme="green"
         borderRadius="0"
         size="sm"
+        disabled={isDisabled}
         onClick={() => {
           navigator.clipboard.writeText(p);
           toast({

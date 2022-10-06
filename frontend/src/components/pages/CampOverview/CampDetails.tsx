@@ -115,6 +115,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           p={
             camp.active ? `https://camps.focusonnature.ca/camp/${camp.id}` : ``
           }
+          isDisabled={!camp.active}
         />
         <Grid
           templateColumns="repeat(5, 1fr)"
