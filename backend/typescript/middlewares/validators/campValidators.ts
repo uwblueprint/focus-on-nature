@@ -360,6 +360,7 @@ export const updateCampSessionDtoValidator = async (
   return next();
 };
 
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
 export const deleteCampSessionsDtoValidator = async (
   req: Request,
@@ -375,6 +376,61 @@ export const deleteCampSessionsDtoValidator = async (
     }
   } else {
     return res.status(400).send("campSessionIds does not exist");
+  }
+  return next();
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const updateCampSessionsDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.body.campers) {
+    return res
+      .status(400)
+      .send("cannot directly edit campers, field should be empty");
+  }
+  if (req.body.waitlist) {
+    return res
+      .status(400)
+      .send("cannot directly edit waitlist, field should be empty");
+  }
+
+  const { campSessionIds } = req.body;
+  if (!campSessionIds) {
+    return res.status(400).send("campSessionIds are required");
+  }
+
+  for (let index = 0; index < campSessionIds.length; index += 1) {
+    const id = campSessionIds[index];
+    if (!validatePrimitive(id, "string")) {
+      return res.status(400).send(getApiValidationError("id", "string"));
+    }
+  }
+
+  const campSessions = req.body.updatedCampSessions;
+
+  if (!campSessions) {
+    return res.status(400).send("campSessions are required");
+  }
+
+  for (let index = 0; index < campSessions.length; index += 1) {
+    const campSession = campSessions[index];
+    if (campSession.dates && !validateArray(campSession.dates, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("dates", "string", true));
+    }
+    if (campSession.dates && !campSession.dates.every(validateDate)) {
+      return res
+        .status(400)
+        .send(getApiValidationError("dates", "Date string"));
+    }
+    if (!validatePrimitive(campSession.capacity, "integer")) {
+      return res.status(400).send(getApiValidationError("capacity", "integer"));
+    }
   }
   return next();
 };

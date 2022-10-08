@@ -12,6 +12,7 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
+  UpdateCampSessionsDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -786,6 +787,49 @@ class CampService implements ICampService {
     } catch (error: unknown) {
       Logger.error(
         `Failed to edit CampSession. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async updateCampSessionsByIds(
+    campId: string,
+    campSessionIds: Array<string>,
+    updatedCampSessions: Array<UpdateCampSessionsDTO>,
+  ): Promise<Array<CampSessionDTO>> {
+    try {
+      // Check how to handle rollback
+      const oldCampSessions = await MgCampSession.find({
+        _id: { $in: campSessionIds },
+        active: true,
+        camp: { _id: campId },
+      });
+
+      if (oldCampSessions.length !== campSessionIds.length) {
+        throw new Error(
+          `Failed to update camp sessions. Could not find all camp sessions in ${campSessionIds} belonging to camp with id ${campId}`,
+        );
+      }
+
+      const newCampSessions = await Promise.all(
+        updatedCampSessions.map(async (session) =>
+          this.updateCampSessionById(campId, session.id, {
+            capacity: session.capacity,
+            dates: session.dates,
+          }),
+        ),
+      );
+
+      if (newCampSessions.length !== campSessionIds.length) {
+        throw new Error(
+          `Failed to update camp sessions. Could not find all camp sessions in ${campSessionIds} belonging to camp with id ${campId}`,
+        );
+      }
+
+      return newCampSessions;
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to updated camp sessions. Reason = ${getErrorMessage(error)}`,
       );
       throw error;
     }

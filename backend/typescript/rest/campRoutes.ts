@@ -182,6 +182,24 @@ campRouter.patch(
   },
 );
 
+/* Update camp sessions */
+campRouter.patch(
+  "/:campId/session/",
+  updateCampSessionDtoValidator,
+  async (req, res) => {
+    try {
+      const campSession = await campService.updateCampSessionsByIds(
+        req.params.campId,
+        req.body.campSessionIds,
+        req.body.updatedCampSessions,
+      );
+      res.status(200).json(campSession);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
 /* Delete a camp session */
 campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   try {

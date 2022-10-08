@@ -57,6 +57,12 @@ interface ICampService {
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO>;
 
+  updateCampSessionsByIds(
+    campId: string,
+    campSessionIds: Array<string>,
+    updatedCampSessions: Array<UpdateCampSessionDTO>,
+  ): Promise<Array<CampSessionDTO>>;
+
   /**
    * Get all campers associated with camps of id campId
    * @param campId camp's id
