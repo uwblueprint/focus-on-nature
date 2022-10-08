@@ -891,10 +891,9 @@ class CampService implements ICampService {
         }
       });
 
-      const oldCampSessions = camp.campSessions; // clone the full array of campers for rollback
+      const oldCampSessions = camp.campSessions; // clone the full array of camp sessions for rollback
 
       try {
-        // delete camper IDs from the array of campers in the camp session
         const sessionsToDeleteSet = new Set(campSessionIds);
 
         const newCampSessions = camp.campSessions.filter(
@@ -902,10 +901,12 @@ class CampService implements ICampService {
         );
 
         camp.campSessions = newCampSessions;
-        const updatedCampSessionCampers = await camp.save();
+        const updatedCamp = await camp.save();
 
-        if (!updatedCampSessionCampers) {
-          throw new Error(`Failed to update ${camp} with deleted campers.`);
+        if (!updatedCamp) {
+          throw new Error(
+            `Failed to update ${camp} with deleted camp sessions.`,
+          );
         }
       } catch (mongoDbError: unknown) {
         try {
@@ -922,7 +923,7 @@ class CampService implements ICampService {
         }
       }
 
-      // deleting campers from the camper table
+      // deleting camp sessions from the camp session table
       try {
         await MgCampSession.deleteMany({
           _id: {
@@ -930,20 +931,36 @@ class CampService implements ICampService {
           },
         });
       } catch (mongoDbError: unknown) {
-        // could not delete camper, rollback camp's campers deletion
         try {
-          await MgCamper.create(campSessionIds);
+          await MgCampSession.create(campSessionIds);
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB camp session deletion. Reason =",
             getErrorMessage(rollbackDbError),
-            "MongoDB camp session that could not be re-created =",
+            "MongoDB camp sessions that could not be re-created =",
             campSessionIds,
           ];
           Logger.error(errorMessage.join(" "));
         }
 
         throw mongoDbError;
+      }
+
+      // deleting all campers with given camp session ID
+      try {
+        await MgCamper.deleteMany({
+          campSession: {
+            _id: {
+              $in: campSessionIds,
+            },
+          },
+        });
+      } catch (mongoDbError: unknown) {
+        const errorMessage = [
+          `Failed to delete all campers belonging to camp sessions ${campSessionIds} Reason =`,
+          getErrorMessage(mongoDbError),
+        ];
+        Logger.error(errorMessage.join(" "));
       }
     } catch (error: unknown) {
       Logger.error(
