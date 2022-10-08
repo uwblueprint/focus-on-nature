@@ -5,7 +5,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   return (
     <div>
       <h2>Global Forms Page</h2>
-      <Footer />
+      <Footer isWaiverFooter />
     </div>
   );
 };

@@ -1,7 +1,13 @@
 import { Button, Flex, Spacer } from "@chakra-ui/react";
 import React from "react";
 
-const Footer = () => {
+type FooterProps = {
+  isWaiverFooter: boolean;
+};
+
+const Footer = ({ isWaiverFooter }: FooterProps): JSX.Element => {
+  const buttonText = isWaiverFooter ? "+ Add form section" : "+ Add question";
+
   return (
     <Flex
       pos="fixed"
@@ -18,7 +24,7 @@ const Footer = () => {
         color="background.white.100"
         p="16px"
       >
-        + Add form section
+        {buttonText}
       </Button>
     </Flex>
   );
