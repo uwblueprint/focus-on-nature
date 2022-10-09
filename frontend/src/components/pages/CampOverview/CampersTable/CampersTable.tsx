@@ -17,6 +17,7 @@ import {
   Tag,
   Box,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
@@ -37,12 +38,23 @@ import CampsAPIClient from "../../../../APIClients/CampsAPIClient";
 
 import { downloadCSV } from "../../../../utils/CSVUtils";
 
-const generateCsv = async (campSessionId: string) => {
-  const csvResponse = await CampsAPIClient.getCampSessionCsv(campSessionId);
-  downloadCSV(csvResponse, "Campers_Information");
-}
-
-const ExportButton = ({campSessionId,}: {campSessionId: string}): JSX.Element => {
+const ExportButton = ({campSessionId}: {campSessionId: string}): JSX.Element => {
+  const toast = useToast();
+  
+  const generateCsv = async () => {
+    const csvResponse = await CampsAPIClient.getCampSessionCsv(campSessionId);
+    if (csvResponse !== "ERROR") {
+      downloadCSV(csvResponse, "Campers_Information");
+    } else {
+      toast({
+        description: `An error occurred while exporting the CSV. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  }
+  
   return (
     <Button
       leftIcon={<DownloadIcon />}
@@ -55,7 +67,7 @@ const ExportButton = ({campSessionId,}: {campSessionId: string}): JSX.Element =>
       borderRadius="5px"
       minWidth="-webkit-fit-content"
       fontSize={textStyles.bodyRegular.fontSize}
-      onClick={() => generateCsv(campSessionId)}
+      onClick={() => generateCsv()}
     >
       Export as .csv
     </Button>

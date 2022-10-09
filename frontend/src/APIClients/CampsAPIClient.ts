@@ -112,7 +112,7 @@ const getCampSessionCsv = async (id: string): Promise<string> => {
     });
     return data;
   } catch (error) {
-    return error as string;
+    return "ERROR";
   }
 }
 
