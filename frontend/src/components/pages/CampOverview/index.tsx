@@ -1,8 +1,8 @@
-import { Box, Container, Divider, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Container, Divider, Text, useDisclosure, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { CampResponse } from "../../../types/CampsTypes";
+import { CampResponse, UpdateCampSessionsRequest } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
@@ -43,6 +43,7 @@ const CampOverviewPage = (): JSX.Element => {
   const numSessions = camp.campSessions?.length;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   const [refetch, setRefetch] = useState<boolean>(true);
   const handleRefetch = () => {
@@ -74,6 +75,36 @@ const CampOverviewPage = (): JSX.Element => {
   };
 
   const openManageSessionsModal = () => onOpen();
+
+  const getUpdateCampSessionsRequestArray = (updatedCapacities: Map<string, string>): Array<UpdateCampSessionsRequest> => {
+    const requests: Array<UpdateCampSessionsRequest> = [];
+    updatedCapacities.forEach((id, capacity) => requests.push({ id, capacity: parseInt(capacity, 10) }));
+    return requests;
+  };
+
+  const onManageSessionsSave = async (deletedSessions: Set<string>, updatedCapacities: Map<string,string>) => {
+    const deleteResult = await CampsAPIClient.deleteCampSessionsByIds(campId, Array.from(deletedSessions));
+    const updatedCampSessions = await CampsAPIClient.updateCampSessions(
+      campId,
+      Array.from(updatedCapacities.keys()),
+      getUpdateCampSessionsRequestArray(updatedCapacities),
+    );
+
+    // Need to refresh to page
+    if (deleteResult && updatedCampSessions) {
+      toast({
+        description: `Edits to camp sessions saved successfully.`,
+        status: "success",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        description: `An error occurred while saving edits to camp sessions. Please try again.`,
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <Container
@@ -121,10 +152,7 @@ const CampOverviewPage = (): JSX.Element => {
                     registeredCampers: session.campers.length,
                   };
                 })}
-              onSaveChanges={(deletedSessions, updatedCapacities) => {
-                console.log(deletedSessions);
-                console.log(updatedCapacities);
-              }}
+              onSaveChanges={onManageSessionsSave}
               isOpen={isOpen}
               onClose={onClose}
             />

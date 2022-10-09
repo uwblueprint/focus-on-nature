@@ -51,6 +51,12 @@ export type ManageCampSessionDetails = Omit<
   "camp" | "campers" | "waitlist"
 > & { registeredCampers: number };
 
+// { id: string; capacity?: number; dates?: string[] }
+export type UpdateCampSessionsRequest = Partial<
+  Omit<CampSession, "camp" | "campers" | "waitlist">
+> &
+  Pick<CampSession, "id">;
+
 export type FormQuestion = {
   id: string;
   type: QuestionType;
