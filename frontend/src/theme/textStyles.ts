@@ -36,6 +36,11 @@ const textStyles = {
     fontSize: "18px",
     lineHeight: "150%",
   },
+  displaySmallerSemiBold: {
+    fontWeight: FontWeights.SEMIBOLD,
+    fontSize: "18px",
+    lineHeight: "150%",
+  },
   displaySmallRegular: {
     fontWeight: FontWeights.REGULAR,
     fontSize: "24px",
