@@ -30,6 +30,7 @@ import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
 import ViewCamperModal from "../ViewCamperModal/index";
+import RemoveCamperModal from "../RemoveCamperModal/index";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -72,6 +73,12 @@ const CampersTable = ({
     isOpen: viewModalIsOpen,
     onOpen: viewModalOnOpen,
     onClose: viewModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: removeModalIsOpen,
+    onOpen: removeModalOnOpen,
+    onClose: removeModalOnClose,
   } = useDisclosure();
 
   const tableData = React.useMemo(() => {
@@ -242,7 +249,8 @@ const CampersTable = ({
                         console.log("Moving Camper");
                       }}
                       removeCamperFunc={() => {
-                        console.log("Removing Camper");
+                        setSelectedCamper(camper);
+                        removeModalOnOpen();
                       }}
                     />
                   </Td>
@@ -265,6 +273,14 @@ const CampersTable = ({
               camper={selectedCamper}
               viewCamperModalIsOpen={viewModalIsOpen}
               viewCamperOnClose={viewModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <RemoveCamperModal
+              camper={selectedCamper}
+              removeModalIsOpen={removeModalIsOpen}
+              removeModalOnClose={removeModalOnClose}
             />
           )}
         </>
