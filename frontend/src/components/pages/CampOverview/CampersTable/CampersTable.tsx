@@ -58,7 +58,7 @@ const CampersTable = ({
 }: {
   campers: Camper[];
   campSessionCapacity: number;
-  formQuestions: FormQuestion[]
+  formQuestions: FormQuestion[];
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -234,8 +234,8 @@ const CampersTable = ({
                   >
                     <CampersTableKebabMenu
                       editCamperFunc={() => {
-                        setSelectedCamper(camper)
-                        editModalOnOpen()
+                        setSelectedCamper(camper);
+                        editModalOnOpen();
                       }}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);

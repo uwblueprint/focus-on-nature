@@ -35,7 +35,7 @@ export type Camper = {
 };
 
 export type EditCamperInfoFields = Omit<
-  Camper, 
+  Camper,
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
@@ -44,17 +44,16 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
->
+>;
 
 export type EditModalSetterFunctions = {
-  setFirstName : (firstName: string) => void;
-  setLastName : (lastName: string) => void;
-  setAge : (age: number) => void;
-  setAllergies : (allergies: string | undefined) => void;
+  setFirstName: (firstName: string) => void;
+  setLastName: (lastName: string) => void;
+  setAge: (age: number) => void;
+  setAllergies: (allergies: string | undefined) => void;
   setSpecialNeeds: (sn: string | undefined) => void;
-  setFormResponses : (formResponses: Map<string, string> | undefined) => void;
-}
-
+  setFormResponses: (formResponses: Map<string, string> | undefined) => void;
+};
 
 export type UpdateWaitlistedStatusType = {
   status: WaitlistedCamperStatus;

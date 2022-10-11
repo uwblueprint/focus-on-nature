@@ -90,7 +90,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   };
 
   const handleVolunteerChange = (newVolunteers: string) => {
-    setCamp({...camp, volunteers: newVolunteers});
+    setCamp({ ...camp, volunteers: newVolunteers });
   };
 
   return (

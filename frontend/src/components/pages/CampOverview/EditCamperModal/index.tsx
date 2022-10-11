@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 
 import {
   ModalOverlay,
@@ -11,19 +11,21 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import { Camper, EditCamperInfoFields, EditModalSetterFunctions} from "../../../../types/CamperTypes";
+import {
+  Camper,
+  EditCamperInfoFields,
+  EditModalSetterFunctions,
+} from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
-import CamperApiClient from '../../../../APIClients/CamperAPIClient';
+import CamperApiClient from "../../../../APIClients/CamperAPIClient";
 import EditCamperModalForm from "./EditCamperModalForm";
-
 
 type EditCamperModalProps = {
   camper: Camper;
   editCamperModalIsOpen: boolean;
-  formQuestions: FormQuestion[]
+  formQuestions: FormQuestion[];
   editCamperOnClose: () => void;
 };
-
 
 const EditCamperModal = ({
   camper,
@@ -31,74 +33,80 @@ const EditCamperModal = ({
   editCamperModalIsOpen,
   editCamperOnClose,
 }: EditCamperModalProps): JSX.Element => {
-  
   const toast = useToast();
 
   // State for the edit form fields
-  const [firstName, setFirstName] = useState<string>(camper.firstName)
-  const [lastName, setLastName] = useState<string>(camper.lastName)
-  const [age, setAge] = useState<number>(camper.age)
-  const [allergies, setAllergies] = useState<string | undefined>(camper.allergies)
-  const [specialNeeds, setSpecialNeeds] = useState<string | undefined>(camper.specialNeeds)
-  const [formResponses, setFormResponses] = useState< Map<string, string> | undefined>(camper.formResponses)
+  const [firstName, setFirstName] = useState<string>(camper.firstName);
+  const [lastName, setLastName] = useState<string>(camper.lastName);
+  const [age, setAge] = useState<number>(camper.age);
+  const [allergies, setAllergies] = useState<string | undefined>(
+    camper.allergies,
+  );
+  const [specialNeeds, setSpecialNeeds] = useState<string | undefined>(
+    camper.specialNeeds,
+  );
+  const [formResponses, setFormResponses] = useState<
+    Map<string, string> | undefined
+  >(camper.formResponses);
 
-  const setStateFuncs : EditModalSetterFunctions = {
-    setFirstName, 
-    setLastName, 
-    setAge, 
-    setAllergies, 
-    setSpecialNeeds, 
-    setFormResponses
+  const setStateFuncs: EditModalSetterFunctions = {
+    setFirstName,
+    setLastName,
+    setAge,
+    setAllergies,
+    setSpecialNeeds,
+    setFormResponses,
   };
 
-  const stateVariables : EditCamperInfoFields = {
-    hasPaid : camper.hasPaid,
-    firstName, 
-    lastName, 
-    age, 
-    allergies, 
-    specialNeeds, 
-    formResponses
+  const stateVariables: EditCamperInfoFields = {
+    hasPaid: camper.hasPaid,
+    firstName,
+    lastName,
+    age,
+    allergies,
+    specialNeeds,
+    formResponses,
   };
 
   const onSaveClicked = async () => {
-    const editCamperFields : EditCamperInfoFields = {
+    const editCamperFields: EditCamperInfoFields = {
       firstName,
       lastName,
       age,
       allergies,
       specialNeeds,
       formResponses,
-      hasPaid : camper.hasPaid,
+      hasPaid: camper.hasPaid,
     };
-    console.log("editing camper info", editCamperFields);
-    const isEditCamperSuccess = await CamperApiClient.updateCampersById([camper.id], editCamperFields);
-    console.log(isEditCamperSuccess);
-    // if (isEditCamperSuccess){
-    //   toast({
-    //     description: `${camper.firstName} ${
-    //       camper.lastName
-    //     }'s information has been updated`,
-    //     status: "success",
-    //     variant: "subtle",
-    //     duration: 3000,
-    //   });
-    //   window.location.reload();
-    // } else {
-    //   toast({
-    //     description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
-    //     status: "error",
-    //     variant: "subtle",
-    //     duration: 3000,
-    //   });
-    // }
-  
+    const isEditCamperSuccess = await CamperApiClient.updateCampersById(
+      [camper.id],
+      editCamperFields,
+    );
+
+    if (isEditCamperSuccess) {
+      toast({
+        description: `${camper.firstName} ${camper.lastName}'s information has been updated`,
+        status: "success",
+        variant: "subtle",
+        duration: 3000,
+      });
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } else {
+      toast({
+        description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
   };
 
-
   return (
-    <Modal 
-      isOpen={editCamperModalIsOpen} 
+    <Modal
+      isOpen={editCamperModalIsOpen}
       onClose={editCamperOnClose}
       preserveScrollBarGap
     >
@@ -110,10 +118,12 @@ const EditCamperModal = ({
         minH="750px"
         maxH="750px"
       >
-        <ModalHeader>Edit {camper.firstName} {camper.lastName}&apos;s Information</ModalHeader>
+        <ModalHeader>
+          Edit {camper.firstName} {camper.lastName}&apos;s Information
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody overflowY="scroll">
-          <EditCamperModalForm 
+          <EditCamperModalForm
             formQuestions={formQuestions}
             formStateVariables={stateVariables}
             setStateFuncs={setStateFuncs}
@@ -121,8 +131,17 @@ const EditCamperModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={editCamperOnClose} variant="editModalCancel">Cancel</Button>
-          <Button variant="editModalSave" onClick={() => {onSaveClicked()}}>Save</Button>
+          <Button onClick={editCamperOnClose} variant="editModalCancel">
+            Cancel
+          </Button>
+          <Button
+            variant="editModalSave"
+            onClick={() => {
+              onSaveClicked();
+            }}
+          >
+            Save
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

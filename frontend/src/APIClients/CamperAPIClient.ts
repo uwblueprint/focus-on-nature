@@ -3,26 +3,36 @@ import {
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
   EditCamperInfoFields,
-  Camper
+  Camper,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
 const updateCampersById = async (
   id: Array<string>,
-  camperData: EditCamperInfoFields
-) : Promise<Array<Camper>> => {
-  try{
-    const body = {camperIds : id, ...camperData};
-    console.log("body", body);
+  camperData: EditCamperInfoFields,
+): Promise<Array<Camper>> => {
+  try {
+    const body = { camperIds: id, ...camperData };
+
+    // Can't send Map<string, string> over HTTP so need to convert to Object before
+    if (camperData.formResponses) {
+      body.formResponses = Object.assign(
+        {},
+        ...Array.from(camperData.formResponses.entries()).map(([k, v]) => ({
+          [k]: v,
+        })),
+      );
+    }
+
     const { data } = await baseAPIClient.patch(`/campers`, body, {
       headers: { Authorization: BEARER_TOKEN },
     });
+
     return data;
-  } catch (error){
+  } catch (error) {
     return error as Array<Camper>;
   }
 };
-
 
 const getWaitlistedCamperById = async (
   id: string,
@@ -70,5 +80,5 @@ export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
-  updateCampersById
+  updateCampersById,
 };

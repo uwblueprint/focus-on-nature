@@ -29,8 +29,8 @@ const Button = {
       radius: "6px",
       width: "91px",
       height: "48px",
-      color: "text.white.100"
-    }
+      color: "text.white.100",
+    },
   },
 };
 
