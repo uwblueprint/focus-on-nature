@@ -8,9 +8,13 @@ import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 type CampersTablesProps = {
   campSession: CampSession;
+  handleRefetch: () => void;
 };
 
-const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
+const CampersTables = ({
+  campSession,
+  handleRefetch,
+}: CampersTablesProps): JSX.Element => {
   return (
     <Box>
       <Tabs variant="line" colorScheme="green" outline="0" marginBottom="30px">
@@ -31,6 +35,7 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
             <CampersTable
               campers={campSession.campers}
               campSessionCapacity={campSession.capacity}
+              handleRefetch={handleRefetch}
             />
           </TabPanel>
           <TabPanel padding="0">

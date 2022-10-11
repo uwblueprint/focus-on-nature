@@ -54,9 +54,11 @@ const ExportButton = (): JSX.Element => {
 const CampersTable = ({
   campers,
   campSessionCapacity,
+  handleRefetch,
 }: {
   campers: Camper[];
   campSessionCapacity: number;
+  handleRefetch: () => void;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -281,6 +283,7 @@ const CampersTable = ({
               camper={selectedCamper}
               removeModalIsOpen={removeModalIsOpen}
               removeModalOnClose={removeModalOnClose}
+              handleRefetch={handleRefetch}
             />
           )}
         </>

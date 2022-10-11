@@ -53,8 +53,8 @@ const deleteMultipleCampersById = async (ids: string[]): Promise<boolean> => {
     await baseAPIClient.delete(`/campers/`, {
       headers: { Authorization: BEARER_TOKEN },
       data: {
-        camperIds: ids
-      }
+        camperIds: ids,
+      },
     });
     return true;
   } catch (error) {
@@ -62,16 +62,22 @@ const deleteMultipleCampersById = async (ids: string[]): Promise<boolean> => {
   }
 };
 
-const getCampersByChargeIdAndSessionId = async (chargeId: string, sessionId: string): Promise<Camper[]> => {
+const getCampersByChargeIdAndSessionId = async (
+  chargeId: string,
+  sessionId: string,
+): Promise<Camper[]> => {
   try {
-    const { data } = await baseAPIClient.get(`/campers/campers-removal/${chargeId}/${sessionId}`, {
-      headers: { Authorization: BEARER_TOKEN },
-    });
+    const { data } = await baseAPIClient.get(
+      `/campers/campers-removal/${chargeId}/${sessionId}`,
+      {
+        headers: { Authorization: BEARER_TOKEN },
+      },
+    );
     return data;
   } catch (error) {
     return error as Camper[];
   }
-}
+};
 
 export default {
   getWaitlistedCamperById,
