@@ -44,6 +44,11 @@ const CampOverviewPage = (): JSX.Element => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [refetch, setRefetch] = useState<boolean>(true);
+  const handleRefetch = () => {
+    setRefetch(!refetch);
+  };
+
   useEffect(() => {
     const getCamp = async () => {
       const campResponse = await CampsAPIClient.getCampById(campId);
@@ -52,7 +57,7 @@ const CampOverviewPage = (): JSX.Element => {
       }
     };
     getCamp();
-  }, [campId]);
+  }, [campId, refetch]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -97,6 +102,7 @@ const CampOverviewPage = (): JSX.Element => {
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
+              handleRefetch={handleRefetch}
             />
             <ManageSessionsModal
               campStartTime={camp.startTime}

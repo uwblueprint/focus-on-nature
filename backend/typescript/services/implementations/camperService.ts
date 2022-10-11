@@ -308,13 +308,18 @@ class CamperService implements ICamperService {
     }
   }
 
-  async getCampersByChargeIdAndSessionId(chargeId: string, sessionId: string): Promise<CamperDTO[]> {
+  async getCampersByChargeIdAndSessionId(
+    chargeId: string,
+    sessionId: string,
+  ): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
       const campers: Camper[] = await MgCamper.find({ chargeId, campSession: sessionId });
 
       if (!campers || campers.length === 0) {
-        throw new Error(`Campers with Charge Id ${chargeId} and Session Id ${sessionId} not found.`);
+        throw new Error(
+          `Campers with Charge Id ${chargeId} and Session Id ${sessionId} not found.`,
+        );
       }
 
       const camperDTO: CamperDTO[] = campers.map((camper) => {

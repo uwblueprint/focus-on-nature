@@ -1,167 +1,156 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-import {
-  Box,
-  ModalOverlay,
-  ModalContent,
-  Modal,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
-  Text,
-  Checkbox,
-  Stack,
-  ListItem,
-  UnorderedList,
-} from "@chakra-ui/react";
+import { ModalOverlay, Modal, useToast } from "@chakra-ui/react";
 
 import { Camper } from "../../../../types/CamperTypes";
+import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
+import SelectModal from "./SelectModal";
+import ConfirmModal from "./ConfirmModal";
+
+// An enum to keep track of the two modal states.
+export enum ModalStatus {
+  SELECT = "select",
+  CONFIRM = "confirm",
+}
 
 type RemoveCamperModalProps = {
   removeModalIsOpen: boolean;
   removeModalOnClose: () => void;
   camper: Camper;
+  handleRefetch: () => void;
 };
 
 const RemoveCamperModal = ({
   removeModalIsOpen,
   removeModalOnClose,
   camper,
+  handleRefetch,
 }: RemoveCamperModalProps): JSX.Element => {
-  const [checkedItems, setCheckedItems] = React.useState([false, false]);
+  const toast = useToast();
+  const [modalStatus, setModalStatus] = useState<ModalStatus>(
+    ModalStatus.SELECT,
+  );
+  const [retrievedCampers, setRetrievedCampers] = useState<Camper[]>([]);
+  const [campersToBeDeleted, setCampersToBeDeleted] = useState<Set<Camper>>(
+    new Set<Camper>(),
+  );
 
-  const allChecked = checkedItems.every(Boolean);
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+  const allCampersToBeDeleted: Camper[] = Array.from(
+    campersToBeDeleted,
+  ) as Camper[];
+  allCampersToBeDeleted.push(camper);
 
-  const [removeUsersPage, setRemoveUsersPage] = React.useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch the data, only refetching when a new camper has been selected.
+  useEffect(() => {
+    const getCampersByChargeIdAndSessionId = async (selectedCamper: Camper) => {
+      setLoading(true);
+      const getResponse: Camper[] = await CamperAPIClient.getCampersByChargeIdAndSessionId(
+        selectedCamper.chargeId,
+        selectedCamper.campSession,
+      );
+      if (getResponse) {
+        setRetrievedCampers(
+          getResponse.filter(
+            (currentCamper: Camper) => currentCamper.id !== camper.id,
+          ),
+        );
+        setLoading(false);
+      } else {
+        toast({
+          description: `Unable to retrieve camper information.`,
+          status: "error",
+          duration: 5000,
+          variant: "subtle",
+        });
+      }
+    };
+    getCampersByChargeIdAndSessionId(camper);
+
+    return () => {
+      setRetrievedCampers([]);
+      setCampersToBeDeleted(new Set<Camper>());
+    };
+  }, [camper]);
+
+  const deselectAndClose = () => {
+    setCampersToBeDeleted(new Set<Camper>());
+    setModalStatus(ModalStatus.SELECT);
+    removeModalOnClose();
+  };
+
+  const deletionMessage = () => {
+    if (allCampersToBeDeleted.length >= 2) {
+      let returnString = `${allCampersToBeDeleted[0].firstName} ${allCampersToBeDeleted[0].lastName}, `;
+      for (let i = 1; i < allCampersToBeDeleted.length - 1; i += 1) {
+        returnString += `${allCampersToBeDeleted[i].firstName} ${allCampersToBeDeleted[i].lastName}, `;
+      }
+      returnString += `and ${
+        allCampersToBeDeleted[allCampersToBeDeleted.length - 1].firstName
+      } ${
+        allCampersToBeDeleted[allCampersToBeDeleted.length - 1].lastName
+      } have been removed.`;
+      return returnString;
+    }
+    return `${allCampersToBeDeleted[0].firstName} ${allCampersToBeDeleted[0].lastName} has been removed.`;
+  };
+
+  // Delete the selected campers.
+  const submitDeletion = async () => {
+    const deletionResponse = await CamperAPIClient.deleteMultipleCampersById(
+      allCampersToBeDeleted.map((currentCamper: Camper) => currentCamper.id),
+    );
+
+    if (deletionResponse) {
+      toast({
+        description: deletionMessage(),
+        status: "success",
+        duration: 5000,
+        variant: "subtle",
+      });
+    } else {
+      toast({
+        description: `Unable to remove the selected campers.`,
+        status: "error",
+        duration: 5000,
+        variant: "subtle",
+      });
+    }
+    handleRefetch();
+  };
 
   return (
     <Modal
       isOpen={removeModalIsOpen}
-      onClose={removeModalOnClose}
+      onClose={deselectAndClose}
       isCentered
       preserveScrollBarGap
       scrollBehavior="inside"
     >
       <ModalOverlay />
 
-      {removeUsersPage ? (
-        <ModalContent maxWidth="400px" maxHeight="80%">
-          <ModalHeader ml={8} mr={8} pt={8} pb={4} pl={0} pr={0}>
-            <Text textStyle="displaySmallerSemiBold">
-              Remove group members?
-            </Text>
-          </ModalHeader>
+      {modalStatus === ModalStatus.SELECT &&
+        retrievedCampers.length > 0 &&
+        !loading && (
+          <SelectModal
+            camper={camper}
+            campersToBeDeleted={campersToBeDeleted}
+            setCampersToBeDeleted={setCampersToBeDeleted}
+            retrievedCampers={retrievedCampers}
+            deselectAndClose={deselectAndClose}
+            setStatusAsConfirm={() => setModalStatus(ModalStatus.CONFIRM)}
+          />
+        )}
 
-          <ModalBody pl={8} pr={8} pb={0} pt={0}>
-            <Box pt={4} pb={4}>
-              <Text textStyle="displaySmallRegular">
-                FirstName LastName registered with the following group members.
-                Please select all the group members you would also like to
-                remove from this session:{" "}
-              </Text>
-
-              <Stack mt={4}>
-                <Checkbox
-                  isChecked={allChecked}
-                  isIndeterminate={isIndeterminate}
-                  onChange={(e) =>
-                    setCheckedItems([e.target.checked, e.target.checked])
-                  }
-                  mb={0}
-                  colorScheme="green"
-                >
-                  Select all
-                </Checkbox>
-
-                <Checkbox
-                  isChecked={checkedItems[0]}
-                  onChange={(e) =>
-                    setCheckedItems([e.target.checked, checkedItems[1]])
-                  }
-                  colorScheme="green"
-                >
-                  Child Checkbox 1
-                </Checkbox>
-
-                <Checkbox
-                  isChecked={checkedItems[1]}
-                  onChange={(e) =>
-                    setCheckedItems([checkedItems[0], e.target.checked])
-                  }
-                  colorScheme="green"
-                >
-                  Child Checkbox 2
-                </Checkbox>
-              </Stack>
-            </Box>
-          </ModalBody>
-          <ModalFooter bg="camperModals.footer" borderRadius="8px">
-            <Button variant="ghost" onClick={removeModalOnClose} mr={3}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="green"
-              onClick={() => setRemoveUsersPage(false)}
-            >
-              Next
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      ) : (
-        <ModalContent maxWidth="400px" maxHeight="80%">
-          <ModalHeader ml={8} mr={8} pt={8} pb={4} pl={0} pr={0}>
-            <Text textStyle="displaySmallerSemiBold">
-              Remove Camper(s) from Session
-            </Text>
-          </ModalHeader>
-
-          <ModalBody pl={8} pr={8} pb={0} pt={0}>
-            <Box pt={4} pb={4}>
-              <Text textStyle="displaySmallRegular">
-                Ensure that you have completed the following steps before
-                removing the camper(s) from the camp session.
-                <UnorderedList>
-                  <ListItem>
-                    Contacted the registrant to confirm that the camper(s)
-                    is/are to be removed
-                  </ListItem>
-                  <ListItem>
-                    Completed a full/partial refund or discussed an alternative
-                    reimbursment
-                  </ListItem>
-                </UnorderedList>
-              </Text>
-
-              <Text textStyle="displaySmallBold" pt={4}>
-                Note: this action is irreversible.
-              </Text>
-            </Box>
-          </ModalBody>
-          <ModalFooter bg="camperModals.footer" borderRadius="8px">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                removeModalOnClose();
-                setRemoveUsersPage(true);
-              }}
-              mr={3}
-            >
-              Cancel
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                removeModalOnClose();
-                setRemoveUsersPage(true);
-              }}
-            >
-              Remove
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      )}
+      {(modalStatus === ModalStatus.CONFIRM || retrievedCampers.length === 0) &&
+        !loading && (
+          <ConfirmModal
+            allCampersToBeDeleted={allCampersToBeDeleted}
+            deselectAndClose={deselectAndClose}
+            submitDeletion={submitDeletion}
+          />
+        )}
     </Modal>
   );
 };

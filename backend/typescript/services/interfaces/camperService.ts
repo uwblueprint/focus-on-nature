@@ -54,7 +54,10 @@ interface ICamperService {
    * @returns array of CamperDTO
    * @throws Error if camper retrieval fails
    */
-   getCampersByChargeIdAndSessionId(chargeId: string, sessionId: string): Promise<Array<CamperDTO>>;
+  getCampersByChargeIdAndSessionId(
+    chargeId: string,
+    sessionId: string,
+  ): Promise<Array<CamperDTO>>;
 
   /**
    * Create a waitlisted camper
