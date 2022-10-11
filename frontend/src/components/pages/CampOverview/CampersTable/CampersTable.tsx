@@ -234,8 +234,8 @@ const CampersTable = ({
                   >
                     <CampersTableKebabMenu
                       editCamperFunc={() => {
-                        setSelectedCamper(camper)
-                        editModalOnOpen()
+                        setSelectedCamper(camper);
+                        editModalOnOpen();
                       }}
                       viewDetailsFunc={() => {
                         setSelectedCamper(camper);
@@ -259,6 +259,14 @@ const CampersTable = ({
               formQuestions={formQuestions}
               editCamperModalIsOpen={editModalIsOpen}
               editCamperOnClose={editModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <ViewCamperModal
+              camper={selectedCamper}
+              viewCamperModalIsOpen={viewModalIsOpen}
+              viewCamperOnClose={viewModalOnClose}
             />
           )}
         </>
