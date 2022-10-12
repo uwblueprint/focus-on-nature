@@ -11,7 +11,10 @@ type CampersTablesProps = {
   formQuestions: FormQuestion[];
 };
 
-const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
+const CampersTables = ({
+  campSession,
+  formQuestions,
+}: CampersTablesProps): JSX.Element => {
   return (
     <Box>
       <Tabs variant="line" colorScheme="green" outline="0" marginBottom="30px">

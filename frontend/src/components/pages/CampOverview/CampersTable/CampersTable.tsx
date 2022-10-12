@@ -255,7 +255,7 @@ const CampersTable = ({
           </Table>
 
           {/* Add the registered camper action modals here  */}
-          
+
           {selectedCamper && (
             <ViewCamperModal
               camper={selectedCamper}
@@ -264,13 +264,14 @@ const CampersTable = ({
             />
           )}
 
-          { selectedCamper ?
-          (<EditCamperModal
-            camper={selectedCamper}
-            formQuestions={formQuestions}
-            editCamperModalIsOpen={editModalIsOpen}
-            editCamperOnClose={editModalOnClose}
-          />) : null}
+          {selectedCamper ? (
+            <EditCamperModal
+              camper={selectedCamper}
+              formQuestions={formQuestions}
+              editCamperModalIsOpen={editModalIsOpen}
+              editCamperOnClose={editModalOnClose}
+            />
+          ) : null}
         </>
       ) : (
         <VStack pb="18px" pt="18px">
