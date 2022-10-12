@@ -1,12 +1,21 @@
 import React from "react";
-import { Button, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Flex,
+  Spacer,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { CampResponse } from "../../../types/CampsTypes";
+import FooterDeleteModal from "./FooterDeleteModal";
 
 type FooterProps = {
   camp: CampResponse;
 };
 
 const Footer = ({ camp }: FooterProps): JSX.Element => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Flex
       pos="fixed"
@@ -22,9 +31,13 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
         bgColor="secondary.critical.100"
         color="background.white.100"
         p="16px"
+        onClick={onOpen}
       >
         Delete camp
       </Button>
+
+      <FooterDeleteModal camp={camp} isOpen={isOpen} onClose={onClose} />
+
       <Spacer />
       {!camp.active && (
         <ButtonGroup>
