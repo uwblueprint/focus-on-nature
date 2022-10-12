@@ -7,16 +7,18 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { LinkIcon } from "@chakra-ui/icons";
-import React from "react";
+import React, { useState } from "react";
 
 const CampRegistrationLink = ({
-  p,
-  isDisabled,
+  linkUrl,
+  disabled,
 }: {
-  p: string;
-  isDisabled: boolean;
+  linkUrl: string;
+  disabled: boolean;
 }): JSX.Element => {
   const toast = useToast();
+
+  const [isDisabled, setIsDisabled] = useState(disabled);
 
   return (
     <HStack justifyContent="left" marginBottom="8px">
@@ -24,7 +26,7 @@ const CampRegistrationLink = ({
         <InputLeftElement>
           <LinkIcon color="gray.300" />
         </InputLeftElement>
-        <Input disabled placeholder={p} borderRadius="0" />
+        <Input disabled placeholder={linkUrl} borderRadius="0" />
       </InputGroup>
       <Button
         colorScheme="green"
@@ -32,11 +34,14 @@ const CampRegistrationLink = ({
         size="sm"
         disabled={isDisabled}
         onClick={() => {
-          navigator.clipboard.writeText(p);
+          setIsDisabled(true);
+          setTimeout(() => setIsDisabled(false), 3000);
+          navigator.clipboard.writeText(linkUrl);
           toast({
             title: "Copied to clipboard.",
             status: "success",
             duration: 1500,
+            variant: "subtle",
             isClosable: true,
           });
         }}

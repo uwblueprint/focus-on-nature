@@ -112,10 +112,10 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           </HStack>
         </HStack>
         <CampRegistrationLink
-          p={
+          linkUrl={
             camp.active ? `https://camps.focusonnature.ca/camp/${camp.id}` : ``
           }
-          isDisabled={!camp.active}
+          disabled={!camp.active}
         />
         <Grid
           templateColumns="repeat(5, 1fr)"
