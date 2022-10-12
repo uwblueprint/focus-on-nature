@@ -89,8 +89,8 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
     setCamp({ ...camp, campCounsellors });
   };
 
-  const handleVolunteerChange = (newVolunteers: string) => {
-    setCamp({ ...camp, volunteers: newVolunteers });
+  const handleVolunteerChange = (e: any) => {
+    setCamp({ ...camp, volunteers: e.target.value });
   };
 
   return (
@@ -150,7 +150,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           </GridItem>
           <GridItem colSpan={4}>
             <Input
-              onChange={(e) => handleVolunteerChange(e.target.value)}
+              onChange={handleVolunteerChange}
               placeholder="Add volunteer(s)"
               _placeholder={{ color: "text.grey.100" }}
               size="sm"
