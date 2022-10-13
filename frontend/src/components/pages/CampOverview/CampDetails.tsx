@@ -27,6 +27,7 @@ import {
   CampStatusColor,
 } from "../../../utils/CampUtils";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import CampRegistrationLink from "./CampRegistrationLink";
 
 type CampDetailsProps = {
   camp: CampResponse;
@@ -110,6 +111,12 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
             </Tag>
           </HStack>
         </HStack>
+        <CampRegistrationLink
+          linkUrl={
+            camp.active ? `https://camps.focusonnature.ca/camp/${camp.id}` : ``
+          }
+          disabled={!camp.active}
+        />
         <Grid
           templateColumns="repeat(5, 1fr)"
           gap={2}
