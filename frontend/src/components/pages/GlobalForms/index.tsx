@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import React from "react";
-import { WaiverClause } from "../../../types/WaiverTypes";
+import { WaiverClause } from "../../../types/AdminTypes";
 import Footer from "./Footer";
 import WaiverPage from "./WaiverPage";
 
@@ -13,6 +13,7 @@ const GlobalFormsPage = (): React.ReactElement => {
 
   const addClause = (newClause: WaiverClause) => {
     dummyWaiverClauses.push(newClause);
+    // make api call here
   };
 
   console.log(dummyWaiverClauses);

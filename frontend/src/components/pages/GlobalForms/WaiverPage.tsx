@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Text, Box } from "@chakra-ui/react";
-import { WaiverClause } from "../../../types/WaiverTypes";
+import { WaiverClause } from "../../../types/AdminTypes";
 
 const WaiverPage = ({
   clauses,

@@ -14,7 +14,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React from "react";
-import { WaiverClause } from "../../../types/WaiverTypes";
+import { WaiverClause } from "../../../types/AdminTypes";
 
 type WaiverAddSectionModalProps = {
   isOpen: boolean;
