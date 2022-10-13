@@ -7,7 +7,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { LinkIcon } from "@chakra-ui/icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const CampRegistrationLink = ({
   linkUrl,
@@ -18,7 +18,11 @@ const CampRegistrationLink = ({
 }): JSX.Element => {
   const toast = useToast();
 
-  const [isDisabled, setIsDisabled] = useState(disabled);
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  useEffect(() => {
+    setIsDisabled(disabled);
+  }, [disabled]);
 
   return (
     <HStack justifyContent="left" marginBottom="8px">
