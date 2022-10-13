@@ -44,9 +44,8 @@ const CampRegistrationLink = ({
           toast({
             title: "Copied to clipboard.",
             status: "success",
-            duration: 1500,
+            duration: 3000,
             variant: "subtle",
-            isClosable: true,
           });
         }}
       >
