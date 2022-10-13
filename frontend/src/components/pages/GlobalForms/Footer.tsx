@@ -1,32 +1,51 @@
-import { Button, Flex, Spacer } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Spacer,
+  useDisclosure,
+} from "@chakra-ui/react";
 import React from "react";
+import { WaiverClause } from "../../../types/WaiverTypes";
+import WaiverAddSectionModal from "./WaiverAddSectionModal";
 
 type FooterProps = {
   isWaiverFooter: boolean;
+  addClause: (newClause: WaiverClause) => void;
 };
 
-const Footer = ({ isWaiverFooter }: FooterProps): JSX.Element => {
+const Footer = ({ isWaiverFooter, addClause }: FooterProps): JSX.Element => {
   const buttonText = isWaiverFooter ? "+ Add form section" : "+ Add question";
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Flex
-      pos="fixed"
-      bottom="0"
-      width="full"
-      bg="background.grey.100"
-      padding="16px 40px 16px 40px"
-      boxShadow="xs"
-    >
-      <Spacer />
-      <Button
-        size="sm"
-        bgColor="primary.green.100"
-        color="background.white.100"
-        p="16px"
+    <Container pos="fixed">
+      <WaiverAddSectionModal
+        isOpen={isOpen && isWaiverFooter}
+        onClose={onClose}
+        onSubmit={addClause}
+      />
+      <Flex
+        pos="fixed"
+        bottom="0"
+        width="full"
+        bg="background.grey.100"
+        padding="16px 40px 16px 40px"
+        boxShadow="xs"
       >
-        {buttonText}
-      </Button>
-    </Flex>
+        <Spacer />
+        <Button
+          size="sm"
+          bgColor="primary.green.100"
+          color="background.white.100"
+          p="16px"
+          onClick={() => onOpen()}
+        >
+          {buttonText}
+        </Button>
+      </Flex>
+    </Container>
   );
 };
 
