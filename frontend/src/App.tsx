@@ -8,7 +8,7 @@ import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import NotFound from "./components/pages/NotFound";
 import CampsPage from "./components/pages/CampsPage";
-import GlobalFormsPage from "./components/pages/GlobalForms";
+import GlobalFormsPage from "./components/pages/GlobalForms/GlobalFormsPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";

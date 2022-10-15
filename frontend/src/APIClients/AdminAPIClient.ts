@@ -17,8 +17,21 @@ const updateWaiver = async (
   } catch (error) {
     return error as UpdateWaiverRequest;
   }
+}
+
+
+const getWaiver = async () => {
+  try {
+    const { data } = await baseAPIClient.get(`/admin/waiver`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return data;
+  } catch (error) {
+    return {};
+  }
 };
 
 export default {
   updateWaiver,
+  getWaiver,
 };
