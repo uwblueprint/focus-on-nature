@@ -42,6 +42,11 @@ const CampOverviewPage = (): JSX.Element => {
   });
   const numSessions = camp.campSessions?.length;
 
+  const [refetch, setRefetch] = useState<boolean>(true);
+  const handleRefetch = () => {
+    setRefetch(!refetch);
+  };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [refetch, setRefetch] = useState<boolean>(true);
