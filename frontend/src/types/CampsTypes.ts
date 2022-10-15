@@ -73,3 +73,5 @@ export type FormQuestion = {
   options?: string[];
   category: QuestionCategory;
 };
+
+export type CreateFormQuestion = Omit< FormQuestion, "id">;

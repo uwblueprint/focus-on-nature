@@ -10,3 +10,11 @@ export type Waiver = {
 export type UpdateWaiverRequest = {
   clauses: WaiverClause[];
 };
+import { FormQuestion } from "./CampsTypes";
+
+
+export type FormTemplate = {
+    formQuestions: [FormQuestion];
+}
+
+// export type 

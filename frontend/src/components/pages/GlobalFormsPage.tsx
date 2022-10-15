@@ -3,6 +3,7 @@ import React from "react";
 import { Button, useDisclosure } from "@chakra-ui/react";
 import { AddIcon} from "@chakra-ui/icons";
 import AddQuestionModal from "../common/formQuestions/AddQuestionModal";
+import { CreateFormQuestion } from "../../types/CampsTypes";
 
 const GlobalFormsPage = (): React.ReactElement => {
 
@@ -12,6 +13,9 @@ const GlobalFormsPage = (): React.ReactElement => {
     onClose : onAddQuestionClose 
   } = useDisclosure();
 
+  const saveFormQuestion = (formQuestion : CreateFormQuestion) => {
+    console.log(formQuestion);
+  }
 
   return (
     <div>
@@ -27,7 +31,7 @@ const GlobalFormsPage = (): React.ReactElement => {
       <AddQuestionModal 
         isOpen={isAddQuestionOpen}
         onClose={onAddQuestionClose}
-        onSave={() => console.log("save question")}
+        onSave={saveFormQuestion}
       />
     </div>
   );
