@@ -71,15 +71,13 @@ const ConfirmModal = ({
       <ModalFooter bg="camperModals.footer" borderRadius="8px">
         <Button
           variant="ghost"
-          onClick={() => {
-            deselectAndClose();
-          }}
+          onClick={deselectAndClose}
           mr={3}
         >
           Cancel
         </Button>
         <Button
-          colorScheme="red"
+          colorScheme='secondary.critical'
           onClick={() => {
             submitDeletion();
             deselectAndClose();
