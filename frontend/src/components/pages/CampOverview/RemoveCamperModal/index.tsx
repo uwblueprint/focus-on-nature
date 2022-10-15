@@ -61,7 +61,7 @@ const RemoveCamperModal = ({
         toast({
           description: `Unable to retrieve camper information.`,
           status: "error",
-          duration: 5000,
+          duration: 3000,
           variant: "subtle",
         });
       }
@@ -106,14 +106,14 @@ const RemoveCamperModal = ({
       toast({
         description: deletionMessage(),
         status: "success",
-        duration: 5000,
+        duration: 3000,
         variant: "subtle",
       });
     } else {
       toast({
         description: `Unable to remove the selected campers.`,
         status: "error",
-        duration: 5000,
+        duration: 3000,
         variant: "subtle",
       });
     }

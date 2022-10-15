@@ -102,7 +102,7 @@ const SelectModal = ({
         <Button variant="ghost" onClick={deselectAndClose} mr={3}>
           Cancel
         </Button>
-        <Button colorScheme="green" onClick={setStatusAsConfirm}>
+        <Button colorScheme="primary.green" onClick={setStatusAsConfirm}>
           Next
         </Button>
       </ModalFooter>
