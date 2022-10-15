@@ -6,6 +6,7 @@ import Button from "./components/Button";
 // import Button from "./components/Button";
 // import Container from "./components/Container";
 // import Input from "./components/Input";
+import layerStyles from "./layerStyles";
 import textStyles from "./textStyles";
 
 const customTheme = extendTheme({
@@ -20,6 +21,7 @@ const customTheme = extendTheme({
     heading: `'Noto Sans', sans-serif`,
     body: `'Noto Sans', sans-serif`,
   },
+  layerStyles,
   textStyles,
   colors,
   //   breakpoints: {
