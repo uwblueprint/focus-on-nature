@@ -2,7 +2,7 @@ import { BEARER_TOKEN } from "../constants/AuthConstants";
 import { UpdateWaiverRequest } from "../types/AdminTypes";
 import baseAPIClient from "./BaseAPIClient";
 
-const onAddWaiverSectionClick = async (
+const updateWaiver = async (
   req: UpdateWaiverRequest,
 ): Promise<UpdateWaiverRequest> => {
   try {
@@ -16,5 +16,5 @@ const onAddWaiverSectionClick = async (
 };
 
 export default {
-  onAddWaiverSectionClick,
+  updateWaiver,
 };

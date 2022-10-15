@@ -11,10 +11,13 @@ import WaiverAddSectionModal from "./WaiverAddSectionModal";
 
 type FooterProps = {
   isWaiverFooter: boolean;
-  updateWaiver: (newClause: WaiverClause) => void;
+  onAddWaiverSectionClick: (newClause: WaiverClause) => void;
 };
 
-const Footer = ({ isWaiverFooter, updateWaiver }: FooterProps): JSX.Element => {
+const Footer = ({
+  isWaiverFooter,
+  onAddWaiverSectionClick,
+}: FooterProps): JSX.Element => {
   const buttonText = isWaiverFooter ? "+ Add form section" : "+ Add question";
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -24,7 +27,7 @@ const Footer = ({ isWaiverFooter, updateWaiver }: FooterProps): JSX.Element => {
       <WaiverAddSectionModal
         isOpen={isOpen && isWaiverFooter}
         onClose={onClose}
-        onSubmit={updateWaiver}
+        onAddWaiverSectionClick={onAddWaiverSectionClick}
       />
       <Flex
         pos="fixed"

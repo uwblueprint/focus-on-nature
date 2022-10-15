@@ -15,9 +15,9 @@ const GlobalFormsPage = (): React.ReactElement => {
 
   const toast = useToast();
 
-  const updateWaiver = async (newClause: WaiverClause) => {
+  const onAddWaiverSectionClick = async (newClause: WaiverClause) => {
     waiver.clauses.push(newClause);
-    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.onAddWaiverSectionClick(
+    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(
       waiver,
     );
     if (updatedWaiver.clauses) {
@@ -42,7 +42,10 @@ const GlobalFormsPage = (): React.ReactElement => {
   return (
     <Box>
       <Text>Global Forms Page</Text>
-      <Footer isWaiverFooter updateWaiver={updateWaiver} />
+      <Footer
+        isWaiverFooter
+        onAddWaiverSectionClick={onAddWaiverSectionClick}
+      />
     </Box>
   );
 };

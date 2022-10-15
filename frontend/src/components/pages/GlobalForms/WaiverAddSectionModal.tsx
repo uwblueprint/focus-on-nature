@@ -19,13 +19,13 @@ import { WaiverClause } from "../../../types/AdminTypes";
 type WaiverAddSectionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (newClause: WaiverClause) => void;
+  onAddWaiverSectionClick: (newClause: WaiverClause) => void;
 };
 
 const WaiverAddSectionModal = ({
   isOpen,
   onClose,
-  onSubmit,
+  onAddWaiverSectionClick,
 }: WaiverAddSectionModalProps): JSX.Element => {
   const [newClauseText, setNewClauseText] = React.useState("");
   const [clauseRequired, setClauseRequired] = React.useState(false);
@@ -44,7 +44,7 @@ const WaiverAddSectionModal = ({
       text: newClauseText,
       required: clauseRequired,
     };
-    onSubmit(newClause);
+    onAddWaiverSectionClick(newClause);
     setNewClauseText("");
     setClauseRequired(false);
     onClose();
