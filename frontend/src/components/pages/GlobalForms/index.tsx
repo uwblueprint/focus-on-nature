@@ -1,9 +1,8 @@
-import { Box, useToast } from "@chakra-ui/react";
+import { Box, Text, useToast } from "@chakra-ui/react";
 import React from "react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { UpdateWaiverRequest, WaiverClause } from "../../../types/AdminTypes";
 import Footer from "./Footer";
-import WaiverPage from "./WaiverPage";
 
 const GlobalFormsPage = (): React.ReactElement => {
   const waiver: UpdateWaiverRequest = {
@@ -42,7 +41,7 @@ const GlobalFormsPage = (): React.ReactElement => {
 
   return (
     <Box>
-      <WaiverPage clauses={waiver.clauses} />
+      <Text>Global Forms Page</Text>
       <Footer isWaiverFooter updateWaiver={updateWaiver} />
     </Box>
   );
