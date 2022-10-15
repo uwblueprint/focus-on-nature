@@ -25,3 +25,4 @@ import WaiverSectionCard from "./WaiverSectionCard";
   };
   
   export default WaiversTab;
+  

@@ -31,12 +31,6 @@ const textStyles = {
     fontSize: "24px",
     lineHeight: "150%",
   },
-  displaySmallSemiBoldUnderline: {
-    fontWeight: FontWeights.SEMIBOLD,
-    fontSize: "24px",
-    lineHeight: "150%",
-    textDecoration: "underline",
-  },
   displaySmallBold: {
     fontWeight: FontWeights.BOLD,
     fontSize: "18px",
