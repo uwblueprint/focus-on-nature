@@ -72,7 +72,7 @@ const RemoveCamperModal = ({
       setRetrievedCampers([]);
       setCampersToBeDeleted(new Set<Camper>());
     };
-  }, [camper]);
+  }, [camper, toast]);
 
   const deselectAndClose = () => {
     setCampersToBeDeleted(new Set<Camper>());
@@ -120,6 +120,15 @@ const RemoveCamperModal = ({
     handleRefetch();
   };
 
+  const showSelectModal = () =>
+    modalStatus === ModalStatus.SELECT &&
+    retrievedCampers.length > 0 &&
+    !loading;
+
+  const showConfirmModal = () =>
+    (modalStatus === ModalStatus.CONFIRM || retrievedCampers.length === 0) &&
+    !loading;
+
   return (
     <Modal
       isOpen={removeModalIsOpen}
@@ -130,27 +139,24 @@ const RemoveCamperModal = ({
     >
       <ModalOverlay />
 
-      {modalStatus === ModalStatus.SELECT &&
-        retrievedCampers.length > 0 &&
-        !loading && (
-          <SelectModal
-            camper={camper}
-            campersToBeDeleted={campersToBeDeleted}
-            setCampersToBeDeleted={setCampersToBeDeleted}
-            retrievedCampers={retrievedCampers}
-            deselectAndClose={deselectAndClose}
-            setStatusAsConfirm={() => setModalStatus(ModalStatus.CONFIRM)}
-          />
-        )}
+      {showSelectModal() && (
+        <SelectModal
+          camper={camper}
+          campersToBeDeleted={campersToBeDeleted}
+          setCampersToBeDeleted={setCampersToBeDeleted}
+          retrievedCampers={retrievedCampers}
+          deselectAndClose={deselectAndClose}
+          setStatusAsConfirm={() => setModalStatus(ModalStatus.CONFIRM)}
+        />
+      )}
 
-      {(modalStatus === ModalStatus.CONFIRM || retrievedCampers.length === 0) &&
-        !loading && (
-          <ConfirmModal
-            allCampersToBeDeleted={allCampersToBeDeleted}
-            deselectAndClose={deselectAndClose}
-            submitDeletion={submitDeletion}
-          />
-        )}
+      {showConfirmModal() && (
+        <ConfirmModal
+          allCampersToBeDeleted={allCampersToBeDeleted}
+          deselectAndClose={deselectAndClose}
+          submitDeletion={submitDeletion}
+        />
+      )}
     </Modal>
   );
 };

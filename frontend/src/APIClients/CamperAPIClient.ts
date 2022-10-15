@@ -68,7 +68,7 @@ const getCampersByChargeIdAndSessionId = async (
 ): Promise<Camper[]> => {
   try {
     const { data } = await baseAPIClient.get(
-      `/campers/campers-removal/${chargeId}/${sessionId}`,
+      `/campers/${chargeId}/${sessionId}`,
       {
         headers: { Authorization: BEARER_TOKEN },
       },

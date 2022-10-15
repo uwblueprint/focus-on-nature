@@ -35,25 +35,31 @@ const SelectModal = ({
     setCampersToBeDeleted(new Set(campersToBeDeleted.add(newCamper)));
   };
 
-  const removeCamperToBeDeleted = (newCamper: Camper) => {
-    setCampersToBeDeleted(
-      new Set(
-        (Array.from(campersToBeDeleted) as Camper[]).filter(
-          (currentCamper: Camper) => currentCamper.id !== newCamper.id,
-        ),
-      ),
+  const removeCamperToBeDeleted = (oldCamper: Camper) => {
+    const newSet = new Set(campersToBeDeleted);
+    newSet.delete(oldCamper);
+    setCampersToBeDeleted(newSet);
+  };
+
+  const addAllCampers = () => {
+    const newSet = new Set<Camper>();
+
+    retrievedCampers.forEach((currentCamper: Camper) =>
+      newSet.add(currentCamper),
     );
+
+    setCampersToBeDeleted(newSet);
   };
 
   return (
     <ModalContent maxWidth="400px" maxHeight="80%">
       <ModalHeader ml={8} mr={8} pt={8} pb={4} pl={0} pr={0}>
-        <Text textStyle="displaySmallerSemiBold">Remove group members?</Text>
+        <Text textStyle="buttonSemiBold">Remove group members?</Text>
       </ModalHeader>
 
       <ModalBody pl={8} pr={8} pb={0} pt={0}>
         <Box pt={4} pb={4}>
-          <Text textStyle="displaySmallRegular">
+          <Text textStyle="bodyRegular">
             {camper.firstName} {camper.lastName} registered with the following
             group members. Please select all the group members you would also
             like to remove from this session:{" "}
@@ -68,9 +74,7 @@ const SelectModal = ({
               }
               onChange={() =>
                 campersToBeDeleted.size < retrievedCampers.length
-                  ? retrievedCampers.forEach((currentCamper: Camper) =>
-                      addCamperToBeDeleted(currentCamper),
-                    )
+                  ? addAllCampers()
                   : setCampersToBeDeleted(new Set<Camper>())
               }
               mb={0}

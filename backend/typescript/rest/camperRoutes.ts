@@ -87,7 +87,8 @@ camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   }
 });
 
-camperRouter.get("/campers-removal/:chargeId/:sessionId", async (req, res) => {
+/* Get campers that have the specified charge ID and session ID */
+camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
   const { chargeId, sessionId } = req.params;
   try {
     const camper = await camperService.getCampersByChargeIdAndSessionId(
