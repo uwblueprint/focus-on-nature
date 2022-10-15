@@ -29,8 +29,11 @@ import { Filter, filterOptions } from "./CampersTableFilterTypes";
 
 import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
+
 import EditCamperModal from "../EditCamperModal";
 import MoveCamperModal from "../MoveCampersModal";
+import ViewCamperModal from "../ViewCamperModal";
+
 import { CampSession } from "../../../../types/CampsTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import Alert from "../../../common/Alert";
@@ -82,6 +85,12 @@ const CampersTable = ({
     isOpen: editModalIsOpen,
     onOpen: editModalOnOpen,
     onClose: editModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: viewModalIsOpen,
+    onOpen: viewModalOnOpen,
+    onClose: viewModalOnClose,
   } = useDisclosure();
 
   const [alertInfo, setAlertInfo] = React.useState<{
@@ -278,7 +287,8 @@ const CampersTable = ({
                         editModalOnOpen();
                       }}
                       viewDetailsFunc={() => {
-                        console.log("Viewing Camper");
+                        setSelectedCamper(camper);
+                        viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
                         setSelectedCamper(camper);
@@ -310,6 +320,14 @@ const CampersTable = ({
                 editCamperOnClose={editModalOnClose}
               />
             </>
+          )}
+
+          {selectedCamper && (
+            <ViewCamperModal
+              camper={selectedCamper}
+              viewCamperModalIsOpen={viewModalIsOpen}
+              viewCamperOnClose={viewModalOnClose}
+            />
           )}
         </>
       ) : (

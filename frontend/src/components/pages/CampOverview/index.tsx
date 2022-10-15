@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Text } from "@chakra-ui/react";
+import { Box, Container, Divider, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
@@ -6,10 +6,12 @@ import { CampResponse } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
+import Footer from "./Footer";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
 import "./CampOverview.css";
+import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
@@ -41,6 +43,8 @@ const CampOverviewPage = (): JSX.Element => {
   });
   const numSessions = camp.campSessions?.length;
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const getCamp = useCallback(async () => {
     const campResponse = await CampsAPIClient.getCampById(campId);
     if (campResponse) {
@@ -70,6 +74,8 @@ const CampOverviewPage = (): JSX.Element => {
       );
   };
 
+  const openManageSessionsModal = () => onOpen();
+
   return (
     <Container
       maxWidth="100vw"
@@ -93,17 +99,43 @@ const CampOverviewPage = (): JSX.Element => {
               currentCampSession={currentCampSession}
               onNextSession={onNextSession}
               onPrevSession={onPrevSession}
+              onClickManageSessions={openManageSessionsModal}
             />
             <CampersTables
               currentCampSession={currentCampSession}
               campSession={camp.campSessions[currentCampSession]}
               updateCamp={updateCampCallback}
             />
+            <ManageSessionsModal
+              campStartTime={camp.startTime}
+              campEndTime={camp.endTime}
+              sessions={camp.campSessions
+                .sort(
+                  (sessionA, sessionB) =>
+                    new Date(sessionA.dates[0]).getUTCMilliseconds() -
+                    new Date(sessionB.dates[0]).getUTCMilliseconds(),
+                )
+                .map((session) => {
+                  return {
+                    id: session.id,
+                    capacity: session.capacity,
+                    dates: session.dates,
+                    registeredCampers: session.campers.length,
+                  };
+                })}
+              onSaveChanges={(deletedSessions, updatedCapacities) => {
+                console.log(deletedSessions);
+                console.log(updatedCapacities);
+              }}
+              isOpen={isOpen}
+              onClose={onClose}
+            />
           </>
         ) : (
           <EmptyCampSessionState />
         )}
       </Box>
+      <Footer camp={camp} />
     </Container>
   );
 };

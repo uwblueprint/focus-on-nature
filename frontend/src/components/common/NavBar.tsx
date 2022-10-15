@@ -55,7 +55,7 @@ const NavBar = (): JSX.Element => {
     }
   };
 
-  const getIndex = () => {
+  const getIndex = (): number => {
     switch (window.location.pathname) {
       case Routes.CAMPS_PAGE:
         return 0;
@@ -98,7 +98,7 @@ const NavBar = (): JSX.Element => {
             <Tabs
               variant="unstyled"
               onChange={navigate}
-              defaultIndex={getIndex as any}
+              defaultIndex={getIndex()}
               width="650px"
               alignContent="center"
               isFitted

@@ -15,21 +15,21 @@ export type Camper = {
     phoneNumber: string;
     relationshipToCamper: string;
   }[];
-  // formResponses?: Map<string, string>;
-  // registrationDate: Date;
-  // hasPaid: boolean;
+  formResponses?: Map<string, string>;
+  registrationDate: Date;
+  hasPaid: boolean;
   chargeId: string;
-  // charges: {
-  //   camp: number;
-  //   earlyDropoff: number;
-  //   latePickup: number;
-  // };
-  // optionalClauses?: [
-  //   {
-  //     clause: string;
-  //     agreed: boolean;
-  //   },
-  // ];
+  charges: {
+    camp: number;
+    earlyDropoff: number;
+    latePickup: number;
+  };
+  optionalClauses?: [
+    {
+      clause: string;
+      agreed: boolean;
+    },
+  ];
 };
 
 export type UpdateWaitlistedStatusType = {

@@ -34,3 +34,26 @@ export const campStatus = (camp: CampResponse): CampStatus => {
   }
   return CampStatus.COMPLETED;
 };
+
+export const getFormattedDateString = (dates: Array<string>): string => {
+  const startDate = new Date(dates[0]).toLocaleDateString("en-us", {
+    month: "short",
+    day: "numeric",
+  });
+  const endDate = new Date(dates[dates.length - 1]).toLocaleDateString(
+    "en-us",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    },
+  );
+
+  return `${startDate} - ${endDate}`;
+};
+
+export const getFormattedSessionDatetime = (
+  dates: Array<string>,
+  startTime: string,
+  endTime: string,
+): string => `${getFormattedDateString(dates)} | ${startTime} - ${endTime}`;
