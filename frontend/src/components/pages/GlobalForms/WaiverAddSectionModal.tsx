@@ -51,7 +51,7 @@ const WaiverAddSectionModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered preserveScrollBarGap>
       <ModalOverlay />
       <ModalContent minWidth="30vw">
         <ModalHeader textStyle="heading">
