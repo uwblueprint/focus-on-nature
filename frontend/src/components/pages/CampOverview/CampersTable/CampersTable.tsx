@@ -17,6 +17,7 @@ import {
   Tag,
   Box,
   useDisclosure,
+  AlertProps,
 } from "@chakra-ui/react";
 import { DownloadIcon, SearchIcon } from "@chakra-ui/icons";
 
@@ -31,6 +32,8 @@ import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
 import MoveCamperModal from "../MoveCampersModal";
 import { CampSession } from "../../../../types/CampsTypes";
+import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
+import Alert from "../../../common/Alert";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -52,13 +55,17 @@ const ExportButton = (): JSX.Element => {
 };
 
 const CampersTable = ({
+  currentCampSession,
   campers,
   campSession,
   campSessionCapacity,
+  updateCamp,
 }: {
+  currentCampSession: number;
   campers: Camper[];
   campSession: CampSession;
   campSessionCapacity: number;
+  updateCamp: () => void;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -76,6 +83,11 @@ const CampersTable = ({
     onOpen: editModalOnOpen,
     onClose: editModalOnClose,
   } = useDisclosure();
+
+  const [alertInfo, setAlertInfo] = React.useState<{
+    status: AlertProps["status"];
+    description: string;
+  } | null>(null);
 
   const tableData = React.useMemo(() => {
     let filteredCampers;
@@ -127,6 +139,34 @@ const CampersTable = ({
 
     setCamperDetailsCount(tempDetailsCount);
   }, [campers]);
+
+  // Function to be called by the Move Campers Modal to update the campers
+  const moveCampers = (camperIds: string[], campSessionId: string) => {
+    CamperAPIClient.moveCampersToCampSession(camperIds, campSessionId).then(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (response: any) => {
+        if (Object.keys(response).includes("isAxiosError")) {
+          setAlertInfo({
+            status: "error",
+            description: response.response.data.error,
+          });
+        } else {
+          setAlertInfo({
+            status: "success",
+            description: `${(response as Camper[])
+              .slice(0, -1)
+              .map((camper) => `${camper.firstName} ${camper.lastName}`)
+              .join(", ")}${response.length !== 1 ? " and " : ""}${
+              response[response.length - 1].firstName
+            } ${response[response.length - 1].lastName} ${
+              response.length !== 1 ? "have" : "has"
+            } been moved to Session ${currentCampSession + 1}.`,
+          });
+          updateCamp();
+        }
+      },
+    );
+  };
 
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
@@ -260,6 +300,7 @@ const CampersTable = ({
               <MoveCamperModal
                 camper={selectedCamper}
                 campSession={campSession}
+                moveCampers={moveCampers}
                 moveCamperModalIsOpen={moveModalIsOpen}
                 moveCamperModalOnClose={moveModalOnClose}
               />
@@ -279,6 +320,9 @@ const CampersTable = ({
           <Text>Check back later!</Text>
         </VStack>
       )}
+      {alertInfo ? (
+        <Alert status={alertInfo.status} description={alertInfo.description} />
+      ) : null}
     </Box>
   );
 };

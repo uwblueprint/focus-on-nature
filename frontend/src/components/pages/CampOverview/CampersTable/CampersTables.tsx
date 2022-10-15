@@ -7,21 +7,19 @@ import CampersTable from "./CampersTable";
 import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 type CampersTablesProps = {
+  currentCampSession: number;
   campSession: CampSession;
+  updateCamp: () => void;
 };
 
-const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
-  const [tabIndex, setTabIndex] = React.useState(0);
-
+const CampersTables = ({
+  currentCampSession,
+  campSession,
+  updateCamp,
+}: CampersTablesProps): JSX.Element => {
   return (
     <Box>
-      <Tabs
-        onChange={(index) => setTabIndex(index)}
-        variant="line"
-        colorScheme="green"
-        outline="0"
-        marginBottom="30px"
-      >
+      <Tabs variant="line" colorScheme="green" outline="0" marginBottom="30px">
         <TabList>
           <Tab
             fontSize={textStyles.bodyRegular.fontSize}
@@ -37,9 +35,11 @@ const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
         <TabPanels width="100%" marginTop="16px">
           <TabPanel padding="0">
             <CampersTable
+              currentCampSession={currentCampSession}
               campers={campSession.campers}
               campSession={campSession}
               campSessionCapacity={campSession.capacity}
+              updateCamp={updateCamp}
             />
           </TabPanel>
           <TabPanel padding="0">

@@ -1,5 +1,5 @@
 import { Box, Container, Divider, Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { CampResponse } from "../../../types/CampsTypes";
@@ -41,15 +41,20 @@ const CampOverviewPage = (): JSX.Element => {
   });
   const numSessions = camp.campSessions?.length;
 
-  useEffect(() => {
-    const getCamp = async () => {
-      const campResponse = await CampsAPIClient.getCampById(campId);
-      if (campResponse) {
-        setCamp(campResponse);
-      }
-    };
-    getCamp();
+  const getCamp = useCallback(async () => {
+    const campResponse = await CampsAPIClient.getCampById(campId);
+    if (campResponse) {
+      setCamp(campResponse);
+    }
   }, [campId]);
+
+  useEffect(() => {
+    getCamp();
+  }, [getCamp]);
+
+  const updateCampCallback = useCallback(() => {
+    getCamp();
+  }, [getCamp]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -90,7 +95,9 @@ const CampOverviewPage = (): JSX.Element => {
               onPrevSession={onPrevSession}
             />
             <CampersTables
+              currentCampSession={currentCampSession}
               campSession={camp.campSessions[currentCampSession]}
+              updateCamp={updateCampCallback}
             />
           </>
         ) : (

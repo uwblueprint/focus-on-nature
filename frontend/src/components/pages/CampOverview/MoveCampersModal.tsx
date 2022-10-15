@@ -21,6 +21,7 @@ import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 type MoveCamperModalProps = {
   camper: Camper;
   campSession: CampSession;
+  moveCampers: (camperIds: string[], campSessionId: string) => void;
   moveCamperModalIsOpen: boolean;
   moveCamperModalOnClose: () => void;
 };
@@ -28,6 +29,7 @@ type MoveCamperModalProps = {
 const MoveCamperModal = ({
   camper,
   campSession,
+  moveCampers,
   moveCamperModalIsOpen,
   moveCamperModalOnClose,
 }: MoveCamperModalProps): JSX.Element => {
@@ -35,6 +37,9 @@ const MoveCamperModal = ({
   const [campers, setCampers] = React.useState<Camper[]>([]);
   const [camperIsSelected, setCamperIsSelected] = React.useState<boolean[]>([]);
   const [campSessions, setCampSessions] = React.useState<CampSession[]>([]);
+  const [selectedCampSession, setSelectedCampSession] = React.useState<string>(
+    campSession.id,
+  );
 
   const reset = () => {
     setModalPage(0);
@@ -66,12 +71,10 @@ const MoveCamperModal = ({
       );
 
       CampsAPIClient.getCampById(campSession.camp).then((camp) => {
-        console.log(campSession.camp);
-        console.log(camp);
         setCampSessions(camp.campSessions);
       });
     }
-  }, [camper, moveCamperModalIsOpen]);
+  }, [camper, moveCamperModalIsOpen, campSession.camp]);
 
   const displayModalContent = () => {
     if (modalPage === 1) {
@@ -141,6 +144,12 @@ const MoveCamperModal = ({
               onClick={() => {
                 setModalPage(2);
               }}
+              disabled={
+                camperIsSelected.reduce<number>(
+                  (prev, cur) => (cur ? prev + 1 : prev),
+                  0,
+                ) === 0
+              }
             >
               Next
             </Button>
@@ -151,19 +160,29 @@ const MoveCamperModal = ({
     if (modalPage === 2) {
       return (
         <>
-          <ModalHeader>Move {campers.length} Camper(s)</ModalHeader>
+          <ModalHeader>
+            Move{" "}
+            {camperIsSelected.reduce<number>(
+              (prev, cur) => (cur ? prev + 1 : prev),
+              0,
+            )}{" "}
+            Camper(s)
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <p>
+            <p style={{ marginBottom: "20px" }}>
               You can move the camper(s) to another session in this camp by
               selecting it below:
             </p>
             {campSessions.length > 0 ? (
-              <Select>
+              <Select
+                value={selectedCampSession}
+                onChange={(e) => setSelectedCampSession(e.target.value)}
+              >
                 {campSessions.map((campSessionsItem, campSessionsIdx) => (
                   <option key={campSessionsIdx} value={campSessionsItem.id}>
                     <p>
-                      Session {campSessionsIdx}:{" "}
+                      Session {campSessionsIdx + 1}:{" "}
                       {new Date(campSessionsItem.dates[0]).toLocaleDateString(
                         "en-US",
                         {
@@ -179,7 +198,10 @@ const MoveCamperModal = ({
                         day: "numeric",
                         year: "numeric",
                       })}{" "}
-                      ({campSessionsItem.capacity} spots open)
+                      (
+                      {campSessionsItem.capacity -
+                        campSessionsItem.campers.length}{" "}
+                      spots open)
                     </p>
                   </option>
                 ))}
@@ -199,7 +221,14 @@ const MoveCamperModal = ({
                 marginLeft: "10px",
               }}
               onClick={() => {
-                // TODO: Move camper(s) to selected session
+                moveCampers(
+                  campers.reduce<string[]>(
+                    (prev, cur, idx) =>
+                      camperIsSelected[idx] ? [...prev, cur.id] : prev,
+                    [],
+                  ),
+                  selectedCampSession,
+                );
                 moveCamperModalOnClose();
               }}
             >

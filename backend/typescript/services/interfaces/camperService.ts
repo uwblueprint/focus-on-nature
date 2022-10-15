@@ -96,6 +96,17 @@ interface ICamperService {
    * @throws Error if waitlisted camper deletion fails
    */
   deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void>;
+
+  /**
+   * Move campers to camp session
+   * @param camperIds is the array of camper IDs to be moved
+   * @param campSessionId is the camp session ID to move the campers to
+   * @throws Error if camper move fails
+   */
+  moveCampersToCampSession(
+    camperIds: string[],
+    campSessionId: string,
+  ): Promise<Array<CamperDTO>>;
 }
 
 export default ICamperService;

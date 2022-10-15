@@ -360,3 +360,31 @@ export const deleteCamperDtoValidator = async (
   }
   return next();
 };
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
+export const moveCamperDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!Array.isArray(req.body.camperIds) || req.body.camperIds.length === 0) {
+    return res
+      .status(400)
+      .send("There must be at least one camperId specified.");
+  }
+
+  if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
+    return res
+      .status(400)
+      .send(getApiValidationError("camperIds", "string", true));
+  }
+
+  if (!validatePrimitive(req.body.campSessionId, "string")) {
+    return res
+      .status(400)
+      .send(getApiValidationError("campSessionId", "string"));
+  }
+
+  return next();
+};

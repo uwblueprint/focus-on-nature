@@ -6,6 +6,7 @@ import {
   createCampersDtoValidator,
   updateCamperDtoValidator,
   deleteCamperDtoValidator,
+  moveCamperDtoValidator,
 } from "../middlewares/validators/camperValidators";
 // eslint-disable-next-line import/no-named-as-default
 import CamperService from "../services/implementations/camperService";
@@ -214,3 +215,16 @@ camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
 });
 
 export default camperRouter;
+
+/* Move campers to a camp session */
+camperRouter.patch("/move", moveCamperDtoValidator, async (req, res) => {
+  try {
+    const campers = await camperService.moveCampersToCampSession(
+      req.body.camperIds,
+      req.body.campSessionId,
+    );
+    res.status(200).send(campers);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});

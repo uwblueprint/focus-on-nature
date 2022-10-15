@@ -59,9 +59,31 @@ const getCampersByChargeId = async (chargeId: string): Promise<Camper[]> => {
   }
 };
 
+const moveCampersToCampSession = async (
+  camperIds: string[],
+  campSessionId: string,
+): Promise<Camper[]> => {
+  try {
+    const { data } = await baseAPIClient.patch(
+      "/campers/move",
+      {
+        camperIds,
+        campSessionId,
+      },
+      {
+        headers: { Authorization: BEARER_TOKEN },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as Camper[];
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
   getCampersByChargeId,
+  moveCampersToCampSession,
 };
