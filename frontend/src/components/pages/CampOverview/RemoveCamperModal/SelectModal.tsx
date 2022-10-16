@@ -78,7 +78,7 @@ const SelectModal = ({
                   : setCampersToBeDeleted(new Set<Camper>())
               }
               mb={0}
-              colorScheme="green"
+              colorScheme="primary.green"
             >
               Select all
             </Checkbox>
@@ -93,7 +93,7 @@ const SelectModal = ({
                       ? removeCamperToBeDeleted(currentCamper)
                       : addCamperToBeDeleted(currentCamper)
                   }
-                  colorScheme="green"
+                  colorScheme="primary.green"
                 >
                   {currentCamper.firstName} {currentCamper.lastName}
                 </Checkbox>
