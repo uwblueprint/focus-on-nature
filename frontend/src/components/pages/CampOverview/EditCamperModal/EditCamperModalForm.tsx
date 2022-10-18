@@ -7,6 +7,7 @@ import {
   Textarea,
   FormControl,
   FormLabel,
+  Text,
 } from "@chakra-ui/react";
 
 import {
@@ -31,7 +32,9 @@ const EditCamperModalForm = ({
         <VStack align="start" flexGrow="1">
           <FormControl isRequired isInvalid={!formStateVariables.firstName}>
             <FormLabel>
-              <b>First name</b>
+              <Text fontSize="md" as="b">
+                First name
+              </Text>
             </FormLabel>
             <Input
               onChange={(event) => {
@@ -44,7 +47,9 @@ const EditCamperModalForm = ({
         <VStack align="start" flexGrow="1">
           <FormControl isRequired isInvalid={!formStateVariables.lastName}>
             <FormLabel>
-              <b>Last name</b>
+              <Text fontSize="md" as="b">
+                Last name
+              </Text>
             </FormLabel>
             <Input
               onChange={(event) => {
@@ -57,7 +62,9 @@ const EditCamperModalForm = ({
         <VStack align="start" flexGrow="1">
           <FormControl isRequired isInvalid={!formStateVariables.age}>
             <FormLabel>
-              <b>Camper age</b>
+              <Text fontSize="md" as="b">
+                Camper age
+              </Text>
             </FormLabel>
             <Input
               onChange={(event) => {
@@ -68,11 +75,13 @@ const EditCamperModalForm = ({
           </FormControl>
         </VStack>
       </HStack>
-      <br />
-      <VStack align="start">
-        <FormControl>
+
+      <VStack align="start" py="30px">
+        <FormControl isRequired>
           <FormLabel>
-            <b>Allergies</b>
+            <Text fontSize="md" as="b">
+              Allergies
+            </Text>
           </FormLabel>
           <Textarea
             minH="120px"
@@ -84,9 +93,11 @@ const EditCamperModalForm = ({
             value={formStateVariables.allergies}
           />
         </FormControl>
-        <FormControl>
+        <FormControl isRequired>
           <FormLabel>
-            <b>Special Needs</b>
+            <Text fontSize="md" as="b">
+              Special Needs
+            </Text>
           </FormLabel>
           <Textarea
             resize="none"
@@ -99,7 +110,7 @@ const EditCamperModalForm = ({
           />
         </FormControl>
       </VStack>
-      <br />
+
       {formStateVariables.formResponses && (
         <EditCamperFormResponseSection
           formQuestions={formQuestions}

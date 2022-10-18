@@ -10,6 +10,7 @@ import {
   Checkbox,
   FormLabel,
   FormControl,
+  Text,
 } from "@chakra-ui/react";
 import { FormQuestion } from "../../../../types/CampsTypes";
 
@@ -38,9 +39,11 @@ const EditCamperFormResponseSection = ({
     return (
       <FormControl key={questionId} isRequired={isRequired}>
         <FormLabel>
-          <b>{question}</b>
+          <Text fontSize="md" as="b">
+            {question}
+          </Text>
         </FormLabel>
-        <RadioGroup defaultValue={answer}>
+        <RadioGroup defaultValue={answer} pb="18px">
           <Stack direction="column">
             {options.map((option) => (
               <Radio
@@ -55,7 +58,6 @@ const EditCamperFormResponseSection = ({
             ))}
           </Stack>
         </RadioGroup>
-        <br />
       </FormControl>
     );
   };
@@ -69,7 +71,9 @@ const EditCamperFormResponseSection = ({
     return (
       <FormControl key={questionId} minW="100%" isRequired={isRequired}>
         <FormLabel>
-          <b>{question}</b>
+          <Text fontSize="md" as="b">
+            {question}
+          </Text>
         </FormLabel>
         <Textarea
           resize="none"
@@ -79,8 +83,8 @@ const EditCamperFormResponseSection = ({
           onChange={(event) => {
             updateFormResponse(question, event.target.value);
           }}
+          pb="18px"
         />
-        <br />
       </FormControl>
     );
   };
@@ -95,9 +99,11 @@ const EditCamperFormResponseSection = ({
     const answeredOptions = answer?.split(",");
 
     return (
-      <FormControl key={questionId} isRequired={isRequired}>
+      <FormControl key={questionId} isRequired={isRequired} pb="18px">
         <FormLabel>
-          <b>{question}</b>
+          <Text fontSize="md" as="b">
+            {question}
+          </Text>
         </FormLabel>
         <CheckboxGroup
           defaultValue={answeredOptions}
@@ -114,7 +120,6 @@ const EditCamperFormResponseSection = ({
             ))}
           </Stack>
         </CheckboxGroup>
-        <br />
       </FormControl>
     );
   };

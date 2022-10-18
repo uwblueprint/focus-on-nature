@@ -18,9 +18,11 @@ const updateCampersById = async (
     if (camperData.formResponses) {
       body.formResponses = Object.assign(
         {},
-        ...Array.from(camperData.formResponses.entries()).map(([k, v]) => ({
-          [k]: v,
-        })),
+        ...Array.from(camperData.formResponses.entries()).map(
+          ([question, response]) => ({
+            [question]: response,
+          }),
+        ),
       );
     }
 

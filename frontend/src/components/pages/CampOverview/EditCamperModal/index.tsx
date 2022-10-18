@@ -84,6 +84,7 @@ const EditCamperModal = ({
     );
 
     if (isEditCamperSuccess) {
+      // TODO: introduce global state so we don't have to reload
       toast({
         description: `${camper.firstName} ${camper.lastName}'s information has been updated`,
         status: "success",
@@ -131,7 +132,11 @@ const EditCamperModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={editCamperOnClose} variant="editModalCancel">
+          <Button
+            onClick={editCamperOnClose}
+            variant="editModalCancel"
+            marginRight="12px"
+          >
             Cancel
           </Button>
           <Button
