@@ -21,7 +21,7 @@ const updateWaiver = async (
 }
 
 
-const getWaiver = async () => {
+const getWaiver = async () : Promise<WaiverResponse>  => {
   try {
     const { data } = await baseAPIClient.get(`/admin/waiver`, {
       headers: { Authorization: BEARER_TOKEN },
