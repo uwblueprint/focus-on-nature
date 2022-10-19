@@ -1,16 +1,18 @@
 import React from "react";
-import {Text, Container} from '@chakra-ui/react'
+import { Text, Container } from "@chakra-ui/react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { ClauseInfo } from "../../../types/AdminTypes";
+import { WaiverClause, WaiverResponse } from "../../../types/AdminTypes";
 import WaiversTab from "./WaiversTab";
 
 const GlobalFormsPage = (): React.ReactElement => {
-
-  const [waiver, setWaiver] = React.useState([]as ClauseInfo[]);
+  const [waiverClauses, setWaiverClauses] = React.useState(
+    [] as WaiverClause[],
+  );
   React.useEffect(() => {
-    const getWaiver = async () => {
-      const res = await AdminAPIClient.getWaiver();
-      if (res.clauses.length !== undefined) setWaiver(res.clauses);
+    const getWaiver = async (): Promise<WaiverResponse> => {
+      const waiverResponse = await AdminAPIClient.getWaiver();
+      if (waiverResponse) setWaiverClauses(waiverResponse.clauses);
+      return waiverResponse;
     };
 
     getWaiver();
@@ -18,15 +20,14 @@ const GlobalFormsPage = (): React.ReactElement => {
 
   return (
     <Container
-    maxWidth="100vw"
-    minHeight="100vh"
-    px="3em"
-    py="3em"
-    background="background.grey.200"
-  >
+      maxWidth="100vw"
+      minHeight="100vh"
+      px="3em"
+      py="3em"
+      background="background.grey.200"
+    >
       <Text textStyle="displayXLarge">Form Management</Text>
-      <WaiversTab clauses={waiver}/>
-
+      <WaiversTab clauses={waiverClauses} />
     </Container>
   );
 };

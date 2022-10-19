@@ -89,7 +89,7 @@ const colors = {
     },
     required: {
       100: "#FFDCDC",
-    }
+    },
   },
   border: {
     default: {

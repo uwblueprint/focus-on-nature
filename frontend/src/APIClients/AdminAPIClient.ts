@@ -1,6 +1,7 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
 import { UpdateWaiverRequest } from "../types/AdminTypes";
 import baseAPIClient from "./BaseAPIClient";
+import { Waiver } from "../types/AdminTypes";
 
 const updateWaiver = async (
   updateWaiverData: UpdateWaiverRequest,
@@ -27,7 +28,7 @@ const getWaiver = async () => {
     });
     return data;
   } catch (error) {
-    return {};
+    return error as Waiver;
   }
 };
 
