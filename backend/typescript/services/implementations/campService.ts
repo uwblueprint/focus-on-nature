@@ -67,29 +67,26 @@ class CampService implements ICampService {
       }
 
       if (year) {
-        // Filter out camps that have camp sessions in the desired year
+        // Filter camps that have at least one camp session in the desired year
         /* eslint-disable no-param-reassign */
         camps = camps.filter((camp) => {
-          // Go through every camp session in a camp. If it has the desired year, include it in the results.
+          // TODO: Remove the undefined and null checks once MongoDB data all have createdAt fields
+          if (camp.campSessions.length === 0) {
+            if (camp.createdAt !== undefined && camp.createdAt !== null)
+              return camp.createdAt.getFullYear() === year;
+          }
+
+          // Go through every camp session in a camp. If at least one camp session has the desired year, include the camp in the final filtered camps.
           /* eslint-disable no-param-reassign */
           camp.campSessions = (camp.campSessions as CampSession[]).filter(
             (campSession) => {
               return campSession.dates.every((campDate) => {
-                const startCampYearTime = new Date(year, 0, 1).getTime();
-                const endCampYearTime = new Date(year, 11, 31).getTime();
-                return (
-                  campDate.getTime() >= startCampYearTime &&
-                  campDate.getTime() <= endCampYearTime
-                );
+                return campDate.getFullYear() === year;
               });
             },
           );
 
-          // After filtering all the campSessions that have the wanted year, return all camps that have campSessions in the year or were created in the year
-          return (
-            camp.campSessions.length > 0 ||
-            new Date(camp.createdAt).getFullYear() === year
-          );
+          return camp.campSessions.length > 0;
         });
       }
 
