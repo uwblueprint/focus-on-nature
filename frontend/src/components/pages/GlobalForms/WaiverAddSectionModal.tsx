@@ -36,7 +36,7 @@ const WaiverAddSectionModal = ({
   };
 
   const handleCheckboxChange = () => {
-    setClauseRequired(!clauseRequired);
+    setClauseRequired((prevState) => !prevState);
   };
 
   const submitModal = () => {
@@ -66,6 +66,7 @@ const WaiverAddSectionModal = ({
               size="sm"
               colorScheme="green"
               minHeight="12vw"
+              resize="none"
               value={newClauseText}
               onChange={handleInputChange}
             />

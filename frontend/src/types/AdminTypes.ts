@@ -4,8 +4,5 @@ export type WaiverClause = {
 };
 
 export type UpdateWaiverRequest = {
-  clauses: {
-    text: string;
-    required: boolean;
-  }[];
+  clauses: WaiverClause[];
 };
