@@ -1,10 +1,30 @@
-import { Box, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import React from "react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { UpdateWaiverRequest, WaiverClause } from "../../../types/AdminTypes";
 import Footer from "./Footer";
+import RegistrationFormTemplate from "./RegistrationFormTemplate";
+import WaiverLiabilityPermissionForm from "./WaiverLiabilityPermissionForm";
 
 const GlobalFormsPage = (): React.ReactElement => {
+  enum TabOption {
+    registration = "REGISTRATION",
+    waiver = "WAIVER",
+  }
+  const [selectedTab, setSelectedTab] = React.useState<TabOption>(
+    TabOption.registration,
+  );
+
   const waiver: UpdateWaiverRequest = {
     clauses: [
       { text: "thing 1", required: true },
@@ -40,13 +60,46 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   return (
-    <Box>
-      <Text>Global Forms Page</Text>
+    <Container
+      maxWidth="100vw"
+      minHeight="100vh"
+      background="background.grey.200"
+      paddingTop="5px"
+    >
+      <Box marginTop="1rem" marginX="40px">
+        <Text mb="1em" textStyle="displayXLarge">
+          Form Management
+        </Text>
+        <Tabs variant="line" colorScheme="green">
+          <TabList>
+            <Tab
+              fontWeight="bold"
+              onClick={() => setSelectedTab(TabOption.registration)}
+            >
+              Registration Form Template
+            </Tab>
+            <Tab
+              fontWeight="bold"
+              onClick={() => setSelectedTab(TabOption.waiver)}
+            >
+              Waiver Liability and Permission Form
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <RegistrationFormTemplate />
+            </TabPanel>
+            <TabPanel>
+              <WaiverLiabilityPermissionForm />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
       <Footer
-        isWaiverFooter
+        isWaiverFooter={selectedTab === TabOption.waiver}
         onAddWaiverSectionClick={onAddWaiverSectionClick}
       />
-    </Box>
+    </Container>
   );
 };
 

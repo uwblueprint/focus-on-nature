@@ -33,6 +33,7 @@ const Footer = ({
         pos="fixed"
         bottom="0"
         width="full"
+        marginLeft="-16px"
         bg="background.grey.100"
         padding="16px 40px 16px 40px"
         boxShadow="xs"
