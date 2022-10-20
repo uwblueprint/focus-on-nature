@@ -8,7 +8,11 @@ import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import NotFound from "./components/pages/NotFound";
 import CampsPage from "./components/pages/CampsPage";
+<<<<<<< HEAD
 import FormManagement from "./components/pages/FormManagement";
+=======
+import GlobalFormsPage from "./components/pages/GlobalForms";
+>>>>>>> 7912239 (created footer component)
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
