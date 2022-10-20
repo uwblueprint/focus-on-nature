@@ -6,12 +6,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import CreatePage from "./components/pages/CreatePage";
-import DisplayPage from "./components/pages/DisplayPage";
 import NotFound from "./components/pages/NotFound";
-import UpdatePage from "./components/pages/UpdatePage";
 import CampsPage from "./components/pages/CampsPage";
-import GlobalFormsPage from "./components/pages/GlobalFormsPage";
+import FormManagement from "./components/pages/FormManagement";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -22,7 +19,6 @@ import SampleContext, {
 import customTheme from "./theme/index";
 import sampleContextReducer from "./reducers/SampleContextReducer";
 import SampleContextDispatcherContext from "./contexts/SampleContextDispatcherContext";
-import EditTeamInfoPage from "./components/pages/EditTeamPage";
 import HooksDemo from "./components/pages/HooksDemo";
 
 import { AuthenticatedUser } from "./types/AuthTypes";
@@ -71,27 +67,7 @@ const App = (): React.ReactElement => {
                 <PrivateRoute
                   exact
                   path={Routes.GLOBAL_FORMS_PAGE}
-                  component={GlobalFormsPage}
-                />
-                <PrivateRoute
-                  exact
-                  path={Routes.CREATE_ENTITY_PAGE}
-                  component={CreatePage}
-                />
-                <PrivateRoute
-                  exact
-                  path={Routes.UPDATE_ENTITY_PAGE}
-                  component={UpdatePage}
-                />
-                <PrivateRoute
-                  exact
-                  path={Routes.DISPLAY_ENTITY_PAGE}
-                  component={DisplayPage}
-                />
-                <PrivateRoute
-                  exact
-                  path={Routes.EDIT_TEAM_PAGE}
-                  component={EditTeamInfoPage}
+                  component={FormManagement}
                 />
                 <PrivateRoute
                   exact

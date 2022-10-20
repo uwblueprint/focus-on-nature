@@ -1,8 +1,8 @@
-import { Container } from "@chakra-ui/react";
 import React from "react";
+import { Container } from "@chakra-ui/react";
 import { UserStatusLabelProps } from "../../../types/AccessManagementTypes";
 
-const UserStatusLabel = (props: UserStatusLabelProps) => {
+const UserStatusLabel = (props: UserStatusLabelProps): JSX.Element => {
   const { active, value } = props;
   return (
     <Container

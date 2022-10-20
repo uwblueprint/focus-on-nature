@@ -11,17 +11,9 @@ type CampersTablesProps = {
 };
 
 const CampersTables = ({ campSession }: CampersTablesProps): JSX.Element => {
-  const [tabIndex, setTabIndex] = React.useState(0);
-
   return (
     <Box>
-      <Tabs
-        onChange={(index) => setTabIndex(index)}
-        variant="line"
-        colorScheme="green"
-        outline="0"
-        marginBottom="30px"
-      >
+      <Tabs variant="line" colorScheme="green" outline="0" marginBottom="30px">
         <TabList>
           <Tab
             fontSize={textStyles.bodyRegular.fontSize}

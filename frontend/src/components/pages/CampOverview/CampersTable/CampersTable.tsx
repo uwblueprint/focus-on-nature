@@ -29,6 +29,7 @@ import { Filter, filterOptions } from "./CampersTableFilterTypes";
 import textStyles from "../../../../theme/textStyles";
 import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
+import ViewCamperModal from "../ViewCamperModal/index";
 
 const ExportButton = (): JSX.Element => {
   return (
@@ -65,6 +66,12 @@ const CampersTable = ({
     isOpen: editModalIsOpen,
     onOpen: editModalOnOpen,
     onClose: editModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: viewModalIsOpen,
+    onOpen: viewModalOnOpen,
+    onClose: viewModalOnClose,
   } = useDisclosure();
 
   const tableData = React.useMemo(() => {
@@ -228,7 +235,8 @@ const CampersTable = ({
                         editModalOnOpen();
                       }}
                       viewDetailsFunc={() => {
-                        console.log("Viewing Camper");
+                        setSelectedCamper(camper);
+                        viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
                         console.log("Moving Camper");
@@ -244,12 +252,19 @@ const CampersTable = ({
           </Table>
 
           {/* Add the registered camper action modals here  */}
-
           {selectedCamper && (
             <EditCamperModal
               camper={selectedCamper}
               editCamperModalIsOpen={editModalIsOpen}
               editCamperOnClose={editModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <ViewCamperModal
+              camper={selectedCamper}
+              viewCamperModalIsOpen={viewModalIsOpen}
+              viewCamperOnClose={viewModalOnClose}
             />
           )}
         </>

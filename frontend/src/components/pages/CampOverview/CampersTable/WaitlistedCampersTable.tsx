@@ -35,12 +35,13 @@ import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
 import RemoveCamperModal from "../../../common/RemoveCamperModal";
 
+type WaitlistedCampersTableProps = {
+  waitlistedCampers: WaitlistedCamper[];
+};
+
 const WaitlistedCampersTable = ({
   waitlistedCampers,
-}: {
-  waitlistedCampers: WaitlistedCamper[];
-}): JSX.Element => {
-  const [campers, setCampers] = React.useState(waitlistedCampers);
+}: WaitlistedCampersTableProps): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [
     camperToDelete,
@@ -48,7 +49,7 @@ const WaitlistedCampersTable = ({
   ] = React.useState<WaitlistedCamper | null>(null);
 
   const tableData = React.useMemo(() => {
-    const filteredCampers = campers;
+    const filteredCampers = waitlistedCampers;
 
     if (!search) return filteredCampers;
     return filteredCampers.filter((camper: WaitlistedCamper) =>
@@ -57,7 +58,7 @@ const WaitlistedCampersTable = ({
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, campers]);
+  }, [search, waitlistedCampers]);
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
