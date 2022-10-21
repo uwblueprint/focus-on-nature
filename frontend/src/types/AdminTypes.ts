@@ -5,7 +5,7 @@ export type WaiverClause = {
 
 export type Waiver = {
   clauses: WaiverClause[];
-}
+};
 
 export type UpdateWaiverRequest = {
   clauses: WaiverClause[];
