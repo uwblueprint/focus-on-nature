@@ -1,7 +1,6 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
-import { UpdateWaiverRequest } from "../types/AdminTypes";
 import baseAPIClient from "./BaseAPIClient";
-import { Waiver } from "../types/AdminTypes";
+import {UpdateWaiverRequest,  Waiver } from "../types/AdminTypes";
 
 const updateWaiver = async (
   updateWaiverData: UpdateWaiverRequest,
@@ -21,7 +20,7 @@ const updateWaiver = async (
 }
 
 
-const getWaiver = async () : Promise<WaiverResponse>  => {
+const getWaiver = async () : Promise<Waiver>  => {
   try {
     const { data } = await baseAPIClient.get(`/admin/waiver`, {
       headers: { Authorization: BEARER_TOKEN },

@@ -1,6 +1,6 @@
 import React from "react";
 
-const RegistrationFormTemplate = (): React.ReactElement => {
+const RegistrationFormTemplateTab = (): React.ReactElement => {
   return (
     <div>
       <h2>Registration Form Template Placeholder</h2>
@@ -8,4 +8,4 @@ const RegistrationFormTemplate = (): React.ReactElement => {
   );
 };
 
-export default RegistrationFormTemplate;
+export default RegistrationFormTemplateTab;

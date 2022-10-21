@@ -8,7 +8,6 @@ import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import NotFound from "./components/pages/NotFound";
 import CampsPage from "./components/pages/CampsPage";
-import GlobalFormsPage from "./components/pages/GlobalForms/GlobalFormsPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -26,6 +25,7 @@ import CampOverviewPage from "./components/pages/CampOverview";
 import AccessControlPage from "./components/pages/AccessControl";
 import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
+import GlobalFormsPage from "./components/pages/GlobalForms";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
