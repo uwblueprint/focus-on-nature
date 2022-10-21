@@ -11,38 +11,52 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { UpdateWaiverRequest, WaiverClause } from "../../../types/AdminTypes";
-import Footer from "./Footer";
-import RegistrationFormTemplate from "./RegistrationFormTemplate";
-import WaiverLiabilityPermissionForm from "./WaiverLiabilityPermissionForm";
+import { UpdateWaiverRequest, Waiver, WaiverClause } from "../../../types/AdminTypes";
+import Footer from "./Footer/Footer";
+import RegistrationFormTemplateTab from "./FormTemplateTab";
+import WaiverTab from "./WaiverTab";
 
 const GlobalFormsPage = (): React.ReactElement => {
   enum TabOption {
     registration = "REGISTRATION",
     waiver = "WAIVER",
   }
+
   const [selectedTab, setSelectedTab] = React.useState<TabOption>(
     TabOption.registration,
   );
 
-  const waiver: UpdateWaiverRequest = {
-    clauses: [
-      { text: "thing 1", required: true },
-      { text: "thing 2", required: true },
-      { text: "thing 3", required: true },
-    ],
-  };
+  const [waiverClauses, setWaiverClauses] = React.useState(
+    [] as WaiverClause[],
+  );
+
+  React.useEffect(() => {
+    const getWaiver = async (): Promise<Waiver> => {
+      const waiverResponse = await AdminAPIClient.getWaiver();
+      if (waiverResponse) setWaiverClauses(waiverResponse.clauses);
+      return waiverResponse;
+    };
+
+    getWaiver();
+  }, []);
 
   const toast = useToast();
 
   const onAddWaiverSectionClick = async (newClause: WaiverClause) => {
-    waiver.clauses.push(newClause);
-    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(
-      waiver,
-    );
+
+    const curClauses = waiverClauses;
+    curClauses.push(newClause);
+
+    const updateWaiverRequest : UpdateWaiverRequest = {clauses : curClauses};
+
+    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(updateWaiverRequest);
+
     if (updatedWaiver.clauses) {
+      setWaiverClauses(updatedWaiver.clauses);
+
       const newSectionCharCode: number = updatedWaiver.clauses.length + 64;
       const newSectionChar: string = String.fromCharCode(newSectionCharCode);
+      
       toast({
         description: `Section ${newSectionChar} has been added to the waiver form`,
         status: "success",
@@ -60,46 +74,48 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   return (
-    <Container
-      maxWidth="100vw"
-      minHeight="100vh"
-      background="background.grey.200"
-      paddingTop="5px"
-    >
-      <Box marginTop="1rem" marginX="40px">
-        <Text mb="1em" textStyle="displayXLarge">
-          Form Management
-        </Text>
-        <Tabs variant="line" colorScheme="green">
-          <TabList>
-            <Tab
-              fontWeight="bold"
-              onClick={() => setSelectedTab(TabOption.registration)}
-            >
-              Registration Form Template
-            </Tab>
-            <Tab
-              fontWeight="bold"
-              onClick={() => setSelectedTab(TabOption.waiver)}
-            >
-              Waiver Liability and Permission Form
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <RegistrationFormTemplate />
-            </TabPanel>
-            <TabPanel>
-              <WaiverLiabilityPermissionForm />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Box>
+    <>
+      <Container
+        maxWidth="100vw"
+        minHeight="100vh"
+        background="background.grey.200"
+        paddingTop="3em"
+      >
+        <Box marginTop="1rem" marginX="40px">
+          <Text mb="1em" textStyle="displayXLarge">
+            Form Management
+          </Text>
+          <Tabs variant="line" colorScheme="green">
+            <TabList>
+              <Tab
+                fontWeight="bold"
+                onClick={() => setSelectedTab(TabOption.registration)}
+              >
+                Registration Form Template
+              </Tab>
+              <Tab
+                fontWeight="bold"
+                onClick={() => setSelectedTab(TabOption.waiver)}
+              >
+                Waiver Liability and Permission Form
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <RegistrationFormTemplateTab />
+              </TabPanel>
+              <TabPanel>
+                <WaiverTab clauses={waiverClauses} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Box>
+      </Container>
       <Footer
         isWaiverFooter={selectedTab === TabOption.waiver}
         onAddWaiverSectionClick={onAddWaiverSectionClick}
       />
-    </Container>
+    </>
   );
 };
 

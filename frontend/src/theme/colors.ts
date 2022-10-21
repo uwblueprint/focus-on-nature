@@ -87,6 +87,9 @@ const colors = {
     primary: {
       100: "#D3E9D3",
     },
+    required: {
+      100: "#FFDCDC",
+    },
   },
   border: {
     default: {

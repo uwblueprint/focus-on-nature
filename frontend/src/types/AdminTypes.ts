@@ -3,6 +3,10 @@ export type WaiverClause = {
   required: boolean;
 };
 
+export type Waiver = {
+  clauses: WaiverClause[];
+}
+
 export type UpdateWaiverRequest = {
   clauses: WaiverClause[];
 };
