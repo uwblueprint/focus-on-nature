@@ -8,7 +8,7 @@ import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import NotFound from "./components/pages/NotFound";
 import CampsPage from "./components/pages/CampsPage";
-import FormManagement from "./components/pages/FormManagement";
+import GlobalFormsPage from "./components/pages/GlobalForms";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -67,7 +67,7 @@ const App = (): React.ReactElement => {
                 <PrivateRoute
                   exact
                   path={Routes.GLOBAL_FORMS_PAGE}
-                  component={FormManagement}
+                  component={GlobalFormsPage}
                 />
                 <PrivateRoute
                   exact
