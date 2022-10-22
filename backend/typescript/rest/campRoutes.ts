@@ -14,6 +14,7 @@ import {
   editFormQuestionValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
+  updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";
 
 const upload = multer({ dest: "uploads/" });
@@ -185,12 +186,11 @@ campRouter.patch(
 /* Update camp sessions */
 campRouter.patch(
   "/:campId/session/",
-  updateCampSessionDtoValidator,
+  updateCampSessionsDtoValidator,
   async (req, res) => {
     try {
       const campSession = await campService.updateCampSessionsByIds(
         req.params.campId,
-        req.body.campSessionIds,
         req.body.updatedCampSessions,
       );
       res.status(200).json(campSession);

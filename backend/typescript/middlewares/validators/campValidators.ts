@@ -387,37 +387,22 @@ export const updateCampSessionsDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.body.campers) {
-    return res
-      .status(400)
-      .send("cannot directly edit campers, field should be empty");
-  }
-  if (req.body.waitlist) {
-    return res
-      .status(400)
-      .send("cannot directly edit waitlist, field should be empty");
-  }
-
-  const { campSessionIds } = req.body;
-  if (!campSessionIds) {
-    return res.status(400).send("campSessionIds are required");
-  }
-
-  for (let index = 0; index < campSessionIds.length; index += 1) {
-    const id = campSessionIds[index];
-    if (!validatePrimitive(id, "string")) {
-      return res.status(400).send(getApiValidationError("id", "string"));
-    }
-  }
-
   const campSessions = req.body.updatedCampSessions;
 
   if (!campSessions) {
-    return res.status(400).send("campSessions are required");
+    return res.status(400).send("updatedCampSessions is a required field");
   }
 
   for (let index = 0; index < campSessions.length; index += 1) {
     const campSession = campSessions[index];
+    if (!campSession.id) {
+      return res
+        .status(400)
+        .send("id is a required field for all camp sessions");
+    }
+    if (!validatePrimitive(campSession.id, "string")) {
+      return res.status(400).send(getApiValidationError("id", "string"));
+    }
     if (campSession.dates && !validateArray(campSession.dates, "string")) {
       return res
         .status(400)
@@ -430,6 +415,16 @@ export const updateCampSessionsDtoValidator = async (
     }
     if (!validatePrimitive(campSession.capacity, "integer")) {
       return res.status(400).send(getApiValidationError("capacity", "integer"));
+    }
+    if (campSession.campers) {
+      return res
+        .status(400)
+        .send("cannot directly edit campers, remove field on request object");
+    }
+    if (campSession.waitlist) {
+      return res
+        .status(400)
+        .send("cannot directly edit waitlist, remove field on request object");
     }
   }
   return next();

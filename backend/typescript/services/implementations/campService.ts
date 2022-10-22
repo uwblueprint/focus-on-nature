@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
@@ -794,14 +794,16 @@ class CampService implements ICampService {
 
   async updateCampSessionsByIds(
     campId: string,
-    campSessionIds: Array<string>,
     updatedCampSessions: Array<UpdateCampSessionsDTO>,
   ): Promise<Array<CampSessionDTO>> {
+    let dbSession = null;
     try {
-      // Check how to handle rollback
+      const campSessionIds = updatedCampSessions.map((session) => session.id);
+      dbSession = await mongoose.startSession();
+      dbSession?.startTransaction();
+
       const oldCampSessions = await MgCampSession.find({
         _id: { $in: campSessionIds },
-        active: true,
         camp: { _id: campId },
       });
 
@@ -811,27 +813,93 @@ class CampService implements ICampService {
         );
       }
 
+      const camp = await MgCamp.findById(campId);
+      if (!camp) {
+        throw new Error(`Could not find camp with id=${campId}`);
+      }
+
       const newCampSessions = await Promise.all(
-        updatedCampSessions.map(async (session) =>
-          this.updateCampSessionById(campId, session.id, {
-            capacity: session.capacity,
-            dates: session.dates,
-          }),
-        ),
+        updatedCampSessions.map(async (session) => {
+          if (camp.active) {
+            const oldCampSession: CampSession | null = await MgCampSession.findById(
+              session.id,
+            );
+            if (oldCampSession) {
+              if (
+                session.capacity &&
+                oldCampSession.campers &&
+                session.capacity < oldCampSession.campers.length
+              ) {
+                throw new Error(
+                  `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${session.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+                );
+              }
+              if (
+                session.dates &&
+                oldCampSession.dates.length !== session.dates.length
+              ) {
+                throw new Error(
+                  `Cannot change the number of dates for an active camp. Requested dates length: ${session.dates.length}, current number of dates ${oldCampSession.dates.length}`,
+                );
+              }
+            } else {
+              throw new Error(
+                `Failed to update camp sessions with ids=${campSessionIds}. CampSession with campSessionId ${session.id} and campId ${campId} not found.`,
+              );
+            }
+          }
+
+          const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
+            session.id,
+            {
+              ...(session.capacity && { capacity: session.capacity }),
+              ...(session.dates && {
+                dates: session.dates.sort(
+                  (dateA, dateB) =>
+                    new Date(dateA).getTime() - new Date(dateB).getTime(),
+                ),
+              }),
+            },
+            { runValidators: true, new: true },
+          );
+
+          if (!newCampSession) {
+            throw new Error(
+              `Could not update campSession with campSessionId ${session.id}.`,
+            );
+          }
+
+          return {
+            id: session.id,
+            camp: newCampSession.camp.toString(),
+            campers: newCampSession.campers.map((camper) => camper.toString()),
+            capacity: newCampSession.capacity,
+            waitlist: newCampSession.waitlist.map((camper) =>
+              camper.toString(),
+            ),
+            dates: newCampSession.dates.map((date) => date.toString()),
+            campPriceId: newCampSession.campPriceId,
+          };
+        }),
       );
 
       if (newCampSessions.length !== campSessionIds.length) {
         throw new Error(
-          `Failed to update camp sessions. Could not find all camp sessions in ${campSessionIds} belonging to camp with id ${campId}`,
+          `Could not update all camp sessions in ${campSessionIds} belonging to camp with id ${campId}`,
         );
       }
 
+      await dbSession?.commitTransaction();
+
       return newCampSessions;
     } catch (error: unknown) {
+      dbSession?.abortTransaction();
       Logger.error(
-        `Failed to updated camp sessions. Reason = ${getErrorMessage(error)}`,
+        `Failed to update camp sessions. Reason = ${getErrorMessage(error)}`,
       );
       throw error;
+    } finally {
+      await dbSession?.endSession();
     }
   }
 

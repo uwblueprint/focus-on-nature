@@ -187,10 +187,9 @@ export type UpdateCampSessionDTO = Omit<
   "id" | "camp" | "campers" | "waitlist" | "campPriceId"
 >;
 
-export type UpdateCampSessionsDTO = Omit<
-  CampSessionDTO,
-  "camp" | "campers" | "waitlist" | "campPriceId"
->;
+export type UpdateCampSessionsDTO = Partial<
+  Omit<CampSessionDTO, "camp" | "campers" | "waitlist" | "campPriceId">
+> & { id: string };
 
 export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];
 
