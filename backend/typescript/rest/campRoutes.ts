@@ -10,6 +10,7 @@ import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
+  deleteCampSessionsDtoValidator,
   editFormQuestionValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
@@ -195,17 +196,21 @@ campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
 });
 
 /* Delete camp sessions */
-campRouter.delete("/:campId/session/", async (req, res) => {
-  try {
-    await campService.deleteCampSessionsByIds(
-      req.params.campId,
-      req.body.campSessionIds,
-    );
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+campRouter.delete(
+  "/:campId/session/",
+  deleteCampSessionsDtoValidator,
+  async (req, res) => {
+    try {
+      await campService.deleteCampSessionsByIds(
+        req.params.campId,
+        req.body.campSessionIds,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {

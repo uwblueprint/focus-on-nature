@@ -946,21 +946,26 @@ class CampService implements ICampService {
         throw mongoDbError;
       }
 
+      const oldCamperIds = campSessions.flatMap((session) => session.campers);
       // deleting all campers with given camp session ID
       try {
         await MgCamper.deleteMany({
-          campSession: {
-            _id: {
-              $in: campSessionIds,
-            },
-          },
+          _id: { $in: oldCamperIds },
         });
       } catch (mongoDbError: unknown) {
-        const errorMessage = [
-          `Failed to delete all campers belonging to camp sessions ${campSessionIds} Reason =`,
-          getErrorMessage(mongoDbError),
-        ];
-        Logger.error(errorMessage.join(" "));
+        try {
+          await MgCamper.create(oldCamperIds);
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            `Failed to rollback MongoDB campers deletion. Reason =`,
+            getErrorMessage(mongoDbError),
+            "MongoDB campers that could not be re-created =",
+            oldCamperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
       }
     } catch (error: unknown) {
       Logger.error(

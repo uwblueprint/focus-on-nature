@@ -177,6 +177,11 @@ export type CreateCampSessionsDTO = Array<
   Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
 
+// export type CampSessionDTO = {
+//   capacity: number;
+//   dates: string[];
+// };
+
 export type UpdateCampSessionDTO = Omit<
   CampSessionDTO,
   "id" | "camp" | "campers" | "waitlist" | "campPriceId"

@@ -360,6 +360,25 @@ export const updateCampSessionDtoValidator = async (
   return next();
 };
 
+/* eslint-disable-next-line import/prefer-default-export */
+export const deleteCampSessionsDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.body.campSessionIds) {
+    const { campSessionIds } = req.body;
+    if (!validateArray(campSessionIds, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("campSessionIds", "string", true));
+    }
+  } else {
+    return res.status(400).send("campSessionIds does not exist");
+  }
+  return next();
+};
+
 export const editFormQuestionValidator = async (
   req: Request,
   res: Response,
