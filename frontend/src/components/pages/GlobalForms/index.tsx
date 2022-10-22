@@ -11,7 +11,11 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { UpdateWaiverRequest, Waiver, WaiverClause } from "../../../types/AdminTypes";
+import {
+  UpdateWaiverRequest,
+  Waiver,
+  WaiverClause,
+} from "../../../types/AdminTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -43,20 +47,21 @@ const GlobalFormsPage = (): React.ReactElement => {
   const toast = useToast();
 
   const onAddWaiverSectionClick = async (newClause: WaiverClause) => {
-
     const curClauses = waiverClauses;
     curClauses.push(newClause);
 
-    const updateWaiverRequest : UpdateWaiverRequest = {clauses : curClauses};
+    const updateWaiverRequest: UpdateWaiverRequest = { clauses: curClauses };
 
-    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(updateWaiverRequest);
+    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(
+      updateWaiverRequest,
+    );
 
     if (updatedWaiver.clauses) {
       setWaiverClauses(updatedWaiver.clauses);
 
       const newSectionCharCode: number = updatedWaiver.clauses.length + 64;
       const newSectionChar: string = String.fromCharCode(newSectionCharCode);
-      
+
       toast({
         description: `Section ${newSectionChar} has been added to the waiver form`,
         status: "success",

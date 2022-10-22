@@ -10,7 +10,6 @@ const WaiverSectionCard = ({
   clauseIdx,
   clauseData,
 }: WaiverSectionCardProps): JSX.Element => {
-  
   function getSectionTitle(number: number) {
     const code = "A".charCodeAt(0);
     return `Section ${String.fromCharCode(code + number)}`;
