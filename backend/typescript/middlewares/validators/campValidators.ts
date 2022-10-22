@@ -342,13 +342,19 @@ export const updateCampSessionDtoValidator = async (
   next: NextFunction,
 ) => {
   const campSession = req.body;
+  if (!campSession.dates && !campSession.capacity) {
+    return res.status(400).send("no fields to update included in request body");
+  }
   if (campSession.dates && !validateArray(campSession.dates, "string")) {
     return res.status(400).send(getApiValidationError("dates", "string", true));
   }
   if (campSession.dates && !campSession.dates.every(validateDate)) {
     return res.status(400).send(getApiValidationError("dates", "Date string"));
   }
-  if (!validatePrimitive(campSession.capacity, "integer")) {
+  if (
+    campSession.capacity &&
+    !validatePrimitive(campSession.capacity, "integer")
+  ) {
     return res.status(400).send(getApiValidationError("capacity", "integer"));
   }
   if (req.body.campers) {

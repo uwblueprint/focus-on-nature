@@ -741,14 +741,18 @@ class CampService implements ICampService {
         );
         if (oldCampSession) {
           if (
-            oldCampSession.campers !== null &&
+            oldCampSession.campers &&
+            campSession.capacity &&
             campSession.capacity < oldCampSession.campers.length
           ) {
             throw new Error(
               `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
             );
           }
-          if (oldCampSession.dates.length !== campSession.dates.length) {
+          if (
+            campSession.dates &&
+            oldCampSession.dates.length !== campSession.dates.length
+          ) {
             throw new Error(
               `Cannot change the number of dates for an active camp. Requested dates length: ${campSession.dates.length}, current number of dates ${oldCampSession.dates.length}`,
             );
@@ -763,8 +767,13 @@ class CampService implements ICampService {
       const newCampSession: CampSession | null = await MgCampSession.findByIdAndUpdate(
         campSessionId,
         {
-          capacity: campSession.capacity,
-          dates: campSession.dates ? campSession.dates.sort() : undefined,
+          ...(campSession.capacity && { capacity: campSession.capacity }),
+          ...(campSession.dates && {
+            dates: campSession.dates.sort(
+              (dateA, dateB) =>
+                new Date(dateA).getTime() - new Date(dateB).getTime(),
+            ),
+          }),
         },
         { runValidators: true, new: true },
       );

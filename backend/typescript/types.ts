@@ -177,14 +177,9 @@ export type CreateCampSessionsDTO = Array<
   Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
 
-// export type CampSessionDTO = {
-//   capacity: number;
-//   dates: string[];
-// };
-
-export type UpdateCampSessionDTO = Omit<
-  CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist" | "campPriceId"
+// Exposes "dates: string[]" and "capacity: number"
+export type UpdateCampSessionDTO = Partial<
+  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
 
 export type UpdateCampSessionsDTO = Partial<
