@@ -1,10 +1,13 @@
+import { Container } from "@chakra-ui/react";
 import React from "react";
+import SessionSidePanel from "./CampCreation/SessionSidePanel";
 
 const CampsPage = (): React.ReactElement => {
   return (
-    <div>
+    <Container maxWidth="100vw" minHeight="100vh">
       <h2>Camps List Page</h2>
-    </div>
+      <SessionSidePanel />
+    </Container>
   );
 };
 
