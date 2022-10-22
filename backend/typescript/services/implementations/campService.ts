@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, ClientSession } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
@@ -746,7 +746,7 @@ class CampService implements ICampService {
             campSession.capacity < oldCampSession.campers.length
           ) {
             throw new Error(
-              `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+              `Cannot decrease capacity to less than current number of registered campers. Requested capacity change: ${campSession.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
             );
           }
           if (
@@ -805,11 +805,15 @@ class CampService implements ICampService {
     campId: string,
     updatedCampSessions: Array<UpdateCampSessionsDTO>,
   ): Promise<Array<CampSessionDTO>> {
-    let dbSession = null;
+    let dbSession: ClientSession | null = null;
     try {
       const campSessionIds = updatedCampSessions.map((session) => session.id);
       dbSession = await mongoose.startSession();
-      dbSession?.startTransaction();
+
+      if (!dbSession) {
+        throw new Error("Unable to start database session");
+      }
+      dbSession.startTransaction();
 
       const oldCampSessions = await MgCampSession.find({
         _id: { $in: campSessionIds },
@@ -840,7 +844,7 @@ class CampService implements ICampService {
                 session.capacity < oldCampSession.campers.length
               ) {
                 throw new Error(
-                  `Cannot decrease capacity to current number of registered campers. Requested capacity change: ${session.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
+                  `Cannot decrease capacity to less than current number of registered campers. Requested capacity change: ${session.capacity}, current number of registed campers: ${oldCampSession.campers.length}`,
                 );
               }
               if (
@@ -870,7 +874,7 @@ class CampService implements ICampService {
               }),
             },
             { runValidators: true, new: true },
-          );
+          ).session(dbSession);
 
           if (!newCampSession) {
             throw new Error(
@@ -898,7 +902,7 @@ class CampService implements ICampService {
         );
       }
 
-      await dbSession?.commitTransaction();
+      await dbSession.commitTransaction();
 
       return newCampSessions;
     } catch (error: unknown) {

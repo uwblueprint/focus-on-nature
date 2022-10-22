@@ -258,7 +258,7 @@ describe("mongo campService", (): void => {
 
     expect(campSession?.camp.toString()).toEqual(res.id);
     expect(campSession?.dates.map((date) => new Date(date))).toEqual(
-      updatedTestCampSession.dates.map((date) => new Date(date)),
+      updatedTestCampSession.dates?.map((date) => new Date(date)),
     );
     expect(campSession?.capacity).toEqual(updatedTestCampSession.capacity);
     expect(campSession?.campers).toHaveLength(0);
