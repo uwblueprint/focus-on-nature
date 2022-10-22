@@ -1,0 +1,37 @@
+[
+  {
+      "campSession": "6353a97ff9b07c73611423ed",
+      "firstName": "Emma",
+      "lastName": "Dhruv",
+      "age": 12,
+      "allergies": "None",
+      "earlyDropoff": [],
+      "latePickup": [],
+      "specialNeeds": "None",
+      "contacts": [
+          {
+              "firstName": "Andy",
+              "lastName": "Lee",
+              "email": "andy@uwblueprint.org",
+              "phoneNumber": "647-222-4455",
+              "relationshipToCamper": "brother"
+          },
+          {
+              "firstName": "Tejas",
+              "lastName": "Jasraj",
+              "email": "tj@uwblueprint.org",
+              "phoneNumber": "647-555-4425",
+              "relationshipToCamper": "parent"
+          }
+      ],
+      "registrationDate": "Sat Oct 15 2022 05:40:00 GMT-0400 (Eastern Daylight Time)",
+      "hasPaid": true,
+      "chargeId": "mockChargeId",
+      "charges": {
+          "camp": 15,
+          "earlyDropoff": 0,
+          "latePickup": 0
+      },
+      "optionalClauses": []
+  }
+]

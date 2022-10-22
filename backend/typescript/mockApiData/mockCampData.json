@@ -1,0 +1,131 @@
+{
+  "active": true,
+  "ageLower": 11,
+  "ageUpper": 15,
+  "campCounsellors": [
+    "632bab6158fc2a183c65b28b",
+    "6325fa4bd32614d01280925e",
+    "634f046745baf02feaedd77a"
+  ],
+  "campCoordinators": ["632bab6158fc2a183c65b28b", "6325fa4bd32614d01280925e"],
+  "capacity": 20,
+  "description": "Focus on Nature camp hosted in Waterloo",
+  "dropoffFee": 15,
+  "startTime": "9:30",
+  "endTime": "16:30",
+  "earlyDropoff": "9:00",
+  "fee": 15,
+  "latePickup": "17:00",
+  "location": {
+    "streetAddress1": "123 Test Avenue",
+    "streetAddress2": "Unit A",
+    "city": "Waterloo",
+    "province": "Ontario",
+    "postalCode": "M4L 9F1"
+  },
+  "name": "Waterloo Camp A",
+  "pickupFee": 20
+}
+
+// Response
+// {
+//     "id": "63538bc01bf0453b8a55ea1a",
+//     "active": true,
+//     "ageLower": 11,
+//     "ageUpper": 15,
+//     "campSessions": [],
+//     "campCoordinators": [
+//         "632bab6158fc2a183c65b28b",
+//         "6325fa4bd32614d01280925e"
+//     ],
+//     "campCounsellors": [
+//         "632bab6158fc2a183c65b28b",
+//         "6325fa4bd32614d01280925e",
+//         "634f046745baf02feaedd77a"
+//     ],
+//     "name": "Waterloo Camp A",
+//     "description": "Focus on Nature camp hosted in Waterloo",
+//     "dropoffFee": 15,
+//     "pickupFee": 20,
+//     "earlyDropoff": "9:00",
+//     "latePickup": "17:00",
+//     "location": {
+//         "streetAddress1": "123 Test Avenue",
+//         "streetAddress2": "Unit A",
+//         "city": "Waterloo",
+//         "province": "Ontario",
+//         "postalCode": "M4L 9F1"
+//     },
+//     "fee": 15,
+//     "formQuestions": [],
+//     "startTime": "9:30",
+//     "endTime": "16:30",
+//     "campProductId": "prod_Meuu5XJPvW1mAv",
+//     "dropoffPriceId": "price_1Lvb4dJBIcYylc2BoCbGFQUI",
+//     "dropoffProductId": "prod_MeuuIqX22i1IXQ",
+//     "pickupPriceId": "price_1Lvb4dJBIcYylc2BtCEFxR9S",
+//     "pickupProductId": "prod_MeuusPu9H0WpkD"
+// }
+
+{
+  "active": true,
+  "ageLower": 9,
+  "ageUpper": 12,
+  "campCounsellors": ["63385e64f5716eea9ee462c6"],
+  "campCoordinators": ["63385e64f5716eea9ee462c6", "634f046745baf02feaedd77a"],
+  "capacity": 15,
+  "description": "Focus on Nature camp hosted in Kitchener",
+  "dropoffFee": 15,
+  "startTime": "9:00",
+  "endTime": "15:00",
+  "earlyDropoff": "8:00",
+  "fee": 15,
+  "latePickup": "16:00",
+  "location": {
+    "streetAddress1": "456 Kitchen Blvd",
+    "streetAddress2": "Unit 23",
+    "city": "Kitchener",
+    "province": "Ontario",
+    "postalCode": "M4L 1M2"
+  },
+  "name": "Kitchener Camp A",
+  "pickupFee": 20
+}
+
+// Response
+// {
+//   "id": "63538da50ec7fc7b4a841085",
+//   "active": true,
+//   "ageLower": 9,
+//   "ageUpper": 12,
+//   "campSessions": [],
+//   "campCoordinators": [
+//       "63385e64f5716eea9ee462c6",
+//       "634f046745baf02feaedd77a"
+//   ],
+//   "campCounsellors": [
+//       "63385e64f5716eea9ee462c6"
+//   ],
+//   "name": "Kitchener Camp A",
+//   "description": "Focus on Nature camp hosted in Kitchener",
+//   "dropoffFee": 15,
+//   "pickupFee": 20,
+//   "earlyDropoff": "8:00",
+//   "latePickup": "16:00",
+//   "location": {
+//       "streetAddress1": "456 Kitchen Blvd",
+//       "streetAddress2": "Unit 23",
+//       "city": "Kitchener",
+//       "province": "Ontario",
+//       "postalCode": "M4L 1M2"
+//   },
+//   "fee": 15,
+//   "formQuestions": [],
+//   "startTime": "9:00",
+//   "endTime": "15:00",
+//   "campProductId": "prod_Mev2qFGxRuIkoE",
+//   "dropoffPriceId": "price_1LvbCTJBIcYylc2BlpdGVN8X",
+//   "dropoffProductId": "prod_Mev2ZxaHn6gtG9",
+//   "pickupPriceId": "price_1LvbCTJBIcYylc2BnWxBCdin",
+//   "pickupProductId": "prod_Mev29DQwG1VowY"
+// }

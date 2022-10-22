@@ -1,0 +1,28 @@
+{
+  "campSessions": [
+      {
+          "capacity": 20,
+          "dates": [
+              "Mon Feb 28 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Tue Mar 1 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Wed Mar 2 2022 08:00:00 GMT-0400 (Eastern Daylight Time)"
+          ]
+      },
+      {
+          "capacity": 20,
+          "dates": [
+              "Mon Mar 7 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Tue Mar 8 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Wed Mar 9 2022 08:00:00 GMT-0400 (Eastern Daylight Time)"
+          ]
+      },
+      {
+          "capacity": 20,
+          "dates": [
+              "Mon Mar 14 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Tue Mar 15 2022 08:00:00 GMT-0400 (Eastern Daylight Time)",
+              "Wed Mar 16 2022 08:00:00 GMT-0400 (Eastern Daylight Time)"
+          ]
+      }
+  ]
+}
