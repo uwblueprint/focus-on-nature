@@ -15,10 +15,11 @@ const WeekDayButton = ({ dayText }: { dayText: string }): JSX.Element => {
   return (
     <IconButton
       key={dayText}
-      isRound
+      aria-label="week day button"
       icon={<Text>{dayText}</Text>}
+      isRound
+      size="lg"
       colorScheme="green"
-      aria-label="monday"
     />
   );
 };
