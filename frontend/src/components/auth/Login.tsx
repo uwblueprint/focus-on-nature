@@ -33,6 +33,13 @@ enum LoginErrorMessages {
   Inactive = `The account associated with this email is currently inactive. Please contact a Focus on Nature admin to gain access to the Camp Management Tool.`,
 }
 
+function isAuthenticatedUserType(
+  res: AuthenticatedUser | string,
+): res is AuthenticatedUser {
+  const response = res as AuthenticatedUser;
+  return response !== null && response.id !== undefined;
+}
+
 const Login = (): React.ReactElement => {
   const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
   const [loginStatus, setLoginStatus] = useState<"" | "success" | "fail">("");
@@ -45,7 +52,7 @@ const Login = (): React.ReactElement => {
       tokenId,
     );
 
-    if (res) {
+    if (isAuthenticatedUserType(res)) {
       setLoginStatus("success");
       setAuthenticatedUser(res);
     } else {

@@ -23,7 +23,9 @@ const login = async (
   }
 };
 
-const loginWithGoogle = async (idToken: string): Promise<AuthenticatedUser> => {
+const loginWithGoogle = async (
+  idToken: string,
+): Promise<AuthenticatedUser | string> => {
   try {
     const { data } = await baseAPIClient.post(
       "/auth/login",
@@ -33,7 +35,7 @@ const loginWithGoogle = async (idToken: string): Promise<AuthenticatedUser> => {
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
   } catch (error: unknown) {
-    return error as AuthenticatedUser;
+    return JSON.stringify({ error: { response: { data: { error } } } });
   }
 };
 
