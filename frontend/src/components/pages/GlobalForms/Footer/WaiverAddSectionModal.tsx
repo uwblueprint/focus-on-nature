@@ -30,7 +30,7 @@ const WaiverAddSectionModal = ({
   const [newClauseText, setNewClauseText] = React.useState("");
   const [clauseRequired, setClauseRequired] = React.useState(false);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target.value;
     setNewClauseText(inputValue);
   };

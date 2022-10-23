@@ -29,7 +29,7 @@ type ManageSessionsPromisesResult = {
 };
 
 const CampOverviewPage = (): JSX.Element => {
-  const { id: campId }: any = useParams();
+  const { id: campId } = useParams<{ id: string }>();
   const [currentCampSession, setCurrentCampSession] = useState(0);
   const [camp, setCamp] = useState<CampResponse>({
     id: "",

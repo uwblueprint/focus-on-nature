@@ -5,7 +5,10 @@ import { UserSelectOption } from "../../../types/UserTypes";
 
 // In menu, show user's name and email
 // In control, show user's name only
-const formatOptionLabel = (user: UserSelectOption, { context }: any) => {
+const formatOptionLabel = (
+  user: UserSelectOption,
+  { context }: { context: string },
+) => {
   if (context === "menu") {
     return (
       <VStack alignItems="left" width="100%">
