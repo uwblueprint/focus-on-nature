@@ -408,7 +408,12 @@ export const updateCampSessionsDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const campSessions = req.body.updatedCampSessions;
+  const body = req.body.data;
+  if (!body) {
+    return res.status(400).send("no data found in request body");
+  }
+
+  const campSessions = body.updatedCampSessions;
 
   if (!campSessions) {
     return res.status(400).send("updatedCampSessions is a required field");

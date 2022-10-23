@@ -1,8 +1,19 @@
-import { Box, Container, Divider, Text, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Divider,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { CampResponse, UpdateCampSessionsRequest } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CampSessionResponse,
+  UpdateCampSessionsRequest,
+} from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
@@ -11,6 +22,11 @@ import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
 import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
+
+type ManageSessionsPromisesResult = {
+  deletedSessions?: boolean;
+  updatedSessions?: Array<CampSessionResponse>;
+};
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
@@ -40,6 +56,7 @@ const CampOverviewPage = (): JSX.Element => {
     volunteers: "",
     campPhotoUrl: "",
   });
+  const [sessionsDidChange, setSessionsDidChange] = useState(false);
   const numSessions = camp.campSessions?.length;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -57,8 +74,9 @@ const CampOverviewPage = (): JSX.Element => {
         setCamp(campResponse);
       }
     };
+
     getCamp();
-  }, [campId, refetch]);
+  }, [campId, refetch, sessionsDidChange]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -76,22 +94,81 @@ const CampOverviewPage = (): JSX.Element => {
 
   const openManageSessionsModal = () => onOpen();
 
-  const getUpdateCampSessionsRequestArray = (updatedCapacities: Map<string, string>): Array<UpdateCampSessionsRequest> => {
+  const getUpdateCampSessionsRequestArray = (
+    updatedCapacities: Map<string, string>,
+  ): Array<UpdateCampSessionsRequest> => {
     const requests: Array<UpdateCampSessionsRequest> = [];
-    updatedCapacities.forEach((id, capacity) => requests.push({ id, capacity: parseInt(capacity, 10) }));
+
+    updatedCapacities.forEach((capacity, id) => {
+      const updatedCapacityExists = capacity.trim().length > 0;
+      if (updatedCapacityExists) {
+        requests.push({ id, capacity: parseInt(capacity, 10) });
+      }
+    });
+
     return requests;
   };
 
-  const onManageSessionsSave = async (deletedSessions: Set<string>, updatedCapacities: Map<string,string>) => {
-    const deleteResult = await CampsAPIClient.deleteCampSessionsByIds(campId, Array.from(deletedSessions));
-    const updatedCampSessions = await CampsAPIClient.updateCampSessions(
-      campId,
-      Array.from(updatedCapacities.keys()),
-      getUpdateCampSessionsRequestArray(updatedCapacities),
-    );
+  const getManageSessionsResult = async (
+    deletedSessions: Set<string>,
+    updatedCapacities: Map<string, string>,
+  ): Promise<ManageSessionsPromisesResult> => {
+    let sessionPromises: ManageSessionsPromisesResult = {};
 
-    // Need to refresh to page
-    if (deleteResult && updatedCampSessions) {
+    const deleteSessionsPromise =
+      deletedSessions.size > 0
+        ? CampsAPIClient.deleteCampSessionsByIds(
+            campId,
+            Array.from(deletedSessions),
+          )
+        : null;
+    const updateCapacitiesPromise =
+      updatedCapacities.size > 0
+        ? CampsAPIClient.updateCampSessions(
+            campId,
+            getUpdateCampSessionsRequestArray(updatedCapacities),
+          )
+        : null;
+
+    if (deleteSessionsPromise && updateCapacitiesPromise) {
+      sessionPromises = await Promise.all([
+        deleteSessionsPromise,
+        updateCapacitiesPromise,
+      ]).then((data) => {
+        return {
+          deletedSessions: data[0],
+          updatedSessions: data[1],
+        };
+      });
+    } else if (deleteSessionsPromise) {
+      sessionPromises.deletedSessions = await deleteSessionsPromise;
+    } else if (updateCapacitiesPromise) {
+      sessionPromises.updatedSessions = await updateCapacitiesPromise;
+    }
+
+    return sessionPromises;
+  };
+
+  const onManageSessionsSave = async (
+    deletedSessions: Set<string>,
+    updatedCapacities: Map<string, string>,
+  ) => {
+    const manageSessionsResult = await getManageSessionsResult(
+      deletedSessions,
+      updatedCapacities,
+    );
+    const requestFailed =
+      (manageSessionsResult.deletedSessions !== undefined &&
+        !manageSessionsResult.deletedSessions) ||
+      (manageSessionsResult.updatedSessions !== undefined &&
+        manageSessionsResult.updatedSessions.length !== updatedCapacities.size);
+
+    if (!requestFailed) {
+      setTimeout(() => {
+        setSessionsDidChange(true);
+        setCurrentCampSession(0);
+      }, 500);
+
       toast({
         description: `Edits to camp sessions saved successfully.`,
         status: "success",

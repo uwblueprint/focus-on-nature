@@ -193,7 +193,7 @@ campRouter.patch(
     try {
       const campSession = await campService.updateCampSessionsByIds(
         req.params.campId,
-        req.body.updatedCampSessions,
+        req.body.data.updatedCampSessions,
       );
       res.status(200).json(campSession);
     } catch (error: unknown) {
