@@ -124,39 +124,47 @@ const EditCamperFormResponseSection = ({
     );
   };
 
+  const getCamperAnswer = (
+    responses: Map<string, string>,
+    question: string,
+  ): string => {
+    const camperAnswerIndex = Object.keys(responses).indexOf(question);
+
+    return camperAnswerIndex !== -1
+      ? Object.values(responses)[camperAnswerIndex]
+      : "";
+  };
+
   return (
     <VStack align="start">
       {formQuestions.map((formQuestion) => {
         const { question, type } = formQuestion;
-        const camperAnswerIndex = Object.keys(camperResponses).indexOf(
-          question,
-        );
-        const camperAnswer =
-          camperAnswerIndex !== -1
-            ? Object.values(camperResponses)[camperAnswerIndex]
-            : "";
+
+        const camperAnswer = getCamperAnswer(camperResponses, question);
 
         switch (type) {
           case "MultipleChoice":
-            return formQuestion.options
-              ? renderMCQ(
-                  question,
-                  camperAnswer,
-                  formQuestion.options,
-                  formQuestion.id,
-                  formQuestion.required,
-                )
-              : null;
+            return (
+              formQuestion.options &&
+              renderMCQ(
+                question,
+                camperAnswer,
+                formQuestion.options,
+                formQuestion.id,
+                formQuestion.required,
+              )
+            );
           case "Multiselect":
-            return formQuestion.options
-              ? renderMultiSelect(
-                  question,
-                  camperAnswer,
-                  formQuestion.options,
-                  formQuestion.id,
-                  formQuestion.required,
-                )
-              : null;
+            return (
+              formQuestion.options &&
+              renderMultiSelect(
+                question,
+                camperAnswer,
+                formQuestion.options,
+                formQuestion.id,
+                formQuestion.required,
+              )
+            );
           case "Text":
             return renderText(
               question,

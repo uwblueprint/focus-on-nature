@@ -94,13 +94,13 @@ const EditCamperModal = ({
 
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 2000);
     } else {
       toast({
         description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
         status: "error",
         variant: "subtle",
-        duration: 3000,
+        duration: 2000,
       });
     }
   };
@@ -112,13 +112,7 @@ const EditCamperModal = ({
       preserveScrollBarGap
     >
       <ModalOverlay />
-      <ModalContent
-        w="1000px"
-        minW="1000px"
-        maxW="1000px"
-        minH="750px"
-        maxH="750px"
-      >
+      <ModalContent minW="1000px" maxW="1000px" minH="750px" maxH="750px">
         <ModalHeader>
           Edit {camper.firstName} {camper.lastName}&apos;s Information
         </ModalHeader>
@@ -134,16 +128,23 @@ const EditCamperModal = ({
         <ModalFooter>
           <Button
             onClick={editCamperOnClose}
-            variant="editModalCancel"
+            background="background.grey.100"
+            padding="12px, 25px, 12px, 25px"
+            borderRadius="6px"
+            width="109px"
+            height="48px"
             marginRight="12px"
           >
             Cancel
           </Button>
           <Button
-            variant="editModalSave"
-            onClick={() => {
-              onSaveClicked();
-            }}
+            background="primary.green.100"
+            padding="12px, 25px, 12px, 25px"
+            borderRadius="6px"
+            width="91px"
+            height="48px"
+            color="text.white.100"
+            onClick={onSaveClicked}
           >
             Save
           </Button>
