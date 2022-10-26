@@ -124,8 +124,10 @@ class AdminService implements IAdminService {
     try {
       // Get the current formTemplate and its list of questions
       const formTemplate = await MgFormTemplate.findOne();
-      if (!formTemplate)
+      
+      if (!formTemplate){
         throw new Error("Failed to retrieve the form template");
+      }  
 
       const newFormQuestion = await MgFormQuestion.create({
         type: formQuestion.type,
@@ -156,8 +158,9 @@ class AdminService implements IAdminService {
         )}`,
       );
       await session.abortTransaction();
-      await session.endSession();
       throw error;
+    } finally {
+      await session.endSession();
     }
   }
 }

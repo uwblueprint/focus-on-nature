@@ -60,7 +60,7 @@ adminRouter.get("/formTemplate", async (req, res) => {
 adminRouter.patch(
   "/formTemplate/formQuestion",
   formTemplateAddQuestionValidator,
-  // isAuthorizedByRole(new Set(["Admin"])),
+  isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
       const newQuestion = await adminService.addQuestionToTemplate({
