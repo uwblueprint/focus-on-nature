@@ -87,6 +87,20 @@ camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   }
 });
 
+/* Get campers that have the specified charge ID and session ID */
+camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
+  const { chargeId, sessionId } = req.params;
+  try {
+    const camper = await camperService.getCampersByChargeIdAndSessionId(
+      (chargeId as unknown) as string,
+      (sessionId as unknown) as string,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 camperRouter.post(
   "/waitlist",
   createWaitlistedCamperDtoValidator,
@@ -168,7 +182,7 @@ camperRouter.delete(
   },
 );
 
-/* Delete a camper */
+/* Delete campers (single or multiple) */
 camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
   try {
     await camperService.deleteCampersById(req.body.camperIds);

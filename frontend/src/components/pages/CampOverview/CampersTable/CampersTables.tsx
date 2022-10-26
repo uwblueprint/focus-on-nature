@@ -9,11 +9,13 @@ import WaitlistedCampersTable from "./WaitlistedCampersTable";
 type CampersTablesProps = {
   campSession: CampSession;
   formQuestions: FormQuestion[];
+  handleRefetch: () => void;
 };
 
 const CampersTables = ({
   campSession,
   formQuestions,
+  handleRefetch,
 }: CampersTablesProps): JSX.Element => {
   return (
     <Box>
@@ -36,6 +38,7 @@ const CampersTables = ({
               campers={campSession.campers}
               formQuestions={formQuestions}
               campSessionCapacity={campSession.capacity}
+              handleRefetch={handleRefetch}
             />
           </TabPanel>
           <TabPanel padding="0">

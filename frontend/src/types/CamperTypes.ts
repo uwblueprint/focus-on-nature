@@ -8,7 +8,7 @@ export type EmergencyContact = {
 
 export type Camper = {
   id: string;
-  // campSession: CampSession;
+  campSession: string;
   firstName: string;
   lastName: string;
   age: number;
