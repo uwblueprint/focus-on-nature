@@ -1,6 +1,12 @@
+import mongoose from "mongoose";
 import IAdminService from "../interfaces/adminService";
 import MgWaiver, { Waiver } from "../../models/waiver.model";
-import { FormQuestionDTO, FormTemplateDTO, WaiverDTO } from "../../types";
+import {
+  FormQuestionDTO,
+  FormTemplateDTO,
+  WaiverDTO,
+  CreateFormQuestionDTO,
+} from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import MgFormTemplate from "../../models/formTemplate.model";
@@ -107,6 +113,52 @@ class AdminService implements IAdminService {
       throw error;
     }
     return form;
+  }
+
+  async addQuestionToTemplate(
+    formQuestion: CreateFormQuestionDTO,
+  ): Promise<FormQuestionDTO> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Get the current formTemplate and its list of questions
+      const formTemplate = await MgFormTemplate.findOne();
+      if (!formTemplate)
+        throw new Error("Failed to retrieve the form template");
+
+      const newFormQuestion = await MgFormQuestion.create({
+        type: formQuestion.type,
+        question: formQuestion.question,
+        required: formQuestion.required,
+        description: formQuestion.description,
+        options: formQuestion.options,
+        category: formQuestion.category,
+      });
+
+      formTemplate.formQuestions.push(newFormQuestion._id);
+      await formTemplate.save();
+      await session.commitTransaction();
+
+      return {
+        type: newFormQuestion.type,
+        question: newFormQuestion.question,
+        required: newFormQuestion.required,
+        description: newFormQuestion.description,
+        options: newFormQuestion.options,
+        id: newFormQuestion.id,
+        category: newFormQuestion.category,
+      };
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to add form question to form template. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      await session.abortTransaction();
+      await session.endSession();
+      throw error;
+    }
   }
 }
 

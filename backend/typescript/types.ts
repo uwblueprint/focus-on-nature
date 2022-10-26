@@ -33,6 +33,8 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
+export type CreateFormQuestionDTO = Omit<FormQuestionDTO, "id">;
+
 export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
