@@ -44,6 +44,7 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
+  | "campSession"
 >;
 
 export type EditModalSetterFunctions = {
