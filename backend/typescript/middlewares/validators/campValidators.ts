@@ -66,11 +66,11 @@ export const createCampDtoValidator = async (
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
-  if (!validatePrimitive(body.pickupFee, "integer")) {
-    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
+  if (!validatePrimitive(body.pickupFee, "number")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "number"));
   }
-  if (!validatePrimitive(body.dropoffFee, "integer")) {
-    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  if (!validatePrimitive(body.dropoffFee, "number")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "number"));
   }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));
@@ -144,8 +144,8 @@ export const createCampDtoValidator = async (
   if (body.ageUpper < body.ageLower) {
     return res.status(400).send("ageUpper must be larger than ageLower");
   }
-  if (!validatePrimitive(body.fee, "integer")) {
-    return res.status(400).send(getApiValidationError("fee", "integer"));
+  if (!validatePrimitive(body.fee, "number")) {
+    return res.status(400).send(getApiValidationError("fee", "number"));
   }
   if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
@@ -190,11 +190,11 @@ export const updateCampDtoValidator = async (
   if (body.description && !validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "integer")) {
-    return res.status(400).send(getApiValidationError("dropoffFee", "integer"));
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "number")) {
+    return res.status(400).send(getApiValidationError("dropoffFee", "number"));
   }
-  if (body.pickupFee && !validatePrimitive(body.pickupFee, "integer")) {
-    return res.status(400).send(getApiValidationError("pickupFee", "integer"));
+  if (body.pickupFee && !validatePrimitive(body.pickupFee, "number")) {
+    return res.status(400).send(getApiValidationError("pickupFee", "number"));
   }
   if (body.location) {
     if (!validatePrimitive(body.location.streetAddress1, "string")) {
@@ -285,8 +285,8 @@ export const updateCampDtoValidator = async (
   if (!validatePrimitive(body.active, "boolean")) {
     return res.status(400).send(getApiValidationError("active", "boolean"));
   }
-  if (!validatePrimitive(body.fee, "integer")) {
-    return res.status(400).send(getApiValidationError("fee", "integer"));
+  if (!validatePrimitive(body.fee, "number")) {
+    return res.status(400).send(getApiValidationError("fee", "number"));
   }
   if (body.volunteers && !validatePrimitive(body.volunteers, "string")) {
     return res.status(400).send(getApiValidationError("volunteers", "string"));
