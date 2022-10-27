@@ -9,7 +9,7 @@ import {
   useToast,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 import ScheduledSessionsCard from "./ScheduledSessionsCard";
 import DeleteModal from "../../../common/DeleteModal";
 
@@ -57,7 +57,7 @@ const CurrentSessionsView = ({
   };
 
   return (
-    <Box paddingX="64px" paddingY="80px">
+    <Box paddingX="64px" paddingY="80px" h="inherit">
       <DeleteModal
         title="Delete Session?"
         bodyText={`Are you sure you want to delete "Session ${

@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 import {
   getFormattedDateStringFromDateArray,
   getSessionDates,
-} from "../../../../utils/CampUtils";
+} from "../../../../../utils/CampUtils";
 
 type ScheduledSessionsCardProps = {
   currIndex: number;
@@ -19,7 +19,7 @@ const ScheduledSessionsCard = ({
   scheduledSession,
   updateSession,
   onDelete,
-}: ScheduledSessionsCardProps): JSX.Element => {
+}: ScheduledSessionsCardProps): React.ReactElement => {
   const sessionDatesRangeString = getFormattedDateStringFromDateArray(
     scheduledSession.dates,
   );

@@ -10,12 +10,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 import {
   getSessionDates,
   sortScheduledSessions,
-} from "../../../../utils/CampUtils";
+} from "../../../../../utils/CampUtils";
 
 const emptyWeekDays = new Map<string, boolean>([
   ["Su", false],
@@ -110,7 +110,7 @@ const AddSessionsForm = ({
   };
 
   return (
-    <Box paddingX="64px" paddingY="80px">
+    <Box paddingX="64px" paddingY="80px" h="inherit">
       <Text textStyle="displayLarge" marginBottom={10}>
         Add Camp Session(s)
       </Text>
