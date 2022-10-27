@@ -11,31 +11,57 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-const WeekDayButton = ({ dayText }: { dayText: string }): JSX.Element => {
+type WeekDayButtonProps = {
+  day: string;
+  active: boolean | undefined;
+  onPress?: (day: string) => void;
+};
+
+const WeekDayButton = ({
+  day,
+  active,
+  onPress,
+}: WeekDayButtonProps): JSX.Element => {
   return (
     <IconButton
-      key={dayText}
+      key={day}
       aria-label="week day button"
-      icon={<Text>{dayText}</Text>}
+      icon={<Text>{day}</Text>}
       isRound
       size="lg"
-      colorScheme="green"
+      colorScheme={active ? "green" : "gray"}
+      onClick={onPress ? () => onPress(day) : () => {}}
     />
   );
 };
 
 const AddSessionsForm = (): JSX.Element => {
-  const weekDays = new Map<string, boolean>([
-    ["Su", false],
-    ["Mo", false],
-    ["Tu", false],
-    ["We", false],
-    ["Th", false],
-    ["Fr", false],
-    ["Sa", false],
-  ]);
+  const [startDate, setStartDate] = React.useState<Date>(new Date());
+  const [successiveSessions, setSuccessiveSessions] = React.useState<number>(0);
+
+  const [weekDays, setweekDays] = React.useState<Map<string, boolean>>(
+    new Map<string, boolean>([
+      ["Su", false],
+      ["Mo", false],
+      ["Tu", false],
+      ["We", false],
+      ["Th", false],
+      ["Fr", false],
+      ["Sa", false],
+    ]),
+  );
 
   const weekDayKeys: string[] = Array.from(weekDays.keys());
+
+  const updateSessionDays = (day: string) => {
+    const daySelected: boolean = weekDays.get(day) ?? false;
+    const updatedMap = new Map<string, boolean>(
+      weekDays.set(day, !daySelected),
+    );
+    setweekDays(updatedMap);
+  };
+
+  console.log(startDate);
 
   return (
     <Box paddingX="64px" paddingY="80px">
@@ -43,19 +69,35 @@ const AddSessionsForm = (): JSX.Element => {
         <Text textStyle="displayLarge">Add Camp Session(s)</Text>
         <FormControl isRequired>
           <FormLabel>Camp Session Start Date</FormLabel>
-          <Input type="date" />
+          <Input
+            type="date"
+            onChange={(e: any) => {
+              setStartDate(e.target.value);
+            }}
+          />
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Session Days</FormLabel>
           <HStack spacing="10px">
             {weekDayKeys.map((day) => (
-              <WeekDayButton dayText={day} key={day} />
+              <WeekDayButton
+                key={day}
+                day={day}
+                active={weekDays.get(day)}
+                onPress={updateSessionDays}
+              />
             ))}
           </HStack>
         </FormControl>
         <HStack>
           <Text>Add </Text>
-          <Input type="number" maxWidth="5vw" />
+          <Input
+            type="number"
+            maxWidth="5vw"
+            onChange={(e: any) => {
+              setSuccessiveSessions(e.target.value);
+            }}
+          />
           <Text> successive camp sessions</Text>
         </HStack>
         <Button colorScheme="green" alignSelf="flex-end">
@@ -67,8 +109,3 @@ const AddSessionsForm = (): JSX.Element => {
 };
 
 export default AddSessionsForm;
-
-/*
-from start date 
-
-*/
