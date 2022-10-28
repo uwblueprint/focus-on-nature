@@ -15,6 +15,7 @@ import {
   getCampDtoValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
+  updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";
 
 const upload = multer({ dest: "uploads/" });
@@ -176,6 +177,23 @@ campRouter.patch(
           capacity: req.body.capacity,
           dates: req.body.dates,
         },
+      );
+      res.status(200).json(campSession);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+/* Update camp sessions */
+campRouter.patch(
+  "/:campId/session/",
+  updateCampSessionsDtoValidator,
+  async (req, res) => {
+    try {
+      const campSession = await campService.updateCampSessionsByIds(
+        req.params.campId,
+        req.body.updatedCampSessions,
       );
       res.status(200).json(campSession);
     } catch (error: unknown) {

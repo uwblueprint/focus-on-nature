@@ -8,6 +8,7 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
+  UpdateCampSessionsDTO,
 } from "../../types";
 
 interface ICampService {
@@ -56,6 +57,11 @@ interface ICampService {
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO>;
+
+  updateCampSessionsByIds(
+    campId: string,
+    updatedCampSessions: Array<UpdateCampSessionsDTO>,
+  ): Promise<Array<CampSessionDTO>>;
 
   /**
    * Get all campers associated with camps of id campId
