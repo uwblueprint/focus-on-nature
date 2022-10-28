@@ -17,7 +17,7 @@ interface ICampService {
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
-  getCamps(): Promise<GetCampDTO[]>;
+  getCamps(campYear: number): Promise<GetCampDTO[]>;
 
   /**
    * Get camp with the specified campId

@@ -46,9 +46,9 @@ class CampService implements ICampService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async getCamps(): Promise<GetCampDTO[]> {
+  async getCamps(year: number): Promise<GetCampDTO[]> {
     try {
-      const camps: Camp[] | null = await MgCamp.find({})
+      let camps: Camp[] | null = await MgCamp.find({})
         .populate({
           path: "campSessions",
           model: MgCampSession,
@@ -64,6 +64,30 @@ class CampService implements ICampService {
 
       if (!camps) {
         return [];
+      }
+
+      if (year) {
+        // Filter camps that have at least one camp session in the desired year
+        /* eslint-disable no-param-reassign */
+        camps = camps.filter((camp) => {
+          // TODO: Remove the undefined and null checks once MongoDB data all have createdAt fields
+          if (camp.campSessions.length === 0) {
+            if (camp.createdAt !== undefined && camp.createdAt !== null)
+              return camp.createdAt.getFullYear() === year;
+          }
+
+          // Go through every camp session in a camp. If at least one camp session has the desired year, include the camp in the final filtered camps.
+          /* eslint-disable no-param-reassign */
+          camp.campSessions = (camp.campSessions as CampSession[]).filter(
+            (campSession) => {
+              return campSession.dates.every((campDate) => {
+                return campDate.getFullYear() === year;
+              });
+            },
+          );
+
+          return camp.campSessions.length > 0;
+        });
       }
 
       return await Promise.all(
