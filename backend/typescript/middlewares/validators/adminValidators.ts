@@ -49,3 +49,14 @@ export const formTemplateUpdateValidator = async (
   }
   return next();
 };
+
+export const formTemplateAddQuestionValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.body.formQuestion || !validateFormQuestion(req.body.formQuestion)) {
+    return res.status(400).send("Invalid format provided for form question");
+  }
+  return next();
+};

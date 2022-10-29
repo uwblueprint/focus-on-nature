@@ -6,10 +6,13 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import {
   waiverUpdateValidator,
   formTemplateUpdateValidator,
+  formTemplateAddQuestionValidator,
 } from "../middlewares/validators/adminValidators";
+import { isAuthorizedByRole } from "../middlewares/auth";
 
 const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
+
 adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
   try {
     const waiver = await adminService.updateWaiver({
@@ -53,5 +56,26 @@ adminRouter.get("/formTemplate", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+adminRouter.patch(
+  "/formTemplate/formQuestion",
+  formTemplateAddQuestionValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const newQuestion = await adminService.addQuestionToTemplate({
+        question: req.body.formQuestion.question,
+        required: req.body.formQuestion.required,
+        category: req.body.formQuestion.category,
+        options: req.body.formQuestion.options,
+        description: req.body.formQuestion.description,
+        type: req.body.formQuestion.type,
+      });
+      res.status(200).json(newQuestion);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 export default adminRouter;
