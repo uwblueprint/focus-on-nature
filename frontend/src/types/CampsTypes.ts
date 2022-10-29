@@ -62,7 +62,7 @@ export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
 export type QuestionCategory =
   | "PersonalInfo"
   | "CampSpecific"
-  | "EmergencyContact"; 
+  | "EmergencyContact";
 
 export type FormQuestion = {
   id: string;
@@ -74,4 +74,4 @@ export type FormQuestion = {
   category: QuestionCategory;
 };
 
-export type CreateFormQuestion = Omit< FormQuestion, "id">;
+export type CreateFormQuestion = Omit<FormQuestion, "id">;
