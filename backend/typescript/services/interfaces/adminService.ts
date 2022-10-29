@@ -38,6 +38,7 @@ interface IAdminService {
   /**
    * Add a question to the form template
    * @returns a FormQuestionDTO for the new form
+   * @param formQuestion is an object with the fields of the new question to be added to the template
    * @throws Error if adding the form question fails
    */
   addQuestionToTemplate(

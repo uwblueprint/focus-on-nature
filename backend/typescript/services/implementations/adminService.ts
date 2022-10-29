@@ -123,11 +123,11 @@ class AdminService implements IAdminService {
 
     try {
       // Get the current formTemplate and its list of questions
-      const formTemplate = await MgFormTemplate.findOne();
-      
-      if (!formTemplate){
+      const formTemplate = await MgFormTemplate.findOne({}, {}, { session });
+
+      if (!formTemplate) {
         throw new Error("Failed to retrieve the form template");
-      }  
+      }
 
       const newFormQuestion = await MgFormQuestion.create({
         type: formQuestion.type,
@@ -139,7 +139,7 @@ class AdminService implements IAdminService {
       });
 
       formTemplate.formQuestions.push(newFormQuestion._id);
-      await formTemplate.save();
+      await formTemplate.save({ session });
       await session.commitTransaction();
 
       return {
