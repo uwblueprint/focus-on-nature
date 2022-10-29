@@ -1,6 +1,7 @@
 import { Flex, Text, Box, IconButton, Button } from "@chakra-ui/react";
 import React from "react";
 
+import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -8,6 +9,7 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import textStyles from "../../../theme/textStyles";
+import { CAMP_CREATION_PAGE } from "../../../constants/Routes";
 
 const CampsNavigationHeading = ({
   year,
@@ -18,6 +20,12 @@ const CampsNavigationHeading = ({
   onNavigateLeft: () => void;
   onNavigateRight: () => void;
 }): React.ReactElement => {
+  const history = useHistory();
+
+  const navigateToCampCreationPage = () => {
+    history.push(CAMP_CREATION_PAGE);
+  };
+
   return (
     <Box>
       <Text textStyle="displayXLarge">FON Camps</Text>
@@ -61,6 +69,7 @@ const CampsNavigationHeading = ({
           background="background.grey.200"
           borderColor="primary.green.100"
           minWidth="-webkit-fit-content"
+          onClick={navigateToCampCreationPage}
         >
           Add Camp
         </Button>
