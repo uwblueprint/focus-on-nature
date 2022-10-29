@@ -5,36 +5,12 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
-  IconButton,
   Input,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
-
-type WeekDayButtonProps = {
-  day: string;
-  active: boolean | undefined;
-  onSelect?: (day: string) => void;
-};
-
-const WeekDayButton = ({
-  day,
-  active,
-  onSelect,
-}: WeekDayButtonProps): JSX.Element => {
-  return (
-    <IconButton
-      key={day}
-      aria-label="week day button"
-      icon={<Text>{day}</Text>}
-      isRound
-      size="lg"
-      colorScheme={active ? "green" : "gray"}
-      onClick={onSelect ? () => onSelect(day) : () => {}}
-    />
-  );
-};
+import SessionDayButton from "./SessionDayButton";
 
 const AddSessionsForm = (): JSX.Element => {
   const [startDate, setStartDate] = React.useState<Date>(new Date());
@@ -98,7 +74,7 @@ const AddSessionsForm = (): JSX.Element => {
             <FormLabel>Session Days</FormLabel>
             <HStack spacing="10px">
               {Array.from(weekDays.keys()).map((day) => (
-                <WeekDayButton
+                <SessionDayButton
                   key={day}
                   day={day}
                   active={weekDays.get(day)}
