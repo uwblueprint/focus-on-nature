@@ -15,7 +15,7 @@ const updateCampersById = async (
     const body = { camperIds: id, ...camperData };
 
     // Can't send Map<string, string> over HTTP so need to convert to Object before
-    if (camperData.formResponses) {
+    if (camperData.formResponses instanceof Map) {
       body.formResponses = Object.assign(
         {},
         ...Array.from(camperData.formResponses.entries()).map(

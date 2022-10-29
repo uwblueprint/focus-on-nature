@@ -268,7 +268,8 @@ const CampersTable = ({
               camper={selectedCamper}
               formQuestions={formQuestions}
               editCamperModalIsOpen={editModalIsOpen}
-              editCamperOnClose={editModalOnClose}
+              editCamperModalOnClose={editModalOnClose}
+              handleRefetch={handleRefetch}
             />
           )}
 

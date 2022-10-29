@@ -24,14 +24,16 @@ type EditCamperModalProps = {
   camper: Camper;
   editCamperModalIsOpen: boolean;
   formQuestions: FormQuestion[];
-  editCamperOnClose: () => void;
+  editCamperModalOnClose: () => void;
+  handleRefetch: () => void;
 };
 
 const EditCamperModal = ({
   camper,
   formQuestions,
   editCamperModalIsOpen,
-  editCamperOnClose,
+  editCamperModalOnClose,
+  handleRefetch,
 }: EditCamperModalProps): JSX.Element => {
   const toast = useToast();
 
@@ -68,6 +70,20 @@ const EditCamperModal = ({
     formResponses,
   };
 
+  const resetState = () => {
+    setFirstName(camper.firstName);
+    setLastName(camper.lastName);
+    setAge(camper.age);
+    setAllergies(camper.allergies);
+    setSpecialNeeds(camper.specialNeeds);
+    setFormResponses(camper.formResponses);
+  };
+
+  const closeModal = () => {
+    resetState();
+    editCamperModalOnClose();
+  };
+
   const onSaveClicked = async () => {
     const editCamperFields: EditCamperInfoFields = {
       firstName,
@@ -82,34 +98,33 @@ const EditCamperModal = ({
       [camper.id],
       editCamperFields,
     );
-
-    if (isEditCamperSuccess) {
-      // TODO: introduce global state so we don't have to reload
+    if (isEditCamperSuccess instanceof Error) {
+      closeModal();
+      toast({
+        description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    } else {
+      // TODO: introduce global state so we don't have to refetch
+      closeModal();
       toast({
         description: `${camper.firstName} ${camper.lastName}'s information has been updated`,
         status: "success",
         variant: "subtle",
         duration: 3000,
       });
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    } else {
-      toast({
-        description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
-        status: "error",
-        variant: "subtle",
-        duration: 2000,
-      });
+      handleRefetch();
     }
   };
 
   return (
     <Modal
       isOpen={editCamperModalIsOpen}
-      onClose={editCamperOnClose}
+      onClose={editCamperModalOnClose}
       preserveScrollBarGap
+      isCentered
     >
       <ModalOverlay />
       <ModalContent minW="1000px" maxW="1000px" minH="750px" maxH="750px">
@@ -127,7 +142,7 @@ const EditCamperModal = ({
 
         <ModalFooter>
           <Button
-            onClick={editCamperOnClose}
+            onClick={editCamperModalOnClose}
             background="background.grey.100"
             padding="12px, 25px, 12px, 25px"
             borderRadius="6px"

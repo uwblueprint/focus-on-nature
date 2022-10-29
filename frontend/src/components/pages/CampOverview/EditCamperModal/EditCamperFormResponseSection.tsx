@@ -24,9 +24,12 @@ const EditCamperFormResponseSection = ({
   setFormResponses: (formResponses: Map<string, string> | undefined) => void;
 }): JSX.Element => {
   const updateFormResponse = (question: string, option: string) => {
-    const newCamperResponse = new Map(Object.entries(camperResponses));
-    newCamperResponse.set(question, option);
-    setFormResponses(newCamperResponse);
+    let newCamperResponses = camperResponses;
+    if (!(camperResponses instanceof Map)) {
+      newCamperResponses = new Map(Object.entries(camperResponses));
+    }
+    newCamperResponses.set(question, option);
+    setFormResponses(newCamperResponses);
   };
 
   const renderMCQ = (

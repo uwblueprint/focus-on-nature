@@ -46,7 +46,7 @@ const EditCamperModalForm = ({
           isRequired
           isInvalid={!formStateVariables.age}
           onInputChange={(event) => {
-            setStateFuncs.setAge(parseInt(event.target.value, 10));
+            setStateFuncs.setAge(parseInt(event.target.value, 10) || 0);
           }}
           value={formStateVariables.age}
         />
