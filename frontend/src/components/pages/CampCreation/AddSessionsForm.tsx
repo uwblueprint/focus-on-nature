@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   IconButton,
@@ -14,13 +15,13 @@ import React from "react";
 type WeekDayButtonProps = {
   day: string;
   active: boolean | undefined;
-  onPress?: (day: string) => void;
+  onSelect?: (day: string) => void;
 };
 
 const WeekDayButton = ({
   day,
   active,
-  onPress,
+  onSelect,
 }: WeekDayButtonProps): JSX.Element => {
   return (
     <IconButton
@@ -30,7 +31,7 @@ const WeekDayButton = ({
       isRound
       size="lg"
       colorScheme={active ? "green" : "gray"}
-      onClick={onPress ? () => onPress(day) : () => {}}
+      onClick={onSelect ? () => onSelect(day) : () => {}}
     />
   );
 };
@@ -51,9 +52,7 @@ const AddSessionsForm = (): JSX.Element => {
     ]),
   );
 
-  const weekDayKeys: string[] = Array.from(weekDays.keys());
-
-  const updateSessionDays = (day: string) => {
+  const updateSelectedSessionDays = (day: string) => {
     const daySelected: boolean = weekDays.get(day) ?? false;
     const updatedMap = new Map<string, boolean>(
       weekDays.set(day, !daySelected),
@@ -61,49 +60,72 @@ const AddSessionsForm = (): JSX.Element => {
     setweekDays(updatedMap);
   };
 
-  console.log(startDate);
+  const noSessionDaysSelected = (): boolean => {
+    let hasNoSelectedDay = true;
+    Array.from(weekDays.values()).forEach((val) => {
+      if (val === true) hasNoSelectedDay = false;
+    });
+    return hasNoSelectedDay;
+  };
+
+  const [sessionDaysHasError, setSessionDaysHasError] = React.useState(false);
+
+  const handleSubmit = (e: any) => {
+    if (noSessionDaysSelected()) {
+      e.preventDefault();
+      setSessionDaysHasError(true);
+    }
+  };
 
   return (
     <Box paddingX="64px" paddingY="80px">
-      <VStack align="flex-start" spacing="30px">
-        <Text textStyle="displayLarge">Add Camp Session(s)</Text>
-        <FormControl isRequired>
-          <FormLabel>Camp Session Start Date</FormLabel>
-          <Input
-            type="date"
-            onChange={(e: any) => {
-              setStartDate(e.target.value);
-            }}
-          />
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel>Session Days</FormLabel>
-          <HStack spacing="10px">
-            {weekDayKeys.map((day) => (
-              <WeekDayButton
-                key={day}
-                day={day}
-                active={weekDays.get(day)}
-                onPress={updateSessionDays}
+      <form onSubmit={handleSubmit}>
+        <VStack align="flex-start" spacing="30px">
+          <Text textStyle="displayLarge">Add Camp Session(s)</Text>
+          <FormControl isRequired>
+            <FormLabel>Camp Session Start Date</FormLabel>
+            <Input
+              type="date"
+              onChange={(e: any) => {
+                setStartDate(e.target.value);
+              }}
+            />
+          </FormControl>
+          <FormControl
+            isRequired
+            isInvalid={sessionDaysHasError ? noSessionDaysSelected() : false}
+          >
+            <FormLabel>Session Days</FormLabel>
+            <HStack spacing="10px">
+              {Array.from(weekDays.keys()).map((day) => (
+                <WeekDayButton
+                  key={day}
+                  day={day}
+                  active={weekDays.get(day)}
+                  onSelect={updateSelectedSessionDays}
+                />
+              ))}
+            </HStack>
+            <FormErrorMessage>Need to select days</FormErrorMessage>
+          </FormControl>
+          <HStack>
+            <Text>Add </Text>
+            <FormControl isRequired width="-webkit-fit-content">
+              <Input
+                type="number"
+                maxWidth="5vw"
+                onChange={(e: any) => {
+                  setSuccessiveSessions(e.target.value);
+                }}
               />
-            ))}
+            </FormControl>
+            <Text> successive camp sessions</Text>
           </HStack>
-        </FormControl>
-        <HStack>
-          <Text>Add </Text>
-          <Input
-            type="number"
-            maxWidth="5vw"
-            onChange={(e: any) => {
-              setSuccessiveSessions(e.target.value);
-            }}
-          />
-          <Text> successive camp sessions</Text>
-        </HStack>
-        <Button colorScheme="green" alignSelf="flex-end">
-          Add Camp Session(s)
-        </Button>
-      </VStack>
+          <Button colorScheme="green" alignSelf="flex-end" type="submit">
+            Add Camp Session(s)
+          </Button>
+        </VStack>
+      </form>
     </Box>
   );
 };
