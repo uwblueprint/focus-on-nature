@@ -87,7 +87,7 @@ const AddSessionsForm = (): JSX.Element => {
             <Input
               type="date"
               onChange={(e: any) => {
-                setStartDate(e.target.value);
+                setStartDate(new Date(`${e.target.value}T00:00`));
               }}
             />
           </FormControl>
@@ -106,7 +106,7 @@ const AddSessionsForm = (): JSX.Element => {
                 />
               ))}
             </HStack>
-            <FormErrorMessage>Need to select days</FormErrorMessage>
+            <FormErrorMessage>Select at least one day</FormErrorMessage>
           </FormControl>
           <HStack>
             <Text>Add </Text>
@@ -115,7 +115,7 @@ const AddSessionsForm = (): JSX.Element => {
                 type="number"
                 maxWidth="5vw"
                 onChange={(e: any) => {
-                  setSuccessiveSessions(e.target.value);
+                  if (e.target.value) setSuccessiveSessions(e.target.value);
                 }}
               />
             </FormControl>
