@@ -56,10 +56,13 @@ const CampOverviewPage = (): JSX.Element => {
     volunteers: "",
     campPhotoUrl: "",
   });
-  const [sessionsDidChange, setSessionsDidChange] = useState(false);
   const numSessions = camp.campSessions?.length;
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenManageSessionsModal,
+    onOpen: onOpenManageSessionsModal,
+    onClose: onCloseManageSessionsModal,
+  } = useDisclosure();
   const toast = useToast();
 
   const [refetch, setRefetch] = useState<boolean>(true);
@@ -76,7 +79,7 @@ const CampOverviewPage = (): JSX.Element => {
     };
 
     getCamp();
-  }, [campId, refetch, sessionsDidChange]);
+  }, [campId, refetch]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -92,8 +95,6 @@ const CampOverviewPage = (): JSX.Element => {
       );
   };
 
-  const openManageSessionsModal = () => onOpen();
-
   const getUpdateCampSessionsRequestArray = (
     updatedCapacities: Map<string, string>,
   ): Array<UpdateCampSessionsRequest> => {
@@ -104,6 +105,8 @@ const CampOverviewPage = (): JSX.Element => {
       if (updatedCapacityExists) {
         requests.push({ id, capacity: parseInt(capacity, 10) });
       }
+
+      console.log(requests);
     });
 
     return requests;
@@ -165,7 +168,7 @@ const CampOverviewPage = (): JSX.Element => {
 
     if (!requestFailed) {
       setTimeout(() => {
-        setSessionsDidChange(true);
+        handleRefetch();
         setCurrentCampSession(0);
       }, 500);
 
@@ -206,7 +209,7 @@ const CampOverviewPage = (): JSX.Element => {
               currentCampSession={currentCampSession}
               onNextSession={onNextSession}
               onPrevSession={onPrevSession}
-              onClickManageSessions={openManageSessionsModal}
+              onClickManageSessions={onOpenManageSessionsModal}
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
@@ -230,8 +233,8 @@ const CampOverviewPage = (): JSX.Element => {
                   };
                 })}
               onSaveChanges={onManageSessionsSave}
-              isOpen={isOpen}
-              onClose={onClose}
+              isOpen={isOpenManageSessionsModal}
+              onClose={onCloseManageSessionsModal}
             />
           </>
         ) : (
