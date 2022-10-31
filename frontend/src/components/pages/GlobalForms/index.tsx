@@ -57,6 +57,7 @@ const GlobalFormsPage = (): React.ReactElement => {
     );
 
     if (updatedWaiver.clauses) {
+
       setWaiverClauses(updatedWaiver.clauses);
 
       const newSectionCharCode: number = updatedWaiver.clauses.length + 64;
@@ -77,6 +78,70 @@ const GlobalFormsPage = (): React.ReactElement => {
       });
     }
   };
+
+  const onEditWaiverSection = async (clauseText: string, clauseIsRequired: boolean, clauseIdx: number) => {
+    const curClauses = waiverClauses;
+    const clauseToEdit = curClauses[clauseIdx];
+    clauseToEdit.text = clauseText;
+    clauseToEdit.required = clauseIsRequired;
+
+    const editWaiverRequest: UpdateWaiverRequest = { clauses: curClauses };
+
+    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(
+      editWaiverRequest,
+    );
+
+    if (updatedWaiver.clauses) {
+      setWaiverClauses(updatedWaiver.clauses);
+
+      const deletedWaiverCode: string = String.fromCharCode(clauseIdx);
+
+      toast({
+        description: `Section ${deletedWaiverCode} has been updated`,
+        status: "success",
+        variant: "subtle",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        description: `Section could not be updated`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  }
+
+  const onDeleteWaiverSection = async (idx: number) => {
+    const curClauses = waiverClauses;
+    curClauses.splice(idx, 1);
+
+    const deleteWaiverRequest: UpdateWaiverRequest = { clauses: curClauses };
+
+    const updatedWaiver: UpdateWaiverRequest = await AdminAPIClient.updateWaiver(
+      deleteWaiverRequest,
+    );
+
+    if (updatedWaiver.clauses) {
+      setWaiverClauses(updatedWaiver.clauses);
+
+      const deletedWaiverCode: string = String.fromCharCode(idx);
+
+      toast({
+        description: `Section ${deletedWaiverCode} has been deleted`,
+        status: "success",
+        variant: "subtle",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        description: `Section could not be deleted`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  }
 
   return (
     <>
@@ -110,7 +175,7 @@ const GlobalFormsPage = (): React.ReactElement => {
                 <RegistrationFormTemplateTab />
               </TabPanel>
               <TabPanel>
-                <WaiverTab clauses={waiverClauses} />
+                <WaiverTab clauses={waiverClauses} onEditWaiverSection={onEditWaiverSection} onDeleteWaiverSection={onDeleteWaiverSection}/>
               </TabPanel>
             </TabPanels>
           </Tabs>
