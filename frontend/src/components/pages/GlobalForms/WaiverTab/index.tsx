@@ -6,12 +6,19 @@ import WaiverSectionCard from "./WaiverSectionCard";
 
 interface WaiverTabProps {
   clauses: Array<WaiverClause>;
-  onEditWaiverSection: (clauseText: string, clauseIsRequired: boolean, clauseIdx: number) => void;
+  onEditWaiverSection: (
+    clauseText: string,
+    clauseIsRequired: boolean,
+    clauseIdx: number,
+  ) => void;
   onDeleteWaiverSection: (idx: number) => void;
 }
 
-const WaiverTab = ({ clauses, onEditWaiverSection, onDeleteWaiverSection, }: WaiverTabProps): React.ReactElement => {
-
+const WaiverTab = ({
+  clauses,
+  onEditWaiverSection,
+  onDeleteWaiverSection,
+}: WaiverTabProps): React.ReactElement => {
   return (
     <>
       {clauses && clauses.length > 0 ? (

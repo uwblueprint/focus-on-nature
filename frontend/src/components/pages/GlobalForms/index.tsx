@@ -57,7 +57,6 @@ const GlobalFormsPage = (): React.ReactElement => {
     );
 
     if (updatedWaiver.clauses) {
-
       setWaiverClauses(updatedWaiver.clauses);
 
       const newSectionCharCode: number = updatedWaiver.clauses.length + 64;
@@ -79,7 +78,11 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
-  const onEditWaiverSection = async (clauseText: string, clauseIsRequired: boolean, clauseIdx: number) => {
+  const onEditWaiverSection = async (
+    clauseText: string,
+    clauseIsRequired: boolean,
+    clauseIdx: number,
+  ) => {
     const curClauses = waiverClauses;
     const clauseToEdit = curClauses[clauseIdx];
     clauseToEdit.text = clauseText;
@@ -94,10 +97,10 @@ const GlobalFormsPage = (): React.ReactElement => {
     if (updatedWaiver.clauses) {
       setWaiverClauses(updatedWaiver.clauses);
 
-      const deletedWaiverCode: string = String.fromCharCode(clauseIdx);
+      const waiverCode: string = String.fromCharCode(clauseIdx + 65);
 
       toast({
-        description: `Section ${deletedWaiverCode} has been updated`,
+        description: `Section ${waiverCode} has been updated`,
         status: "success",
         variant: "subtle",
         duration: 3000,
@@ -110,7 +113,7 @@ const GlobalFormsPage = (): React.ReactElement => {
         duration: 3000,
       });
     }
-  }
+  };
 
   const onDeleteWaiverSection = async (idx: number) => {
     const curClauses = waiverClauses;
@@ -125,7 +128,7 @@ const GlobalFormsPage = (): React.ReactElement => {
     if (updatedWaiver.clauses) {
       setWaiverClauses(updatedWaiver.clauses);
 
-      const deletedWaiverCode: string = String.fromCharCode(idx);
+      const deletedWaiverCode: string = String.fromCharCode(idx + 65);
 
       toast({
         description: `Section ${deletedWaiverCode} has been deleted`,
@@ -141,7 +144,7 @@ const GlobalFormsPage = (): React.ReactElement => {
         duration: 3000,
       });
     }
-  }
+  };
 
   return (
     <>
@@ -175,7 +178,11 @@ const GlobalFormsPage = (): React.ReactElement => {
                 <RegistrationFormTemplateTab />
               </TabPanel>
               <TabPanel>
-                <WaiverTab clauses={waiverClauses} onEditWaiverSection={onEditWaiverSection} onDeleteWaiverSection={onDeleteWaiverSection}/>
+                <WaiverTab
+                  clauses={waiverClauses}
+                  onEditWaiverSection={onEditWaiverSection}
+                  onDeleteWaiverSection={onDeleteWaiverSection}
+                />
               </TabPanel>
             </TabPanels>
           </Tabs>
