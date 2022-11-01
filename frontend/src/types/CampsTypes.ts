@@ -46,10 +46,18 @@ export type CampSession = {
   dates: string[];
 };
 
+export type CampSessionResponse = CampSession & { campPriceId: string };
+
 export type ManageCampSessionDetails = Omit<
   CampSession,
   "camp" | "campers" | "waitlist"
 > & { registeredCampers: number };
+
+// { id: string; capacity?: number; dates?: string[] }
+export type UpdateCampSessionsRequest = Partial<
+  Omit<CampSession, "camp" | "campers" | "waitlist">
+> &
+  Pick<CampSession, "id">;
 
 export type FormQuestion = {
   id: string;

@@ -837,12 +837,12 @@ class CampService implements ICampService {
       if (!dbSession) {
         throw new Error("Unable to start database session");
       }
-      dbSession.startTransaction();
+      await dbSession.startTransaction();
 
       const oldCampSessions = await MgCampSession.find({
         _id: { $in: campSessionIds },
         camp: { _id: campId },
-      });
+      }).session(dbSession);
 
       if (oldCampSessions.length !== campSessionIds.length) {
         throw new Error(
@@ -850,20 +850,20 @@ class CampService implements ICampService {
         );
       }
 
-      const camp = await MgCamp.findById(campId);
+      const camp = await MgCamp.findById(campId).session(dbSession);
       if (!camp) {
         throw new Error(`Could not find camp with id=${campId}`);
       }
 
-      const newCampSessions = await Promise.all(
-        updatedCampSessions.map(async (session) => {
+      const newCampSessionPromises = updatedCampSessions.map(
+        async (session): Promise<CampSessionDTO> => {
           if (camp.active) {
             const oldCampSession: CampSession | null = await MgCampSession.findById(
               session.id,
-            );
+            ).session(dbSession);
             if (oldCampSession) {
               if (
-                session.capacity &&
+                (session.capacity || session.capacity === 0) &&
                 oldCampSession.campers &&
                 session.capacity < oldCampSession.campers.length
               ) {
@@ -917,8 +917,16 @@ class CampService implements ICampService {
             dates: newCampSession.dates.map((date) => date.toString()),
             campPriceId: newCampSession.campPriceId,
           };
-        }),
+        },
       );
+
+      const newCampSessions: Array<CampSessionDTO> = [];
+
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const updatedSession of newCampSessionPromises) {
+        newCampSessions.push(updatedSession);
+        console.log(newCampSessions);
+      }
 
       if (newCampSessions.length !== campSessionIds.length) {
         throw new Error(
@@ -930,7 +938,7 @@ class CampService implements ICampService {
 
       return newCampSessions;
     } catch (error: unknown) {
-      dbSession?.abortTransaction();
+      await dbSession?.abortTransaction();
       Logger.error(
         `Failed to update camp sessions. Reason = ${getErrorMessage(error)}`,
       );
