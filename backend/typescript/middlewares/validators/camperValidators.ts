@@ -211,34 +211,6 @@ export const updateCamperDtoValidator = async (
   if (req.body.allergies && !validatePrimitive(req.body.allergies, "string")) {
     return res.status(400).send(getApiValidationError("allergies", "string"));
   }
-  if (!Array.isArray(req.body.earlyDropoff)) {
-    return res.status(400).send("early dropoff is not an array");
-  }
-  // eslint-disable-next-line no-restricted-syntax
-  for (const dropoffDate of req.body.earlyDropoff) {
-    if (
-      !validatePrimitive(dropoffDate, "Date string") ||
-      !validateDate(dropoffDate)
-    ) {
-      return res
-        .status(400)
-        .send(getApiValidationError("earlyDropoff", "Date string"));
-    }
-  }
-  if (!Array.isArray(req.body.latePickup)) {
-    return res.status(400).send("late pickup is not an array");
-  }
-  // eslint-disable-next-line no-restricted-syntax
-  for (const pickupDate of req.body.latePickup) {
-    if (
-      !validatePrimitive(pickupDate, "Date string") ||
-      !validateDate(pickupDate)
-    ) {
-      return res
-        .status(400)
-        .send(getApiValidationError("latePickup", "Date string"));
-    }
-  }
   if (
     req.body.specialNeeds &&
     !validatePrimitive(req.body.specialNeeds, "string")
@@ -246,46 +218,6 @@ export const updateCamperDtoValidator = async (
     return res
       .status(400)
       .send(getApiValidationError("specialNeeds", "string"));
-  }
-  if (
-    req.body.contacts &&
-    (!Array.isArray(req.body.contacts) || req.body.contacts.length !== 2)
-  ) {
-    return res
-      .status(400)
-      .send("There must be 2 emergency contacts specified.");
-  }
-  if (req.body.contacts) {
-    for (let i = 0; i < req.body.contacts.length; i += 1) {
-      const contact = req.body.contacts[i];
-      if (!validatePrimitive(contact.firstName, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("contact firstName", "string"));
-      }
-      if (!validatePrimitive(contact.lastName, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("contact lastName", "string"));
-      }
-      if (!validatePrimitive(contact.email, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("contact email", "string"));
-      }
-      if (!validatePrimitive(contact.phoneNumber, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("contact phoneNumber", "string"));
-      }
-      if (!validatePrimitive(contact.relationshipToCamper, "string")) {
-        return res
-          .status(400)
-          .send(
-            getApiValidationError("contact relationshipToCamper", "string"),
-          );
-      }
-    }
   }
   if (
     req.body.formResponses &&
@@ -297,22 +229,6 @@ export const updateCamperDtoValidator = async (
   }
   if (req.body.hasPaid && !validatePrimitive(req.body.hasPaid, "boolean")) {
     return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
-  }
-  if (!Array.isArray(req.body.optionalClauses)) {
-    return res.status(400).send("optional clauses must be an array");
-  }
-  // eslint-disable-next-line no-restricted-syntax
-  for (const optionalClause of req.body.optionalClauses) {
-    if (!validatePrimitive(optionalClause.clause, "string")) {
-      return res
-        .status(400)
-        .send(getApiValidationError("optionalClause.clause", "string"));
-    }
-    if (!validatePrimitive(optionalClause.agreed, "boolean")) {
-      return res
-        .status(400)
-        .send(getApiValidationError("optionalClause.agreed", "boolean"));
-    }
   }
   return next();
 };

@@ -2,9 +2,39 @@ import { BEARER_TOKEN } from "../constants/AuthConstants";
 import {
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
+  EditCamperInfoFields,
   Camper,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
+
+const updateCampersById = async (
+  id: Array<string>,
+  camperData: EditCamperInfoFields,
+): Promise<Array<Camper>> => {
+  try {
+    const body = { camperIds: id, ...camperData };
+
+    // Can't send Map<string, string> over HTTP so need to convert to Object before
+    if (camperData.formResponses instanceof Map) {
+      body.formResponses = Object.assign(
+        {},
+        ...Array.from(camperData.formResponses.entries()).map(
+          ([question, response]) => ({
+            [question]: response,
+          }),
+        ),
+      );
+    }
+
+    const { data } = await baseAPIClient.patch(`/campers`, body, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+
+    return data;
+  } catch (error) {
+    return error as Array<Camper>;
+  }
+};
 
 const getWaitlistedCamperById = async (
   id: string,
@@ -83,6 +113,7 @@ export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
+  updateCampersById,
   getCampersByChargeIdAndSessionId,
   deleteMultipleCampersById,
 };

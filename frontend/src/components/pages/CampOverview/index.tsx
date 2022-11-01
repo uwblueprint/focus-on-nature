@@ -102,6 +102,7 @@ const CampOverviewPage = (): JSX.Element => {
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
+              formQuestions={camp.formQuestions}
               handleRefetch={handleRefetch}
             />
             <ManageSessionsModal
