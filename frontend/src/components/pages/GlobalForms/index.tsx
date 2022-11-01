@@ -79,14 +79,13 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   const onEditWaiverSection = async (
-    clauseText: string,
-    clauseIsRequired: boolean,
+    clauseData: WaiverClause,
     clauseIdx: number,
   ) => {
     const curClauses = waiverClauses;
     const clauseToEdit = curClauses[clauseIdx];
-    clauseToEdit.text = clauseText;
-    clauseToEdit.required = clauseIsRequired;
+    clauseToEdit.text = clauseData.text;
+    clauseToEdit.required = clauseData.required;
 
     const editWaiverRequest: UpdateWaiverRequest = { clauses: curClauses };
 

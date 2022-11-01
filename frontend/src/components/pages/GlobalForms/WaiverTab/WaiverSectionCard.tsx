@@ -5,26 +5,16 @@ import {
   Flex,
   HStack,
   Spacer,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
-  Textarea,
-  Checkbox,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { WaiverClause } from "../../../../types/AdminTypes";
+import EditWaiverModal from "./EditWaiverModal";
+import DeleteWaiverModal from "./DeleteWaiverModal";
 
 interface WaiverSectionCardProps {
   clauseIdx: number;
   clauseData: WaiverClause;
-  onEditWaiverSection: (
-    clauseText: string,
-    clauseIsRequired: boolean,
-    clauseIdx: number,
-  ) => void;
+  onEditWaiverSection: (clause: WaiverClause, clauseIdx: number) => void;
   onDeleteWaiverSection: (idx: number) => void;
 }
 const WaiverSectionCard = ({
@@ -38,34 +28,17 @@ const WaiverSectionCard = ({
     return `Section ${String.fromCharCode(code + number)}`;
   }
 
-  const [clauseText, setClauseText] = React.useState(clauseData.text);
-  const [isRequired, setIsRequired] = React.useState(clauseData.required);
-  const [isDeleteOpen, setDeleteOpen] = React.useState(false);
-  const [isEditOpen, setEditOpen] = React.useState(false);
+  const {
+    isOpen: editModalIsOpen,
+    onOpen: editModalOnOpen,
+    onClose: editModalOnClose,
+  } = useDisclosure();
 
-  function onDeleteOpen() {
-    setDeleteOpen(true);
-  }
-  function onDeleteClose() {
-    setDeleteOpen(false);
-  }
-
-  function onDeleteConfirm() {
-    onDeleteWaiverSection(clauseIdx);
-    setDeleteOpen(false);
-  }
-
-  function onEditOpen() {
-    setEditOpen(true);
-  }
-  function onEditClose() {
-    setEditOpen(false);
-  }
-
-  function onEditConfirm() {
-    onEditWaiverSection(clauseText, isRequired, clauseIdx);
-    setEditOpen(false);
-  }
+  const {
+    isOpen: deleteModalIsOpen,
+    onOpen: deleteModalOnOpen,
+    onClose: deleteModalOnClose,
+  } = useDisclosure();
 
   return (
     <>
@@ -91,7 +64,7 @@ const WaiverSectionCard = ({
             <Text
               textStyle="buttonSemiBold"
               _hover={{ cursor: "pointer" }}
-              onClick={onEditOpen}
+              onClick={editModalOnOpen}
               color="text.success.100"
             >
               Edit
@@ -99,7 +72,7 @@ const WaiverSectionCard = ({
             <Text
               textStyle="buttonSemiBold"
               _hover={{ cursor: "pointer" }}
-              onClick={onDeleteOpen}
+              onClick={deleteModalOnOpen}
               color="text.critical.100"
             >
               Delete
@@ -108,72 +81,19 @@ const WaiverSectionCard = ({
         </Flex>
         <Text>{clauseData.text}</Text>
       </Box>
-      <>
-        <Modal isOpen={isEditOpen} onClose={onEditClose} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              <Text textStyle="heading">Edit waiver section</Text>
-            </ModalHeader>
-            <ModalBody>
-              <Text textStyle="bodyRegular">Edit waiver</Text>
-              <Textarea
-                my="8px"
-                value={clauseText}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                  setClauseText(e.target.value);
-                }}
-                textStyle="bodyRegular"
-                h="300px"
-              />
-              <Checkbox
-                size="md"
-                isChecked={isRequired}
-                colorScheme="green"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setIsRequired(e.target.checked)
-                }
-              >
-                Mark as a required section
-              </Checkbox>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={onEditClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="green" onClick={onEditConfirm}>
-                Save
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalBody>
-            <Text mt="16px" textStyle="heading">
-              Delete waiver section?
-            </Text>
-
-            <Text mb="28px" mt="12px" textStyle="bodyRegular">
-              Are you sure you want to delete this waiver section?
-            </Text>
-
-            <Text textStyle="bodyBold">Note: this action is irreversible.</Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={onDeleteClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="red" onClick={onDeleteConfirm}>
-              Remove
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <EditWaiverModal
+        clauseData={clauseData}
+        clauseIdx={clauseIdx}
+        onEditModalClose={editModalOnClose}
+        onEditWaiverSection={onEditWaiverSection}
+        editModalIsOpen={editModalIsOpen}
+      />
+      <DeleteWaiverModal
+        deleteModalIsOpen={deleteModalIsOpen}
+        clauseIdx={clauseIdx}
+        onDeleteModalClose={deleteModalOnClose}
+        onDeleteWaiverSection={onDeleteWaiverSection}
+      />
     </>
   );
 };

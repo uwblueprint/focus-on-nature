@@ -6,11 +6,7 @@ import WaiverSectionCard from "./WaiverSectionCard";
 
 interface WaiverTabProps {
   clauses: Array<WaiverClause>;
-  onEditWaiverSection: (
-    clauseText: string,
-    clauseIsRequired: boolean,
-    clauseIdx: number,
-  ) => void;
+  onEditWaiverSection: (clauseData: WaiverClause, clauseIdx: number) => void;
   onDeleteWaiverSection: (idx: number) => void;
 }
 
