@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import {
   CampResponse,
   CampSession,
@@ -70,4 +71,19 @@ export const getTextFromQuestionType = (questionType: QuestionType): string => {
     default:
       return "";
   }
+};
+
+export const getFormattedCampDateRange = (
+  firstCampSessionDates: Array<string>,
+  lastCampSessionDates: Array<string>,
+): string => {
+  if (firstCampSessionDates && lastCampSessionDates) {
+    const startDate = format(new Date(firstCampSessionDates[0]), "PP");
+    const lastDate = format(
+      new Date(lastCampSessionDates[lastCampSessionDates.length - 1]),
+      "PP",
+    );
+    return `${startDate} - ${lastDate}`;
+  }
+  return "";
 };

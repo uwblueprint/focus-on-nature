@@ -6,9 +6,9 @@ import {
 } from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
 
-const getAllCamps = async (): Promise<Array<CampResponse>> => {
+const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
   try {
-    const { data } = await baseAPIClient.get(`/camp`, {
+    const { data } = await baseAPIClient.get(`/camp?${year}`, {
       headers: { Authorization: BEARER_TOKEN },
     });
     return data;

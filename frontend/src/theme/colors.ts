@@ -141,6 +141,9 @@ const colors = {
     red: {
       100: "#FFD0D0",
     },
+    yellow: {
+      100: "#FFF5EA",
+    },
   },
 };
 

@@ -1,12 +1,17 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
+  Button,
   Container,
   HStack,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   Table,
   Tag,
@@ -17,53 +22,90 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React from "react";
-import { CampResponse } from "../../../types/CampsTypes";
+import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import {
+  campStatus,
+  getFormattedCampDateRange,
+  locationString,
+} from "../../../utils/CampUtils";
+import CampStatusLabel from "./CampStatusLabel";
 
-const CampsTable = (): JSX.Element => {
-  enum CampStatusFilters {
-    PUBLISHED = "Published",
-    DRAFTS = "Drafts",
-    COMPLETED = "Completed",
-  }
+interface CampsTableProps {
+  year: number;
+}
 
+const CampsTable = (props: CampsTableProps): JSX.Element => {
+  const { year } = props;
 
-  const filterOptions = [CampStatusFilters.PUBLISHED, CampStatusFilters.DRAFTS, CampStatusFilters.COMPLETED];
+  const filterOptions = [
+    CampStatus.PUBLISHED,
+    CampStatus.DRAFT,
+    CampStatus.COMPLETED,
+  ];
 
+  const [yearState, setYearState] = React.useState(year);
   const [camps, setCamps] = React.useState([] as CampResponse[]);
   const [search, setSearch] = React.useState("");
-  const [selectedFilter, setSelectedFilter] = React.useState<CampStatusFilters>(
-    CampStatusFilters.PUBLISHED,
+  const [selectedFilter, setSelectedFilter] = React.useState<CampStatus | "">(
+    "",
   );
+  const [campToEdit, setCampToEdit] = React.useState<CampResponse | null>(null);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   React.useEffect(() => {
     const getCamps = async () => {
-      const res = await CampsAPIClient.getAllCamps();
-      if (res.length !== undefined) setCamps(res);
+      const res = await CampsAPIClient.getAllCamps(year);
+      if (res.length) setCamps(res);
     };
 
     getCamps();
   }, []);
 
-  const tableData = React.useMemo(() => {
-    let filteredCamps;
-    if (selectedFilter === CampStatusFilters.PUBLISHED) filteredCamps = camps.filter((camp) => camp.active);
-    else if (selectedFilter === CampStatusFilters.DRAFTS)
-      filteredCamps = camps.filter((camp) => camp.active);
-    else filteredCamps = camps.filter((camp) => !camp.active);
+  React.useEffect(() => {
+    setYearState(year);
+  }, [year]);
 
+  const tableData = React.useMemo(() => {
+    let filteredCamps = camps;
+    if (selectedFilter === CampStatus.PUBLISHED)
+      filteredCamps = camps.filter(
+        (camp) => campStatus(camp) === CampStatus.PUBLISHED,
+      );
+    else if (selectedFilter === CampStatus.DRAFT)
+      filteredCamps = camps.filter(
+        (camp) => campStatus(camp) === CampStatus.DRAFT,
+      );
+    else if (selectedFilter === CampStatus.COMPLETED)
+      filteredCamps = camps.filter(
+        (camp) => campStatus(camp) === CampStatus.COMPLETED,
+      );
     if (!search) return filteredCamps;
     return filteredCamps.filter(
       (camp) =>
-      camp.name.toLowerCase().includes(search.toLowerCase())
+        camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [search, selectedFilter, camps]);
 
+  const handleFilterSelect = (selectedOption: CampStatus) => {
+    // handle unselecting the current selected filter
+    if (selectedFilter === selectedOption) {
+      setSelectedFilter("");
+    } else {
+      setSelectedFilter(selectedOption);
+    }
+  };
+
+  const handleStatusChangePopoverTrigger = (camp: CampResponse) => {
+    setCampToEdit(camp);
+    onOpen();
+  };
 
   return (
     <Container
@@ -101,7 +143,7 @@ const CampsTable = (): JSX.Element => {
                   variant={selectedFilter === option ? "solid" : "outline"}
                   colorScheme={selectedFilter === option ? "green" : "gray"}
                   px="1em"
-                  onClick={() => setSelectedFilter(option)}
+                  onClick={() => handleFilterSelect(option)}
                 >
                   <TagLabel>{option}</TagLabel>
                 </Tag>
@@ -121,14 +163,49 @@ const CampsTable = (): JSX.Element => {
             <Th color="text.default.100">Camp Name</Th>
             <Th color="text.default.100">Camp Dates</Th>
             <Th color="text.default.100">Camp Status</Th>
+            <Th color="text.default.100"> </Th>
           </Tr>
         </Thead>
         <Tbody>
           {tableData.map((camp, key) => (
             <Tr key={key}>
-              <Td>{`${camp.name}`}</Td>
-              <Td>{camp.startTime}</Td>
-              <Td>asdfghj</Td>
+              <Td>
+                <Text textStyle="bodyBold">{camp.name}</Text>
+                <Text textStyle="bodyRegular">
+                  {locationString(camp.location)}
+                </Text>
+              </Td>
+              <Td>
+                {camp.campSessions.length > 0
+                  ? getFormattedCampDateRange(
+                      camp.campSessions[0].dates,
+                      camp.campSessions[camp.campSessions.length - 1].dates,
+                    )
+                  : ""}
+              </Td>
+              <Td>
+                <CampStatusLabel status={campStatus(camp)} />
+              </Td>
+              <Td>
+                <Popover placement="bottom-end">
+                  <PopoverTrigger>
+                    <IconButton
+                      aria-label="More options button"
+                      icon={<FaEllipsisV />}
+                      variant=""
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent width="inherit">
+                    <PopoverBody
+                      as={Button}
+                      bg="background.white.100"
+                      onClick={(e) => handleStatusChangePopoverTrigger(camp)}
+                    >
+                      <Text textStyle="buttonRegular">Placeholder text</Text>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Td>
             </Tr>
           ))}
         </Tbody>
