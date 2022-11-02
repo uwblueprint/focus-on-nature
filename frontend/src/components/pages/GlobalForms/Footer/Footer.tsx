@@ -37,6 +37,7 @@ const Footer = ({
   const onOpenModal = isWaiverFooter
     ? waiverAddSectionOnOpen
     : onAddQuestionOpen;
+
   const buttonText = isWaiverFooter ? "+ Add form section" : "+ Add question";
 
   return (
@@ -47,7 +48,7 @@ const Footer = ({
         onAddWaiverSectionClick={onAddWaiverSectionClick}
       />
       <AddQuestionModal
-        isOpen={isAddQuestionOpen}
+        isOpen={isAddQuestionOpen && !isWaiverFooter}
         onClose={onAddQuestionClose}
         onSave={onAddFormQuestionToTemplateClick}
       />

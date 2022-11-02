@@ -150,8 +150,8 @@ const GlobalFormsPage = (): React.ReactElement => {
     const newFormQuestion = await AdminAPIClient.addQuestionToTemplate(
       formQuestion,
     );
-    
-    if (newFormQuestion.id !== undefined) {
+
+    if (newFormQuestion.id) {
       toast({
         description: `Form question was added to the form template`,
         status: "success",
