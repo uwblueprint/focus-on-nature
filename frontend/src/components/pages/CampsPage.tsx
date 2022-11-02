@@ -1,10 +1,12 @@
 import React from "react";
+import { Box } from "@chakra-ui/react";
+import CampsListPage from "./CampsList";
 
 const CampsPage = (): React.ReactElement => {
   return (
-    <div>
-      <h2>Camps List Page</h2>
-    </div>
+    <Box>
+      <CampsListPage />
+    </Box>
   );
 };
 
