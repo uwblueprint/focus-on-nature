@@ -5,20 +5,20 @@ import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
 
 enum CampCreationPages {
-  CampDetailsPage,
+  CampCreationDetailsPage,
   ScheduleSessionsPage,
   RegistrationFormPage,
 }
 
 const CampCreationPage = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
-    CampCreationPages.CampDetailsPage,
+    CampCreationPages.CampCreationDetailsPage,
   );
 
-  const getPageComponent = (nextPage: CampCreationPages) => {
+  const getCampCreationStepComponent = (nextPage: CampCreationPages) => {
     // will also need logic blocking pages if current page not complete
     switch (nextPage) {
-      case CampCreationPages.CampDetailsPage:
+      case CampCreationPages.CampCreationDetailsPage:
         return <CampDetails />;
       case CampCreationPages.ScheduleSessionsPage:
         return <ScheduleSessions />;
@@ -31,7 +31,11 @@ const CampCreationPage = (): JSX.Element => {
 
   return (
     <Box>
-      <Button onClick={() => setCurrentPage(CampCreationPages.CampDetailsPage)}>
+      <Button
+        onClick={() =>
+          setCurrentPage(CampCreationPages.CampCreationDetailsPage)
+        }
+      >
         Camp Details
       </Button>
       <Button
@@ -45,7 +49,9 @@ const CampCreationPage = (): JSX.Element => {
         Registration Form
       </Button>
 
-      {getPageComponent(currentPage)}
+      <Box my="50px" mx="228px">
+        {getCampCreationStepComponent(currentPage)}
+      </Box>
     </Box>
   );
 };

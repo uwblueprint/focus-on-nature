@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import CampsListPage from "./CampsList";
 
 const CampsPage = (): React.ReactElement => {

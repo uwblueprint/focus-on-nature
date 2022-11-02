@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "@chakra-ui/react";
 
-const CampDetails = (): JSX.Element => {
+const CampCreationDetails = (): JSX.Element => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Camp Details</Text>
@@ -9,4 +9,4 @@ const CampDetails = (): JSX.Element => {
   );
 };
 
-export default CampDetails;
+export default CampCreationDetails;
