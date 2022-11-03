@@ -10,6 +10,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import { CreateCampSession } from "../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 
 const AddSessionsForm = (): JSX.Element => {
@@ -51,7 +53,63 @@ const AddSessionsForm = (): JSX.Element => {
       e.preventDefault();
       setSessionDaysHasError(true);
     }
+
+    const campId = "63538da50ec7fc7b4a841085";
+    const campCapcity = 10;
+    const campSessionsToAdd: CreateCampSession[] = [];
+    const weekDayValues = Array.from(weekDays.values());
+    const weekDay: number = startDate.getUTCDate(); // 0-6
+
+    // get an array of base start dates
+
+    // from start date, get all the selected days, create the new sessions days
+    for (let i = 0; i < successiveSessions; i += 1) {
+      const newCampSession: CreateCampSession = {
+        camp: campId,
+        capacity: campCapcity,
+        campers: [],
+        waitlist: [],
+        dates: [],
+      };
+      const dates: Date[] = [];
+
+      let counter = 0;
+      let currIndex = startDate.getUTCDay();
+      while (counter < 7) {
+        if (weekDayValues[currIndex]) {
+          const newDate = new Date(startDate.getTime());
+          newDate.setDate(newDate.getDate() + counter);
+          dates.push(newDate);
+        }
+        currIndex = (currIndex + counter) % 7;
+        counter += 1;
+      }
+
+      newCampSession.dates = dates;
+      campSessionsToAdd.push(newCampSession);
+    }
+
+    // just update the state 
+
+    // update the db
+    // const newCampSessions = CampsAPIClient.addCampSession(
+    //   campId,
+    //   campSessionsToAdd,
+    // ); // returns a list of newly inserted camp sessions
+
+    // update the parent state
+    // const [scheduledSessions, setScheduledSessions] = useState<Array<Array<string>>>([]);
+    // update the state with new camp sessions
   };
+
+  const newDate = new Date(startDate.getTime());
+  newDate.setDate(newDate.getDate() + 1);
+
+  console.log(startDate.toJSON());
+  console.log(startDate);
+  console.log(newDate);
+  console.log(Array.from(weekDays.values()));
+  console.log(5 % 7);
 
   return (
     <Box paddingX="64px" paddingY="80px">

@@ -46,6 +46,14 @@ export type CampSession = {
   dates: string[];
 };
 
+export type CreateCampSession = {
+  camp: string;
+  capacity: number;
+  campers: Camper[];
+  waitlist: WaitlistedCamper[];
+  dates: Date[];
+}
+
 export type ManageCampSessionDetails = Omit<
   CampSession,
   "camp" | "campers" | "waitlist"
