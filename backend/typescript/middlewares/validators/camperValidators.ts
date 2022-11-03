@@ -138,20 +138,20 @@ export const createCampersDtoValidator = async (
       return res.status(400).send("Campers must have the same chargeId.");
     }
     if (camper.charges) {
-      if (!validatePrimitive(camper.charges.camp, "integer")) {
+      if (!validatePrimitive(camper.charges.camp, "number")) {
         return res
           .status(400)
-          .send(getApiValidationError("charges.camp", "integer"));
+          .send(getApiValidationError("charges.camp", "number"));
       }
-      if (!validatePrimitive(camper.charges.earlyDropoff, "integer")) {
+      if (!validatePrimitive(camper.charges.earlyDropoff, "number")) {
         return res
           .status(400)
-          .send(getApiValidationError("charges.earlyDropoff", "integer"));
+          .send(getApiValidationError("charges.earlyDropoff", "number"));
       }
-      if (!validatePrimitive(camper.charges.latePickup, "integer")) {
+      if (!validatePrimitive(camper.charges.latePickup, "number")) {
         return res
           .status(400)
-          .send(getApiValidationError("charges.latePickup", "integer"));
+          .send(getApiValidationError("charges.latePickup", "number"));
       }
     } else {
       return res.status(400).send(getApiValidationError("charges", "mixed"));
