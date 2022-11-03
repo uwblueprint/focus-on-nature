@@ -308,6 +308,48 @@ class CamperService implements ICamperService {
     }
   }
 
+  async getCampersByChargeIdAndSessionId(
+    chargeId: string,
+    sessionId: string,
+  ): Promise<CamperDTO[]> {
+    try {
+      // eslint-disable-next-line prettier/prettier
+      const campers: Camper[] = await MgCamper.find({ chargeId, campSession: sessionId });
+
+      if (!campers || campers.length === 0) {
+        throw new Error(
+          `Campers with Charge Id ${chargeId} and Session Id ${sessionId} not found.`,
+        );
+      }
+
+      const camperDTO: CamperDTO[] = campers.map((camper) => {
+        return {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
+          formResponses: camper.formResponses,
+          registrationDate: camper.registrationDate.toString(),
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
+        };
+      });
+
+      return camperDTO;
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+  }
+
   async createWaitlistedCamper(
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO> {

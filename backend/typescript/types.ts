@@ -33,6 +33,8 @@ export type FormQuestionDTO = {
   options?: string[];
 };
 
+export type CreateFormQuestionDTO = Omit<FormQuestionDTO, "id">;
+
 export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
@@ -177,15 +179,14 @@ export type CreateCampSessionsDTO = Array<
   Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
 
-// export type CampSessionDTO = {
-//   capacity: number;
-//   dates: string[];
-// };
-
-export type UpdateCampSessionDTO = Omit<
-  CampSessionDTO,
-  "id" | "camp" | "campers" | "waitlist" | "campPriceId"
+// Exposes "dates: string[]" and "capacity: number"
+export type UpdateCampSessionDTO = Partial<
+  Omit<CampSessionDTO, "id" | "camp" | "campers" | "waitlist" | "campPriceId">
 >;
+
+export type UpdateCampSessionsDTO = Partial<
+  Omit<CampSessionDTO, "camp" | "campers" | "waitlist" | "campPriceId">
+> & { id: string };
 
 export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];
 
@@ -197,7 +198,14 @@ export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
-  "id" | "registrationDate" | "chargeId" | "charges"
+  | "id"
+  | "registrationDate"
+  | "chargeId"
+  | "charges"
+  | "earlyDropoff"
+  | "latePickup"
+  | "contacts"
+  | "optionalClauses"
 >;
 
 export type AuthDTO = Token & UserDTO;

@@ -3,14 +3,11 @@ import CampService from "../campService";
 import {
   CreateCampDTO,
   CreateCampSessionsDTO,
-  CreateFormQuestionsDTO,
   UpdateCampSessionDTO,
   UpdateCampDTO,
-  CampDTO,
 } from "../../../types";
 import MgCampSession from "../../../models/campSession.model";
 import MgCamp from "../../../models/camp.model";
-import MgFormQuestion from "../../../models/formQuestion.model";
 import FileStorageService from "../fileStorageService";
 import IFileStorageService from "../../interfaces/fileStorageService";
 
@@ -258,7 +255,7 @@ describe("mongo campService", (): void => {
 
     expect(campSession?.camp.toString()).toEqual(res.id);
     expect(campSession?.dates.map((date) => new Date(date))).toEqual(
-      updatedTestCampSession.dates.map((date) => new Date(date)),
+      updatedTestCampSession.dates?.map((date) => new Date(date)),
     );
     expect(campSession?.capacity).toEqual(updatedTestCampSession.capacity);
     expect(campSession?.campers).toHaveLength(0);
