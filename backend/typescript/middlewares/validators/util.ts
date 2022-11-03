@@ -1,6 +1,7 @@
 type Type =
   | "string"
   | "integer"
+  | "number"
   | "boolean"
   | "mixed"
   | "Date string"
@@ -33,6 +34,9 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
     }
     case "integer": {
       return typeof value === "number" && Number.isInteger(value);
+    }
+    case "number": {
+      return typeof value === "number";
     }
     default: {
       return false;

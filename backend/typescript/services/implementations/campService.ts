@@ -414,9 +414,9 @@ class CampService implements ICampService {
         oldCamp.active &&
         (camp.fee !== oldCamp.fee ||
           camp.dropoffFee !== oldCamp.dropoffFee ||
-          camp.pickupFee !== oldCamp.dropoffFee)
+          camp.pickupFee !== oldCamp.pickupFee)
       ) {
-        throw new Error(`Error - cannot update fee of active camp`);
+        throw new Error(`Error - cannot update fees of active camp`);
       }
 
       const fileName = oldCamp.fileName ?? uuidv4();
