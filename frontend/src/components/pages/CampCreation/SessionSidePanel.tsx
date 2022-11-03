@@ -10,7 +10,6 @@ const SessionSidePanel = (): JSX.Element => {
       position="absolute"
       right="0"
       background="background.grey.200"
-      alignSelf="flex-end"
     >
       <AddSessionsForm />
     </Box>
