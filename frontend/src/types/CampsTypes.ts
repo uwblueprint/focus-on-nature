@@ -59,6 +59,11 @@ export type UpdateCampSessionsRequest = Partial<
 > &
   Pick<CampSession, "id">;
 
+export type QuestionCategory =
+  | "PersonalInfo"
+  | "CampSpecific"
+  | "EmergencyContact";
+
 export type FormQuestion = {
   id: string;
   type: QuestionType;
@@ -66,4 +71,5 @@ export type FormQuestion = {
   required: boolean;
   description?: string;
   options?: string[];
+  category: QuestionCategory
 };

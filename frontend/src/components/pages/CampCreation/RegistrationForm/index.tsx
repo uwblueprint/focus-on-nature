@@ -1,11 +1,36 @@
-import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import React, {useState} from "react";
+import {Button, HStack, Text, Accordion } from "@chakra-ui/react";
+import { FormQuestion } from "../../../../types/CampsTypes";
+import CamperInfoAccordion from "./CamperInfoAccordion";
 
-const RegistrationFormPage = (): JSX.Element => {
+type RegistrationFormPageProps = {
+  campQuestions : Array<FormQuestion>;
+}
+
+const RegistrationFormPage = ({
+  campQuestions
+}: RegistrationFormPageProps): JSX.Element => {
+
+  const camperInfoQuestions = campQuestions.filter(question => question.category === "PersonalInfo");
+  const campSpecificQuestions = campQuestions.filter(question => question.category === "CampSpecific");
+  const emergencyContactQuestions = campQuestions.filter(question => question.category === "EmergencyContact");
+
   return (
-    <Box>
-      <Text textStyle="displayXLarge">Registration Information</Text>
-    </Box>
+    <>
+      <HStack display="flex" justifyContent="space-between">
+        <Text mb="35px" textStyle="displayXLarge">
+          Registration Information
+        </Text>
+        <Button>
+          Add Question
+        </Button>
+      </HStack>
+      <Accordion allowToggle>
+          <CamperInfoAccordion 
+            camperInfoQuestions={camperInfoQuestions}
+          />
+      </Accordion>
+    </>
   );
 };
 

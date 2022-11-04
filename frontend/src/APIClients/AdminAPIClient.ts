@@ -1,6 +1,6 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
 import baseAPIClient from "./BaseAPIClient";
-import { UpdateWaiverRequest, Waiver } from "../types/AdminTypes";
+import { FormTemplate, UpdateWaiverRequest, Waiver } from "../types/AdminTypes";
 
 const updateWaiver = async (
   updateWaiverData: UpdateWaiverRequest,
@@ -30,7 +30,21 @@ const getWaiver = async (): Promise<Waiver> => {
   }
 };
 
+const getFormTemplate = async () : Promise<FormTemplate> => {
+  try{
+    const {data} = await baseAPIClient.get(
+      '/admin/formTemplate',
+      { headers: { Authorization: BEARER_TOKEN }}
+    );
+    console.log(data);
+    return data;
+  } catch (error) {
+    return error as FormTemplate;
+  }
+}
+
 export default {
   updateWaiver,
   getWaiver,
+  getFormTemplate,
 };
