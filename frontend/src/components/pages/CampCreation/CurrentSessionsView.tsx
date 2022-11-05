@@ -30,6 +30,8 @@ const CurrentSessionsView = ({
               key={currIndex}
               currIndex={currIndex}
               scheduledSession={session}
+              scheduledSessions={scheduledSessions}
+              setScheduledSessions={setScheduledSessions}
             />
           ))}
         </>
