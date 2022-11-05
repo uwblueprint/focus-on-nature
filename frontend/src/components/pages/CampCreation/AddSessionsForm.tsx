@@ -16,11 +16,13 @@ import SessionDayButton from "./SessionDayButton";
 type AddSessionsFormProps = {
   scheduledSessions: CreateCampSession[];
   setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
+  setShowAddSessions: Dispatch<SetStateAction<boolean>>;
 };
 
 const AddSessionsForm = ({
   scheduledSessions,
   setScheduledSessions,
+  setShowAddSessions,
 }: AddSessionsFormProps): JSX.Element => {
   const [startDate, setStartDate] = React.useState<Date>(new Date());
   const [successiveSessions, setSuccessiveSessions] = React.useState<number>(0);
@@ -71,6 +73,7 @@ const AddSessionsForm = ({
           startDate: sessionStartDate,
           endDate: new Date(),
           dates: [],
+          selectedWeekDays: weekDays,
         };
         const dates: Date[] = [];
 
@@ -95,21 +98,27 @@ const AddSessionsForm = ({
       );
 
       setScheduledSessions(updatedSessions);
-      // setStartDate(new Date());
-      // setSuccessiveSessions(0);
-      // setWeekDays(emptyWeekDays);
+
+      setStartDate(new Date());
+      setSuccessiveSessions(0);
+      setWeekDays(emptyWeekDays);
+      setShowAddSessions(false);
     }
     e.preventDefault();
   };
 
-  console.log(startDate.getDay());
-  console.log(Array.from(weekDays.values()));
-
   return (
     <Box paddingX="64px" paddingY="80px">
+      <HStack justifyContent="space-between" marginBottom={10}>
+        <Text textStyle="displayLarge">Add Camp Session(s)</Text>
+        {scheduledSessions.length !== 0 && (
+          <Button colorScheme="gray" onClick={() => setShowAddSessions(false)}>
+            Cancel
+          </Button>
+        )}
+      </HStack>
       <form onSubmit={handleSubmit}>
         <VStack align="flex-start" spacing="30px">
-          <Text textStyle="displayLarge">Add Camp Session(s)</Text>
           <FormControl isRequired>
             <FormLabel>Camp Session Start Date</FormLabel>
             <Input
