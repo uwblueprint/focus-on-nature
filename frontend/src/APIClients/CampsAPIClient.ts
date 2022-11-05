@@ -1,8 +1,6 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
 import {
   CampResponse,
-  CreateCampSession,
-  CampSession,
   CampSessionResponse,
   UpdateCampSessionsRequest,
 } from "../types/CampsTypes";
@@ -52,24 +50,6 @@ const deleteCamp = async (id: string): Promise<boolean> => {
     return false;
   }
 };
-
-// const addCampSession = async (
-//   campId: string,
-//   campSessions: CreateCampSession[],
-// ): Promise<CampSession> => {
-//   try {
-//     const { data } = await baseAPIClient.post(
-//       `/camp/${campId}/session/`,
-//       campSessions,
-//       {
-//         headers: { Authorization: BEARER_TOKEN },
-//       },
-//     );
-//     return data;
-//   } catch (error) {
-//     return error as CampSession;
-//   }
-// };
 
 const updateCampSessions = async (
   campId: string,
