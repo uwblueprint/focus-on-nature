@@ -14,6 +14,12 @@ const CurrentSessionsView = ({
   setScheduledSessions,
   setShowAddSessions,
 }: CurrentSessionsViewProps): JSX.Element => {
+  const deleteSession = (index: number) => {
+    const updatedSessions = scheduledSessions.slice(0);
+    updatedSessions.splice(index, 1);
+    setScheduledSessions(updatedSessions);
+  };
+
   return (
     <Box paddingX="64px" paddingY="80px">
       <HStack justifyContent="space-between">
@@ -30,8 +36,7 @@ const CurrentSessionsView = ({
               key={currIndex}
               currIndex={currIndex}
               scheduledSession={session}
-              scheduledSessions={scheduledSessions}
-              setScheduledSessions={setScheduledSessions}
+              onDelete={deleteSession}
             />
           ))}
         </>

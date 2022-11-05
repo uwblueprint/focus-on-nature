@@ -1,28 +1,20 @@
-import { Box, HStack, Text, VStack, Button } from "@chakra-ui/react";
-import React, { Dispatch, SetStateAction } from "react";
+import { Box, HStack, Text, Button } from "@chakra-ui/react";
+import React from "react";
 import { CreateCampSession } from "../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 
 type ScheduledSessionsRowProps = {
   currIndex: number;
   scheduledSession: CreateCampSession;
-  scheduledSessions: CreateCampSession[];
-  setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
+  onDelete: (index: number) => void;
 };
 
 const ScheduledSessionsRow = ({
   currIndex,
   scheduledSession,
-  scheduledSessions,
-  setScheduledSessions,
+  onDelete,
 }: ScheduledSessionsRowProps): JSX.Element => {
   const weekDays: Map<string, boolean> = scheduledSession.selectedWeekDays;
-
-  const deleteSession = () => {
-    const updatedSessions = scheduledSessions.slice(0);
-    updatedSessions.splice(currIndex, 1);
-    setScheduledSessions(updatedSessions);
-  };
 
   return (
     <Box
@@ -32,13 +24,13 @@ const ScheduledSessionsRow = ({
       padding={5}
       borderRadius={10}
     >
-      <VStack alignItems="flex-start">
+      <Box alignItems="flex-start" flexDirection="column">
         <HStack justifyContent="space-between" w="full">
           <Text textStyle="displayMediumBold">{`Session ${
             currIndex + 1
           }`}</Text>
           <Button
-            onClick={deleteSession}
+            onClick={() => onDelete(currIndex)}
             bgColor="background.white.100"
             color="text.critical.100"
             _hover={{ bg: "background.grey.100" }}
@@ -46,7 +38,10 @@ const ScheduledSessionsRow = ({
             Delete
           </Button>
         </HStack>
-        <Text textStyle="bodyRegular">{`${scheduledSession.startDate.toDateString()} - ${scheduledSession.endDate.toDateString()}`}</Text>
+        <Text
+          marginBottom={3}
+          textStyle="bodyRegular"
+        >{`${scheduledSession.startDate.toDateString()} - ${scheduledSession.endDate.toDateString()}`}</Text>
         <HStack spacing="10px">
           {Array.from(weekDays.keys()).map((day) => (
             <SessionDayButton
@@ -57,7 +52,7 @@ const ScheduledSessionsRow = ({
             />
           ))}
         </HStack>
-      </VStack>
+      </Box>
     </Box>
   );
 };

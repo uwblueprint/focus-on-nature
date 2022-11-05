@@ -16,7 +16,7 @@ const SessionDayButton = ({
     <IconButton
       key={day}
       aria-label="week day button"
-      icon={<Text>{day}</Text>}
+      icon={<Text textStyle="bodyBold">{day}</Text>}
       isRound
       size="lg"
       variant={active ? "primaryGreen" : "backgroundInteractive"}
