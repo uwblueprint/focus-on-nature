@@ -90,6 +90,8 @@ const AddSessionsForm = ({
         }
 
         newCampSession.dates = dates;
+        // eslint-disable-next-line prefer-destructuring
+        newCampSession.startDate = dates[0];
         newCampSession.endDate = dates[dates.length - 1];
         updatedSessions.push(newCampSession);
       }
@@ -123,9 +125,9 @@ const AddSessionsForm = ({
             <FormLabel>Camp Session Start Date</FormLabel>
             <Input
               type="date"
-              onChange={(e: any) => {
-                setStartDate(new Date(`${e.target.value}T00:00`));
-              }}
+              onChange={(e: any) =>
+                setStartDate(new Date(`${e.target.value}T00:00`))
+              }
             />
           </FormControl>
           <FormControl
