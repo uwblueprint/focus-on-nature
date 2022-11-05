@@ -15,6 +15,19 @@ const ScheduledSessionsRow = ({
   onDelete,
 }: ScheduledSessionsRowProps): JSX.Element => {
   const weekDays: Map<string, boolean> = scheduledSession.selectedWeekDays;
+  const startDateOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+  };
+  const endDateOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  };
+  const sessionDatesRangeString = `${scheduledSession.startDate.toLocaleDateString(
+    "en-US",
+    startDateOptions,
+  )} - ${scheduledSession.endDate.toLocaleDateString("en-US", endDateOptions)}`;
 
   return (
     <Box
@@ -38,10 +51,9 @@ const ScheduledSessionsRow = ({
             Delete
           </Button>
         </HStack>
-        <Text
-          marginBottom={3}
-          textStyle="bodyRegular"
-        >{`${scheduledSession.startDate.toDateString()} - ${scheduledSession.endDate.toDateString()}`}</Text>
+        <Text marginBottom={3} textStyle="bodyRegular">
+          {sessionDatesRangeString}
+        </Text>
         <HStack spacing="10px">
           {Array.from(weekDays.keys()).map((day) => (
             <SessionDayButton
