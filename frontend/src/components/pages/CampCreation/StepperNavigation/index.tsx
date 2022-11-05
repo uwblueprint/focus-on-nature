@@ -9,7 +9,7 @@ import {
 import StepperTab from "./StepperTab";
 
 export enum CampCreationPages {
-  CampDetailsPage,
+  CampCreationDetailsPage,
   ScheduleSessionsPage,
   RegistrationFormPage,
 }
@@ -35,9 +35,9 @@ const Stepper = ({
         <StepperTab
           title="Camp Details"
           stepNum={1}
-          focused={currentPage === CampCreationPages.CampDetailsPage}
+          focused={currentPage === CampCreationPages.CampCreationDetailsPage}
           icon={<FontAwesomeIcon icon={faCampground} />}
-          onClick={() => setCurrentPage(CampCreationPages.CampDetailsPage)}
+          onClick={() => setCurrentPage(CampCreationPages.CampCreationDetailsPage)}
         />
         <StepperTab
           title="Schedule Sessions"

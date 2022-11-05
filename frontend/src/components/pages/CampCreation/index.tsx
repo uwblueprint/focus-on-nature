@@ -35,7 +35,7 @@ const CampCreationPage = (): React.ReactElement => {
     registrationFormDummyOne && registrationFormDummyTwo;
 
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
-    CampCreationPages.CampDetailsPage,
+    CampCreationPages.CampCreationDetailsPage,
   );
 
   return (
@@ -48,7 +48,7 @@ const CampCreationPage = (): React.ReactElement => {
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
       <Box m={20}>
-        {currentPage === CampCreationPages.CampDetailsPage && (
+        {currentPage === CampCreationPages.CampCreationDetailsPage && (
           <CampDetails
             campDetailsDummyOne={campDetailsDummyOne}
             campDetailsDummyTwo={campDetailsDummyTwo}
