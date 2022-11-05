@@ -18,7 +18,7 @@ const CurrentSessionsView = ({
     <Box paddingX="64px" paddingY="80px">
       <HStack justifyContent="space-between">
         <Text textStyle="displayLarge">Current Sessions</Text>
-        <Button colorScheme="green" onClick={() => setShowAddSessions(true)}>
+        <Button variant="primaryGreen" onClick={() => setShowAddSessions(true)}>
           Add more session(s)
         </Button>
       </HStack>

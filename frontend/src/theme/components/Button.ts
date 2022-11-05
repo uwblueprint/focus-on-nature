@@ -16,6 +16,19 @@ const Button = {
       py: "20px",
       px: "35px",
     },
+    primaryGreen: {
+      bg: "primary.green.100",
+      color: "white",
+      _hover: {
+        bg: `primary.green.200`,
+      },
+    },
+    backgroundInteractive: {
+      bg: "background.interactive.100",
+      _hover: {
+        bg: `primary.interactive.200`,
+      },
+    },
   },
 };
 

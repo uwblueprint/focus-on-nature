@@ -19,7 +19,7 @@ const SessionDayButton = ({
       icon={<Text>{day}</Text>}
       isRound
       size="lg"
-      colorScheme={active ? "green" : "gray"}
+      variant={active ? "primaryGreen" : "backgroundInteractive"}
       onClick={onSelect ? () => onSelect(day) : () => {}}
     />
   );

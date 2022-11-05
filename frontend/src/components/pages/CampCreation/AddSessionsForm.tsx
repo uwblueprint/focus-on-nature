@@ -160,7 +160,7 @@ const AddSessionsForm = ({
             </FormControl>
             <Text> successive camp sessions</Text>
           </HStack>
-          <Button colorScheme="green" alignSelf="flex-end" type="submit">
+          <Button variant="primaryGreen" alignSelf="flex-end" type="submit">
             Add Camp Session(s)
           </Button>
         </VStack>

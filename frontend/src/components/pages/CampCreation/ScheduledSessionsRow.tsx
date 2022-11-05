@@ -37,7 +37,12 @@ const ScheduledSessionsRow = ({
           <Text textStyle="displayMediumBold">{`Session ${
             currIndex + 1
           }`}</Text>
-          <Button onClick={deleteSession} colorScheme="red">
+          <Button
+            onClick={deleteSession}
+            bgColor="background.white.100"
+            color="text.critical.100"
+            _hover={{ bg: "background.grey.100" }}
+          >
             Delete
           </Button>
         </HStack>
