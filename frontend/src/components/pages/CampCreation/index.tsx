@@ -1,58 +1,95 @@
 import React, { useState } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import CampDetails from "./CampDetails";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
+import Stepper, { CampCreationPages } from "./StepperNavigation/index";
 
-enum CampCreationPages {
-  CampCreationDetailsPage,
-  ScheduleSessionsPage,
-  RegistrationFormPage,
-}
-
-const CampCreationPage = (): JSX.Element => {
-  const [currentPage, setCurrentPage] = useState<CampCreationPages>(
-    CampCreationPages.CampCreationDetailsPage,
+const CampCreationPage = (): React.ReactElement => {
+  // All response state from the three page components.
+  const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
+  const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
+  const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
+  const [scheduleSessionsDummyOne, setScheduleSessionsDummyOne] = useState(
+    false,
+  );
+  const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(
+    false,
+  );
+  const [registrationFormDummyOne, setRegistrationFormDummyOne] = useState(
+    false,
+  );
+  const [registrationFormDummyTwo, setRegistrationFormDummyTwo] = useState(
+    false,
   );
 
-  const getCampCreationStepComponent = (nextPage: CampCreationPages) => {
-    // will also need logic blocking pages if current page not complete
-    switch (nextPage) {
-      case CampCreationPages.CampCreationDetailsPage:
-        return <CampDetails />;
-      case CampCreationPages.ScheduleSessionsPage:
-        return <ScheduleSessions />;
-      case CampCreationPages.RegistrationFormPage:
-        return <RegistrationForm />;
-      default:
-        throw new Error("never reached");
-    }
-  };
+  // State to determine whether or not all required fields have been filled out.
+  // NOTE: This will depend on what type of state a page requires, i.e. determining
+  // if a checkbox is checked is different than determining if an input field is filled.
+
+  const isCampDetailsFilled =
+    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isScheduleSessionsFilled =
+    scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
+  const isRegistrationFormFilled =
+    registrationFormDummyOne && registrationFormDummyTwo;
+
+  const [currentPage, setCurrentPage] = useState<CampCreationPages>(
+    CampCreationPages.CampDetailsPage,
+  );
 
   return (
-    <Box>
-      <Button
-        onClick={() =>
-          setCurrentPage(CampCreationPages.CampCreationDetailsPage)
-        }
-      >
-        Camp Details
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}
-      >
-        Schedule Sessions
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}
-      >
-        Registration Form
-      </Button>
-
-      <Box my="50px" mx="228px">
-        {getCampCreationStepComponent(currentPage)}
+    <>
+      <Stepper
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        isCampDetailsFilled={isCampDetailsFilled}
+        isScheduleSessionsFilled={isScheduleSessionsFilled}
+        isRegistrationFormFilled={isRegistrationFormFilled}
+      />
+      <Box m={20}>
+        {currentPage === CampCreationPages.CampDetailsPage && (
+          <CampDetails
+            campDetailsDummyOne={campDetailsDummyOne}
+            campDetailsDummyTwo={campDetailsDummyTwo}
+            campDetailsDummyThree={campDetailsDummyThree}
+            toggleCampDetailsDummyOne={() =>
+              setCampDetailsDummyOne(!campDetailsDummyOne)
+            }
+            toggleCampDetailsDummyTwo={() =>
+              setCampDetailsDummyTwo(!campDetailsDummyTwo)
+            }
+            handleCampDetailsDummyThree={(event) =>
+              setCampDetailsDummyThree(event.target.value)
+            }
+          />
+        )}
+        {currentPage === CampCreationPages.ScheduleSessionsPage && (
+          <ScheduleSessions
+            scheduleSessionsDummyOne={scheduleSessionsDummyOne}
+            scheduleSessionsDummyTwo={scheduleSessionsDummyTwo}
+            toggleScheduleSessionsDummyOne={() =>
+              setScheduleSessionsDummyOne(!scheduleSessionsDummyOne)
+            }
+            toggleScheduleSessionsDummyTwo={() =>
+              setScheduleSessionsDummyTwo(!scheduleSessionsDummyTwo)
+            }
+          />
+        )}
+        {currentPage === CampCreationPages.RegistrationFormPage && (
+          <RegistrationForm
+            registrationFormDummyOne={registrationFormDummyOne}
+            registrationFormDummyTwo={registrationFormDummyTwo}
+            toggleRegistrationFormDummyOne={() =>
+              setRegistrationFormDummyOne(!registrationFormDummyOne)
+            }
+            toggleRegistrationFormDummyTwo={() =>
+              setRegistrationFormDummyTwo(!registrationFormDummyTwo)
+            }
+          />
+        )}
       </Box>
-    </Box>
+    </>
   );
 };
 
