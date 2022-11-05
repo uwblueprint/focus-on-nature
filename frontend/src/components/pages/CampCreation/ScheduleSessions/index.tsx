@@ -9,9 +9,6 @@ const ScheduleSessionsPage = (): React.ReactElement => {
     CreateCampSession[]
   >([]);
 
-  console.log("scheduledSessions:");
-  console.log(scheduledSessions);
-
   return (
     <Box ml="230px" mt="50px">
       <Text textStyle="displayXLarge">Schedule Sessions</Text>
