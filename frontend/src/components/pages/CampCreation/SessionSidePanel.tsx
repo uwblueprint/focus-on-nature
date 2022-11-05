@@ -1,8 +1,17 @@
 import { Box } from "@chakra-ui/react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
+import { CreateCampSession } from "../../../types/CampsTypes";
 import AddSessionsForm from "./AddSessionsForm";
 
-const SessionSidePanel = (): JSX.Element => {
+type SessionSidePanelProps = {
+  scheduledSessions: CreateCampSession[];
+  setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
+};
+
+const SessionSidePanel = ({
+  scheduledSessions,
+  setScheduledSessions,
+}: SessionSidePanelProps): JSX.Element => {
   return (
     <Box
       minWidth="35vw"
@@ -11,7 +20,10 @@ const SessionSidePanel = (): JSX.Element => {
       right="0"
       background="background.grey.200"
     >
-      <AddSessionsForm />
+      <AddSessionsForm
+        scheduledSessions={scheduledSessions}
+        setScheduledSessions={setScheduledSessions}
+      />
     </Box>
   );
 };

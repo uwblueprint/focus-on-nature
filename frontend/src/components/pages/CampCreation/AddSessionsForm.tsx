@@ -9,24 +9,33 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { CreateCampSession } from "../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 
-const AddSessionsForm = (): JSX.Element => {
+type AddSessionsFormProps = {
+  scheduledSessions: CreateCampSession[];
+  setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
+};
+
+const AddSessionsForm = ({
+  scheduledSessions,
+  setScheduledSessions,
+}: AddSessionsFormProps): JSX.Element => {
   const [startDate, setStartDate] = React.useState<Date>(new Date());
   const [successiveSessions, setSuccessiveSessions] = React.useState<number>(0);
 
-  const [weekDays, setweekDays] = React.useState<Map<string, boolean>>(
-    new Map<string, boolean>([
-      ["Su", false],
-      ["Mo", false],
-      ["Tu", false],
-      ["We", false],
-      ["Th", false],
-      ["Fr", false],
-      ["Sa", false],
-    ]),
+  const emptyWeekDays = new Map<string, boolean>([
+    ["Su", false],
+    ["Mo", false],
+    ["Tu", false],
+    ["We", false],
+    ["Th", false],
+    ["Fr", false],
+    ["Sa", false],
+  ]);
+  const [weekDays, setWeekDays] = React.useState<Map<string, boolean>>(
+    new Map<string, boolean>(emptyWeekDays),
   );
 
   const updateSelectedSessionDays = (day: string) => {
@@ -34,7 +43,7 @@ const AddSessionsForm = (): JSX.Element => {
     const updatedMap = new Map<string, boolean>(
       weekDays.set(day, !daySelected),
     );
-    setweekDays(updatedMap);
+    setWeekDays(updatedMap);
   };
 
   const noSessionDaysSelected = (): boolean => {
@@ -49,49 +58,52 @@ const AddSessionsForm = (): JSX.Element => {
 
   const handleSubmit = (e: any) => {
     if (noSessionDaysSelected()) {
-      e.preventDefault();
       setSessionDaysHasError(true);
-    }
+    } else {
+      const updatedSessions: CreateCampSession[] = scheduledSessions.slice(0);
+      const weekDayValues = Array.from(weekDays.values());
 
-    const campId = "63538da50ec7fc7b4a841085";
-    const campCapcity = 10;
+      for (let i = 0; i < successiveSessions; i += 1) {
+        const sessionStartDate = new Date(startDate.getTime());
+        sessionStartDate.setDate(sessionStartDate.getDate() + i * 7);
 
-    const campSessionsToAdd: CreateCampSession[] = [];
-    const weekDayValues = Array.from(weekDays.values());
+        const newCampSession: CreateCampSession = {
+          startDate: sessionStartDate,
+          endDate: new Date(),
+          dates: [],
+        };
+        const dates: Date[] = [];
 
-    for (let i = 0; i < successiveSessions; i += 1) {
-      const newCampSession: CreateCampSession = {
-        camp: campId,
-        capacity: campCapcity,
-        campers: [],
-        waitlist: [],
-        dates: [],
-      };
-      const dates: Date[] = [];
-
-      let counter = 0;
-      let currIndex = startDate.getUTCDay();
-      while (counter < 7) {
-        if (weekDayValues[currIndex]) {
-          const newDate = new Date(startDate.getTime());
-          newDate.setDate(newDate.getDate() + counter);
-          dates.push(newDate);
+        let counter = 0;
+        let currIndex = sessionStartDate.getDay();
+        while (counter < 7) {
+          if (weekDayValues[currIndex]) {
+            const newDate = new Date(sessionStartDate.getTime());
+            newDate.setDate(newDate.getDate() + counter);
+            dates.push(newDate);
+          }
+          counter += 1;
+          currIndex = (currIndex + 1) % 7;
         }
-        currIndex = (currIndex + counter) % 7;
-        counter += 1;
+
+        newCampSession.dates = dates;
+        newCampSession.endDate = dates[dates.length - 1];
+        updatedSessions.push(newCampSession);
       }
+      updatedSessions.sort(
+        (a, b) => a.startDate.getTime() - b.startDate.getTime(),
+      );
 
-      newCampSession.dates = dates;
-      campSessionsToAdd.push(newCampSession);
+      setScheduledSessions(updatedSessions);
+      // setStartDate(new Date());
+      // setSuccessiveSessions(0);
+      // setWeekDays(emptyWeekDays);
     }
-
-    // update the parent state
-    // const [scheduledSessions, setScheduledSessions] = useState<Array<Array<string>>>([]);
-    // update the state with new camp sessions
+    e.preventDefault();
   };
 
-  const newDate = new Date(startDate.getTime());
-  newDate.setDate(newDate.getDate() + 1);
+  console.log(startDate.getDay());
+  console.log(Array.from(weekDays.values()));
 
   return (
     <Box paddingX="64px" paddingY="80px">

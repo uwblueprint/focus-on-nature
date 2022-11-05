@@ -47,10 +47,8 @@ export type CampSession = {
 };
 
 export type CreateCampSession = {
-  camp: string;
-  capacity: number;
-  campers: Camper[];
-  waitlist: WaitlistedCamper[];
+  startDate: Date;
+  endDate: Date;
   dates: Date[];
 };
 
