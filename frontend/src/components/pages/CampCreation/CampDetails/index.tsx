@@ -17,7 +17,7 @@ const CampCreationDetails = ({
   toggleCampDetailsDummyOne,
   toggleCampDetailsDummyTwo,
   handleCampDetailsDummyThree,
-}: CampCreationDetailsProps): JSX.Element => {
+}: CampCreationDetailsProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Camp Details</Text>

@@ -13,7 +13,7 @@ const ScheduleSessions = ({
   scheduleSessionsDummyTwo,
   toggleScheduleSessionsDummyOne,
   toggleScheduleSessionsDummyTwo,
-}: ScheduleSessionsProps): JSX.Element => {
+}: ScheduleSessionsProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Schedule Sessions</Text>

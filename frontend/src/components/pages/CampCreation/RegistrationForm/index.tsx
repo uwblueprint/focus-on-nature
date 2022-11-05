@@ -13,7 +13,7 @@ const RegistrationForm = ({
   registrationFormDummyTwo,
   toggleRegistrationFormDummyOne,
   toggleRegistrationFormDummyTwo,
-}: RegistrationFormProps): JSX.Element => {
+}: RegistrationFormProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Registration Form</Text>
