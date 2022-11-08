@@ -163,6 +163,27 @@ class AdminService implements IAdminService {
       await session.endSession();
     }
   }
+
+  async removeQuestionFromTemplate(formQuestionId: string): Promise<boolean> {
+    try {
+      await MgFormTemplate.updateOne(
+        {},
+        {
+          $pull: {
+            formQuestions: formQuestionId,
+          },
+        },
+      );
+      return true;
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to remove form question from form template. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
 }
 
 export default AdminService;

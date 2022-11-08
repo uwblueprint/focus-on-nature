@@ -44,6 +44,15 @@ interface IAdminService {
   addQuestionToTemplate(
     formQuestion: CreateFormQuestionDTO,
   ): Promise<FormQuestionDTO>;
+
+  /**
+   * Removes a question from the form template
+   * NOTE: does NOT delete the formQuestion as old camps may have references to this formQuestion
+   * @returns true if successfully removed the formQuestion, false otherwise
+   * @param formQuestionId is the objectID of the form question to be removed from the template
+   * @throws Error if removing fails (db query to remove fails etc.)
+   */
+  removeQuestionFromTemplate(formQuestionId: string): Promise<boolean>;
 }
 
 export default IAdminService;

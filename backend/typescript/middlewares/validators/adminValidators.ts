@@ -60,3 +60,17 @@ export const formTemplateAddQuestionValidator = async (
   }
   return next();
 };
+
+export const formTemplateRemoveQuestionValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    !req.params.formQuestionId ||
+    !validatePrimitive(req.params.formQuestionId, "string")
+  ) {
+    return res.status(400).send("formQuestionId param must be a string");
+  }
+  return next();
+};
