@@ -2,7 +2,7 @@ import { Box, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 // import SessionsCalendar from "./SessionsCalendar";
-import SessionSidePanel from "../SessionSidePanel";
+import SessionSidePanel from "./SessionSidePanel";
 
 const ScheduleSessionsPage = (): React.ReactElement => {
   const [scheduledSessions, setScheduledSessions] = useState<

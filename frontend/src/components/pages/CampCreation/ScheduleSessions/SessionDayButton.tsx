@@ -4,7 +4,7 @@ import React from "react";
 type SessionDayButtonProps = {
   day: string;
   active: boolean | undefined;
-  onSelect?: (day: string) => void;
+  onSelect: (day: string) => void;
 };
 
 const SessionDayButton = ({
@@ -20,7 +20,7 @@ const SessionDayButton = ({
       isRound
       size="lg"
       variant={active ? "primaryGreen" : "backgroundInteractive"}
-      onClick={onSelect ? () => onSelect(day) : () => {}}
+      onClick={() => onSelect(day)}
     />
   );
 };

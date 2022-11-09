@@ -1,7 +1,7 @@
 import { Box, HStack, Text, Button, Divider, VStack } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
-import { CreateCampSession } from "../../../types/CampsTypes";
-import ScheduledSessionsRow from "./ScheduledSessionsRow";
+import { CreateCampSession } from "../../../../types/CampsTypes";
+import ScheduledSessionsCard from "./ScheduledSessionsCard";
 
 type CurrentSessionsViewProps = {
   scheduledSessions: CreateCampSession[];
@@ -32,7 +32,7 @@ const CurrentSessionsView = ({
       <VStack alignItems="flex-start" spacing={5}>
         <>
           {scheduledSessions.map((session, currIndex) => (
-            <ScheduledSessionsRow
+            <ScheduledSessionsCard
               key={currIndex}
               currIndex={currIndex}
               scheduledSession={session}

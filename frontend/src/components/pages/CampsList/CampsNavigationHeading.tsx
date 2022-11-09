@@ -27,7 +27,7 @@ const CampsNavigationHeading = ({
   };
 
   return (
-    <Box marginBottom="10">
+    <Box>
       <Text textStyle="displayXLarge">FON Camps</Text>
       <Flex
         direction="row"

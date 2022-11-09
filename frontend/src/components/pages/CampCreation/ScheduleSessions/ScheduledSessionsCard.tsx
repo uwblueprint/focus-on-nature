@@ -1,19 +1,19 @@
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import React from "react";
-import { CreateCampSession } from "../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 
-type ScheduledSessionsRowProps = {
+type ScheduledSessionsCardProps = {
   currIndex: number;
   scheduledSession: CreateCampSession;
   onDelete: (index: number) => void;
 };
 
-const ScheduledSessionsRow = ({
+const ScheduledSessionsCard = ({
   currIndex,
   scheduledSession,
   onDelete,
-}: ScheduledSessionsRowProps): JSX.Element => {
+}: ScheduledSessionsCardProps): JSX.Element => {
   const weekDays: Map<string, boolean> = scheduledSession.selectedWeekDays;
   const startDateOptions: Intl.DateTimeFormatOptions = {
     month: "short",
@@ -69,4 +69,4 @@ const ScheduledSessionsRow = ({
   );
 };
 
-export default ScheduledSessionsRow;
+export default ScheduledSessionsCard;

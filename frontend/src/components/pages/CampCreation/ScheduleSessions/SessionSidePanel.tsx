@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
-import { CreateCampSession } from "../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../types/CampsTypes";
 import AddSessionsForm from "./AddSessionsForm";
 import CurrentSessionsView from "./CurrentSessionsView";
 
@@ -13,7 +13,7 @@ const SessionSidePanel = ({
   scheduledSessions,
   setScheduledSessions,
 }: SessionSidePanelProps): JSX.Element => {
-  const [showAddSessions, setShowAddSessions] = React.useState(false);
+  const [showAddSessionView, setShowAddSessionView] = React.useState(false);
 
   return (
     <Box
@@ -23,17 +23,17 @@ const SessionSidePanel = ({
       right="0"
       background="background.grey.200"
     >
-      {scheduledSessions.length === 0 || showAddSessions ? (
+      {scheduledSessions.length === 0 || showAddSessionView ? (
         <AddSessionsForm
           scheduledSessions={scheduledSessions}
           setScheduledSessions={setScheduledSessions}
-          setShowAddSessions={setShowAddSessions}
+          setShowAddSessions={setShowAddSessionView}
         />
       ) : (
         <CurrentSessionsView
           scheduledSessions={scheduledSessions}
           setScheduledSessions={setScheduledSessions}
-          setShowAddSessions={setShowAddSessions}
+          setShowAddSessions={setShowAddSessionView}
         />
       )}
     </Box>
