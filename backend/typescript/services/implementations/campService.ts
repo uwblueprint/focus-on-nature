@@ -1148,20 +1148,19 @@ class CampService implements ICampService {
         throw new Error(`Camp Session with id ${campSessionId} not found.`);
       }
       const campers = campSession.campers as Camper[];
-      
       const camp: Camp | null = await MgCamp.findById(campSession.camp);
       if (!camp) {
         throw new Error(`Camp with id ${campSessionId} not found.`);
       }
 
-      let formQuestionsData = await MgFormQuestion.find(
-        {'_id': { $in: camp.formQuestions }}
-      );
+      const formQuestionsData = await MgFormQuestion.find({
+        _id: { $in: camp.formQuestions },
+      });
 
-      let campersWithSpecficQuestions: string[] = [];
+      const campersWithSpecficQuestions: string[] = [];
       campers.forEach((camper) => {
-        (camper.formResponses).forEach((value, key) => {
-          const campQuestion = formQuestionsData.find(item => item.question == key);
+        camper.formResponses.forEach((value, key) => {
+          const campQuestion = formQuestionsData.find((item) => item.question == key);
           if (campQuestion?.category === "CampSpecific") {
             campersWithSpecficQuestions.push(camper.id);
           }
@@ -1170,7 +1169,7 @@ class CampService implements ICampService {
 
       return await Promise.all(
         campers.map(async (camper) => {
-            return {
+          return {
               "Registration Date": camper.registrationDate.toLocaleDateString('en-CA').toString(),
               "Camper Name": camper.firstName + ' ' + camper.lastName,
               "Camper Age": camper.age,
@@ -1186,9 +1185,9 @@ class CampService implements ICampService {
               "Amount Paid": camper.charges.camp + camper.charges.earlyDropoff + camper.charges.latePickup,
               "Additional Camp-Specific Q's": (campersWithSpecficQuestions.includes(camper.id)) ? "Y" : "N",
               "Additional Waiver Clauses": (camper.optionalClauses.length > 0) ? "Y" : "N",
-            };
-          }),
-        );
+          };
+        }),
+      );
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;

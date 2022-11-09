@@ -54,7 +54,6 @@ const editCampById = async (
   }
 };
 
-
 const deleteCamp = async (id: string): Promise<boolean> => {
   try {
     await baseAPIClient.delete(`/camp/${id}`, {
@@ -114,7 +113,7 @@ const getCampSessionCsv = async (id: string): Promise<string> => {
   } catch (error) {
     return "ERROR";
   }
-}
+};
 
 export default {
   getAllCamps,
