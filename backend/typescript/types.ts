@@ -71,10 +71,23 @@ export type CamperDTO = {
   ];
 };
 
-export type CamperCSVInfoDTO = Omit<
-  CamperDTO,
-  "id" | "campSession" | "charges" | "formResponses"
-> & { formResponses: { [key: string]: string } };
+export type CamperCSVInfoDTO = {
+  "Registration Date": string;
+  "Camper Name": string;
+  "Camper Age": number;
+  "Primary Emergency Contact Name": string;
+  "Primary Emergency Contact Phone #": string;
+  "Primary Emergency Contact Email": string;
+  "Secondary Emergency Contact Name": string;
+  "Secondary Emergency Contact Phone #": string;
+  "Requires Early Drop-off": string;
+  "Requires Late Pick-up": string;
+  "Allergies": string;
+  "Amount Paid": number;
+  "Additional Accomodations": string;
+  "Additional Camp-Specific Q's": string;
+  "Additional Waiver Clauses": string;
+};
 
 export type WaitlistedCamperDTO = {
   id: string;

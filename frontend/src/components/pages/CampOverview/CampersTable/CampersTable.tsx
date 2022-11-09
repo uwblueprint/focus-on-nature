@@ -38,13 +38,13 @@ import CampsAPIClient from "../../../../APIClients/CampsAPIClient";
 
 import { downloadCSV } from "../../../../utils/CSVUtils";
 
-const ExportButton = ({campSessionId}: {campSessionId: string}): JSX.Element => {
+const ExportButton = ({campSessionId, campSessionCSVFilename}: {campSessionId: string, campSessionCSVFilename: string}): JSX.Element => {
   const toast = useToast();
   
   const generateCsv = async () => {
     const csvResponse = await CampsAPIClient.getCampSessionCsv(campSessionId);
     if (csvResponse !== "ERROR") {
-      downloadCSV(csvResponse, "Campers_Information");
+      downloadCSV(csvResponse, campSessionCSVFilename);
     } else {
       toast({
         description: `An error occurred while exporting the CSV. Please try again.`,
@@ -80,12 +80,14 @@ const CampersTable = ({
   formQuestions,
   handleRefetch,
   campSessionId,
+  campSessionCSVFilename,
 }: {
   campers: Camper[];
   campSessionCapacity: number;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
   campSessionId: string;
+  campSessionCSVFilename: string;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -202,7 +204,7 @@ const CampersTable = ({
                 </Tag>
               );
             })}
-            <ExportButton campSessionId={campSessionId} />
+            <ExportButton campSessionId={campSessionId} campSessionCSVFilename={campSessionCSVFilename}/>
           </HStack>
 
           <Table

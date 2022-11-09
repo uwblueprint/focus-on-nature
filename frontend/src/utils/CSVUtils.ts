@@ -82,3 +82,8 @@ export const downloadCSV = (data: string, fileName: string): void => {
     URL.revokeObjectURL(url);
   });
 };
+
+export const generateCSVName = (campCity: string, campSessionDate: string): string => {
+  const startDate = new Date(campSessionDate);
+  return `${campCity}_${startDate.toLocaleString('default', { month: 'short' })}_${startDate.getDay()}_${startDate.getFullYear()}`;
+};

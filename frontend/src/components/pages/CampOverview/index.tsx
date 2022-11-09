@@ -213,6 +213,7 @@ const CampOverviewPage = (): JSX.Element => {
               campSession={camp.campSessions[currentCampSession]}
               formQuestions={camp.formQuestions}
               handleRefetch={handleRefetch}
+              campCity={camp.location.city}
             />
             <ManageSessionsModal
               campStartTime={camp.startTime}
