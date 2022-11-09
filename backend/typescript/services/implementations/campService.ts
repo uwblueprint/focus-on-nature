@@ -1160,7 +1160,9 @@ class CampService implements ICampService {
       const campersWithSpecficQuestions: string[] = [];
       campers.forEach((camper) => {
         camper.formResponses.forEach((value, key) => {
-          const campQuestion = formQuestionsData.find((item) => item.question == key);
+          const campQuestion = formQuestionsData.find(
+            (item) => item.question === key,
+          );
           if (campQuestion?.category === "CampSpecific") {
             campersWithSpecficQuestions.push(camper.id);
           }
@@ -1170,21 +1172,37 @@ class CampService implements ICampService {
       return await Promise.all(
         campers.map(async (camper) => {
           return {
-              "Registration Date": camper.registrationDate.toLocaleDateString('en-CA').toString(),
-              "Camper Name": camper.firstName + ' ' + camper.lastName,
-              "Camper Age": camper.age,
-              "Primary Emergency Contact Name": camper.contacts[0].firstName + ' ' + camper.contacts[0].lastName,
-              "Primary Emergency Contact Phone #": camper.contacts[0].phoneNumber,
-              "Primary Emergency Contact Email": camper.contacts[0].email,
-              "Secondary Emergency Contact Name": (camper.contacts.length > 1) ? camper.contacts[1].firstName + ' ' + camper.contacts[1].lastName : "",
-              "Secondary Emergency Contact Phone #": (camper.contacts.length > 1) ? camper.contacts[1].phoneNumber : "",
-              "Requires Early Drop-off": (camper.earlyDropoff.length > 0) ? "Y" : "N",
-              "Requires Late Pick-up": (camper.earlyDropoff.length > 0) ? "Y" : "N",
-              "Allergies": camper.allergies,
-              "Additional Accomodations": camper.specialNeeds,
-              "Amount Paid": camper.charges.camp + camper.charges.earlyDropoff + camper.charges.latePickup,
-              "Additional Camp-Specific Q's": (campersWithSpecficQuestions.includes(camper.id)) ? "Y" : "N",
-              "Additional Waiver Clauses": (camper.optionalClauses.length > 0) ? "Y" : "N",
+            "Registration Date": camper.registrationDate
+              .toLocaleDateString("en-CA")
+              .toString(),
+            "Camper Name": `${camper.firstName} ${camper.lastName}`,
+            "Camper Age": camper.age,
+            "Primary Emergency Contact Name": `${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`,
+            "Primary Emergency Contact Phone #": camper.contacts[0].phoneNumber,
+            "Primary Emergency Contact Email": camper.contacts[0].email,
+            "Secondary Emergency Contact Name":
+              camper.contacts.length > 1
+                ? `${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`
+                : "",
+            "Secondary Emergency Contact Phone #":
+              camper.contacts.length > 1 ? camper.contacts[1].phoneNumber : "",
+            "Requires Early Drop-off":
+              camper.earlyDropoff.length > 0 ? "Y" : "N",
+            "Requires Late Pick-up": camper.earlyDropoff.length > 0 ? "Y" : "N",
+            // eslint-disable-next-line
+            "Allergies": camper.allergies,
+            "Additional Accomodations": camper.specialNeeds,
+            "Amount Paid":
+              camper.charges.camp +
+              camper.charges.earlyDropoff +
+              camper.charges.latePickup,
+            "Additional Camp-Specific Q's": campersWithSpecficQuestions.includes(
+              camper.id,
+            )
+              ? "Y"
+              : "N",
+            "Additional Waiver Clauses":
+              camper.optionalClauses.length > 0 ? "Y" : "N",
           };
         }),
       );

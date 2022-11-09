@@ -82,6 +82,7 @@ export type CamperCSVInfoDTO = {
   "Secondary Emergency Contact Phone #": string;
   "Requires Early Drop-off": string;
   "Requires Late Pick-up": string;
+  // eslint-disable-next-line
   "Allergies": string;
   "Amount Paid": number;
   "Additional Accomodations": string;
