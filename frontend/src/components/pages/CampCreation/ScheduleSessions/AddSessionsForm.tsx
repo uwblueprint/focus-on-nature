@@ -80,7 +80,7 @@ const AddSessionsForm = ({
     return dates;
   };
 
-  const onAddSesssionsToCamp = (e: any) => {
+  const onAddSesssionsToCamp = () => {
     if (noSessionDaysSelected()) {
       setSessionDaysHasError(true);
     } else {
@@ -129,7 +129,6 @@ const AddSessionsForm = ({
       // hide form and show scheduled sessions list
       setShowAddSessions(false);
     }
-    e.preventDefault();
   };
 
   return (
@@ -137,60 +136,58 @@ const AddSessionsForm = ({
       <Text textStyle="displayLarge" marginBottom={10}>
         Add Camp Session(s)
       </Text>
-      <form onSubmit={onAddSesssionsToCamp}>
-        <VStack align="flex-start" spacing="30px">
-          <FormControl isRequired>
-            <FormLabel>Camp Session Start Date</FormLabel>
-            <Input
-              type="date"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setStartDate(new Date(`${e.target.value}T00:00`))
-              }
-            />
-          </FormControl>
-          <FormControl
-            isRequired
-            isInvalid={sessionDaysHasError ? noSessionDaysSelected() : false}
-          >
-            <FormLabel>Session Days</FormLabel>
-            <HStack spacing="10px">
-              {Array.from(selectedWeekDays.keys()).map((day) => (
-                <SessionDayButton
-                  key={day}
-                  day={day}
-                  active={selectedWeekDays.get(day)}
-                  onSelect={updateSelectedSessionDays}
-                />
-              ))}
-            </HStack>
-            <FormErrorMessage>Select at least one day</FormErrorMessage>
-          </FormControl>
-          <HStack>
-            <Text>Add </Text>
-            <Input
-              type="number"
-              maxWidth="5vw"
-              onChange={(e: any) => {
-                if (e.target.value) setSuccessiveSessions(e.target.value);
-              }}
-            />
-            <Text> successive camp sessions</Text>
+      <VStack align="flex-start" spacing="30px">
+        <FormControl isRequired>
+          <FormLabel>Camp Session Start Date</FormLabel>
+          <Input
+            type="date"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setStartDate(new Date(`${e.target.value}T00:00`))
+            }
+          />
+        </FormControl>
+        <FormControl
+          isRequired
+          isInvalid={sessionDaysHasError ? noSessionDaysSelected() : false}
+        >
+          <FormLabel>Session Days</FormLabel>
+          <HStack spacing="10px">
+            {Array.from(selectedWeekDays.keys()).map((day) => (
+              <SessionDayButton
+                key={day}
+                day={day}
+                active={selectedWeekDays.get(day)}
+                onSelect={updateSelectedSessionDays}
+              />
+            ))}
           </HStack>
-          <HStack alignSelf="flex-end">
-            {scheduledSessions.length !== 0 && (
-              <Button
-                variant="secondary"
-                onClick={() => setShowAddSessions(false)}
-              >
-                Cancel
-              </Button>
-            )}
-            <Button variant="primary" type="submit">
-              Add Camp Session(s)
+          <FormErrorMessage>Select at least one day</FormErrorMessage>
+        </FormControl>
+        <HStack>
+          <Text>Add </Text>
+          <Input
+            type="number"
+            maxWidth="5vw"
+            onChange={(e: any) => {
+              if (e.target.value) setSuccessiveSessions(e.target.value);
+            }}
+          />
+          <Text> successive camp sessions</Text>
+        </HStack>
+        <HStack alignSelf="flex-end">
+          {scheduledSessions.length !== 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => setShowAddSessions(false)}
+            >
+              Cancel
             </Button>
-          </HStack>
-        </VStack>
-      </form>
+          )}
+          <Button variant="primary" onClick={onAddSesssionsToCamp}>
+            Add Camp Session(s)
+          </Button>
+        </HStack>
+      </VStack>
     </Box>
   );
 };

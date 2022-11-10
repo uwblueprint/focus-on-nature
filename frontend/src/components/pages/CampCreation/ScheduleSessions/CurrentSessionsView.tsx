@@ -29,18 +29,20 @@ const CurrentSessionsView = ({
         </Button>
       </HStack>
       <Divider marginY={5} />
-      <VStack alignItems="flex-start" spacing={5}>
-        <>
-          {scheduledSessions.map((session, currIndex) => (
-            <ScheduledSessionsCard
-              key={currIndex}
-              currIndex={currIndex}
-              scheduledSession={session}
-              onDelete={deleteSession}
-            />
-          ))}
-        </>
-      </VStack>
+      <Box height="80vh" overflowY="scroll">
+        <VStack alignItems="flex-start" spacing={5}>
+          <>
+            {scheduledSessions.map((session, currIndex) => (
+              <ScheduledSessionsCard
+                key={currIndex}
+                currIndex={currIndex}
+                scheduledSession={session}
+                onDelete={deleteSession}
+              />
+            ))}
+          </>
+        </VStack>
+      </Box>
     </Box>
   );
 };
