@@ -134,9 +134,9 @@ const AddSessionsForm = ({
 
   return (
     <Box paddingX="64px" paddingY="80px">
-      <HStack justifyContent="space-between" marginBottom={10}>
-        <Text textStyle="displayLarge">Add Camp Session(s)</Text>
-      </HStack>
+      <Text textStyle="displayLarge" marginBottom={10}>
+        Add Camp Session(s)
+      </Text>
       <form onSubmit={onAddSesssionsToCamp}>
         <VStack align="flex-start" spacing="30px">
           <FormControl isRequired>
