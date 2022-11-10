@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { Box } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import AddSessionsForm from "./AddSessionsForm";
@@ -6,7 +6,7 @@ import CurrentSessionsView from "./CurrentSessionsView";
 
 type SessionSidePanelProps = {
   scheduledSessions: CreateCampSession[];
-  setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
+  setScheduledSessions: (sessions: Array<CreateCampSession>) => void;
 };
 
 const SessionSidePanel: React.FC<SessionSidePanelProps> = ({

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -25,8 +25,8 @@ const emptyWeekDays = new Map<string, boolean>([
 
 type AddSessionsFormProps = {
   scheduledSessions: CreateCampSession[];
-  setScheduledSessions: Dispatch<SetStateAction<CreateCampSession[]>>;
-  setShowAddSessions: Dispatch<SetStateAction<boolean>>;
+  setScheduledSessions: (sessions: Array<CreateCampSession>) => void;
+  setShowAddSessions: (showView: boolean) => void;
 };
 
 const AddSessionsForm = ({
