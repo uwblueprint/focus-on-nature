@@ -136,11 +136,6 @@ const AddSessionsForm = ({
     <Box paddingX="64px" paddingY="80px">
       <HStack justifyContent="space-between" marginBottom={10}>
         <Text textStyle="displayLarge">Add Camp Session(s)</Text>
-        {scheduledSessions.length !== 0 && (
-          <Button colorScheme="gray" onClick={() => setShowAddSessions(false)}>
-            Cancel
-          </Button>
-        )}
       </HStack>
       <form onSubmit={onAddSesssionsToCamp}>
         <VStack align="flex-start" spacing="30px">
@@ -181,9 +176,19 @@ const AddSessionsForm = ({
             />
             <Text> successive camp sessions</Text>
           </HStack>
-          <Button variant="primaryGreen" alignSelf="flex-end" type="submit">
-            Add Camp Session(s)
-          </Button>
+          <HStack alignSelf="flex-end">
+            {scheduledSessions.length !== 0 && (
+              <Button
+                variant="secondary"
+                onClick={() => setShowAddSessions(false)}
+              >
+                Cancel
+              </Button>
+            )}
+            <Button variant="primary" type="submit">
+              Add Camp Session(s)
+            </Button>
+          </HStack>
         </VStack>
       </form>
     </Box>
