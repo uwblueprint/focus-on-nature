@@ -1,5 +1,5 @@
-import { Box, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { Box, Text } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 // import SessionsCalendar from "./SessionsCalendar";
 import SessionSidePanel from "./SessionSidePanel";
@@ -10,7 +10,7 @@ const ScheduleSessionsPage = (): React.ReactElement => {
   >([]);
 
   return (
-    <Box ml="230px" mt="50px">
+    <Box>
       <Text textStyle="displayXLarge">Schedule Sessions</Text>
       <Text textStyle="heading" mb={8}>
         Waterloo Photography Camp 2022 @7:00 AM - 3:00PM

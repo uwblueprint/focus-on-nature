@@ -1,3 +1,4 @@
+import React, { Dispatch, SetStateAction } from "react";
 import {
   Box,
   Button,
@@ -9,7 +10,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { Dispatch, SetStateAction } from "react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 
@@ -39,7 +39,7 @@ const AddSessionsForm = ({
 
   const [selectedWeekDays, setSelectedWeekDays] = React.useState<
     Map<string, boolean>
-  >(new Map<string, boolean>(emptyWeekDays));
+  >(new Map(emptyWeekDays));
 
   const updateSelectedSessionDays = (day: string) => {
     const daySelected: boolean = selectedWeekDays.get(day) ?? false;
@@ -50,11 +50,7 @@ const AddSessionsForm = ({
   };
 
   const noSessionDaysSelected = (): boolean => {
-    let hasNoSelectedDay = true;
-    Array.from(selectedWeekDays.values()).forEach((val) => {
-      if (val === true) hasNoSelectedDay = false;
-    });
-    return hasNoSelectedDay;
+    return !Array.from(selectedWeekDays.values()).find((val) => val === true);
   };
 
   const [sessionDaysHasError, setSessionDaysHasError] = React.useState(false);
@@ -128,7 +124,7 @@ const AddSessionsForm = ({
       // reset form states
       setStartDate(new Date());
       setSuccessiveSessions(0);
-      setSelectedWeekDays(emptyWeekDays);
+      setSelectedWeekDays(new Map(emptyWeekDays));
 
       // hide form and show scheduled sessions list
       setShowAddSessions(false);
@@ -152,7 +148,7 @@ const AddSessionsForm = ({
             <FormLabel>Camp Session Start Date</FormLabel>
             <Input
               type="date"
-              onChange={(e: any) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setStartDate(new Date(`${e.target.value}T00:00`))
               }
             />

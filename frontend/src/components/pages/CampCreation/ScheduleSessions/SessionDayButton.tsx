@@ -1,5 +1,5 @@
-import { IconButton, Text } from "@chakra-ui/react";
 import React from "react";
+import { IconButton, Text } from "@chakra-ui/react";
 
 type SessionDayButtonProps = {
   day: string;
