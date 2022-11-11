@@ -380,11 +380,5 @@ export const moveCamperDtoValidator = async (
       .send(getApiValidationError("camperIds", "string", true));
   }
 
-  if (!validatePrimitive(req.body.campSessionId, "string")) {
-    return res
-      .status(400)
-      .send(getApiValidationError("campSessionId", "string"));
-  }
-
   return next();
 };

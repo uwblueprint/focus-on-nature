@@ -214,17 +214,21 @@ camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
   }
 });
 
-export default camperRouter;
-
 /* Move campers to a camp session */
-camperRouter.patch("/move", moveCamperDtoValidator, async (req, res) => {
-  try {
-    const campers = await camperService.moveCampersToCampSession(
-      req.body.camperIds,
-      req.body.campSessionId,
-    );
-    res.status(200).send(campers);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+camperRouter.patch(
+  "/campSession/:campSessionId",
+  moveCamperDtoValidator,
+  async (req, res) => {
+    try {
+      const campers = await camperService.moveCampersToCampSession(
+        req.body.camperIds,
+        req.params.campSessionId,
+      );
+      res.status(200).send(campers);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+export default camperRouter;

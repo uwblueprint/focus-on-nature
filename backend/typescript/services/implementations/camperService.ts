@@ -610,7 +610,7 @@ class CamperService implements ICamperService {
     campSessionId: string,
   ): Promise<CamperDTO[]> {
     const session = await mongoose.startSession();
-    await session.startTransaction();
+    session.startTransaction();
 
     try {
       const oldCampers = await MgCamper.find({
@@ -632,14 +632,18 @@ class CamperService implements ICamperService {
           oldCamper.campSession.toString() !==
           oldCampers[0].campSession.toString()
         ) {
-          throw new Error(`All campers must have the same campSession.`);
+          throw new Error(`All campers must be from the same camp session.`);
+        }
+
+        if (oldCamper.campSession.toString() === campSessionId) {
+          throw new Error(`Must move campers to a different camp session.`);
         }
       });
 
       const newCampSession = await MgCampSession.findById(campSessionId);
 
       if (!newCampSession) {
-        throw new Error(`Camp ${campSessionId} not found.`);
+        throw new Error(`Camp session ${campSessionId} not found.`);
       }
 
       const oldCampSession = await MgCampSession.findById(
@@ -647,7 +651,7 @@ class CamperService implements ICamperService {
       );
 
       if (!oldCampSession) {
-        throw new Error(`Camp ${oldCampers[0].campSession} not found.`);
+        throw new Error(`Camp session ${oldCampers[0].campSession} not found.`);
       }
 
       if (newCampSession.camp.toString() !== oldCampSession.camp.toString()) {
@@ -698,6 +702,7 @@ class CamperService implements ICamperService {
       }
 
       await session.commitTransaction();
+      await session.endSession();
 
       const updatedCampers = await MgCamper.find({
         _id: {
@@ -730,191 +735,6 @@ class CamperService implements ICamperService {
       await session.endSession();
       throw error;
     }
-
-    // let updatedCamperDTOs: Array<CamperDTO> = [];
-    // let updatedCampers: Array<Camper> = [];
-    // let oldCampers: Array<Camper> = [];
-    // let newCampSession: CampSession | null = null;
-    // let oldCampSession: CampSession | null = null;
-    // let camp: Camp | null;
-
-    // try {
-    //   oldCampers = await MgCamper.find({
-    //     _id: {
-    //       $in: camperIds,
-    //     },
-    //   });
-
-    //   if (oldCampers.length !== camperIds.length) {
-    //     throw new Error(`Not all campers in [${camperIds}] are found.`);
-    //   }
-
-    //   const { chargeId } = oldCampers[0];
-    //   for (let i = 0; i < oldCampers.length; i += 1) {
-    //     if (oldCampers[i].chargeId !== chargeId) {
-    //       throw new Error(`All campers must have the same chargeId.`);
-    //     }
-    //   }
-
-    //   newCampSession = await MgCampSession.findById(campSessionId);
-
-    //   if (!newCampSession) {
-    //     throw new Error(`Camp ${campSessionId} not found.`);
-    //   }
-
-    //   // TODO: should wrap this in a transaction instead of copying the old data
-    //   const newCampSessionOriginalCampers = newCampSession.campers; // for roll back
-
-    //   oldCampSession = await MgCampSession.findById(oldCampers[0].campSession);
-
-    //   if (!oldCampSession) {
-    //     throw new Error(`Camp ${oldCampers[0].campSession} not found.`);
-    //   }
-
-    //   if (newCampSession.camp.toString() !== oldCampSession.camp.toString()) {
-    //     throw new Error(
-    //       `Error: for all campers, can only change sessions between the same camp`,
-    //     );
-    //   }
-
-    //   const oldCampSessionOriginalCampers = oldCampSession.campers; // for roll back
-
-    //   if (newCampSession) {
-    //     // campers for new camp session
-    //     newCampSession.campers = newCampSession.campers.concat(oldCampers);
-
-    //     // campers for old camp session
-    //     oldCampSession.campers = oldCampSession.campers.filter(
-    //       (camperId) => !camperIds.includes(camperId.toString()),
-    //     );
-    //   }
-
-    //   try {
-    //     await newCampSession.save();
-    //     await oldCampSession.save();
-    //   } catch (mongoDbError: unknown) {
-    //     try {
-    //       oldCampSession.campers = oldCampSessionOriginalCampers;
-    //       await oldCampSession.save();
-
-    //       newCampSession.campers = newCampSessionOriginalCampers;
-    //       await newCampSession.save();
-    //     } catch (rollbackDbError: unknown) {
-    //       const errorMessage = [
-    //         "Failed to rollback MongoDB update to campSession to restore camperIds. Reason =",
-    //         getErrorMessage(rollbackDbError),
-    //         "MongoDB camper ids that could not be restored in the camp Sessions=",
-    //         camperIds,
-    //       ];
-    //       Logger.error(errorMessage.join(" "));
-    //     }
-    //   }
-
-    //   try {
-    //     const updatedResult = await MgCamper.updateMany(
-    //       {
-    //         _id: {
-    //           $in: camperIds,
-    //         },
-    //       },
-    //       {
-    //         $set: { campSession: campSessionId },
-    //       },
-    //       { runValidators: true },
-    //     );
-
-    //     if (updatedResult.acknowledged === false) {
-    //       throw new Error(
-    //         `Some or none of the campers with camperIds [${camperIds}] were able to be updated.`,
-    //       );
-    //     }
-    //   } catch (mongoDbError: unknown) {
-    //     // rollback camper updates
-    //     /* eslint-disable no-await-in-loop */
-    //     for (let i = 0; i < oldCampers.length; i += 1) {
-    //       try {
-    //         const rollBackCamper = await MgCamper.findByIdAndUpdate(
-    //           oldCampers[i].id,
-    //           {
-    //             ...oldCampers[i],
-    //           },
-    //           { runValidators: true },
-    //         );
-    //         if (!rollBackCamper) {
-    //           throw new Error(`Camper ${oldCampers[i].id} not found.`);
-    //         }
-    //       } catch (rollbackDbError) {
-    //         const errorMessage = [
-    //           "Failed to rollback MongoDB camper creation after update camper failure. Reason =",
-    //           getErrorMessage(rollbackDbError),
-    //           "MongoDB camper id that could not be updated =",
-    //           oldCampers[i].id,
-    //         ];
-    //         Logger.error(errorMessage.join(" "));
-    //       }
-    //     }
-    //     throw mongoDbError;
-    //   }
-    // } catch (error: unknown) {
-    //   Logger.error(
-    //     `Failed to update campers. Reason = ${getErrorMessage(error)}`,
-    //   );
-    //   throw error;
-    // }
-
-    // updatedCampers = await MgCamper.find({
-    //   _id: {
-    //     $in: camperIds,
-    //   },
-    // });
-
-    // if (newCampSession && oldCampSession) {
-    //   try {
-    //     camp = await MgCamp.findById(newCampSession.camp);
-    //     if (!camp) {
-    //       throw new Error(`Error: Camp ${newCampSession.camp} not found`);
-    //     }
-
-    //     await emailService.sendParentMovedConfirmationEmail(
-    //       updatedCampers,
-    //       camp,
-    //       oldCampSession,
-    //       newCampSession,
-    //     );
-    //   } catch (error: unknown) {
-    //     Logger.error(
-    //       `Failed to send confirmation email. Reason = ${getErrorMessage(
-    //         error,
-    //       )}`,
-    //     );
-    //     throw error;
-    //   }
-    // }
-
-    // updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
-    //   return {
-    //     id: updatedCamper.id,
-    //     campSession: updatedCamper.campSession
-    //       ? updatedCamper.campSession.toString()
-    //       : "",
-    //     firstName: updatedCamper.firstName,
-    //     lastName: updatedCamper.lastName,
-    //     age: updatedCamper.age,
-    //     allergies: updatedCamper.allergies,
-    //     earlyDropoff: updatedCamper.earlyDropoff.map((date) => date.toString()),
-    //     latePickup: updatedCamper.latePickup.map((date) => date.toString()),
-    //     specialNeeds: updatedCamper.specialNeeds,
-    //     contacts: updatedCamper.contacts,
-    //     formResponses: updatedCamper.formResponses,
-    //     registrationDate: updatedCamper.registrationDate.toString(),
-    //     hasPaid: updatedCamper.hasPaid,
-    //     chargeId: updatedCamper.chargeId,
-    //     charges: updatedCamper.charges,
-    //     optionalClauses: updatedCamper.optionalClauses,
-    //   };
-    // });
-
-    // return updatedCamperDTOs;
   }
 
   async cancelRegistration(

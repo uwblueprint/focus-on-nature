@@ -10,7 +10,6 @@ import Footer from "./Footer";
 import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
-import "./CampOverview.css";
 import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
 
 const CampOverviewPage = (): JSX.Element => {
@@ -102,7 +101,6 @@ const CampOverviewPage = (): JSX.Element => {
               onClickManageSessions={openManageSessionsModal}
             />
             <CampersTables
-              currentCampSession={currentCampSession}
               campSession={camp.campSessions[currentCampSession]}
               updateCamp={updateCampCallback}
             />

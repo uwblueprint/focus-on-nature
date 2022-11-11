@@ -65,10 +65,9 @@ const moveCampersToCampSession = async (
 ): Promise<Camper[]> => {
   try {
     const { data } = await baseAPIClient.patch(
-      "/campers/move",
+      `/campers/campSession/${campSessionId}`,
       {
         camperIds,
-        campSessionId,
       },
       {
         headers: { Authorization: BEARER_TOKEN },

@@ -7,13 +7,11 @@ import CampersTable from "./CampersTable";
 import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 type CampersTablesProps = {
-  currentCampSession: number;
   campSession: CampSession;
   updateCamp: () => void;
 };
 
 const CampersTables = ({
-  currentCampSession,
   campSession,
   updateCamp,
 }: CampersTablesProps): JSX.Element => {
@@ -35,7 +33,6 @@ const CampersTables = ({
         <TabPanels width="100%" marginTop="16px">
           <TabPanel padding="0">
             <CampersTable
-              currentCampSession={currentCampSession}
               campers={campSession.campers}
               campSession={campSession}
               campSessionCapacity={campSession.capacity}
