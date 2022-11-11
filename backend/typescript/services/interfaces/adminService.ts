@@ -53,6 +53,20 @@ interface IAdminService {
    * @throws Error if removing fails (db query to remove fails etc.)
    */
   removeQuestionFromTemplate(formQuestionId: string): Promise<boolean>;
+
+  /**
+   * Edits a question in the form template
+   * NOTE: does NOT edit the old question as older camps still use the old version of the question
+   *       creates a NEW question with the edited values and REPLACES old question in the template
+   * @returns true if successfully edited the template, false otherwise
+   * @param oldQuestionId is the objectID as string of the form question to be removed from the template
+   * @param newformQuestion is the data for the edited form question
+   * @throws Error if editing fails (db query to create / remove fails etc.)
+   */
+  editQuestionInTemplate(
+    oldQuestionId: string,
+    newformQuestion: CreateFormQuestionDTO,
+  ): Promise<boolean>;
 }
 
 export default IAdminService;

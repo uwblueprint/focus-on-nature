@@ -8,6 +8,7 @@ import {
   formTemplateUpdateValidator,
   formTemplateAddQuestionValidator,
   formTemplateRemoveQuestionValidator,
+  formTemplateEditQuestionValidator,
 } from "../middlewares/validators/adminValidators";
 import { isAuthorizedByRole } from "../middlewares/auth";
 
@@ -93,6 +94,23 @@ adminRouter.patch(
         type: req.body.formQuestion.type,
       });
       res.status(200).json(newQuestion);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+adminRouter.patch(
+  "/formTemplate/formQuestion/:oldQuestionId",
+  formTemplateEditQuestionValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const isSuccess = await adminService.editQuestionInTemplate(
+        req.params.oldQuestionId,
+        req.body.newFormQuestion,
+      );
+      res.status(200).json(isSuccess);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }

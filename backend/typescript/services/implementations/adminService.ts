@@ -184,6 +184,52 @@ class AdminService implements IAdminService {
       throw error;
     }
   }
+
+  async editQuestionInTemplate(
+    oldQuestionId: string,
+    newFormQuestion: CreateFormQuestionDTO,
+  ): Promise<boolean> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Get the formTemplate which has the oldQuestionId in its list of questions
+      const formTemplate = await MgFormTemplate.findOne(
+        { formQuestions: oldQuestionId },
+        {},
+        { session },
+      );
+
+      if (!formTemplate) {
+        throw new Error(
+          "Failed to retrieve the form template with that question",
+        );
+      }
+
+      const newQuestion = new MgFormQuestion(newFormQuestion);
+      await newQuestion.save({ session });
+
+      // Replace the old question id with the new id
+      await MgFormTemplate.updateOne(
+        { formQuestions: oldQuestionId },
+        { $set: { "formQuestions.$": newQuestion._id } },
+        { session },
+      );
+
+      await session.commitTransaction();
+      return true;
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit the form question in form template. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
 }
 
 export default AdminService;

@@ -74,3 +74,25 @@ export const formTemplateRemoveQuestionValidator = async (
   }
   return next();
 };
+
+export const formTemplateEditQuestionValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (
+    !req.params.oldQuestionId ||
+    !validatePrimitive(req.params.oldQuestionId, "string")
+  ) {
+    return res.status(400).send("oldQuestionId param must be a string");
+  }
+
+  if (
+    !req.body.newFormQuestion ||
+    !validateFormQuestion(req.body.newFormQuestion)
+  ) {
+    return res.status(400).send("new form question details invalid");
+  }
+
+  return next();
+};
