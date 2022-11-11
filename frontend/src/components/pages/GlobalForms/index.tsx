@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Container,
@@ -9,13 +10,13 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React from "react";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
   UpdateWaiverRequest,
   Waiver,
   WaiverClause,
 } from "../../../types/AdminTypes";
+import { CreateFormQuestion } from "../../../types/CampsTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -145,6 +146,28 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
+  const saveFormQuestion = async (formQuestion: CreateFormQuestion) => {
+    const newFormQuestion = await AdminAPIClient.addQuestionToTemplate(
+      formQuestion,
+    );
+
+    if (newFormQuestion.id) {
+      toast({
+        description: `Form question was added to the form template`,
+        status: "success",
+        variant: "subtle",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        description: `Form question could not be added to the form template`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <Container
@@ -190,6 +213,7 @@ const GlobalFormsPage = (): React.ReactElement => {
       <Footer
         isWaiverFooter={selectedTab === TabOption.waiver}
         onAddWaiverSectionClick={onAddWaiverSectionClick}
+        onAddFormQuestionToTemplateClick={saveFormQuestion}
       />
     </>
   );

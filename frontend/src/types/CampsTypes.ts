@@ -35,8 +35,6 @@ export type CampResponse = {
   campPhotoUrl: string;
 };
 
-export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
-
 export type CampSession = {
   id: string;
   camp: string;
@@ -59,6 +57,13 @@ export type UpdateCampSessionsRequest = Partial<
 > &
   Pick<CampSession, "id">;
 
+export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
+
+export type QuestionCategory =
+  | "PersonalInfo"
+  | "CampSpecific"
+  | "EmergencyContact";
+
 export type FormQuestion = {
   id: string;
   type: QuestionType;
@@ -66,4 +71,7 @@ export type FormQuestion = {
   required: boolean;
   description?: string;
   options?: string[];
+  category: QuestionCategory;
 };
+
+export type CreateFormQuestion = Omit<FormQuestion, "id">;

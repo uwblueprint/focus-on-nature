@@ -1,3 +1,5 @@
+import { FormQuestion } from "./CampsTypes";
+
 export type WaiverClause = {
   text: string;
   required: boolean;
@@ -9,4 +11,8 @@ export type Waiver = {
 
 export type UpdateWaiverRequest = {
   clauses: WaiverClause[];
+};
+
+export type FormTemplate = {
+  formQuestions: [FormQuestion];
 };
