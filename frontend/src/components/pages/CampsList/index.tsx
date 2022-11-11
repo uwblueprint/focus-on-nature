@@ -10,7 +10,6 @@ const CampsListPage = (): React.ReactElement => {
         onNavigateLeft={() => setYear(year - 1)}
         onNavigateRight={() => setYear(year + 1)}
       />
-          <p>Foo bar baz</p>
     </>
   );
 };

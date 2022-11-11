@@ -23,7 +23,6 @@ import HooksDemo from "./components/pages/HooksDemo";
 import { AuthenticatedUser } from "./types/AuthTypes";
 import CampOverviewPage from "./components/pages/CampOverview";
 import AccessControlPage from "./components/pages/AccessControl";
-import LandingPage from "./components/pages/LandingPage";
 import NavBar from "./components/common/NavBar";
 import GlobalFormsPage from "./components/pages/GlobalForms";
 import CampCreationPage from "./components/pages/CampCreation";
@@ -59,7 +58,11 @@ const App = (): React.ReactElement => {
               <Switch>
                 <Route exact path={Routes.LOGIN_PAGE} component={Login} />
                 <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
-                <PrivateRoute exact path={Routes.HOME_PAGE} component={CampsPage} />
+                <PrivateRoute
+                  exact
+                  path={Routes.HOME_PAGE}
+                  component={CampsPage}
+                />
                 <PrivateRoute
                   exact
                   path={Routes.CAMPS_PAGE}
