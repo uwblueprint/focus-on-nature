@@ -8,14 +8,12 @@ import WaitlistedCampersTable from "./WaitlistedCampersTable";
 
 type CampersTablesProps = {
   campSession: CampSession;
-  updateCamp: () => void;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
 };
 
 const CampersTables = ({
   campSession,
-  updateCamp,
   formQuestions,
   handleRefetch,
 }: CampersTablesProps): JSX.Element => {
@@ -40,9 +38,7 @@ const CampersTables = ({
               campers={campSession.campers}
               campSession={campSession}
               campSessionCapacity={campSession.capacity}
-              updateCamp={updateCamp}
               formQuestions={formQuestions}
-              campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
             />
           </TabPanel>

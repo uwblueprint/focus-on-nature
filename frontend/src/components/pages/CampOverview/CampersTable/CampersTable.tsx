@@ -62,14 +62,12 @@ const CampersTable = ({
   campers,
   campSession,
   campSessionCapacity,
-  updateCamp,
   formQuestions,
   handleRefetch,
 }: {
   campers: Camper[];
   campSession: CampSession;
   campSessionCapacity: number;
-  updateCamp: () => void;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
 }): JSX.Element => {
@@ -99,7 +97,7 @@ const CampersTable = ({
     onOpen: viewModalOnOpen,
     onClose: viewModalOnClose,
   } = useDisclosure();
-  
+
   const {
     isOpen: removeModalIsOpen,
     onOpen: removeModalOnOpen,
@@ -200,7 +198,7 @@ const CampersTable = ({
         duration: 3000,
         isClosable: true,
       });
-      updateCamp();
+      handleRefetch();
     }
   };
 
@@ -340,7 +338,7 @@ const CampersTable = ({
               handleRefetch={handleRefetch}
             />
           )}
-          
+
           {selectedCamper && (
             <MoveCamperModal
               camper={selectedCamper}
@@ -353,7 +351,7 @@ const CampersTable = ({
               moveCamperModalOnClose={moveModalOnClose}
             />
           )}
-          
+
           {selectedCamper && (
             <ViewCamperModal
               camper={selectedCamper}

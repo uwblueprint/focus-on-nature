@@ -213,7 +213,6 @@ const CampOverviewPage = (): JSX.Element => {
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
-              updateCamp={updateCampCallback}
               formQuestions={camp.formQuestions}
               handleRefetch={handleRefetch}
             />
