@@ -16,7 +16,7 @@ import {
   Waiver,
   WaiverClause,
 } from "../../../types/AdminTypes";
-import { CreateFormQuestion } from "../../../types/CampsTypes";
+import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -35,6 +35,17 @@ const GlobalFormsPage = (): React.ReactElement => {
     [] as WaiverClause[],
   );
 
+  const [formTemplateQuestions, setFormTemplateQuestions] = React.useState<
+    Array<FormQuestion>
+  >([]);
+  const [refetchFormTemplate, setRefetchFormTemplate] = React.useState<boolean>(
+    true,
+  );
+  const handleRefetchFormTemplate = () => {
+    setRefetchFormTemplate(!refetchFormTemplate);
+  };
+
+  // Initial function calls to get the waiver and form template questions
   React.useEffect(() => {
     const getWaiver = async (): Promise<Waiver> => {
       const waiverResponse = await AdminAPIClient.getWaiver();
@@ -44,6 +55,17 @@ const GlobalFormsPage = (): React.ReactElement => {
 
     getWaiver();
   }, []);
+
+  React.useEffect(() => {
+    const getFormTemplate = async () => {
+      const formTemplate = await AdminAPIClient.getFormTemplate();
+      if (formTemplate) {
+        setFormTemplateQuestions(formTemplate.formQuestions);
+      }
+    };
+
+    getFormTemplate();
+  }, [refetchFormTemplate]);
 
   const toast = useToast();
 
@@ -146,12 +168,16 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
-  const saveFormQuestion = async (formQuestion: CreateFormQuestion) => {
+  const onAddFormQuestionToTemplate = async (
+    formQuestion: CreateFormQuestion,
+  ) => {
     const newFormQuestion = await AdminAPIClient.addQuestionToTemplate(
       formQuestion,
     );
 
     if (newFormQuestion.id) {
+      handleRefetchFormTemplate();
+
       toast({
         description: `Form question was added to the form template`,
         status: "success",
@@ -176,7 +202,7 @@ const GlobalFormsPage = (): React.ReactElement => {
         background="background.grey.200"
         paddingTop="3em"
       >
-        <Box marginTop="1rem" marginX="40px">
+        <Box marginTop="1rem" marginX="100px">
           <Text mb="1em" textStyle="displayXLarge">
             Form Management
           </Text>
@@ -197,7 +223,9 @@ const GlobalFormsPage = (): React.ReactElement => {
             </TabList>
             <TabPanels>
               <TabPanel>
-                <RegistrationFormTemplateTab />
+                <RegistrationFormTemplateTab
+                  templateQuestions={formTemplateQuestions}
+                />
               </TabPanel>
               <TabPanel>
                 <WaiverTab
@@ -213,7 +241,7 @@ const GlobalFormsPage = (): React.ReactElement => {
       <Footer
         isWaiverFooter={selectedTab === TabOption.waiver}
         onAddWaiverSectionClick={onAddWaiverSectionClick}
-        onAddFormQuestionToTemplateClick={saveFormQuestion}
+        onAddFormQuestionToTemplateClick={onAddFormQuestionToTemplate}
       />
     </>
   );

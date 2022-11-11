@@ -1,9 +1,38 @@
 import React from "react";
 
-const RegistrationFormTemplateTab = (): React.ReactElement => {
+import { Accordion } from "@chakra-ui/react";
+import { FormQuestion } from "../../../../types/CampsTypes";
+import {
+  fixedCamperInfoQuestions,
+  fixedEmergencyContactQuestions,
+} from "../../../../constants/FixedQuestions";
+import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccordionItem";
+
+type RegistrationFormTemplateTabProps = {
+  templateQuestions: Array<FormQuestion>;
+};
+
+const RegistrationFormTemplateTab = ({
+  templateQuestions,
+}: RegistrationFormTemplateTabProps): React.ReactElement => {
   return (
     <div>
-      <h2>Registration Form Template Placeholder</h2>
+      <Accordion allowToggle>
+        <QuestionsAccordionItem
+          fixedQuestions={fixedCamperInfoQuestions}
+          dynamicQuestions={templateQuestions.filter(
+            (question) => question.category === "PersonalInfo",
+          )}
+          accordionTitle="Camper Information"
+        />
+        <QuestionsAccordionItem
+          fixedQuestions={fixedEmergencyContactQuestions}
+          dynamicQuestions={templateQuestions.filter(
+            (question) => question.category === "EmergencyContact",
+          )}
+          accordionTitle="Emergency Contact"
+        />
+      </Accordion>
     </div>
   );
 };
