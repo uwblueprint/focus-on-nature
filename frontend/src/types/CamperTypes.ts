@@ -1,3 +1,11 @@
+export type EmergencyContact = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  relationshipToCamper: string;
+};
+
 export type Camper = {
   id: string;
   campSession: string;
@@ -8,13 +16,7 @@ export type Camper = {
   earlyDropoff?: Date[];
   latePickup?: Date[];
   specialNeeds?: string;
-  contacts: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    relationshipToCamper: string;
-  }[];
+  contacts: EmergencyContact[];
   formResponses?: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
@@ -30,6 +32,28 @@ export type Camper = {
       agreed: boolean;
     },
   ];
+};
+
+export type EditCamperInfoFields = Omit<
+  Camper,
+  | "earlyDropoff"
+  | "latePickup"
+  | "registrationDate"
+  | "contacts"
+  | "chargeId"
+  | "charges"
+  | "optionalClauses"
+  | "id"
+  | "campSession"
+>;
+
+export type EditModalSetterFunctions = {
+  setFirstName: (firstName: string) => void;
+  setLastName: (lastName: string) => void;
+  setAge: (age: number) => void;
+  setAllergies: (allergies: string | undefined) => void;
+  setSpecialNeeds: (sn: string | undefined) => void;
+  setFormResponses: (formResponses: Map<string, string> | undefined) => void;
 };
 
 export type UpdateWaitlistedStatusType = {

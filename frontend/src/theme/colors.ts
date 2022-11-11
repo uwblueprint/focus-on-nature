@@ -2,11 +2,13 @@ const colors = {
   primary: {
     green: {
       100: "#468740",
+      500: "#468740",
     },
   },
   secondary: {
     critical: {
       100: "#F8533D",
+      500: "#F8533D",
     },
     warning: {
       100: "#F39E3B",
@@ -86,6 +88,9 @@ const colors = {
     },
     primary: {
       100: "#D3E9D3",
+    },
+    required: {
+      100: "#FFDCDC",
     },
   },
   border: {

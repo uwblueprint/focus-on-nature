@@ -1,8 +1,19 @@
-import { Box, Container, Divider, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  Divider,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { CampResponse } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CampSessionResponse,
+  UpdateCampSessionsRequest,
+} from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import CampSessionInfoHeader from "../../common/camps/CampSessionInfoHeader";
 import CampDetails from "./CampDetails";
@@ -11,6 +22,11 @@ import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
 import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
+
+type ManageSessionsPromisesResult = {
+  deletedSessions?: boolean;
+  updatedSessions?: Array<CampSessionResponse>;
+};
 
 const CampOverviewPage = (): JSX.Element => {
   const { id: campId }: any = useParams();
@@ -42,22 +58,28 @@ const CampOverviewPage = (): JSX.Element => {
   });
   const numSessions = camp.campSessions?.length;
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenManageSessionsModal,
+    onOpen: onOpenManageSessionsModal,
+    onClose: onCloseManageSessionsModal,
+  } = useDisclosure();
+  const toast = useToast();
 
-  const getCamp = useCallback(async () => {
-    const campResponse = await CampsAPIClient.getCampById(campId);
-    if (campResponse) {
-      setCamp(campResponse);
-    }
-  }, [campId]);
+  const [refetch, setRefetch] = useState<boolean>(true);
+  const handleRefetch = () => {
+    setRefetch(!refetch);
+  };
 
   useEffect(() => {
-    getCamp();
-  }, [getCamp]);
+    const getCamp = async () => {
+      const campResponse = await CampsAPIClient.getCampById(campId);
+      if (campResponse) {
+        setCamp(campResponse);
+      }
+    };
 
-  const updateCampCallback = useCallback(() => {
     getCamp();
-  }, [getCamp]);
+  }, [campId, refetch]);
 
   const onNextSession = () => {
     if (numSessions >= 2)
@@ -73,7 +95,96 @@ const CampOverviewPage = (): JSX.Element => {
       );
   };
 
-  const openManageSessionsModal = () => onOpen();
+  const getUpdateCampSessionsRequestArray = (
+    updatedCapacities: Map<string, string>,
+  ): Array<UpdateCampSessionsRequest> => {
+    const requests: Array<UpdateCampSessionsRequest> = [];
+
+    updatedCapacities.forEach((capacity, id) => {
+      const updatedCapacityExists = capacity.trim().length > 0;
+      if (updatedCapacityExists) {
+        requests.push({ id, capacity: parseInt(capacity, 10) });
+      }
+
+      console.log(requests);
+    });
+
+    return requests;
+  };
+
+  const getManageSessionsResult = async (
+    deletedSessions: Set<string>,
+    updatedCapacities: Map<string, string>,
+  ): Promise<ManageSessionsPromisesResult> => {
+    let sessionPromises: ManageSessionsPromisesResult = {};
+
+    const deleteSessionsPromise =
+      deletedSessions.size > 0
+        ? CampsAPIClient.deleteCampSessionsByIds(
+            campId,
+            Array.from(deletedSessions),
+          )
+        : null;
+    const updateCapacitiesPromise =
+      updatedCapacities.size > 0
+        ? CampsAPIClient.updateCampSessions(
+            campId,
+            getUpdateCampSessionsRequestArray(updatedCapacities),
+          )
+        : null;
+
+    if (deleteSessionsPromise && updateCapacitiesPromise) {
+      sessionPromises = await Promise.all([
+        deleteSessionsPromise,
+        updateCapacitiesPromise,
+      ]).then((data) => {
+        return {
+          deletedSessions: data[0],
+          updatedSessions: data[1],
+        };
+      });
+    } else if (deleteSessionsPromise) {
+      sessionPromises.deletedSessions = await deleteSessionsPromise;
+    } else if (updateCapacitiesPromise) {
+      sessionPromises.updatedSessions = await updateCapacitiesPromise;
+    }
+
+    return sessionPromises;
+  };
+
+  const onManageSessionsSave = async (
+    deletedSessions: Set<string>,
+    updatedCapacities: Map<string, string>,
+  ) => {
+    const manageSessionsResult = await getManageSessionsResult(
+      deletedSessions,
+      updatedCapacities,
+    );
+    const requestFailed =
+      (manageSessionsResult.deletedSessions !== undefined &&
+        !manageSessionsResult.deletedSessions) ||
+      (manageSessionsResult.updatedSessions !== undefined &&
+        manageSessionsResult.updatedSessions.length !== updatedCapacities.size);
+
+    if (!requestFailed) {
+      setTimeout(() => {
+        handleRefetch();
+        setCurrentCampSession(0);
+      }, 500);
+
+      toast({
+        description: `Edits to camp sessions saved successfully.`,
+        status: "success",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        description: `An error occurred while saving edits to camp sessions. Please try again.`,
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <Container
@@ -98,11 +209,13 @@ const CampOverviewPage = (): JSX.Element => {
               currentCampSession={currentCampSession}
               onNextSession={onNextSession}
               onPrevSession={onPrevSession}
-              onClickManageSessions={openManageSessionsModal}
+              onClickManageSessions={onOpenManageSessionsModal}
             />
             <CampersTables
               campSession={camp.campSessions[currentCampSession]}
               updateCamp={updateCampCallback}
+              formQuestions={camp.formQuestions}
+              handleRefetch={handleRefetch}
             />
             <ManageSessionsModal
               campStartTime={camp.startTime}
@@ -121,12 +234,9 @@ const CampOverviewPage = (): JSX.Element => {
                     registeredCampers: session.campers.length,
                   };
                 })}
-              onSaveChanges={(deletedSessions, updatedCapacities) => {
-                console.log(deletedSessions);
-                console.log(updatedCapacities);
-              }}
-              isOpen={isOpen}
-              onClose={onClose}
+              onSaveChanges={onManageSessionsSave}
+              isOpen={isOpenManageSessionsModal}
+              onClose={onCloseManageSessionsModal}
             />
           </>
         ) : (

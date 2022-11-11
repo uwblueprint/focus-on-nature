@@ -1,6 +1,7 @@
 type Type =
   | "string"
   | "integer"
+  | "number"
   | "boolean"
   | "mixed"
   | "Date string"
@@ -33,6 +34,9 @@ export const validatePrimitive = (value: any, type: Type): boolean => {
     }
     case "integer": {
       return typeof value === "number" && Number.isInteger(value);
+    }
+    case "number": {
+      return typeof value === "number";
     }
     default: {
       return false;
@@ -124,4 +128,17 @@ export const getImageSizeValidationError = (): string => {
 
 export const duplicatesInArray = (value: Array<any>): boolean => {
   return new Set(value).size !== value.length;
+};
+
+export const getCampYearValidationError = (campYear: string): string => {
+  if (parseInt(campYear, 10).toString() !== campYear) {
+    return getApiValidationError("Camp Year", "string");
+  }
+  return `camp year ${campYear} should be of a valid year format (YYYY)`;
+};
+
+export const validateCampYear = (campYear: string) => {
+  return (
+    parseInt(campYear, 10).toString() === campYear && campYear.length === 4
+  );
 };

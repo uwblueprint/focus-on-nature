@@ -1,5 +1,9 @@
 import { BEARER_TOKEN } from "../constants/AuthConstants";
-import { CampResponse } from "../types/CampsTypes";
+import {
+  CampResponse,
+  CampSessionResponse,
+  UpdateCampSessionsRequest,
+} from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
 
 const getCampById = async (id: string): Promise<CampResponse> => {
@@ -47,8 +51,49 @@ const deleteCamp = async (id: string): Promise<boolean> => {
   }
 };
 
+const updateCampSessions = async (
+  campId: string,
+  updatedCampSessions: Array<UpdateCampSessionsRequest>,
+): Promise<Array<CampSessionResponse>> => {
+  try {
+    const { data } = await baseAPIClient.patch(`/camp/${campId}/session`, {
+      headers: {
+        Authorization: BEARER_TOKEN,
+      },
+      data: {
+        updatedCampSessions,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    return error as Array<CampSessionResponse>;
+  }
+};
+
+const deleteCampSessionsByIds = async (
+  campId: string,
+  campSessionIds: Array<string>,
+): Promise<boolean> => {
+  try {
+    await baseAPIClient.delete(`/camp/${campId}/session`, {
+      headers: {
+        Authorization: BEARER_TOKEN,
+      },
+      data: {
+        campSessionIds,
+      },
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
   getCampById,
   editCampById,
   deleteCamp,
+  updateCampSessions,
+  deleteCampSessionsByIds,
 };

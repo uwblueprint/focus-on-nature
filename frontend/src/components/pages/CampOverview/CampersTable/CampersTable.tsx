@@ -25,6 +25,7 @@ import { CamperDetailsBadgeGroup } from "./CamperDetailsBadge";
 import CampersTableFilterTag from "./CampersTableFilterTag";
 
 import { Camper } from "../../../../types/CamperTypes";
+import { CampSession, FormQuestion } from "../../../../types/CampsTypes";
 import { Filter, filterOptions } from "./CampersTableFilterTypes";
 
 import textStyles from "../../../../theme/textStyles";
@@ -33,8 +34,8 @@ import CampersTableKebabMenu from "./CampersTableKebabMenu";
 import EditCamperModal from "../EditCamperModal";
 import MoveCamperModal from "../MoveCamperModal";
 import ViewCamperModal from "../ViewCamperModal";
+import RemoveCamperModal from "../RemoveCamperModal/index";
 
-import { CampSession } from "../../../../types/CampsTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import CampsAPIClient from "../../../../APIClients/CampsAPIClient";
 
@@ -62,11 +63,15 @@ const CampersTable = ({
   campSession,
   campSessionCapacity,
   updateCamp,
+  formQuestions,
+  handleRefetch,
 }: {
   campers: Camper[];
   campSession: CampSession;
   campSessionCapacity: number;
   updateCamp: () => void;
+  formQuestions: FormQuestion[];
+  handleRefetch: () => void;
 }): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
@@ -93,6 +98,12 @@ const CampersTable = ({
     isOpen: viewModalIsOpen,
     onOpen: viewModalOnOpen,
     onClose: viewModalOnClose,
+  } = useDisclosure();
+  
+  const {
+    isOpen: removeModalIsOpen,
+    onOpen: removeModalOnOpen,
+    onClose: removeModalOnClose,
   } = useDisclosure();
 
   const toast = useToast();
@@ -311,7 +322,8 @@ const CampersTable = ({
                         moveModalOnOpen();
                       }}
                       removeCamperFunc={() => {
-                        console.log("Removing Camper");
+                        setSelectedCamper(camper);
+                        removeModalOnOpen();
                       }}
                     />
                   </Td>
@@ -319,33 +331,43 @@ const CampersTable = ({
               ))}
             </Tbody>
           </Table>
-
-          {/* Add the registered camper action modals here  */}
           {selectedCamper && (
-            <>
-              <MoveCamperModal
-                camper={selectedCamper}
-                campSession={campSession}
-                campSessions={campSessions}
-                selectedCampSession={selectedCampSession}
-                setSelectedCampSession={setSelectedCampSession}
-                moveCampers={moveCampers}
-                moveCamperModalIsOpen={moveModalIsOpen}
-                moveCamperModalOnClose={moveModalOnClose}
-              />
-              <EditCamperModal
-                camper={selectedCamper}
-                editCamperModalIsOpen={editModalIsOpen}
-                editCamperOnClose={editModalOnClose}
-              />
-            </>
+            <EditCamperModal
+              camper={selectedCamper}
+              formQuestions={formQuestions}
+              editCamperModalIsOpen={editModalIsOpen}
+              editCamperModalOnClose={editModalOnClose}
+              handleRefetch={handleRefetch}
+            />
           )}
-
+          
+          {selectedCamper && (
+            <MoveCamperModal
+              camper={selectedCamper}
+              campSession={campSession}
+              campSessions={campSessions}
+              selectedCampSession={selectedCampSession}
+              setSelectedCampSession={setSelectedCampSession}
+              moveCampers={moveCampers}
+              moveCamperModalIsOpen={moveModalIsOpen}
+              moveCamperModalOnClose={moveModalOnClose}
+            />
+          )}
+          
           {selectedCamper && (
             <ViewCamperModal
               camper={selectedCamper}
               viewCamperModalIsOpen={viewModalIsOpen}
               viewCamperOnClose={viewModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <RemoveCamperModal
+              camper={selectedCamper}
+              removeModalIsOpen={removeModalIsOpen}
+              removeModalOnClose={removeModalOnClose}
+              handleRefetch={handleRefetch}
             />
           )}
         </>

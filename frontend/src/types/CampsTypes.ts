@@ -35,8 +35,6 @@ export type CampResponse = {
   campPhotoUrl: string;
 };
 
-export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
-
 export type CampSession = {
   id: string;
   camp: string;
@@ -46,10 +44,25 @@ export type CampSession = {
   dates: string[];
 };
 
+export type CampSessionResponse = CampSession & { campPriceId: string };
+
 export type ManageCampSessionDetails = Omit<
   CampSession,
   "camp" | "campers" | "waitlist"
 > & { registeredCampers: number };
+
+// { id: string; capacity?: number; dates?: string[] }
+export type UpdateCampSessionsRequest = Partial<
+  Omit<CampSession, "camp" | "campers" | "waitlist">
+> &
+  Pick<CampSession, "id">;
+
+export type QuestionType = "Text" | "MultipleChoice" | "Multiselect";
+
+export type QuestionCategory =
+  | "PersonalInfo"
+  | "CampSpecific"
+  | "EmergencyContact";
 
 export type FormQuestion = {
   id: string;
@@ -58,4 +71,7 @@ export type FormQuestion = {
   required: boolean;
   description?: string;
   options?: string[];
+  category: QuestionCategory;
 };
+
+export type CreateFormQuestion = Omit<FormQuestion, "id">;

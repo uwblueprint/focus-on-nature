@@ -8,6 +8,7 @@ import {
   UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
+  UpdateCampSessionsDTO,
 } from "../../types";
 
 interface ICampService {
@@ -17,7 +18,7 @@ interface ICampService {
    * @returns array of getCampDTO object containing camp information
    * @throws Error if camp retrieval fails
    */
-  getCamps(): Promise<GetCampDTO[]>;
+  getCamps(campYear: number): Promise<GetCampDTO[]>;
 
   /**
    * Get camp with the specified campId
@@ -41,6 +42,11 @@ interface ICampService {
 
   deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
 
+  deleteCampSessionsByIds(
+    campId: string,
+    campSessionIds: Array<string>,
+  ): Promise<void>;
+
   createCampSessions(
     campId: string,
     campSessions: CreateCampSessionsDTO,
@@ -51,6 +57,11 @@ interface ICampService {
     campSessionId: string,
     campSession: UpdateCampSessionDTO,
   ): Promise<CampSessionDTO>;
+
+  updateCampSessionsByIds(
+    campId: string,
+    updatedCampSessions: Array<UpdateCampSessionsDTO>,
+  ): Promise<Array<CampSessionDTO>>;
 
   /**
    * Get all campers associated with camps of id campId

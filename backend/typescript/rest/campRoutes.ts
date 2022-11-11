@@ -10,9 +10,12 @@ import {
   createCampDtoValidator,
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
+  deleteCampSessionsDtoValidator,
   editFormQuestionValidator,
+  getCampDtoValidator,
   updateCampDtoValidator,
   updateCampSessionDtoValidator,
+  updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";
 
 const upload = multer({ dest: "uploads/" });
@@ -26,9 +29,10 @@ const fileStorageService: IFileStorageService = new FileStorageService(
 
 const campService: ICampService = new CampService(fileStorageService);
 /* Get all camps */
-campRouter.get("/", async (req, res) => {
+campRouter.get("/", getCampDtoValidator, async (req, res) => {
   try {
-    const camps = await campService.getCamps();
+    const { campYear } = req.query;
+    const camps = await campService.getCamps(parseInt(campYear as string, 10));
     res.status(200).json(camps);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
@@ -181,6 +185,23 @@ campRouter.patch(
   },
 );
 
+/* Update camp sessions */
+campRouter.patch(
+  "/:campId/session/",
+  updateCampSessionsDtoValidator,
+  async (req, res) => {
+    try {
+      const campSession = await campService.updateCampSessionsByIds(
+        req.params.campId,
+        req.body.data.updatedCampSessions,
+      );
+      res.status(200).json(campSession);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
 /* Delete a camp session */
 campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   try {
@@ -193,6 +214,23 @@ campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
+
+/* Delete camp sessions */
+campRouter.delete(
+  "/:campId/session/",
+  deleteCampSessionsDtoValidator,
+  async (req, res) => {
+    try {
+      await campService.deleteCampSessionsByIds(
+        req.params.campId,
+        req.body.campSessionIds,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
