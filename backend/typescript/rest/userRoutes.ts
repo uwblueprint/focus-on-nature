@@ -23,6 +23,7 @@ const userService: IUserService = new UserService();
 const emailService: IEmailService = new EmailService(nodemailerConfig);
 const authService: IAuthService = new AuthService(userService, emailService);
 
+// ROLES: Admin
 /* Get all users, optionally filter by a userId or email query parameter to retrieve a single user */
 userRouter.get("/", async (req, res) => {
   const { userId, email } = req.query;
@@ -83,6 +84,7 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
+// ROLES: Leave unprotected
 /* Create a user */
 userRouter.post("/", createUserDtoValidator, async (req, res) => {
   try {
@@ -102,6 +104,7 @@ userRouter.post("/", createUserDtoValidator, async (req, res) => {
   }
 });
 
+// ROLES: Leave unprotected (TODO- do we need this? @dhruv)
 /* Update the user with the specified userId */
 userRouter.put("/:userId", updateUserDtoValidator, async (req, res) => {
   try {
@@ -119,6 +122,8 @@ userRouter.put("/:userId", updateUserDtoValidator, async (req, res) => {
   }
 });
 
+
+// ROLES: Leave unprotected (TODO- do we need this? @dhruv)
 /* Delete a user by userId or email, specified through a query parameter */
 userRouter.delete("/", async (req, res) => {
   const { userId, email } = req.query;

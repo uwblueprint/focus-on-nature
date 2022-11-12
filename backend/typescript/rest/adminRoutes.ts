@@ -13,6 +13,7 @@ import { isAuthorizedByRole } from "../middlewares/auth";
 const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
 
+// ROLES: Admin
 adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
   try {
     const waiver = await adminService.updateWaiver({
@@ -24,6 +25,7 @@ adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
   }
 });
 
+// ROLES: Unprotected
 adminRouter.get("/waiver", async (req, res) => {
   try {
     const waiver = await adminService.getWaiver();
@@ -33,6 +35,7 @@ adminRouter.get("/waiver", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 adminRouter.post(
   "/formTemplate",
   formTemplateUpdateValidator,
@@ -48,6 +51,7 @@ adminRouter.post(
   },
 );
 
+// ROLES: Admin + CC
 adminRouter.get("/formTemplate", async (req, res) => {
   try {
     const form = await adminService.getFormTemplate();
@@ -57,6 +61,7 @@ adminRouter.get("/formTemplate", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 adminRouter.patch(
   "/formTemplate/formQuestion",
   formTemplateAddQuestionValidator,

@@ -24,6 +24,7 @@ const fileStorageService: IFileStorageService = new FileStorageService(
 );
 const entityService: IEntityService = new EntityService(fileStorageService);
 
+// ROLES: Admin
 /* Create entity */
 entityRouter.post(
   "/",
@@ -51,6 +52,7 @@ entityRouter.post(
   },
 );
 
+// ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get all entities */
 entityRouter.get("/", async (req, res) => {
   const contentType = req.headers["content-type"];
@@ -71,6 +73,7 @@ entityRouter.get("/", async (req, res) => {
   }
 });
 
+// ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get entity by id */
 entityRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -83,6 +86,7 @@ entityRouter.get("/:id", async (req, res) => {
   }
 });
 
+// ROLES: Admin 
 /* Update entity by id */
 entityRouter.put(
   "/:id",
@@ -111,6 +115,7 @@ entityRouter.put(
   },
 );
 
+// ROLES: Admin
 /* Delete entity by id */
 entityRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
@@ -123,6 +128,7 @@ entityRouter.delete("/:id", async (req, res) => {
   }
 });
 
+// ROLES: Admin + CC
 /* Get file associated with entity by fileUUID */
 entityRouter.get("/files/:fileUUID", async (req, res) => {
   const { fileUUID } = req.params;
