@@ -1,45 +1,71 @@
 import React from "react";
 import { Box, HStack, IconButton, Text } from "@chakra-ui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+
+enum TabState {
+  Focused,
+  Available,
+  Disabled,
+}
 
 type StepperTabProps = {
   title: string;
   stepNum: number;
+  filled: boolean;
   focused: boolean;
+  available: boolean;
   icon: JSX.Element;
   onClick: () => void;
+  margin: string;
 };
 
 const StepperTab = ({
   title,
   stepNum,
+  filled,
   focused,
+  available,
   icon,
   onClick,
+  margin,
 }: StepperTabProps): React.ReactElement => {
+  let iconColorScheme = "text.grey";
+  let tabState: TabState = TabState.Disabled;
+  if (available) {
+    tabState = TabState.Available;
+    iconColorScheme = "text.available";
+  }
+  if (focused) {
+    tabState = TabState.Focused;
+    iconColorScheme = "primary.green";
+  }
+
   return (
-    <Box onClick={onClick} cursor="pointer" mt={4} mb={4} ml="10vw" mr="10vw">
+    <Box
+      onClick={available ? onClick : undefined}
+      cursor={tabState === TabState.Disabled ? "not-allowed" : "pointer"}
+      mt={4}
+      mb={4}
+      ml={margin}
+      mr={margin}
+    >
       <HStack spacing={4}>
         <Box>
-          {focused ? (
-            <IconButton
-              icon={icon}
-              colorScheme="primary.green"
-              color="white"
-              isRound
-              size="lg"
-              aria-label={title}
-            />
-          ) : (
-            <IconButton
-              icon={icon}
-              variant="outline"
-              colorScheme="text.grey"
-              border="2px"
-              isRound
-              size="lg"
-              aria-label={title}
-            />
-          )}
+          <IconButton
+            icon={filled ? <FontAwesomeIcon icon={faCheck} /> : icon}
+            colorScheme={iconColorScheme}
+            size="lg"
+            aria-label={title}
+            isRound
+            border="2px"
+            variant={tabState === TabState.Focused ? "solid" : "outline"}
+            _hover={
+              tabState === TabState.Disabled
+                ? { cursor: "not-allowed" }
+                : { cursor: "pointer" }
+            }
+          />
         </Box>
         <Box>
           <Text textStyle="caption">Step {stepNum}/3</Text>

@@ -38,8 +38,8 @@ const colors = {
       100: "#FFFFFF",
     },
     grey: {
-      50: "#FAFAFA",
-      100: "#FAFAFA",
+      50: "#FFFFFF",
+      100: "#FFFFFF",
       600: "#A3AEBE",
     },
     secondary: {
@@ -56,6 +56,11 @@ const colors = {
     },
     informative: {
       100: "#0362A5",
+    },
+    available: {
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#A2CC9F",
     },
   },
   background: {

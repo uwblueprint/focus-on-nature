@@ -7,12 +7,7 @@ import {
   faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import StepperTab from "./StepperTab";
-
-export enum CampCreationPages {
-  CampCreationDetailsPage,
-  ScheduleSessionsPage,
-  RegistrationFormPage,
-}
+import { CampCreationPages } from "../CampCreationPages";
 
 type StepperProps = {
   currentPage: CampCreationPages;
@@ -30,35 +25,39 @@ const Stepper = ({
   isRegistrationFormFilled,
 }: StepperProps): React.ReactElement => {
   return (
-    <Box bg="white" maxW="100%" boxShadow="sm">
+    <Box bg="white" boxShadow="sm">
       <Center>
         <StepperTab
           title="Camp Details"
           stepNum={1}
+          filled={isCampDetailsFilled}
           focused={currentPage === CampCreationPages.CampCreationDetailsPage}
+          available
           icon={<FontAwesomeIcon icon={faCampground} />}
-          onClick={() => setCurrentPage(CampCreationPages.CampCreationDetailsPage)}
+          onClick={() =>
+            setCurrentPage(CampCreationPages.CampCreationDetailsPage)
+          }
+          margin="10vw"
         />
         <StepperTab
           title="Schedule Sessions"
           stepNum={2}
+          filled={isScheduleSessionsFilled}
           focused={currentPage === CampCreationPages.ScheduleSessionsPage}
+          available={isCampDetailsFilled}
           icon={<FontAwesomeIcon icon={faCalendarDays} />}
-          onClick={() =>
-            isCampDetailsFilled &&
-            setCurrentPage(CampCreationPages.ScheduleSessionsPage)
-          }
+          onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}
+          margin="10vw"
         />
         <StepperTab
           title="Registration Form"
           stepNum={3}
+          filled={isRegistrationFormFilled}
           focused={currentPage === CampCreationPages.RegistrationFormPage}
+          available={isCampDetailsFilled && isScheduleSessionsFilled}
           icon={<FontAwesomeIcon icon={faCircleInfo} />}
-          onClick={() =>
-            isCampDetailsFilled &&
-            isScheduleSessionsFilled &&
-            setCurrentPage(CampCreationPages.RegistrationFormPage)
-          }
+          onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}
+          margin="10vw"
         />
       </Center>
     </Box>
