@@ -17,7 +17,7 @@ const RegistrationFormTemplateTab = ({
 }: RegistrationFormTemplateTabProps): React.ReactElement => {
   return (
     <div>
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={0}>
         <QuestionsAccordionItem
           fixedQuestions={fixedCamperInfoQuestions}
           dynamicQuestions={templateQuestions.filter(

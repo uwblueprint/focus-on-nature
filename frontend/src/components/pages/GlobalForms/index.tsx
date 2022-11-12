@@ -200,14 +200,14 @@ const GlobalFormsPage = (): React.ReactElement => {
         maxWidth="100vw"
         minHeight="100vh"
         background="background.grey.200"
-        paddingTop="3em"
+        paddingY="3em"
       >
         <Box marginTop="1rem" marginX="100px">
           <Text mb="1em" textStyle="displayXLarge">
             Form Management
           </Text>
           <Tabs variant="line" colorScheme="green">
-            <TabList>
+            <TabList marginBottom="20px">
               <Tab
                 fontWeight="bold"
                 onClick={() => setSelectedTab(TabOption.registration)}
