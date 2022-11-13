@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, HStack, Text, Accordion } from "@chakra-ui/react";
+import { Accordion, Box, Button, HStack, Text,} from "@chakra-ui/react";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import CamperInfoAccordion from "./CamperInfoAccordion";
 
@@ -17,8 +17,8 @@ const RegistrationFormPage = ({
 
   return (
     <>
-      <HStack display="flex" justifyContent="space-between">
-        <Text mb="35px" textStyle="displayXLarge">
+      <HStack display="flex" justifyContent="space-between" alignItems="center" mb={10}>
+        <Text textStyle="displayXLarge">
           Registration Information
         </Text>
         <Button>

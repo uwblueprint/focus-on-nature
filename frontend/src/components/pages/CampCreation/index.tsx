@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 import CampDetails from "./CampDetails";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
@@ -46,29 +46,31 @@ const CampCreationPage = (): JSX.Element => {
   };
 
   return (
-    <Box>
-      <Button
-        onClick={() =>
-          setCurrentPage(CampCreationPages.CampCreationDetailsPage)
-        }
-      >
-        Camp Details
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}
-      >
-        Schedule Sessions
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}
-      >
-        Registration Form
-      </Button>
+    <Flex flexDirection="column" minHeight="calc(100vh - 68px)">
+      {/* Stepper */}
+      <Box bg="#dddddd" height="92px">
+        <Button onClick={() => setCurrentPage(CampCreationPages.CampCreationDetailsPage)}>
+          Camp Details
+        </Button>
+        <Button onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}>
+          Schedule Sessions
+        </Button>
+        <Button onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}>
+          Registration Form
+        </Button>
+      </Box>
 
-      <Box my="50px" mx="228px">
+      {/* Page */}
+      <Box  pt="75px" pl="200px" pr="200px" maxHeight="calc(100vh - 260px)" flexGrow={1} overflowY={currentPage === CampCreationPages.RegistrationFormPage ? "scroll" : "auto"}>
         {getCampCreationStepComponent(currentPage)}
       </Box>
-    </Box>
+
+      {/* Footer */}
+      <Box as="footer" bg="#dddddd" height="100px" >
+        footer
+      </Box>
+
+    </Flex>
   );
 };
 

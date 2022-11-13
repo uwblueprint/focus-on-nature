@@ -69,14 +69,14 @@ const NavBar = (): JSX.Element => {
   };
 
   return (
-    <Container maxWidth="100vw">
+    <Container maxWidth="100vw" p={0}>
       <Flex
         direction="row"
         justifyContent="space-between"
-        marginLeft="80px"
-        marginRight="80px"
-        marginTop="14px"
-        marginBottom="14px"
+        paddingLeft="80px"
+        paddingRight="80px"
+        paddingTop="14px"
+        paddingBottom="14px"
       >
         {authenticatedUser ? (
           <>

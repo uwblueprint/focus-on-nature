@@ -17,9 +17,9 @@ const CamperInfoAccordion = ({
 
     return (
         <AccordionItem border="none">
-            <AccordionButton backgroundColor="primary.green.600" borderRadius="20px" _hover={{ bg: "primary.green.600"}}>
+            <AccordionButton borderRadius="20px" bg="primary.green.100" _hover={{bg: "primary.green.100"}}>
                 <Box flex="1" textAlign="left">
-                    <Text color="text.white.100" fontWeight="bold">
+                    <Text color="text.white.100" textStyle="displayLarge" p={2}>
                         Camper Information
                     </Text>
                 </Box>
@@ -27,24 +27,20 @@ const CamperInfoAccordion = ({
             </AccordionButton>
 
             <AccordionPanel>
-                {
-                    FixedQuestions.fixedCamperInfoQuestions.map((question, index) => (
+                {FixedQuestions.fixedCamperInfoQuestions.map((question, index) => (
                         <FixedQuestionCard 
                             question={question}
                             questionNumber={index + 1}
                             key={`${question.question}_${index + 1}`}
                         />
-                    ))
-                }
-                {
-                    camperInfoQuestions.map((question, index) => (
+                    ))}
+                {camperInfoQuestions.map((question, index) => (
                         <AdditionalQuestionCard 
                             question={question}
                             questionNumber={index + 1 + FixedQuestions.fixedCamperInfoQuestions.length}
                             key={`${question.question}_${index + FixedQuestions.fixedCamperInfoQuestions.length + 1}`}
                         />
-                    ))
-                }
+                    ))}
             </AccordionPanel>
         </AccordionItem>
     );
