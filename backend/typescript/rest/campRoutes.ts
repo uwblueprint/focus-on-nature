@@ -17,7 +17,6 @@ import {
   updateCampSessionDtoValidator,
   updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";
-import { isAuthorizedByRole } from "../middlewares/auth";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -32,18 +31,14 @@ const campService: ICampService = new CampService(fileStorageService);
 
 // ROLES: Admin + CC
 /* Get all camps */
-campRouter.get(
-  "/",
-  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])), 
-  getCampDtoValidator, 
-  async (req, res) => {
-    try {
-      const { campYear } = req.query;
-      const camps = await campService.getCamps(parseInt(campYear as string, 10));
-      res.status(200).json(camps);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+campRouter.get("/", getCampDtoValidator, async (req, res) => {
+  try {
+    const { campYear } = req.query;
+    const camps = await campService.getCamps(parseInt(campYear as string, 10));
+    res.status(200).json(camps);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Leave unprotected as we'll probably need to get the camp info in registration (TBD) @dhruv
@@ -78,7 +73,6 @@ campRouter.get("/:id", async (req, res) => {
 /* Create a camp */
 campRouter.post(
   "/",
-  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   createCampDtoValidator,
   async (req, res) => {
@@ -121,7 +115,6 @@ campRouter.post(
 /* Update a camp */
 campRouter.patch(
   "/:campId",
-  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   updateCampDtoValidator,
   async (req, res) => {
@@ -161,7 +154,6 @@ campRouter.patch(
 /* Create camp sessions */
 campRouter.post(
   "/:campId/session/",
-  isAuthorizedByRole(new Set(["Admin"])),
   createCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -180,7 +172,6 @@ campRouter.post(
 /* Update a camp session */
 campRouter.patch(
   "/:campId/session/:campSessionId",
-  isAuthorizedByRole(new Set(["Admin"])),
   updateCampSessionDtoValidator,
   async (req, res) => {
     try {
@@ -203,7 +194,6 @@ campRouter.patch(
 /* Update camp sessions */
 campRouter.patch(
   "/:campId/session/",
-  isAuthorizedByRole(new Set(["Admin"])),
   updateCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -220,26 +210,22 @@ campRouter.patch(
 
 // ROLES: Admin
 /* Delete a camp session */
-campRouter.delete(
-  "/:campId/session/:campSessionId", 
-  isAuthorizedByRole(new Set(["Admin"])),
-  async (req, res) => {
-    try {
-      await campService.deleteCampSessionById(
-        req.params.campId,
-        req.params.campSessionId,
-      );
-      res.status(204).send();
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
+  try {
+    await campService.deleteCampSessionById(
+      req.params.campId,
+      req.params.campSessionId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Admin
 /* Delete camp sessions */
 campRouter.delete(
   "/:campId/session/",
-  isAuthorizedByRole(new Set(["Admin"])),
   deleteCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -256,22 +242,18 @@ campRouter.delete(
 
 // ROLES: Admin + CC
 /* Returns a CSV string containing all campers within a specific camp */
-campRouter.get(
-  "/csv/:id", 
-  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
-  async (req, res) => {
-    try {
-      const csvString = await campService.generateCampersCSV(req.params.id);
-      res.status(200).set("Content-Type", "text/csv").send(csvString);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+campRouter.get("/csv/:id", async (req, res) => {
+  try {
+    const csvString = await campService.generateCampersCSV(req.params.id);
+    res.status(200).set("Content-Type", "text/csv").send(csvString);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Admin
 campRouter.post(
   "/:campId/form/",
-  isAuthorizedByRole(new Set(["Admin"])),
   createFormQuestionsValidator,
   async (req, res) => {
     try {
@@ -289,7 +271,6 @@ campRouter.post(
 // ROLES: Admin
 campRouter.put(
   "/:campId/form/:formQuestionId/",
-  isAuthorizedByRole(new Set(["Admin"])),
   editFormQuestionValidator,
   async (req, res) => {
     try {
@@ -306,25 +287,21 @@ campRouter.put(
 );
 
 // ROLES: Admin
-campRouter.delete(
-  "/:campId/form/:formQuestionId/", 
-  isAuthorizedByRole(new Set(["Admin"])),
-  async (req, res) => {
-    try {
-      await campService.deleteFormQuestion(
-        req.params.campId,
-        req.params.formQuestionId,
-      );
-      res.status(204).send();
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
+  try {
+    await campService.deleteFormQuestion(
+      req.params.campId,
+      req.params.formQuestionId,
+    );
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Admin
 campRouter.patch(
   "/:campId/form/",
-  isAuthorizedByRole(new Set(["Admin"])),
   createFormQuestionsValidator,
   async (req, res) => {
     try {
@@ -341,16 +318,13 @@ campRouter.patch(
 
 // ROLES: Admin
 /* Delete a camp */
-campRouter.delete(
-  "/:id", 
-  isAuthorizedByRole(new Set(["Admin"])),
-  async (req, res) => {
-    try {
-      await campService.deleteCamp(req.params.id);
-      res.status(204).send();
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+campRouter.delete("/:id", async (req, res) => {
+  try {
+    await campService.deleteCamp(req.params.id);
+    res.status(204).send();
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 export default campRouter;

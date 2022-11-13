@@ -14,19 +14,15 @@ const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
 
 // ROLES: Admin
-adminRouter.post(
-  "/waiver", 
-  isAuthorizedByRole(new Set(["Admin"])),
-  waiverUpdateValidator, 
-  async (req, res) => {
-    try {
-      const waiver = await adminService.updateWaiver({
-        clauses: req.body.clauses,
-      });
-      res.status(200).json(waiver);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
+  try {
+    const waiver = await adminService.updateWaiver({
+      clauses: req.body.clauses,
+    });
+    res.status(200).json(waiver);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Unprotected
@@ -42,7 +38,6 @@ adminRouter.get("/waiver", async (req, res) => {
 // ROLES: Admin
 adminRouter.post(
   "/formTemplate",
-  isAuthorizedByRole(new Set(["Admin"])),
   formTemplateUpdateValidator,
   async (req, res) => {
     try {
@@ -57,23 +52,20 @@ adminRouter.post(
 );
 
 // ROLES: Admin + CC
-adminRouter.get(
-  "/formTemplate",
-  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
-  async (req, res) => {
-    try {
-      const form = await adminService.getFormTemplate();
-      res.status(200).json(form);
-    } catch (error: unknown) {
-      res.status(500).json({ error: getErrorMessage(error) });
-    }
+adminRouter.get("/formTemplate", async (req, res) => {
+  try {
+    const form = await adminService.getFormTemplate();
+    res.status(200).json(form);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
 });
 
 // ROLES: Admin
 adminRouter.patch(
   "/formTemplate/formQuestion",
-  isAuthorizedByRole(new Set(["Admin"])),
   formTemplateAddQuestionValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
       const newQuestion = await adminService.addQuestionToTemplate({
