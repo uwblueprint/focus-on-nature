@@ -86,7 +86,7 @@ entityRouter.get("/:id", async (req, res) => {
   }
 });
 
-// ROLES: Admin 
+// ROLES: Admin
 /* Update entity by id */
 entityRouter.put(
   "/:id",

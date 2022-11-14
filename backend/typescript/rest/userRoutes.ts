@@ -122,7 +122,6 @@ userRouter.put("/:userId", updateUserDtoValidator, async (req, res) => {
   }
 });
 
-
 // ROLES: Leave unprotected (TODO- do we need this? @dhruv)
 /* Delete a user by userId or email, specified through a query parameter */
 userRouter.delete("/", async (req, res) => {
