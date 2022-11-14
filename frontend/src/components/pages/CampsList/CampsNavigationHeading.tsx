@@ -28,7 +28,9 @@ const CampsNavigationHeading = ({
 
   return (
     <Box>
-      <Text textStyle="displayXLarge">FON Camps</Text>
+      <Text mb="35px" textStyle="displayXLarge">
+        FON Camps
+      </Text>
       <Flex
         direction="row"
         marginTop="16px"
@@ -41,7 +43,7 @@ const CampsNavigationHeading = ({
             fontSize="32px"
             aria-label="back-button"
             onClick={onNavigateLeft}
-            backgroundColor="background.white.100"
+            // backgroundColor="background.white.100"
           />
           <Text
             fontWeight={textStyles.displayXLarge.fontWeight}
@@ -56,7 +58,7 @@ const CampsNavigationHeading = ({
             fontSize="32px"
             aria-label="forward-button"
             onClick={onNavigateRight}
-            backgroundColor="background.white.100"
+            // backgroundColor="background.white.100"
           />
         </Flex>
         <Button

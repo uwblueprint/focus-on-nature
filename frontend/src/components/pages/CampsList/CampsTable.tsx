@@ -29,11 +29,12 @@ import React from "react";
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import {
-  campStatus,
+  getCampStatus,
   getFormattedCampDateRange,
   locationString,
 } from "../../../utils/CampUtils";
 import CampStatusLabel from "./CampStatusLabel";
+import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
 interface CampsTableProps {
   year: number;
@@ -48,7 +49,6 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
     CampStatus.COMPLETED,
   ];
 
-  const [yearState, setYearState] = React.useState(year);
   const [camps, setCamps] = React.useState([] as CampResponse[]);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<CampStatus | "">(
@@ -62,36 +62,34 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
-      if (res.length) setCamps(res);
+      if (res) setCamps(res);
     };
 
-    getCamps();
-  }, []);
 
-  React.useEffect(() => {
-    setYearState(year);
+    getCamps();
+    console.log("camps", camps);
   }, [year]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
     if (selectedFilter === CampStatus.PUBLISHED)
       filteredCamps = camps.filter(
-        (camp) => campStatus(camp) === CampStatus.PUBLISHED,
+        (camp) => getCampStatus(camp) === CampStatus.PUBLISHED,
       );
     else if (selectedFilter === CampStatus.DRAFT)
       filteredCamps = camps.filter(
-        (camp) => campStatus(camp) === CampStatus.DRAFT,
+        (camp) => getCampStatus(camp) === CampStatus.DRAFT,
       );
     else if (selectedFilter === CampStatus.COMPLETED)
       filteredCamps = camps.filter(
-        (camp) => campStatus(camp) === CampStatus.COMPLETED,
+        (camp) => getCampStatus(camp) === CampStatus.COMPLETED,
       );
     if (!search) return filteredCamps;
     return filteredCamps.filter(
       (camp) =>
         camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search, selectedFilter, camps]);
+  }, [search, selectedFilter, camps, year]);
 
   const handleFilterSelect = (selectedOption: CampStatus) => {
     // handle unselecting the current selected filter
@@ -107,14 +105,44 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
     onOpen();
   };
 
+  const handleConfirmDelete = async () => {
+    const res = await CampsAPIClient.deleteCamp(campToEdit!.id);
+    if (res) {
+      toast({
+        description: `${campToEdit!.name} has been succesfully deleted`,
+        status: "success",
+        variant: "subtle",
+        duration: 3000,
+      });
+
+      const newCampsList: CampResponse[] = await camps.filter((camp) => {
+        return (camp.id !== campToEdit!.id) 
+      });
+      setCamps(newCampsList);
+    } else {
+      toast({
+        description: `An error occurred with deleting ${campToEdit!.name}. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+    onClose();
+    setCampToEdit(null);
+
+  }
+
   return (
-    <Container
-      maxWidth="100vw"
-      minHeight="100vh"
-      px="3em"
-      py="3em"
-      background="background.grey.200"
-    >
+    <>    
+    <DeleteCampConfirmationModel
+    title="Delete Camp"
+        bodyText={`Are you sure you want to delete ${campToEdit?.name}?`}
+        bodyText2="Note: This action is irreversible."
+        buttonLabel="Remove"
+        buttonColor="red"
+        isOpen={isOpen}
+        onClose={onClose}
+        onConfirmation={() => handleConfirmDelete()} /> 
       <Container
         py="20px"
         maxWidth="100vw"
@@ -183,8 +211,8 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                     )
                   : ""}
               </Td>
-              <Td>
-                <CampStatusLabel status={campStatus(camp)} />
+              <Td padding="0px" mr="px">
+                <CampStatusLabel status={getCampStatus(camp)} />
               </Td>
               <Td>
                 <Popover placement="bottom-end">
@@ -200,8 +228,9 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                       as={Button}
                       bg="background.white.100"
                       onClick={(e) => handleStatusChangePopoverTrigger(camp)}
+                      padding="1.5em 2em"
                     >
-                      <Text textStyle="buttonRegular">Placeholder text</Text>
+                      <Text textStyle="buttonRegular" color="text.critical.100">Delete camp</Text>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -210,7 +239,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
           ))}
         </Tbody>
       </Table>
-    </Container>
+    </>
   );
 };
 

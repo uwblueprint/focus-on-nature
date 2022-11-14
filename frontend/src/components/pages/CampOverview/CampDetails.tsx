@@ -23,7 +23,7 @@ import ageIcon from "../../../assets/person.svg";
 import UserSelect from "./UserSelect";
 import {
   locationString,
-  campStatus,
+  getCampStatus,
   CampStatusColor,
 } from "../../../utils/CampUtils";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
@@ -36,7 +36,7 @@ type CampDetailsProps = {
 
 const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   const [users, setUsers] = useState([] as UserResponse[]);
-  const status = campStatus(camp);
+  const status = getCampStatus(camp);
 
   useEffect(() => {
     const getUsers = async () => {

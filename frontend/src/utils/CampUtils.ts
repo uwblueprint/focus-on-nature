@@ -27,7 +27,7 @@ export const ongoingSession = (session: CampSession): boolean => {
   return today <= lastDay;
 };
 
-export const campStatus = (camp: CampResponse): CampStatus => {
+export const getCampStatus = (camp: CampResponse): CampStatus => {
   if (!camp.active) {
     return CampStatus.DRAFT;
   }
