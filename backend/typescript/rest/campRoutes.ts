@@ -64,12 +64,11 @@ campRouter.get("/:id", async (req, res) => {
   }
 });
 
-
 // TODO: Required checks:
 // dates for campSessions cannot overlap
 // fee cannot change after any campSession is published (?)
 
-// ROLES: Admin 
+// ROLES: Admin
 /* Create a camp */
 campRouter.post(
   "/",
