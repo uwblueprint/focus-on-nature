@@ -43,7 +43,6 @@ const CampsNavigationHeading = ({
             fontSize="32px"
             aria-label="back-button"
             onClick={onNavigateLeft}
-            // backgroundColor="background.white.100"
           />
           <Text
             fontWeight={textStyles.displayXLarge.fontWeight}
@@ -58,7 +57,6 @@ const CampsNavigationHeading = ({
             fontSize="32px"
             aria-label="forward-button"
             onClick={onNavigateRight}
-            // backgroundColor="background.white.100"
           />
         </Flex>
         <Button
