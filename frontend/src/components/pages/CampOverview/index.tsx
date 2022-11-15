@@ -105,8 +105,6 @@ const CampOverviewPage = (): JSX.Element => {
       if (updatedCapacityExists) {
         requests.push({ id, capacity: parseInt(capacity, 10) });
       }
-
-      console.log(requests);
     });
 
     return requests;
