@@ -35,15 +35,19 @@ const campService: ICampService = new CampService(fileStorageService);
 campRouter.get(
   "/",
   isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
-  getCampDtoValidator, async (req, res) => {
-  try {
-    const { campYear } = req.query;
-    const camps = await campService.getCamps(parseInt(campYear as string, 10));
-    res.status(200).json(camps);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+  getCampDtoValidator,
+  async (req, res) => {
+    try {
+      const { campYear } = req.query;
+      const camps = await campService.getCamps(
+        parseInt(campYear as string, 10),
+      );
+      res.status(200).json(camps);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 // ROLES: Leave unprotected as we'll probably need to get the camp info in registration (TBD) @dhruv
 campRouter.get("/:id", async (req, res) => {
@@ -222,16 +226,17 @@ campRouter.delete(
   "/:campId/session/:campSessionId",
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
-  try {
-    await campService.deleteCampSessionById(
-      req.params.campId,
-      req.params.campSessionId,
-    );
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+    try {
+      await campService.deleteCampSessionById(
+        req.params.campId,
+        req.params.campSessionId,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 // ROLES: Admin
 /* Delete camp sessions */
@@ -258,13 +263,14 @@ campRouter.get(
   "/csv/:id",
   isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
   async (req, res) => {
-  try {
-    const csvString = await campService.generateCampersCSV(req.params.id);
-    res.status(200).set("Content-Type", "text/csv").send(csvString);
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+    try {
+      const csvString = await campService.generateCampersCSV(req.params.id);
+      res.status(200).set("Content-Type", "text/csv").send(csvString);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 // ROLES: Admin
 campRouter.post(
@@ -308,16 +314,17 @@ campRouter.delete(
   "/:campId/form/:formQuestionId/",
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
-  try {
-    await campService.deleteFormQuestion(
-      req.params.campId,
-      req.params.formQuestionId,
-    );
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+    try {
+      await campService.deleteFormQuestion(
+        req.params.campId,
+        req.params.formQuestionId,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 // ROLES: Admin
 campRouter.patch(
@@ -343,12 +350,13 @@ campRouter.delete(
   "/:id",
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
-  try {
-    await campService.deleteCamp(req.params.id);
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+    try {
+      await campService.deleteCamp(req.params.id);
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 export default campRouter;

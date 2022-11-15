@@ -29,63 +29,64 @@ userRouter.get(
   "/",
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
-  const { userId, email } = req.query;
-  const contentType = req.headers["content-type"];
+    const { userId, email } = req.query;
+    const contentType = req.headers["content-type"];
 
-  if (userId && email) {
-    await sendResponseByMimeType(res, 400, contentType, [
-      {
-        error: "Cannot query by both userId and email.",
-      },
-    ]);
-    return;
-  }
-
-  if (!userId && !email) {
-    try {
-      const users = await userService.getUsers();
-      await sendResponseByMimeType<UserDTO>(res, 200, contentType, users);
-    } catch (error: unknown) {
-      await sendResponseByMimeType(res, 500, contentType, [
+    if (userId && email) {
+      await sendResponseByMimeType(res, 400, contentType, [
         {
-          error: getErrorMessage(error),
+          error: "Cannot query by both userId and email.",
         },
       ]);
+      return;
     }
-    return;
-  }
 
-  if (userId) {
-    if (typeof userId !== "string") {
-      res
-        .status(400)
-        .json({ error: "userId query parameter must be a string." });
-    } else {
+    if (!userId && !email) {
       try {
-        const user = await userService.getUserById(userId);
-        res.status(200).json(user);
+        const users = await userService.getUsers();
+        await sendResponseByMimeType<UserDTO>(res, 200, contentType, users);
       } catch (error: unknown) {
-        res.status(500).json({ error: getErrorMessage(error) });
+        await sendResponseByMimeType(res, 500, contentType, [
+          {
+            error: getErrorMessage(error),
+          },
+        ]);
+      }
+      return;
+    }
+
+    if (userId) {
+      if (typeof userId !== "string") {
+        res
+          .status(400)
+          .json({ error: "userId query parameter must be a string." });
+      } else {
+        try {
+          const user = await userService.getUserById(userId);
+          res.status(200).json(user);
+        } catch (error: unknown) {
+          res.status(500).json({ error: getErrorMessage(error) });
+        }
+      }
+      return;
+    }
+
+    if (email) {
+      if (typeof email !== "string") {
+        res
+          .status(400)
+          .json({ error: "email query parameter must be a string." });
+      } else {
+        try {
+          const user = await userService.getUserByEmail(email);
+          res.status(200).json(user);
+        } catch (error: unknown) {
+          res.status(500).json({ error: getErrorMessage(error) });
+        }
       }
     }
-    return;
-  }
-
-  if (email) {
-    if (typeof email !== "string") {
-      res
-        .status(400)
-        .json({ error: "email query parameter must be a string." });
-    } else {
-      try {
-        const user = await userService.getUserByEmail(email);
-        res.status(200).json(user);
-      } catch (error: unknown) {
-        res.status(500).json({ error: getErrorMessage(error) });
-      }
-    }
-  }
-});
+  },
+);
 
 // ROLES: Leave unprotected
 /* Create a user */
