@@ -202,7 +202,7 @@ class AdminService implements IAdminService {
 
       if (!formTemplate) {
         throw new Error(
-          "Failed to retrieve the form template with that question",
+          `Failed to retrieve the form template, no template with question of id: ${oldQuestionId}`,
         );
       }
 
