@@ -12,7 +12,6 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
-  Select,
   Table,
   Tag,
   TagLabel,
@@ -65,31 +64,34 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
       if (res) setCamps(res);
     };
 
-
     getCamps();
-    console.log("camps", camps);
-  }, [year]);
+  }, [year, camps]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
-    if (selectedFilter === CampStatus.PUBLISHED)
+    if (selectedFilter === CampStatus.PUBLISHED) {
       filteredCamps = camps.filter(
         (camp) => getCampStatus(camp) === CampStatus.PUBLISHED,
       );
-    else if (selectedFilter === CampStatus.DRAFT)
+    } else if (selectedFilter === CampStatus.DRAFT) {
       filteredCamps = camps.filter(
         (camp) => getCampStatus(camp) === CampStatus.DRAFT,
       );
-    else if (selectedFilter === CampStatus.COMPLETED)
+    } else if (selectedFilter === CampStatus.COMPLETED) {
       filteredCamps = camps.filter(
         (camp) => getCampStatus(camp) === CampStatus.COMPLETED,
       );
-    if (!search) return filteredCamps;
+    }
+
+    if (!search) {
+      return filteredCamps;
+    }
+
     return filteredCamps.filter(
       (camp) =>
         camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search, selectedFilter, camps, year]);
+  }, [search, selectedFilter, camps]);
 
   const handleFilterSelect = (selectedOption: CampStatus) => {
     // handle unselecting the current selected filter
@@ -106,22 +108,27 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   };
 
   const handleConfirmDelete = async () => {
-    const res = await CampsAPIClient.deleteCamp(campToEdit!.id);
+    if (!campToEdit){
+      return;
+    }
+    const res = await CampsAPIClient.deleteCamp(campToEdit.id);
     if (res) {
       toast({
-        description: `${campToEdit!.name} has been succesfully deleted`,
+        description: `${campToEdit.name} has been succesfully deleted`,
         status: "success",
         variant: "subtle",
         duration: 3000,
       });
 
       const newCampsList: CampResponse[] = await camps.filter((camp) => {
-        return (camp.id !== campToEdit!.id) 
+        return camp.id !== campToEdit.id;
       });
       setCamps(newCampsList);
     } else {
       toast({
-        description: `An error occurred with deleting ${campToEdit!.name}. Please try again.`,
+        description: `An error occurred with deleting ${
+          campToEdit.name
+        }. Please try again.`,
         status: "error",
         variant: "subtle",
         duration: 3000,
@@ -129,25 +136,25 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
     }
     onClose();
     setCampToEdit(null);
-
-  }
+  };
 
   return (
-    <>    
-    <DeleteCampConfirmationModel
-    title="Delete Camp"
+    <>
+      <DeleteCampConfirmationModel
+        title="Delete Camp"
         bodyText={`Are you sure you want to delete ${campToEdit?.name}?`}
         bodyText2="Note: This action is irreversible."
         buttonLabel="Remove"
         buttonColor="red"
         isOpen={isOpen}
         onClose={onClose}
-        onConfirmation={() => handleConfirmDelete()} /> 
+        onConfirmation={() => handleConfirmDelete()}
+      />
       <Container
         py="20px"
         maxWidth="100vw"
-        background="background.grey.300"
-        borderTopRadius="lg"
+        backgroundColor="background.grey.100"
+        borderRadius="20px"
       >
         <HStack spacing={12}>
           <InputGroup>
@@ -227,10 +234,12 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                     <PopoverBody
                       as={Button}
                       bg="background.white.100"
-                      onClick={(e) => handleStatusChangePopoverTrigger(camp)}
+                      onClick={() => handleStatusChangePopoverTrigger(camp)}
                       padding="1.5em 2em"
                     >
-                      <Text textStyle="buttonRegular" color="text.critical.100">Delete camp</Text>
+                      <Text textStyle="buttonRegular" color="text.critical.100">
+                        Delete camp
+                      </Text>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>

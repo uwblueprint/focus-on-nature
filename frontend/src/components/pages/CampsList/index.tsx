@@ -1,6 +1,4 @@
-import {
-  Container,
-} from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 import React, { useState } from "react";
 import CampsNavigationHeading from "./CampsNavigationHeading";
 import CampsTable from "./CampsTable";

@@ -8,9 +8,12 @@ import baseAPIClient from "./BaseAPIClient";
 
 const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
   try {
-    const { data } = await baseAPIClient.get(`/camp?campYear=${year?.toString()}`, {
-      headers: { Authorization: BEARER_TOKEN },
-    });
+    const { data } = await baseAPIClient.get(
+      `/camp?campYear=${year?.toString()}`,
+      {
+        headers: { Authorization: BEARER_TOKEN },
+      },
+    );
     return data;
   } catch (error) {
     return error as CampResponse[];
