@@ -36,7 +36,8 @@ enum LoginErrorMessages {
 function isAuthenticatedUserType(
   res: AuthenticatedUser | string,
 ): res is AuthenticatedUser {
-  return (res as AuthenticatedUser)!.id !== undefined;
+  const response = res as AuthenticatedUser;
+  return response !== null && response.id !== undefined;
 }
 
 const Login = (): React.ReactElement => {

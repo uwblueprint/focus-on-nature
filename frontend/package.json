@@ -2,6 +2,9 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "Frontend UI for Focus on Nature",
+  "author": "UW Blueprint and Contributors",
+  "license": "MIT",
   "dependencies": {
     "@apollo/client": "^3.3.16",
     "@chakra-ui/icons": "^1.1.7",

@@ -90,7 +90,13 @@ const AccessControlPage = (): JSX.Element => {
           .concat(" ", user.lastName.toLowerCase())
           .includes(search.toLowerCase()),
     );
-  }, [search, selectedFilter, users]);
+  }, [
+    search,
+    selectedFilter,
+    users,
+    UserStatusStates.ACTIVE_CAPITALIZED,
+    UserStatusStates.ALL,
+  ]);
 
   const handleRoleChange = async (user: UserResponse, newRole: Role) => {
     const newUserData = {
@@ -136,33 +142,29 @@ const AccessControlPage = (): JSX.Element => {
     onOpen();
   };
 
-  const handleStatusChange = async (user: UserResponse | null) => {
+  const handleStatusChange = async (user: UserResponse) => {
     const newUserData = {
-      id: user!.id,
-      firstName: user!.firstName,
-      lastName: user!.lastName,
-      email: user!.email,
-      role: user!.role,
-      active: !user!.active,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      active: !user.active,
     };
 
-    const res = await UserAPIClient.updateUserById(user!.id, newUserData);
+    const res = await UserAPIClient.updateUserById(user.id, newUserData);
     if (res) {
       toast({
         description: newUserData.active
-          ? `${user!.firstName} ${
-              user!.lastName
-            } can now access the Camp Management Tool`
-          : `${user!.firstName} ${
-              user!.lastName
-            } can no longer access the Camp Management Tool`,
+          ? `${user.firstName} ${user.lastName} can now access the Camp Management Tool`
+          : `${user.firstName} ${user.lastName} can no longer access the Camp Management Tool`,
         status: "success",
         variant: "subtle",
         duration: 3000,
       });
 
       const newUsers: UserResponse[] = await users.map((u) => {
-        if (u.id === user!.id) {
+        if (user && u.id === user.id) {
           return { ...u, active: newUserData.active };
         }
         return u;
@@ -170,9 +172,7 @@ const AccessControlPage = (): JSX.Element => {
       setUsers(newUsers);
     } else {
       toast({
-        description: `An error occurred with changing ${user!.firstName} ${
-          user!.lastName
-        }'s status. Please try again.`,
+        description: `An error occurred with changing ${user.firstName} ${user.lastName}'s status. Please try again.`,
         status: "error",
         variant: "subtle",
         duration: 3000,
@@ -213,7 +213,9 @@ const AccessControlPage = (): JSX.Element => {
         buttonColor={userToChangeStatus?.active ? "red" : "green"}
         isOpen={isOpen}
         onClose={onClose}
-        onChangeStatus={() => handleStatusChange(userToChangeStatus)}
+        onChangeStatus={() =>
+          userToChangeStatus && handleStatusChange(userToChangeStatus)
+        }
       />
       <Text mb="35px" textStyle="displayXLarge">
         FON Staff Access Control
@@ -311,7 +313,7 @@ const AccessControlPage = (): JSX.Element => {
                     <PopoverBody
                       as={Button}
                       bg="background.white.100"
-                      onClick={(e) => handleStatusChangePopoverTrigger(user)}
+                      onClick={() => handleStatusChangePopoverTrigger(user)}
                     >
                       <Text textStyle="buttonRegular">
                         Mark as{" "}

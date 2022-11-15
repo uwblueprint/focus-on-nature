@@ -89,7 +89,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
     setCamp({ ...camp, campCounsellors });
   };
 
-  const handleVolunteerChange = (e: any) => {
+  const handleVolunteerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCamp({ ...camp, volunteers: e.target.value });
   };
 
