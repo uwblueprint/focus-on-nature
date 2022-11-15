@@ -16,7 +16,10 @@ const adminRouter: Router = Router();
 const adminService: IAdminService = new AdminService();
 
 // ROLES: Admin
-adminRouter.post("/waiver", waiverUpdateValidator, async (req, res) => {
+adminRouter.post(
+  "/waiver", 
+  isAuthorizedByRole(new Set(["Admin"])),
+  waiverUpdateValidator, async (req, res) => {
   try {
     const waiver = await adminService.updateWaiver({
       clauses: req.body.clauses,
@@ -40,6 +43,7 @@ adminRouter.get("/waiver", async (req, res) => {
 // ROLES: Admin
 adminRouter.post(
   "/formTemplate",
+  isAuthorizedByRole(new Set(["Admin"])),
   formTemplateUpdateValidator,
   async (req, res) => {
     try {
@@ -54,7 +58,10 @@ adminRouter.post(
 );
 
 // ROLES: Admin + CC
-adminRouter.get("/formTemplate", async (req, res) => {
+adminRouter.get(
+  "/formTemplate",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   try {
     const form = await adminService.getFormTemplate();
     res.status(200).json(form);
@@ -66,8 +73,8 @@ adminRouter.get("/formTemplate", async (req, res) => {
 // ROLES: Admin
 adminRouter.delete(
   "/formTemplate/formQuestion/:formQuestionId",
-  formTemplateRemoveQuestionValidator,
   isAuthorizedByRole(new Set(["Admin"])),
+  formTemplateRemoveQuestionValidator,
   async (req, res) => {
     try {
       await adminService.removeQuestionFromTemplate(req.params.formQuestionId);
@@ -81,8 +88,8 @@ adminRouter.delete(
 // ROLES: Admin
 adminRouter.patch(
   "/formTemplate/formQuestion",
-  formTemplateAddQuestionValidator,
   isAuthorizedByRole(new Set(["Admin"])),
+  formTemplateAddQuestionValidator,
   async (req, res) => {
     try {
       const newQuestion = await adminService.addQuestionToTemplate({
@@ -103,8 +110,8 @@ adminRouter.patch(
 // ROLES: Admin
 adminRouter.patch(
   "/formTemplate/formQuestion/:oldQuestionId",
-  formTemplateEditQuestionValidator,
   isAuthorizedByRole(new Set(["Admin"])),
+  formTemplateEditQuestionValidator,
   async (req, res) => {
     try {
       const isSuccess = await adminService.editQuestionInTemplate(

@@ -36,7 +36,10 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
 
 // ROLES: Admin + CC
 /* Get all campers, optionally filter by camp ID */
-camperRouter.get("/", async (req, res) => {
+camperRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   const { campId } = req.query;
   const contentType = req.headers["content-type"];
   if (!campId) {
@@ -130,7 +133,10 @@ camperRouter.post(
 );
 
 // ROLES: Admin
-camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
+camperRouter.patch(
+  "/waitlist/:waitlistedCamperId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   try {
     const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
       req.params.waitlistedCamperId,
@@ -148,8 +154,8 @@ camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
 /* Update the camper with the specified camperId */
 camperRouter.patch(
   "/",
-  updateCamperDtoValidator,
   isAuthorizedByRole(new Set(["Admin"])),
+  updateCamperDtoValidator,
   async (req, res) => {
     try {
       const updatedCampers = await camperService.updateCampersById(
@@ -192,7 +198,10 @@ camperRouter.delete(
 
 // ROLES: Admin
 /* Delete campers (single or multiple) */
-camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
+camperRouter.delete(
+  "/",
+  isAuthorizedByRole(new Set(["Admin"])),
+  deleteCamperDtoValidator, async (req, res) => {
   try {
     await camperService.deleteCampersById(req.body.camperIds);
     res.status(204).send();
@@ -203,7 +212,10 @@ camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
 
 // ROLES: Admin
 /* Delete a waitlisted camper */
-camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
+camperRouter.delete(
+  "/waitlist/:waitlistedCamperId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   try {
     await camperService.deleteWaitlistedCamperById(
       req.params.waitlistedCamperId,

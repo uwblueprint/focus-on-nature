@@ -17,6 +17,7 @@ import {
   updateCampSessionDtoValidator,
   updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";
+import { isAuthorizedByRole } from "../middlewares/auth";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -31,7 +32,10 @@ const campService: ICampService = new CampService(fileStorageService);
 
 // ROLES: Admin + CC
 /* Get all camps */
-campRouter.get("/", getCampDtoValidator, async (req, res) => {
+campRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  getCampDtoValidator, async (req, res) => {
   try {
     const { campYear } = req.query;
     const camps = await campService.getCamps(parseInt(campYear as string, 10));
@@ -72,6 +76,7 @@ campRouter.get("/:id", async (req, res) => {
 /* Create a camp */
 campRouter.post(
   "/",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   createCampDtoValidator,
   async (req, res) => {
@@ -114,6 +119,7 @@ campRouter.post(
 /* Update a camp */
 campRouter.patch(
   "/:campId",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   updateCampDtoValidator,
   async (req, res) => {
@@ -153,6 +159,7 @@ campRouter.patch(
 /* Create camp sessions */
 campRouter.post(
   "/:campId/session/",
+  isAuthorizedByRole(new Set(["Admin"])),
   createCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -171,6 +178,7 @@ campRouter.post(
 /* Update a camp session */
 campRouter.patch(
   "/:campId/session/:campSessionId",
+  isAuthorizedByRole(new Set(["Admin"])),
   updateCampSessionDtoValidator,
   async (req, res) => {
     try {
@@ -193,6 +201,7 @@ campRouter.patch(
 /* Update camp sessions */
 campRouter.patch(
   "/:campId/session/",
+  isAuthorizedByRole(new Set(["Admin"])),
   updateCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -209,7 +218,10 @@ campRouter.patch(
 
 // ROLES: Admin
 /* Delete a camp session */
-campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
+campRouter.delete(
+  "/:campId/session/:campSessionId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   try {
     await campService.deleteCampSessionById(
       req.params.campId,
@@ -225,6 +237,7 @@ campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
 /* Delete camp sessions */
 campRouter.delete(
   "/:campId/session/",
+  isAuthorizedByRole(new Set(["Admin"])),
   deleteCampSessionsDtoValidator,
   async (req, res) => {
     try {
@@ -241,7 +254,10 @@ campRouter.delete(
 
 // ROLES: Admin + CC
 /* Returns a CSV string containing all campers within a specific camp */
-campRouter.get("/csv/:id", async (req, res) => {
+campRouter.get(
+  "/csv/:id",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   try {
     const csvString = await campService.generateCampersCSV(req.params.id);
     res.status(200).set("Content-Type", "text/csv").send(csvString);
@@ -253,6 +269,7 @@ campRouter.get("/csv/:id", async (req, res) => {
 // ROLES: Admin
 campRouter.post(
   "/:campId/form/",
+  isAuthorizedByRole(new Set(["Admin"])),
   createFormQuestionsValidator,
   async (req, res) => {
     try {
@@ -270,6 +287,7 @@ campRouter.post(
 // ROLES: Admin
 campRouter.put(
   "/:campId/form/:formQuestionId/",
+  isAuthorizedByRole(new Set(["Admin"])),
   editFormQuestionValidator,
   async (req, res) => {
     try {
@@ -286,7 +304,10 @@ campRouter.put(
 );
 
 // ROLES: Admin
-campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
+campRouter.delete(
+  "/:campId/form/:formQuestionId/",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   try {
     await campService.deleteFormQuestion(
       req.params.campId,
@@ -301,6 +322,7 @@ campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
 // ROLES: Admin
 campRouter.patch(
   "/:campId/form/",
+  isAuthorizedByRole(new Set(["Admin"])),
   createFormQuestionsValidator,
   async (req, res) => {
     try {
@@ -317,7 +339,10 @@ campRouter.patch(
 
 // ROLES: Admin
 /* Delete a camp */
-campRouter.delete("/:id", async (req, res) => {
+campRouter.delete(
+  "/:id",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   try {
     await campService.deleteCamp(req.params.id);
     res.status(204).send();

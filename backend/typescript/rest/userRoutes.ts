@@ -25,7 +25,10 @@ const authService: IAuthService = new AuthService(userService, emailService);
 
 // ROLES: Admin
 /* Get all users, optionally filter by a userId or email query parameter to retrieve a single user */
-userRouter.get("/", async (req, res) => {
+userRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   const { userId, email } = req.query;
   const contentType = req.headers["content-type"];
 

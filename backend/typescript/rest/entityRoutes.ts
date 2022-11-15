@@ -28,6 +28,7 @@ const entityService: IEntityService = new EntityService(fileStorageService);
 /* Create entity */
 entityRouter.post(
   "/",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   entityRequestDtoValidator,
   async (req, res) => {
@@ -54,7 +55,10 @@ entityRouter.post(
 
 // ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get all entities */
-entityRouter.get("/", async (req, res) => {
+entityRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   const contentType = req.headers["content-type"];
   try {
     const entities = await entityService.getEntities();
@@ -75,7 +79,10 @@ entityRouter.get("/", async (req, res) => {
 
 // ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get entity by id */
-entityRouter.get("/:id", async (req, res) => {
+entityRouter.get(
+  "/:id",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -90,6 +97,7 @@ entityRouter.get("/:id", async (req, res) => {
 /* Update entity by id */
 entityRouter.put(
   "/:id",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   entityRequestDtoValidator,
   async (req, res) => {
@@ -117,7 +125,10 @@ entityRouter.put(
 
 // ROLES: Admin
 /* Delete entity by id */
-entityRouter.delete("/:id", async (req, res) => {
+entityRouter.delete(
+  "/:id",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -130,7 +141,10 @@ entityRouter.delete("/:id", async (req, res) => {
 
 // ROLES: Admin + CC
 /* Get file associated with entity by fileUUID */
-entityRouter.get("/files/:fileUUID", async (req, res) => {
+entityRouter.get(
+  "/files/:fileUUID",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
   const { fileUUID } = req.params;
   try {
     const fileURL = await fileStorageService.getFile(fileUUID);
