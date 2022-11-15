@@ -3,6 +3,7 @@ import {
   CampSession,
   CampStatus,
   Location,
+  QuestionType,
 } from "../types/CampsTypes";
 
 export const CampStatusColor = {
@@ -57,3 +58,16 @@ export const getFormattedSessionDatetime = (
   startTime: string,
   endTime: string,
 ): string => `${getFormattedDateString(dates)} | ${startTime} - ${endTime}`;
+
+export const getTextFromQuestionType = (questionType: QuestionType): string => {
+  switch (questionType) {
+    case "MultipleChoice":
+      return "Multiple Choice";
+    case "Multiselect":
+      return "Checkbox";
+    case "Text":
+      return "Short Answer";
+    default:
+      return "";
+  }
+};
