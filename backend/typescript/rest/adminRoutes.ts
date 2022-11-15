@@ -7,6 +7,8 @@ import {
   waiverUpdateValidator,
   formTemplateUpdateValidator,
   formTemplateAddQuestionValidator,
+  formTemplateRemoveQuestionValidator,
+  formTemplateEditQuestionValidator,
 } from "../middlewares/validators/adminValidators";
 import { isAuthorizedByRole } from "../middlewares/auth";
 
@@ -62,6 +64,21 @@ adminRouter.get("/formTemplate", async (req, res) => {
 });
 
 // ROLES: Admin
+adminRouter.delete(
+  "/formTemplate/formQuestion/:formQuestionId",
+  formTemplateRemoveQuestionValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      await adminService.removeQuestionFromTemplate(req.params.formQuestionId);
+      res.status(204).json();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+// ROLES: Admin
 adminRouter.patch(
   "/formTemplate/formQuestion",
   formTemplateAddQuestionValidator,
@@ -77,6 +94,24 @@ adminRouter.patch(
         type: req.body.formQuestion.type,
       });
       res.status(200).json(newQuestion);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+// ROLES: Admin
+adminRouter.patch(
+  "/formTemplate/formQuestion/:oldQuestionId",
+  formTemplateEditQuestionValidator,
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const isSuccess = await adminService.editQuestionInTemplate(
+        req.params.oldQuestionId,
+        req.body.newFormQuestion,
+      );
+      res.status(200).json(isSuccess);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }
