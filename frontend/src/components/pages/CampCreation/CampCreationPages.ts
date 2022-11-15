@@ -1,4 +1,4 @@
-export enum CampCreationPages {
+enum CampCreationPages {
   CampCreationDetailsPage,
   ScheduleSessionsPage,
   RegistrationFormPage,

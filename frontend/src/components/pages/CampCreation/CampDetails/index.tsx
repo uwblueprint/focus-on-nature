@@ -7,7 +7,9 @@ type CampCreationDetailsProps = {
   campDetailsDummyThree: string;
   toggleCampDetailsDummyOne: () => void;
   toggleCampDetailsDummyTwo: () => void;
-  handleCampDetailsDummyThree: (event: any) => void;
+  handleCampDetailsDummyThree: (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
 };
 
 const CampCreationDetails = ({

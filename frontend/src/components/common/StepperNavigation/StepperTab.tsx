@@ -12,6 +12,7 @@ enum TabState {
 type StepperTabProps = {
   title: string;
   stepNum: number;
+  totalSteps: number;
   filled: boolean;
   focused: boolean;
   available: boolean;
@@ -24,6 +25,7 @@ type StepperTabProps = {
 const StepperTab = ({
   title,
   stepNum,
+  totalSteps,
   filled,
   focused,
   available,
@@ -49,7 +51,7 @@ const StepperTab = ({
       cursor={tabState === TabState.Disabled ? "not-allowed" : "pointer"}
       ml={marginLeft}
       mr={marginRight}
-      mt={5}
+      my={5}
     >
       <HStack spacing={4}>
         <Box>
@@ -69,7 +71,9 @@ const StepperTab = ({
           />
         </Box>
         <Box>
-          <Text textStyle="caption">Step {stepNum}/3</Text>
+          <Text textStyle="caption">
+            Step {stepNum}/{totalSteps}
+          </Text>
           <Text textStyle="bodyBold">{title}</Text>
         </Box>
       </HStack>
