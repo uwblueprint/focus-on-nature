@@ -7,7 +7,6 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import NotFound from "./components/pages/NotFound";
-import CampsPage from "./components/pages/CampsPage";
 import * as Routes from "./constants/Routes";
 import AUTHENTICATED_USER_KEY from "./constants/AuthConstants";
 import AuthContext from "./contexts/AuthContext";
@@ -26,6 +25,7 @@ import AccessControlPage from "./components/pages/AccessControl";
 import NavBar from "./components/common/NavBar";
 import GlobalFormsPage from "./components/pages/GlobalForms";
 import CampCreationPage from "./components/pages/CampCreation";
+import CampsList from "./components/pages/CampsList/index";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -61,12 +61,12 @@ const App = (): React.ReactElement => {
                 <PrivateRoute
                   exact
                   path={Routes.HOME_PAGE}
-                  component={CampsPage}
+                  component={CampsList}
                 />
                 <PrivateRoute
                   exact
                   path={Routes.CAMPS_PAGE}
-                  component={CampsPage}
+                  component={CampsList}
                 />
                 <PrivateRoute
                   exact

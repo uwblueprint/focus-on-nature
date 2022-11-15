@@ -86,7 +86,6 @@ class CampService implements ICampService {
               });
             },
           );
-
           return camp.campSessions.length > 0;
         });
       }
