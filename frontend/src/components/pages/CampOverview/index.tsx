@@ -22,6 +22,7 @@ import EmptyCampSessionState from "./CampersTable/EmptyCampSessionState";
 import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
 import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
+import { downloadCSV, generateCSVName } from "../../../utils/CSVUtils";
 
 type ManageSessionsPromisesResult = {
   deletedSessions?: boolean;
@@ -184,6 +185,20 @@ const CampOverviewPage = (): JSX.Element => {
     }
   };
 
+  const generateCsv = async () => {
+    const csvResponse = await CampsAPIClient.getCampSessionCsv(camp.campSessions[currentCampSession].id);
+    if (csvResponse !== "ERROR") {
+      downloadCSV(csvResponse, generateCSVName(camp.location.city, camp.campSessions[currentCampSession].dates[0]));
+    } else {
+      toast({
+        description: `An error occurred while exporting the CSV. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  }
+
   return (
     <Container
       maxWidth="100vw"
@@ -213,7 +228,7 @@ const CampOverviewPage = (): JSX.Element => {
               campSession={camp.campSessions[currentCampSession]}
               formQuestions={camp.formQuestions}
               handleRefetch={handleRefetch}
-              campCity={camp.location.city}
+              generateCsv={generateCsv}
             />
             <ManageSessionsModal
               campStartTime={camp.startTime}

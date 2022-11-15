@@ -5,20 +5,19 @@ import textStyles from "../../../../theme/textStyles";
 import { CampSession, FormQuestion } from "../../../../types/CampsTypes";
 import CampersTable from "./CampersTable";
 import WaitlistedCampersTable from "./WaitlistedCampersTable";
-import { generateCSVName } from "../../../../utils/CSVUtils"
 
 type CampersTablesProps = {
   campSession: CampSession;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
-  campCity: string;
+  generateCsv: () => void;
 };
 
 const CampersTables = ({
   campSession,
   formQuestions,
   handleRefetch,
-  campCity
+  generateCsv
 }: CampersTablesProps): JSX.Element => {
   return (
     <Box>
@@ -42,8 +41,7 @@ const CampersTables = ({
               formQuestions={formQuestions}
               campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
-              campSessionId={campSession.id}
-              campSessionCSVFilename={generateCSVName(campCity, campSession.dates[0])}
+              generateCsv={generateCsv}
             />
           </TabPanel>
           <TabPanel padding="0">
