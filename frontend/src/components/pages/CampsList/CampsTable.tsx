@@ -108,7 +108,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!campToEdit){
+    if (!campToEdit) {
       return;
     }
     const res = await CampsAPIClient.deleteCamp(campToEdit.id);
@@ -126,9 +126,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
       setCamps(newCampsList);
     } else {
       toast({
-        description: `An error occurred with deleting ${
-          campToEdit.name
-        }. Please try again.`,
+        description: `An error occurred with deleting ${campToEdit.name}. Please try again.`,
         status: "error",
         variant: "subtle",
         duration: 3000,
