@@ -71,7 +71,7 @@ adminRouter.delete(
   async (req, res) => {
     try {
       await adminService.removeQuestionFromTemplate(req.params.formQuestionId);
-      res.status(200).json(req.params.formQuestionId);
+      res.status(204).json();
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }

@@ -56,8 +56,10 @@ interface IAdminService {
 
   /**
    * Edits a question in the form template
-   * NOTE: does NOT edit the old question as older camps still use the old version of the question
-   *       creates a NEW question with the edited values and REPLACES old question in the template
+   * NOTE: Form template includes a list of form question ids referencing documents in the formQuestion collection.
+   *       This implementation does NOT edit the old question object, as older camps should keep reference to the pre-edited version.
+   *       New camps should refer to the "updated" question, which is a new question with the "edited" values;
+   *       this question replaces the old question in the template.
    * @returns true if successfully edited the template, false otherwise
    * @param oldQuestionId is the objectID as string of the form question to be removed from the template
    * @param newformQuestion is the data for the edited form question
