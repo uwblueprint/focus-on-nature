@@ -152,7 +152,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
             <Input
               onChange={handleVolunteerChange}
               placeholder="Add volunteer(s)"
-              _placeholder={{ color: "text.grey.100" }}
+              _placeholder={{ color: "text.grey.600" }}
               size="sm"
               _focusVisible={{ outline: "0" }}
               value={camp.volunteers}

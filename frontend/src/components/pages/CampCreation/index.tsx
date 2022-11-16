@@ -1,58 +1,107 @@
 import React, { useState } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import CampDetails from "./CampDetails";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
+import CampCreationPages from "./CampCreationPages";
+import CampCreationNavStepper from "./CampCreationNavStepper";
 
-enum CampCreationPages {
-  CampCreationDetailsPage,
-  ScheduleSessionsPage,
-  RegistrationFormPage,
-}
+const CampCreationPage = (): React.ReactElement => {
+  /* eslint-disable */
+  // All response state from the three page components.
+  const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
+  const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
+  const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
+  const [scheduleSessionsDummyOne, setScheduleSessionsDummyOne] = useState(
+    false,
+  );
+  const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(
+    false,
+  );
+  const [registrationFormDummyOne, setRegistrationFormDummyOne] = useState(
+    false,
+  );
+  const [registrationFormDummyTwo, setRegistrationFormDummyTwo] = useState(
+    false,
+  );
 
-const CampCreationPage = (): JSX.Element => {
+  // Variables to determine whether or not all required fields have been filled out.
+  // NOTE: This will depend on what type of state a page requires, i.e. determining
+  // if a checkbox is checked is different than determining if an input field is filled.
+  const isCampDetailsFilled =
+    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isScheduleSessionsFilled =
+    scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
+  const isRegistrationFormFilled =
+    registrationFormDummyOne && registrationFormDummyTwo;
+
+  // State of what page to display.
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
     CampCreationPages.CampCreationDetailsPage,
   );
+  /* eslint-enable */
 
-  const getCampCreationStepComponent = (nextPage: CampCreationPages) => {
-    // will also need logic blocking pages if current page not complete
-    switch (nextPage) {
+  const getCampCreationStepComponent = (page: CampCreationPages) => {
+    switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
-        return <CampDetails />;
+        return (
+          <CampDetails
+            campDetailsDummyOne={campDetailsDummyOne}
+            campDetailsDummyTwo={campDetailsDummyTwo}
+            campDetailsDummyThree={campDetailsDummyThree}
+            toggleCampDetailsDummyOne={() =>
+              setCampDetailsDummyOne(!campDetailsDummyOne)
+            }
+            toggleCampDetailsDummyTwo={() =>
+              setCampDetailsDummyTwo(!campDetailsDummyTwo)
+            }
+            handleCampDetailsDummyThree={(event) =>
+              setCampDetailsDummyThree(event.target.value)
+            }
+          />
+        );
       case CampCreationPages.ScheduleSessionsPage:
-        return <ScheduleSessions />;
+        return (
+          <ScheduleSessions
+            scheduleSessionsDummyOne={scheduleSessionsDummyOne}
+            scheduleSessionsDummyTwo={scheduleSessionsDummyTwo}
+            toggleScheduleSessionsDummyOne={() =>
+              setScheduleSessionsDummyOne(!scheduleSessionsDummyOne)
+            }
+            toggleScheduleSessionsDummyTwo={() =>
+              setScheduleSessionsDummyTwo(!scheduleSessionsDummyTwo)
+            }
+          />
+        );
       case CampCreationPages.RegistrationFormPage:
-        return <RegistrationForm />;
+        return (
+          <RegistrationForm
+            registrationFormDummyOne={registrationFormDummyOne}
+            registrationFormDummyTwo={registrationFormDummyTwo}
+            toggleRegistrationFormDummyOne={() =>
+              setRegistrationFormDummyOne(!registrationFormDummyOne)
+            }
+            toggleRegistrationFormDummyTwo={() =>
+              setRegistrationFormDummyTwo(!registrationFormDummyTwo)
+            }
+          />
+        );
       default:
-        throw new Error("never reached");
+        throw new Error("unexpected camp creation page");
     }
   };
 
   return (
-    <Box>
-      <Button
-        onClick={() =>
-          setCurrentPage(CampCreationPages.CampCreationDetailsPage)
-        }
-      >
-        Camp Details
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}
-      >
-        Schedule Sessions
-      </Button>
-      <Button
-        onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}
-      >
-        Registration Form
-      </Button>
-
-      <Box my="50px" mx="228px">
-        {getCampCreationStepComponent(currentPage)}
-      </Box>
-    </Box>
+    <>
+      <CampCreationNavStepper
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        isCampDetailsFilled={isCampDetailsFilled}
+        isScheduleSessionsFilled={isScheduleSessionsFilled}
+        isRegistrationFormFilled={isRegistrationFormFilled}
+      />
+      <Box m={20}>{getCampCreationStepComponent(currentPage)}</Box>
+    </>
   );
 };
 
