@@ -49,7 +49,7 @@ const ExportButton = ({generateCsv}: {generateCsv: () => void}): JSX.Element => 
         borderRadius="5px"
         minWidth="-webkit-fit-content"
         fontSize={textStyles.bodyRegular.fontSize}
-        onClick={() => generateCsv()}
+        onClick={generateCsv}
       >
         Export as .csv
       </Button>
