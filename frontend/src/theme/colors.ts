@@ -57,11 +57,6 @@ const colors = {
     informative: {
       100: "#0362A5",
     },
-    available: {
-      50: "#FFFFFF",
-      100: "#FFFFFF",
-      600: "#A2CC9F",
-    },
   },
   background: {
     white: {
@@ -150,6 +145,18 @@ const colors = {
     },
     yellow: {
       100: "#FFF5EA",
+    },
+  },
+  stepper: {
+    disabled: {
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#CDD5DF",
+    },
+    available: {
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#95C9B4",
     },
   },
 };

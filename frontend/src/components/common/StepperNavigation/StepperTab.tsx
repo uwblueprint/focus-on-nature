@@ -34,12 +34,14 @@ const StepperTab = ({
   marginLeft,
   marginRight,
 }: StepperTabProps): React.ReactElement => {
-  let iconColorScheme = "text.grey";
+  let iconColorScheme = "stepper.disabled";
   let tabState: TabState = TabState.Disabled;
+
   if (available) {
     tabState = TabState.Available;
-    iconColorScheme = "text.available";
+    iconColorScheme = "stepper.available";
   }
+
   if (focused) {
     tabState = TabState.Focused;
     iconColorScheme = "primary.green";
