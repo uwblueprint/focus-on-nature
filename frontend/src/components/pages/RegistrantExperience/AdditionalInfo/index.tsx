@@ -1,11 +1,26 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Checkbox, Text } from "@chakra-ui/react";
 
-const AdditionalInfo = (): React.ReactElement => {
+type AdditionalInfoProps = {
+  isChecked: boolean;
+  toggleChecked: () => void;
+};
+
+const AdditionalInfo = ({
+  isChecked,
+  toggleChecked,
+}: AdditionalInfoProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Camp Registration</Text>
       <Text>Additional Info</Text>
+
+      <Checkbox
+        size="lg"
+        borderColor="black"
+        isChecked={isChecked}
+        onChange={toggleChecked}
+      />
     </Box>
   );
 };
