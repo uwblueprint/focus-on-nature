@@ -251,6 +251,7 @@ const CampersTable = ({
                         viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
+                        /* eslint-disable no-console */
                         console.log("Moving Camper");
                       }}
                       removeCamperFunc={() => {

@@ -28,6 +28,8 @@ const fileStorageService: IFileStorageService = new FileStorageService(
 );
 
 const campService: ICampService = new CampService(fileStorageService);
+
+// ROLES: Admin + CC
 /* Get all camps */
 campRouter.get("/", getCampDtoValidator, async (req, res) => {
   try {
@@ -39,6 +41,7 @@ campRouter.get("/", getCampDtoValidator, async (req, res) => {
   }
 });
 
+// ROLES: Leave unprotected as we'll probably need to get the camp info in registration (TBD) @dhruv
 campRouter.get("/:id", async (req, res) => {
   try {
     if (req.query?.wId && req.query?.session) {
@@ -61,13 +64,11 @@ campRouter.get("/:id", async (req, res) => {
   }
 });
 
-// TODO: Functionality
-// Create/update/delete formQuestions
-
 // TODO: Required checks:
 // dates for campSessions cannot overlap
 // fee cannot change after any campSession is published (?)
 
+// ROLES: Admin
 /* Create a camp */
 campRouter.post(
   "/",
@@ -109,6 +110,7 @@ campRouter.post(
   },
 );
 
+// ROLES: Admin
 /* Update a camp */
 campRouter.patch(
   "/:campId",
@@ -147,6 +149,7 @@ campRouter.patch(
   },
 );
 
+// ROLES: Admin
 /* Create camp sessions */
 campRouter.post(
   "/:campId/session/",
@@ -164,6 +167,7 @@ campRouter.post(
   },
 );
 
+// ROLES: Admin
 /* Update a camp session */
 campRouter.patch(
   "/:campId/session/:campSessionId",
@@ -185,6 +189,7 @@ campRouter.patch(
   },
 );
 
+// ROLES: Admin
 /* Update camp sessions */
 campRouter.patch(
   "/:campId/session/",
@@ -202,6 +207,7 @@ campRouter.patch(
   },
 );
 
+// ROLES: Admin
 /* Delete a camp session */
 campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   try {
@@ -215,6 +221,7 @@ campRouter.delete("/:campId/session/:campSessionId", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 /* Delete camp sessions */
 campRouter.delete(
   "/:campId/session/",
@@ -232,6 +239,7 @@ campRouter.delete(
   },
 );
 
+// ROLES: Admin + CC
 /* Returns a CSV string containing all campers within a specific camp */
 campRouter.get("/csv/:id", async (req, res) => {
   try {
@@ -242,6 +250,7 @@ campRouter.get("/csv/:id", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 campRouter.post(
   "/:campId/form/",
   createFormQuestionsValidator,
@@ -258,6 +267,7 @@ campRouter.post(
   },
 );
 
+// ROLES: Admin
 campRouter.put(
   "/:campId/form/:formQuestionId/",
   editFormQuestionValidator,
@@ -275,6 +285,7 @@ campRouter.put(
   },
 );
 
+// ROLES: Admin
 campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
   try {
     await campService.deleteFormQuestion(
@@ -287,6 +298,7 @@ campRouter.delete("/:campId/form/:formQuestionId/", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 campRouter.patch(
   "/:campId/form/",
   createFormQuestionsValidator,
@@ -303,6 +315,7 @@ campRouter.patch(
   },
 );
 
+// ROLES: Admin
 /* Delete a camp */
 campRouter.delete("/:id", async (req, res) => {
   try {

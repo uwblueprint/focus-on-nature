@@ -6,6 +6,20 @@ import {
 } from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
 
+const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
+  try {
+    const { data } = await baseAPIClient.get(
+      `/camp?campYear=${year?.toString()}`,
+      {
+        headers: { Authorization: BEARER_TOKEN },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as CampResponse[];
+  }
+};
+
 const getCampById = async (id: string): Promise<CampResponse> => {
   try {
     const { data } = await baseAPIClient.get(`/camp/${id}`, {
@@ -91,6 +105,7 @@ const deleteCampSessionsByIds = async (
 };
 
 export default {
+  getAllCamps,
   getCampById,
   editCampById,
   deleteCamp,

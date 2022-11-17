@@ -1,9 +1,11 @@
+import { format } from "date-fns";
 import {
   CampResponse,
   CampSession,
   CampStatus,
   CreateCampSession,
   Location,
+  QuestionType,
 } from "../types/CampsTypes";
 
 export const CampStatusColor = {
@@ -26,7 +28,7 @@ export const ongoingSession = (session: CampSession): boolean => {
   return today <= lastDay;
 };
 
-export const campStatus = (camp: CampResponse): CampStatus => {
+export const getCampStatus = (camp: CampResponse): CampStatus => {
   if (!camp.active) {
     return CampStatus.DRAFT;
   }
@@ -81,4 +83,32 @@ export const getSessionDatesRangeString = (
     "en-US",
     startDateOptions,
   )} - ${session.endDate.toLocaleDateString("en-US", endDateOptions)}`;
+};
+
+export const getTextFromQuestionType = (questionType: QuestionType): string => {
+  switch (questionType) {
+    case "MultipleChoice":
+      return "Multiple Choice";
+    case "Multiselect":
+      return "Checkbox";
+    case "Text":
+      return "Short Answer";
+    default:
+      return "";
+  }
+};
+
+export const getFormattedCampDateRange = (
+  firstCampSessionDates: Array<string>,
+  lastCampSessionDates: Array<string>,
+): string => {
+  if (firstCampSessionDates && lastCampSessionDates) {
+    const startDate = format(new Date(firstCampSessionDates[0]), "PP");
+    const lastDate = format(
+      new Date(lastCampSessionDates[lastCampSessionDates.length - 1]),
+      "PP",
+    );
+    return `${startDate} - ${lastDate}`;
+  }
+  return "";
 };

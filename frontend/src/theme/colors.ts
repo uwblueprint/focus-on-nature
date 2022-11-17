@@ -3,6 +3,7 @@ const colors = {
     green: {
       100: "#468740",
       200: "#3A7035",
+      600: "#146600",
     },
   },
   secondary: {
@@ -37,7 +38,9 @@ const colors = {
       100: "#FFFFFF",
     },
     grey: {
-      100: "#A3AEBE",
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#A3AEBE",
     },
     secondary: {
       100: "#6D7175",
@@ -140,6 +143,21 @@ const colors = {
     },
     red: {
       100: "#FFD0D0",
+    },
+    yellow: {
+      100: "#FFF5EA",
+    },
+  },
+  stepper: {
+    disabled: {
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#CDD5DF",
+    },
+    available: {
+      50: "#FFFFFF",
+      100: "#FFFFFF",
+      600: "#95C9B4",
     },
   },
 };

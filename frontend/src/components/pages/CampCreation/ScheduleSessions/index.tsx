@@ -1,31 +1,38 @@
-import React, { useState } from "react";
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
-// import SessionsCalendar from "./SessionsCalendar";
-import SessionSidePanel from "./SessionSidePanel";
+import React from "react";
+import { Box, Checkbox, Text } from "@chakra-ui/react";
 
-const ScheduleSessionsPage = (): React.ReactElement => {
-  const [scheduledSessions, setScheduledSessions] = useState<
-    CreateCampSession[]
-  >([]);
+type ScheduleSessionsProps = {
+  scheduleSessionsDummyOne: boolean;
+  scheduleSessionsDummyTwo: boolean;
+  toggleScheduleSessionsDummyOne: () => void;
+  toggleScheduleSessionsDummyTwo: () => void;
+};
 
+const ScheduleSessions = ({
+  scheduleSessionsDummyOne,
+  scheduleSessionsDummyTwo,
+  toggleScheduleSessionsDummyOne,
+  toggleScheduleSessionsDummyTwo,
+}: ScheduleSessionsProps): React.ReactElement => {
   return (
     <Box>
-      <HStack alignItems="flex-start">
-        <VStack alignItems="flex-start">
-          <Text textStyle="displayXLarge">Schedule Sessions</Text>
-          <Text textStyle="heading" mb={8}>
-            Waterloo Photography Camp 2022 @7:00 AM - 3:00PM
-          </Text>
-        </VStack>
-        {/* <SessionsCalendar sessions={scheduledSessions}/> */}
-        <SessionSidePanel
-          scheduledSessions={scheduledSessions}
-          setScheduledSessions={setScheduledSessions}
-        />
-      </HStack>
+      <Text textStyle="displayXLarge">Schedule Sessions</Text>
+      <Text>scheduleSessionsDummyOne: {String(scheduleSessionsDummyOne)}</Text>
+      <Checkbox
+        size="lg"
+        borderColor="black"
+        isChecked={scheduleSessionsDummyOne}
+        onChange={toggleScheduleSessionsDummyOne}
+      />
+      <Text>scheduleSessionsDummyTwo: {String(scheduleSessionsDummyTwo)}</Text>
+      <Checkbox
+        size="lg"
+        borderColor="black"
+        isChecked={scheduleSessionsDummyTwo}
+        onChange={toggleScheduleSessionsDummyTwo}
+      />
     </Box>
   );
 };
 
-export default ScheduleSessionsPage;
+export default ScheduleSessions;
