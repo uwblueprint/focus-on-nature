@@ -2,7 +2,7 @@ const colors = {
   primary: {
     green: {
       100: "#468740",
-      200: "#3a7035",
+      200: "#3A7035",
     },
   },
   secondary: {
@@ -67,7 +67,7 @@ const colors = {
     },
     interactive: {
       100: "#D3E9D3",
-      200: "#bcd1bc",
+      200: "#BCD1BC",
     },
     inactive: {
       100: "#E4E5E7",

@@ -15,7 +15,7 @@ const CurrentSessionsView = ({
   setShowAddSessions,
 }: CurrentSessionsViewProps): JSX.Element => {
   const deleteSession = (index: number) => {
-    const updatedSessions = scheduledSessions.slice(0);
+    const updatedSessions = [...scheduledSessions];
     updatedSessions.splice(index, 1);
     setScheduledSessions(updatedSessions);
   };
@@ -24,7 +24,7 @@ const CurrentSessionsView = ({
     <Box paddingX="64px" paddingY="80px">
       <HStack justifyContent="space-between">
         <Text textStyle="displayLarge">Current Sessions</Text>
-        <Button variant="primary" onClick={() => setShowAddSessions(true)}>
+        <Button variant="secondary" onClick={() => setShowAddSessions(true)}>
           Add more session(s)
         </Button>
       </HStack>

@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
+import { sortScheduledSessions } from "../../../../utils/CampUtils";
 
 const emptyWeekDays = new Map<string, boolean>([
   ["Su", false],
@@ -54,6 +55,12 @@ const AddSessionsForm = ({
   };
 
   const [sessionDaysHasError, setSessionDaysHasError] = React.useState(false);
+
+  const resetFormStates = () => {
+    setStartDate(new Date());
+    setSuccessiveSessions(0);
+    setSelectedWeekDays(new Map(emptyWeekDays));
+  };
 
   // get dates of the selected week days within a week of the start date
   const getSessionDates = (
@@ -115,16 +122,8 @@ const AddSessionsForm = ({
         updatedSessions.push(newCampSession);
       }
 
-      // scheduled sessions need to be sorted by start date
-      updatedSessions.sort(
-        (a, b) => a.startDate.getTime() - b.startDate.getTime(),
-      );
-      setScheduledSessions(updatedSessions);
-
-      // reset form states
-      setStartDate(new Date());
-      setSuccessiveSessions(0);
-      setSelectedWeekDays(new Map(emptyWeekDays));
+      setScheduledSessions(sortScheduledSessions(updatedSessions));
+      resetFormStates();
 
       // hide form and show scheduled sessions list
       setShowAddSessions(false);
@@ -150,7 +149,7 @@ const AddSessionsForm = ({
           </FormControl>
           <FormControl
             isRequired
-            isInvalid={sessionDaysHasError ? noSessionDaysSelected() : false}
+            isInvalid={sessionDaysHasError && noSessionDaysSelected()}
           >
             <FormLabel>Session Days</FormLabel>
             <HStack spacing="10px">
@@ -169,9 +168,10 @@ const AddSessionsForm = ({
             <Text>Add </Text>
             <Input
               type="number"
+              defaultValue={0}
               maxWidth="5vw"
-              onChange={(e: any) => {
-                if (e.target.value) setSuccessiveSessions(e.target.value);
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e.target.value) setSuccessiveSessions(+e.target.value);
               }}
             />
             <Text> successive camp sessions</Text>

@@ -2,6 +2,7 @@ import React from "react";
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
+import { getSessionDatesRangeString } from "../../../../utils/CampUtils";
 
 type ScheduledSessionsCardProps = {
   currIndex: number;
@@ -15,19 +16,7 @@ const ScheduledSessionsCard = ({
   onDelete,
 }: ScheduledSessionsCardProps): JSX.Element => {
   const weekDays: Map<string, boolean> = scheduledSession.selectedWeekDays;
-  const startDateOptions: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-  };
-  const endDateOptions: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  };
-  const sessionDatesRangeString = `${scheduledSession.startDate.toLocaleDateString(
-    "en-US",
-    startDateOptions,
-  )} - ${scheduledSession.endDate.toLocaleDateString("en-US", endDateOptions)}`;
+  const sessionDatesRangeString = getSessionDatesRangeString(scheduledSession);
 
   return (
     <Box

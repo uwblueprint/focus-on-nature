@@ -2,6 +2,7 @@ import {
   CampResponse,
   CampSession,
   CampStatus,
+  CreateCampSession,
   Location,
 } from "../types/CampsTypes";
 
@@ -57,3 +58,27 @@ export const getFormattedSessionDatetime = (
   startTime: string,
   endTime: string,
 ): string => `${getFormattedDateString(dates)} | ${startTime} - ${endTime}`;
+
+export const sortScheduledSessions = (
+  sessions: CreateCampSession[],
+): CreateCampSession[] => {
+  return sessions.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+};
+
+export const getSessionDatesRangeString = (
+  session: CreateCampSession,
+): string => {
+  const startDateOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+  };
+  const endDateOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  };
+  return `${session.startDate.toLocaleDateString(
+    "en-US",
+    startDateOptions,
+  )} - ${session.endDate.toLocaleDateString("en-US", endDateOptions)}`;
+};

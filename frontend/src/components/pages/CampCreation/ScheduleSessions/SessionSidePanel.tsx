@@ -9,7 +9,7 @@ type SessionSidePanelProps = {
   setScheduledSessions: (sessions: Array<CreateCampSession>) => void;
 };
 
-const SessionSidePanel: React.FC<SessionSidePanelProps> = ({
+const SessionSidePanel = ({
   scheduledSessions,
   setScheduledSessions,
 }: SessionSidePanelProps): React.ReactElement => {
