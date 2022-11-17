@@ -20,7 +20,7 @@ import AccessControlPage from "./components/pages/AccessControl";
 import NavBar from "./components/common/NavBar";
 import GlobalFormsPage from "./components/pages/GlobalForms";
 import CampCreationPage from "./components/pages/CampCreation";
-import CampsList from "./components/pages/CampsList/index";
+// import CampsList from "./components/pages/CampsList/index";
 import RegistrantExperiencePage from "./components/pages/RegistrantExperience";
 
 const App = (): React.ReactElement => {
@@ -40,12 +40,12 @@ const App = (): React.ReactElement => {
           <Switch>
             <Route exact path={Routes.LOGIN_PAGE} component={Login} />
             <Route exact path={Routes.SIGNUP_PAGE} component={Signup} />
-            <PrivateRoute exact path={Routes.HOME_PAGE} component={CampsList} />
-            <PrivateRoute
+            {/* <PrivateRoute exact path={Routes.HOME_PAGE} component={CampsList} /> */}
+            {/* <PrivateRoute
               exact
               path={Routes.CAMPS_PAGE}
               component={CampsList}
-            />
+            /> */}
             <PrivateRoute
               exact
               path={Routes.GLOBAL_FORMS_PAGE}
