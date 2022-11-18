@@ -66,7 +66,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
     };
 
     getCamps();
-  }, [year, camps]);
+  }, [year]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
