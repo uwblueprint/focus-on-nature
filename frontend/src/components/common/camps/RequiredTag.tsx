@@ -1,16 +1,23 @@
 import React from "react";
-import { Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 const RequiredTag = (): React.ReactElement => {
   return (
-    <Text
-      borderRadius="50px"
-      px={4}
-      bg="background.required.100"
+    <Box
+      backgroundColor="background.required.100"
+      borderRadius="20px"
+      padding="2px"
+      marginLeft="40px"
+      marginRight="40px"
+      minW="100px"
+      minH="10px"
+      fontSize="15px"
+      textAlign="center"
       color="text.critical.100"
+      fontWeight="bold"
     >
-      required
-    </Text>
+      Required
+    </Box>
   );
 };
 

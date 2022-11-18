@@ -12,7 +12,7 @@ import {
   fixedCamperInfoQuestions,
   fixedEmergencyContactQuestions,
 } from "../../../../constants/FixedQuestions";
-import RegistrationAccordionItem from "./RegistrationAccordionItem";
+import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccordionItem";
 
 type RegistrationFormPageProps = {
   formTemplateQuestions: Array<FormQuestion>;
@@ -80,7 +80,7 @@ const RegistrationFormPage = ({
         </Button>
       </HStack>
       <Accordion allowToggle>
-        <RegistrationAccordionItem
+        <QuestionsAccordionItem
           accordionTitle="Camper Information"
           fixedQuestions={[
             ...fixedCamperInfoQuestions,
@@ -89,8 +89,9 @@ const RegistrationFormPage = ({
           dynamicQuestions={customCamperInfoQuestions as FormQuestion[]}
           onDeleteCustomQuestion={onDeleteCustomQuestion}
           onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
         />
-        <RegistrationAccordionItem
+        <QuestionsAccordionItem
           accordionTitle="Emergency Contact Information"
           fixedQuestions={[
             ...fixedEmergencyContactQuestions,
@@ -99,13 +100,15 @@ const RegistrationFormPage = ({
           dynamicQuestions={customEmergencyContactQuestions as FormQuestion[]}
           onDeleteCustomQuestion={onDeleteCustomQuestion}
           onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
         />
-        <RegistrationAccordionItem
+        <QuestionsAccordionItem
           accordionTitle="Camp Specific Information"
           fixedQuestions={[]}
           dynamicQuestions={customCampSpecificQuestions as FormQuestion[]}
           onDeleteCustomQuestion={onDeleteCustomQuestion}
           onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
         />
       </Accordion>
     </>

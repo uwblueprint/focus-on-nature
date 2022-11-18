@@ -12,7 +12,7 @@ import { LockIcon } from "@chakra-ui/icons";
 
 import { CreateFormQuestion, FormQuestion } from "../../../../types/CampsTypes";
 import { getTextFromQuestionType } from "../../../../utils/CampUtils";
-import RegistrationRequiredTag from "../../../common/camps/RegistrationRequiredTag";
+import RequiredTag from "../../../common/camps/RequiredTag";
 import DeleteCustomQuestionModal from "./DeleteCustomQuestionModal";
 import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal/index";
 
@@ -96,7 +96,7 @@ const RegistrationQuestionCard = ({
                 </Text>
               </GridItem>
               <GridItem colSpan={1}>
-                <RegistrationRequiredTag />
+                <RequiredTag />
               </GridItem>
             </>
           ) : (
@@ -109,7 +109,7 @@ const RegistrationQuestionCard = ({
               </GridItem>
 
               <GridItem rowSpan={1} colSpan={1}>
-                {question.required && <RegistrationRequiredTag />}
+                {question.required && <RequiredTag />}
               </GridItem>
 
               <GridItem rowSpan={1} colSpan={1}>
