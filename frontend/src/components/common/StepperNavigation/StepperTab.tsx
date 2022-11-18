@@ -44,7 +44,7 @@ const StepperTab = ({
 
   if (focused) {
     tabState = TabState.Focused;
-    iconColorScheme = "primary.green";
+    iconColorScheme = "stepper.focused";
   }
 
   return (
