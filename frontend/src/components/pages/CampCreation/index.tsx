@@ -1,10 +1,13 @@
-import React, { useState } from "react";
-import { Box } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Box, useToast } from "@chakra-ui/react";
 import CampDetails from "./CampDetails";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
 import CampCreationPages from "./CampCreationPages";
 import CampCreationNavStepper from "./CampCreationNavStepper";
+import { FormTemplate } from "../../../types/AdminTypes";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import { CreateFormQuestion } from "../../../types/CampsTypes";
 
 const CampCreationPage = (): React.ReactElement => {
   /* eslint-disable */
@@ -18,12 +21,7 @@ const CampCreationPage = (): React.ReactElement => {
   const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(
     false,
   );
-  const [registrationFormDummyOne, setRegistrationFormDummyOne] = useState(
-    false,
-  );
-  const [registrationFormDummyTwo, setRegistrationFormDummyTwo] = useState(
-    false,
-  );
+  const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
@@ -32,14 +30,86 @@ const CampCreationPage = (): React.ReactElement => {
     campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
   const isScheduleSessionsFilled =
     scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
-  const isRegistrationFormFilled =
-    registrationFormDummyOne && registrationFormDummyTwo;
-
+  const isRegistrationFormFilled = visitedRegistrationPage;
   // State of what page to display.
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
     CampCreationPages.CampCreationDetailsPage,
   );
   /* eslint-enable */
+
+  // All state for registration form page.
+
+  const [
+    formTemplateQuestions,
+    setFormTemplateQuestions,
+  ] = useState<FormTemplate>();
+
+  useEffect(() => {
+    const getFormTemplate = async () => {
+      const formTemplate = await AdminAPIClient.getFormTemplate();
+      if (formTemplate) {
+        setFormTemplateQuestions(formTemplate);
+      }
+    };
+    getFormTemplate();
+  }, []);
+
+  const toast = useToast();
+
+  const [customQuestions, setCustomQuestions] = useState<CreateFormQuestion[]>(
+    [],
+  );
+  const onAddCustomQuestion = (newQuestion: CreateFormQuestion) => {
+    setCustomQuestions((oldArr: CreateFormQuestion[]) => [
+      ...oldArr,
+      newQuestion,
+    ]);
+    toast({
+      description: "Question has been successfully added.",
+      status: "success",
+      duration: 3000,
+      isClosable: false,
+      variant: "subtle",
+    });
+  };
+  const onDeleteCustomQuestion = (questionToBeDeleted: CreateFormQuestion) => {
+    setCustomQuestions((oldArr: CreateFormQuestion[]) =>
+      oldArr.filter(
+        (question: CreateFormQuestion) => question !== questionToBeDeleted,
+      ),
+    );
+    toast({
+      description: "Question has been successfully deleted.",
+      status: "success",
+      duration: 3000,
+      isClosable: false,
+      variant: "subtle",
+    });
+  };
+
+  const onEditCustomQuestion = (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => {
+    setCustomQuestions((oldArr: CreateFormQuestion[]) => {
+      const newArr = [...oldArr];
+      for (let i = 0; i < newArr.length; i += 1) {
+        if (newArr[i] === oldQuestion) {
+          newArr[i] = newQuestion;
+          break;
+        }
+      }
+      return newArr;
+    });
+
+    toast({
+      description: "Question has been successfully edited.",
+      status: "success",
+      duration: 3000,
+      isClosable: false,
+      variant: "subtle",
+    });
+  };
 
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
@@ -76,14 +146,14 @@ const CampCreationPage = (): React.ReactElement => {
       case CampCreationPages.RegistrationFormPage:
         return (
           <RegistrationForm
-            registrationFormDummyOne={registrationFormDummyOne}
-            registrationFormDummyTwo={registrationFormDummyTwo}
-            toggleRegistrationFormDummyOne={() =>
-              setRegistrationFormDummyOne(!registrationFormDummyOne)
+            formTemplateQuestions={
+              formTemplateQuestions ? formTemplateQuestions.formQuestions : []
             }
-            toggleRegistrationFormDummyTwo={() =>
-              setRegistrationFormDummyTwo(!registrationFormDummyTwo)
-            }
+            customQuestions={customQuestions}
+            onAddCustomQuestion={onAddCustomQuestion}
+            onDeleteCustomQuestion={onDeleteCustomQuestion}
+            onEditCustomQuestion={onEditCustomQuestion}
+            setVisitedRegistrationPage={setVisitedRegistrationPage}
           />
         );
       default:

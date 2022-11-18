@@ -13,9 +13,13 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 const QuestionOptionSection = ({
   questionType,
   setOptionsArray,
+  optionsToBeEdited,
+  editing = false,
 }: {
   questionType: string;
   setOptionsArray: (options: Array<string>) => void;
+  optionsToBeEdited?: Array<string>;
+  editing?: boolean;
 }): React.ReactElement => {
   interface Option {
     option: string;
@@ -23,7 +27,14 @@ const QuestionOptionSection = ({
 
   const key: keyof Option = "option";
 
-  const [options, setOptions] = useState<Array<Option>>([{ option: "" }]);
+  let existingOptions: Array<Option> = [];
+  if (editing) {
+    optionsToBeEdited?.forEach((option) => {
+      existingOptions.push({ option });
+    });
+  }
+  if (!optionsToBeEdited) existingOptions = [{ option: "" }];
+  const [options, setOptions] = useState<Array<Option>>(existingOptions);
 
   const handleFormChange = (
     index: number,
