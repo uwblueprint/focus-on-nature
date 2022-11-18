@@ -2,6 +2,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
   Button,
+  Center,
   Container,
   HStack,
   IconButton,
@@ -246,6 +247,16 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
           ))}
         </Tbody>
       </Table>
+      {tableData.length === 0 && (
+        <Center
+          bg="background.white.100"
+          color="text.grey.600"
+          p="30px"
+          textStyle="buttonSemiBold"
+        >
+          No results found
+        </Center>
+      )}
     </>
   );
 };
