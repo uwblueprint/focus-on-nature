@@ -8,7 +8,6 @@ import * as dotenv from "dotenv";
 
 import { mongo } from "./models";
 import authRouter from "./rest/authRoutes";
-import entityRouter from "./rest/entityRoutes";
 import userRouter from "./rest/userRoutes";
 import campRouter from "./rest/campRoutes";
 import camperRouter from "./rest/camperRoutes";
@@ -36,7 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRouter);
-app.use("/entities", entityRouter);
 app.use("/users", userRouter);
 app.use("/camp", campRouter);
 app.use("/campers", camperRouter);
