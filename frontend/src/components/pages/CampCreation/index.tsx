@@ -28,8 +28,8 @@ const CampCreationPage = (): React.ReactElement => {
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled =
-    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isCampDetailsFilled = true;
+  // campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
   const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 

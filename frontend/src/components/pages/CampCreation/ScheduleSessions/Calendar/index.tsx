@@ -67,8 +67,8 @@ type SessionsCalendarProps = {
 
 type CalendarSession = {
   title: string;
-  start: string | Date;
-  end: string | undefined | Date;
+  start: Date;
+  end: Date | undefined;
   backgroundColor: string;
   borderColor: string;
 };
@@ -77,13 +77,13 @@ const SessionsCalendar = ({
   sessions,
 }: SessionsCalendarProps): React.ReactElement => {
   // Check that this doesn't refresh unnecessarily
-  const currentDate = new Date();
+  const today = new Date();
 
   const [displayMonth, setDisplayMonth] = useState<string>(
-    MONTHS[currentDate.getMonth()],
+    MONTHS[today.getMonth()],
   );
   const [displayYear, setDisplayYear] = useState<string>(
-    currentDate.getFullYear().toString(),
+    today.getFullYear().toString(),
   );
 
   const calendar = useRef<FullCalendar>(null);
@@ -108,51 +108,87 @@ const SessionsCalendar = ({
     return Math.round(Math.abs(deltaMs / oneDay));
   };
 
+  const isConsecutiveSession = (
+    lastAddedStartDate: Date | undefined,
+    lastAddedEndDate: Date | undefined,
+    currentDate: Date,
+  ): boolean => {
+    const lastDate: Date | undefined = lastAddedEndDate || lastAddedStartDate;
+
+    if (lastDate) {
+      return daysBetween(lastDate, currentDate) === 1;
+    }
+
+    return false;
+  };
+
   // Note: end date exclusive for ranges
   const mapSessionsDataToCalendarSessions = (
     inputSessions: CreateCampSession[],
   ): Array<CalendarSession> => {
     console.log(inputSessions);
 
-    const calendarSessions = inputSessions.flatMap((session, index) => {
-      return session.dates.map((date) => {
-        return {
-          title: `Session ${index + 1}`,
-          start: date,
-          end: undefined,
-          backgroundColor: FILL_COLORS[index % 8],
-          borderColor: BORDER_COLORS[index % 8],
-        };
-      });
-    });
+    const allSessionCalendarSessions = inputSessions.flatMap(
+      (session, sessionIndex) => {
+        const calendarSessions = session.dates.reduce(
+          (formattedSessions: Array<CalendarSession>, currentDate: Date) => {
+            const lastAddedEndDate =
+              formattedSessions.length === 0
+                ? undefined
+                : formattedSessions[formattedSessions.length - 1].end;
+            const lastAddedStartDate =
+              formattedSessions.length === 0
+                ? undefined
+                : formattedSessions[formattedSessions.length - 1].start;
 
-    // for (let i = 0; i < inputSessions.length; i += 1) {
-    // const session = inputSessions[i];
-    // const backgroundColor = FILL_COLORS[i % 8];
-    // const borderColor = BORDER_COLORS[i % 8];
+            if (
+              isConsecutiveSession(
+                lastAddedStartDate,
+                lastAddedEndDate,
+                currentDate,
+              )
+            ) {
+              // eslint-disable-next-line no-param-reassign
+              formattedSessions[formattedSessions.length - 1].end = currentDate;
+            } else {
+              const colorIndex = sessionIndex % 8;
+              formattedSessions.push({
+                title: `Session ${sessionIndex + 1}`,
+                start: currentDate,
+                end: undefined,
+                backgroundColor: FILL_COLORS[colorIndex],
+                borderColor: BORDER_COLORS[colorIndex],
+              });
+            }
 
-    // if (daysBetween(session.startDate, session.endDate) === 1) {
-    //   console.log(i);
-    //   const calendarSession = {
-    //     title: `Session ${i + 1}`,
-    //     start: session.startDate,
-    //     end: session.endDate,
-    //     // end: new Date(session.endDate.setDate(session.endDate.getDate() + 1)),
-    //     // need this in camp session too
-    //     backgroundColor: FILL_COLORS[currentColorIndex],
-    //     borderColor: BORDER_COLORS[currentColorIndex],
-    //   };
-    //   currentColorIndex += 1;
-    //   calendarSessions.push(calendarSession);
-    // }
+            return formattedSessions;
+          },
+          Array<CalendarSession>(),
+        );
 
-    // }
+        return calendarSessions.map((calendarSession) => {
+          const exclusiveEndDate = calendarSession.end
+            ? new Date(calendarSession.end.getTime())
+            : undefined;
+          if (exclusiveEndDate) {
+            exclusiveEndDate.setDate(exclusiveEndDate.getDate() + 1);
+          }
+          return {
+            title: calendarSession.title,
+            start: calendarSession.start,
+            end: exclusiveEndDate,
+            backgroundColor: calendarSession.backgroundColor,
+            borderColor: calendarSession.borderColor,
+          };
+        });
+      },
+    );
 
-    return calendarSessions;
+    return allSessionCalendarSessions;
   };
 
   return (
-    <VStack spacing={4} align="flex-start">
+    <VStack spacing={4} align="center">
       <CalendarHeader
         month={displayMonth}
         year={displayYear}

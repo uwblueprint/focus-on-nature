@@ -22,7 +22,6 @@ const SessionSidePanel = ({
       position="absolute"
       right="0"
       background="background.grey.200"
-      flex="1"
       zIndex="10"
     >
       {scheduledSessions.length === 0 || showAddSessionView ? (
