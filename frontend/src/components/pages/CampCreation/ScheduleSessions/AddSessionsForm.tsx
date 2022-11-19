@@ -108,7 +108,7 @@ const AddSessionsForm = ({
           startDate: sessionStartDate,
           endDate: new Date(),
           dates: [],
-          selectedWeekDays,
+          selectedWeekDays: new Map(selectedWeekDays),
         };
 
         const dates: Date[] = getSessionDates(
@@ -120,6 +120,8 @@ const AddSessionsForm = ({
         newCampSession.startDate = dates[0];
         newCampSession.endDate = dates[dates.length - 1];
         updatedSessions.push(newCampSession);
+
+        // sunday will always be the first day
       }
 
       setScheduledSessions(sortScheduledSessions(updatedSessions));

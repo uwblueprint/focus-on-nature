@@ -28,6 +28,12 @@ const CurrentSessionsView = ({
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const updateSession = (index: number, updatedSession: CreateCampSession) => {
+    const updatedSessions = [...scheduledSessions];
+    updatedSessions[index] = updatedSession;
+    setScheduledSessions(updatedSessions);
+  };
+
   const deleteSession = (index: number) => {
     setSessionToDeleteIndex(index);
     onOpen();
@@ -78,6 +84,7 @@ const CurrentSessionsView = ({
                 key={currIndex}
                 currIndex={currIndex}
                 scheduledSession={session}
+                updateSession={updateSession}
                 onDelete={deleteSession}
               />
             ))}
