@@ -56,6 +56,8 @@ export const getFormattedDateString = (dates: Array<string>): string => {
 };
 
 export const getFormattedDateStringFromDateArray = (dates: Date[]): string => {
+  if (dates.length === 0) return "No dates selected";
+
   const startDate = dates[0].toLocaleDateString("en-us", {
     month: "short",
     day: "numeric",
