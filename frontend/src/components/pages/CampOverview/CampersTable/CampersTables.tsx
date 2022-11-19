@@ -10,12 +10,14 @@ type CampersTablesProps = {
   campSession: CampSession;
   formQuestions: FormQuestion[];
   handleRefetch: () => void;
+  generateCsv: () => void;
 };
 
 const CampersTables = ({
   campSession,
   formQuestions,
   handleRefetch,
+  generateCsv
 }: CampersTablesProps): JSX.Element => {
   return (
     <Box>
@@ -39,6 +41,7 @@ const CampersTables = ({
               formQuestions={formQuestions}
               campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
+              generateCsv={generateCsv}
             />
           </TabPanel>
           <TabPanel padding="0">

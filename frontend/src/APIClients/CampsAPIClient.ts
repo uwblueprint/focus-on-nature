@@ -104,6 +104,17 @@ const deleteCampSessionsByIds = async (
   }
 };
 
+const getCampSessionCsv = async (id: string): Promise<string> => {
+  try {
+    const { data } = await baseAPIClient.get(`/camp/csv/${id}`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return data;
+  } catch (error) {
+    return "ERROR";
+  }
+};
+
 export default {
   getAllCamps,
   getCampById,
@@ -111,4 +122,5 @@ export default {
   deleteCamp,
   updateCampSessions,
   deleteCampSessionsByIds,
+  getCampSessionCsv,
 };

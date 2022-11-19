@@ -1145,56 +1145,64 @@ class CampService implements ICampService {
       });
 
       if (!campSession) {
-        throw new Error(`Camp with id ${campSessionId} not found.`);
+        throw new Error(`Camp Session with id ${campSessionId} not found.`);
       }
       const campers = campSession.campers as Camper[];
+      const camp: Camp | null = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with id ${campSessionId} not found.`);
+      }
 
-      const questionIds = new Set(
-        campers.length > 0
-          ? campers.reduce((prevCamper, currCamper) => {
-              return [
-                ...prevCamper,
-                ...Array.from(currCamper.formResponses.keys()),
-              ];
-            }, Array.from(campers[0].formResponses.keys()))
-          : [],
-      );
-
-      const formQuestions = await MgFormQuestion.find({
-        _id: Array.from(questionIds),
+      const formQuestionsData = await MgFormQuestion.find({
+        _id: { $in: camp.formQuestions },
       });
 
-      const formQuestionMap: { [id: string]: string } = {};
-
-      formQuestions.forEach((formQuestion) => {
-        formQuestionMap[formQuestion._id] = formQuestion.question;
+      const campersWithSpecficQuestions: string[] = [];
+      campers.forEach((camper) => {
+        camper.formResponses.forEach((value, key) => {
+          const campQuestion = formQuestionsData.find(
+            (item) => item.question === key,
+          );
+          if (campQuestion?.category === "CampSpecific") {
+            campersWithSpecficQuestions.push(camper.id);
+          }
+        });
       });
 
       return await Promise.all(
         campers.map(async (camper) => {
-          const { formResponses } = camper;
-          const formResponseObject: { [key: string]: string } = {};
-
-          Array.from(formResponses.keys()).forEach((questionId) => {
-            const question = formQuestionMap[questionId];
-            const answer = formResponses.get(questionId);
-            formResponseObject[question] = answer as string;
-          });
-
           return {
-            firstName: camper.firstName,
-            lastName: camper.lastName,
-            age: camper.age,
-            allergies: camper.allergies,
-            earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
-            latePickup: camper.latePickup.map((date) => date.toString()),
-            specialNeeds: camper.specialNeeds,
-            contacts: camper.contacts,
-            formResponses: formResponseObject,
-            registrationDate: camper.registrationDate.toString(),
-            hasPaid: camper.hasPaid,
-            chargeId: camper.chargeId,
-            optionalClauses: camper.optionalClauses,
+            "Registration Date": camper.registrationDate
+              .toLocaleDateString("en-CA")
+              .toString(),
+            "Camper Name": `${camper.firstName} ${camper.lastName}`,
+            "Camper Age": camper.age,
+            "Primary Emergency Contact Name": `${camper.contacts[0].firstName} ${camper.contacts[0].lastName}`,
+            "Primary Emergency Contact Phone #": camper.contacts[0].phoneNumber,
+            "Primary Emergency Contact Email": camper.contacts[0].email,
+            "Secondary Emergency Contact Name":
+              camper.contacts.length > 1
+                ? `${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`
+                : "",
+            "Secondary Emergency Contact Phone #":
+              camper.contacts.length > 1 ? camper.contacts[1].phoneNumber : "",
+            "Requires Early Drop-off":
+              camper.earlyDropoff.length > 0 ? "Y" : "N",
+            "Requires Late Pick-up": camper.earlyDropoff.length > 0 ? "Y" : "N",
+            // eslint-disable-next-line
+            "Allergies": camper.allergies,
+            "Additional Accomodations": camper.specialNeeds,
+            "Amount Paid":
+              camper.charges.camp +
+              camper.charges.earlyDropoff +
+              camper.charges.latePickup,
+            "Additional Camp-Specific Q's": campersWithSpecficQuestions.includes(
+              camper.id,
+            )
+              ? "Y"
+              : "N",
+            "Additional Waiver Clauses":
+              camper.optionalClauses.length > 0 ? "Y" : "N",
           };
         }),
       );
@@ -1331,26 +1339,12 @@ class CampService implements ICampService {
     try {
       const campers = await this.getCampersByCampSessionId(campSessionId);
       if (campers.length === 0) {
-        // if there are no campers, we return an empty string
+        // if there are no campers, we return an empty string.
         return "";
       }
-      let csvHeaders: string[] = [];
-      const flattenedCampers = campers.map((camper) => {
-        const { formResponses, ...formObj } = camper;
-        // grabbing column names
-        csvHeaders = [
-          ...csvHeaders,
-          ...Object.keys(formResponses),
-          ...Object.keys(formObj),
-        ];
-        return {
-          ...formResponses,
-          ...formObj,
-        };
-      });
-      csvHeaders = Array.from(new Set(csvHeaders));
+      const csvHeaders = Object.keys(campers[0]);
       const csvString = await generateCSV({
-        data: flattenedCampers,
+        data: campers,
         fields: csvHeaders,
       });
       return csvString;
