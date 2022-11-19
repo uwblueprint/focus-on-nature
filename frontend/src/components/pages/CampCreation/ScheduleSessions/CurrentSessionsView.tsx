@@ -1,7 +1,17 @@
 import React from "react";
-import { Box, HStack, Text, Button, Divider, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Text,
+  Button,
+  Divider,
+  VStack,
+  useToast,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import ScheduledSessionsCard from "./ScheduledSessionsCard";
+import GeneralDeleteModal from "../../../common/GeneralDeleteModal";
 
 type CurrentSessionsViewProps = {
   scheduledSessions: CreateCampSession[];
@@ -14,14 +24,45 @@ const CurrentSessionsView = ({
   setScheduledSessions,
   setShowAddSessions,
 }: CurrentSessionsViewProps): JSX.Element => {
+  const [sessionToDeleteIndex, setSessionToDeleteIndex] = React.useState(0);
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const deleteSession = (index: number) => {
+    setSessionToDeleteIndex(index);
+    onOpen();
+  };
+
+  const confirmDeleteSession = () => {
     const updatedSessions = [...scheduledSessions];
-    updatedSessions.splice(index, 1);
+    updatedSessions.splice(sessionToDeleteIndex, 1);
     setScheduledSessions(updatedSessions);
+
+    onClose();
+
+    toast({
+      description: `Session ${
+        sessionToDeleteIndex + 1
+      } has been successfully deleted`,
+      status: "success",
+      variant: "subtle",
+      duration: 3000,
+    });
   };
 
   return (
     <Box paddingX="64px" paddingY="80px">
+      <GeneralDeleteModal
+        title="Delete Session?"
+        bodyText={`Are you sure you want to delete "Session ${
+          sessionToDeleteIndex + 1
+        }?"`}
+        bodyNote="Note: this action is irreversible."
+        buttonLabel="Delete"
+        isOpen={isOpen}
+        onClose={onClose}
+        onDelete={confirmDeleteSession}
+      />
       <HStack justifyContent="space-between">
         <Text textStyle="displayLarge">Current Sessions</Text>
         <Button variant="secondary" onClick={() => setShowAddSessions(true)}>
