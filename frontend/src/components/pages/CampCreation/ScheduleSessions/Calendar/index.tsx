@@ -113,10 +113,6 @@ const SessionsCalendar = ({
     inputSessions: CreateCampSession[],
   ): Array<CalendarSession> => {
     console.log(inputSessions);
-    // const calendarSessions = inputSessions.flatMap((session, index) => {
-
-    // if days == dates.length => start, end
-    // let currentColorIndex = 0;
 
     const calendarSessions = inputSessions.flatMap((session, index) => {
       return session.dates.map((date) => {
@@ -153,44 +149,6 @@ const SessionsCalendar = ({
     // }
 
     return calendarSessions;
-
-    // return [
-    //   {
-    //     title: "Event 1",
-    //     start: "2022-11-03",
-    //     end: "2022-11-08",
-    //     backgroundColor: FILL_COLORS[0],
-    //     borderColor: BORDER_COLORS[0],
-    //   },
-    //   {
-    //     title: "Event 2",
-    //     start: "2022-11-05",
-    //     end: undefined,
-    //     backgroundColor: FILL_COLORS[1],
-    //     borderColor: BORDER_COLORS[1],
-    //   },
-    //   {
-    //     title: "Event 2",
-    //     start: "2022-11-06",
-    //     end: undefined,
-    //     backgroundColor: FILL_COLORS[1],
-    //     borderColor: BORDER_COLORS[1],
-    //   },
-    //   {
-    //     title: "Event 2",
-    //     start: "2022-11-07",
-    //     end: undefined,
-    //     backgroundColor: FILL_COLORS[1],
-    //     borderColor: BORDER_COLORS[1],
-    //   },
-    //   {
-    //     title: "Event 3",
-    //     start: "2022-11-15",
-    //     end: "2022-11-18",
-    //     backgroundColor: FILL_COLORS[2],
-    //     borderColor: BORDER_COLORS[2],
-    //   },
-    // ];
   };
 
   return (

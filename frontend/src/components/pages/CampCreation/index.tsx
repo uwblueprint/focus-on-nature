@@ -7,34 +7,41 @@ import CampCreationPages from "./CampCreationPages";
 import CampCreationNavStepper from "./CampCreationNavStepper";
 import { FormTemplate } from "../../../types/AdminTypes";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { CreateFormQuestion } from "../../../types/CampsTypes";
+import {
+  CreateFormQuestion,
+  CreateCampSession,
+} from "../../../types/CampsTypes";
 
 const CampCreationPage = (): React.ReactElement => {
   /* eslint-disable */
   // All response state from the three page components.
   const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
   const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
+
+  const [scheduledSessions, setScheduledSessions] = React.useState<
+    CreateCampSession[]
+  >([]);
+
   const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
-  const [scheduleSessionsDummyOne, setScheduleSessionsDummyOne] = useState(false);
-  const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(false);
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled = campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
-  const isScheduleSessionsFilled = scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
+  const isCampDetailsFilled =
+    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
+
   // State of what page to display.
-  const [currentPage, setCurrentPage] = useState<CampCreationPages>(CampCreationPages.CampCreationDetailsPage);
+  const [currentPage, setCurrentPage] = useState<CampCreationPages>(
+    CampCreationPages.CampCreationDetailsPage,
+  );
   /* eslint-enable */
 
   // All state for registration form page.
 
-  const [
-    formTemplate,
-    setFormTemplate,
-  ] = useState<FormTemplate>();
+  const [formTemplate, setFormTemplate] = useState<FormTemplate>();
 
   useEffect(() => {
     const getFormTemplate = async () => {
@@ -125,14 +132,9 @@ const CampCreationPage = (): React.ReactElement => {
       case CampCreationPages.ScheduleSessionsPage:
         return (
           <ScheduleSessions
-            scheduleSessionsDummyOne={scheduleSessionsDummyOne}
-            scheduleSessionsDummyTwo={scheduleSessionsDummyTwo}
-            toggleScheduleSessionsDummyOne={() =>
-              setScheduleSessionsDummyOne(!scheduleSessionsDummyOne)
-            }
-            toggleScheduleSessionsDummyTwo={() =>
-              setScheduleSessionsDummyTwo(!scheduleSessionsDummyTwo)
-            }
+            campTitle="Waterloo Photography Camp 2022 @7:00 AM - 3:00PM"
+            scheduledSessions={scheduledSessions}
+            setScheduledSessions={setScheduledSessions}
           />
         );
       case CampCreationPages.RegistrationFormPage:
