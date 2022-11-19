@@ -55,6 +55,20 @@ export const getFormattedDateString = (dates: Array<string>): string => {
   return `${startDate} - ${endDate}`;
 };
 
+export const getFormattedDateStringFromDateArray = (dates: Date[]): string => {
+  const startDate = dates[0].toLocaleDateString("en-us", {
+    month: "short",
+    day: "numeric",
+  });
+  const endDate = dates[dates.length - 1].toLocaleDateString("en-us", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  return `${startDate} - ${endDate}`;
+};
+
 export const getFormattedSessionDatetime = (
   dates: Array<string>,
   startTime: string,
@@ -67,22 +81,28 @@ export const sortScheduledSessions = (
   return sessions.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 };
 
-export const getSessionDatesRangeString = (
-  session: CreateCampSession,
-): string => {
-  const startDateOptions: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-  };
-  const endDateOptions: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  };
-  return `${session.startDate.toLocaleDateString(
-    "en-US",
-    startDateOptions,
-  )} - ${session.endDate.toLocaleDateString("en-US", endDateOptions)}`;
+export const getSessionDates = (
+  sessionStartDate: Date,
+  selectedWeekDayValues: boolean[],
+): Date[] => {
+  const dates: Date[] = [];
+
+  let currDay = sessionStartDate.getDay();
+  for (
+    let daysAfterStartDate = 0;
+    daysAfterStartDate < 7;
+    daysAfterStartDate += 1
+  ) {
+    // only add days that the user selected
+    // e.g. only add Mondays - Fridays dates, don't add weekends
+    if (selectedWeekDayValues[currDay]) {
+      const newDate = new Date(sessionStartDate.getTime());
+      newDate.setDate(newDate.getDate() + daysAfterStartDate);
+      dates.push(newDate);
+    }
+    currDay = (currDay + 1) % 7;
+  }
+  return dates;
 };
 
 export const getTextFromQuestionType = (questionType: QuestionType): string => {

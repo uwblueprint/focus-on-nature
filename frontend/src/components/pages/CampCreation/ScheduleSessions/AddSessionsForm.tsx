@@ -12,7 +12,10 @@ import {
 } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
-import { sortScheduledSessions } from "../../../../utils/CampUtils";
+import {
+  getSessionDates,
+  sortScheduledSessions,
+} from "../../../../utils/CampUtils";
 
 const emptyWeekDays = new Map<string, boolean>([
   ["Su", false],
@@ -62,31 +65,6 @@ const AddSessionsForm = ({
     setSelectedWeekDays(new Map(emptyWeekDays));
   };
 
-  // get dates of the selected week days within a week of the start date
-  const getSessionDates = (
-    sessionStartDate: Date,
-    selectedWeekDayValues: boolean[],
-  ): Date[] => {
-    const dates: Date[] = [];
-
-    let currDay = sessionStartDate.getDay();
-    for (
-      let daysAfterStartDate = 0;
-      daysAfterStartDate < 7;
-      daysAfterStartDate += 1
-    ) {
-      // only add days that the user selected
-      // e.g. only add Mondays - Fridays dates, don't add weekends
-      if (selectedWeekDayValues[currDay]) {
-        const newDate = new Date(sessionStartDate.getTime());
-        newDate.setDate(newDate.getDate() + daysAfterStartDate);
-        dates.push(newDate);
-      }
-      currDay = (currDay + 1) % 7;
-    }
-    return dates;
-  };
-
   const onAddSesssionsToCamp = (e: any) => {
     if (noSessionDaysSelected()) {
       setSessionDaysHasError(true);
@@ -120,8 +98,6 @@ const AddSessionsForm = ({
         newCampSession.startDate = dates[0];
         newCampSession.endDate = dates[dates.length - 1];
         updatedSessions.push(newCampSession);
-
-        // sunday will always be the first day
       }
 
       setScheduledSessions(sortScheduledSessions(updatedSessions));

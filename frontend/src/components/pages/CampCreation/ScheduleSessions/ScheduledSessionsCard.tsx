@@ -2,7 +2,10 @@ import React from "react";
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
-import { getSessionDatesRangeString } from "../../../../utils/CampUtils";
+import {
+  getFormattedDateStringFromDateArray,
+  getSessionDates,
+} from "../../../../utils/CampUtils";
 
 type ScheduledSessionsCardProps = {
   currIndex: number;
@@ -11,60 +14,39 @@ type ScheduledSessionsCardProps = {
   onDelete: (index: number) => void;
 };
 
-// get dates of the selected week days within a week of the start date
-const getSessionDates = (
-  sessionStartDate: Date,
-  selectedWeekDayValues: boolean[],
-): Date[] => {
-  const dates: Date[] = [];
-
-  let currDay = sessionStartDate.getDay();
-  for (
-    let daysAfterStartDate = 0;
-    daysAfterStartDate < 7;
-    daysAfterStartDate += 1
-  ) {
-    // only add days that the user selected
-    // e.g. only add Mondays - Fridays dates, don't add weekends
-    if (selectedWeekDayValues[currDay]) {
-      const newDate = new Date(sessionStartDate.getTime());
-      newDate.setDate(newDate.getDate() + daysAfterStartDate);
-      dates.push(newDate);
-    }
-    currDay = (currDay + 1) % 7;
-  }
-  return dates;
-};
-
 const ScheduledSessionsCard = ({
   currIndex,
   scheduledSession,
   updateSession,
   onDelete,
 }: ScheduledSessionsCardProps): JSX.Element => {
-  const sessionDatesRangeString = getSessionDatesRangeString(scheduledSession);
+  const sessionDatesRangeString = getFormattedDateStringFromDateArray(
+    scheduledSession.dates,
+  );
   const { selectedWeekDays } = scheduledSession;
 
   const updateSelectedSessionDays = (day: string) => {
-    const updatedScheduledSession = scheduledSession;
-
-    const weekDays = updatedScheduledSession.selectedWeekDays;
-
-    const daySelected: boolean = weekDays.get(day) ?? false;
-    weekDays.set(day, !daySelected);
-
-    const sessionStartDate = scheduledSession.startDate;
-    const selectedWeekDayValues = Array.from(weekDays.values());
-
-    const newDates: Date[] = getSessionDates(
-      sessionStartDate,
-      selectedWeekDayValues,
+    // set the new start date to the sunday beginning in the week
+    const updatedStartDate = new Date(scheduledSession.startDate.getTime());
+    updatedStartDate.setDate(
+      updatedStartDate.getDate() - scheduledSession.startDate.getDay(),
     );
 
-    updatedScheduledSession.dates = newDates;
-    // eslint-disable-next-line prefer-destructuring
-    updatedScheduledSession.startDate = newDates[0];
-    updatedScheduledSession.endDate = newDates[newDates.length - 1];
+    const updatedScheduledSession = scheduledSession;
+    const updatedWeekDays = updatedScheduledSession.selectedWeekDays;
+
+    const daySelected: boolean = updatedWeekDays.get(day) ?? false;
+    updatedWeekDays.set(day, !daySelected);
+
+    const updatedWeekDayValues = Array.from(updatedWeekDays.values());
+    const updatedDates: Date[] = getSessionDates(
+      updatedStartDate,
+      updatedWeekDayValues,
+    );
+
+    updatedScheduledSession.dates = updatedDates;
+    updatedScheduledSession.startDate = updatedStartDate;
+    updatedScheduledSession.endDate = updatedDates[updatedDates.length - 1];
 
     updateSession(currIndex, updatedScheduledSession);
   };
