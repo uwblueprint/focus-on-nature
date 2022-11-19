@@ -17,19 +17,19 @@ const CampCreationPage = (): React.ReactElement => {
   // All response state from the three page components.
   const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
   const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
+  const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
 
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
   >([]);
 
-  const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled = true;
-  // campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isCampDetailsFilled =
+    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
   const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 

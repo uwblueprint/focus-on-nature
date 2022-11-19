@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import CalendarHeader from "./CalendarHeader";
-import { MONTHS } from "../../../../../constants/CampManagementConstants";
+import { getMonthIndex } from "../../../../../constants/CampManagementConstants";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 
 const FILL_COLORS = [
@@ -30,37 +30,6 @@ const BORDER_COLORS = [
 
 const TEXT_DEFAULT_100 = "#1A1A1A";
 
-const getMonthIndex = (month: string): number => {
-  switch (month) {
-    case "January":
-      return 0;
-    case "February":
-      return 1;
-    case "March":
-      return 2;
-    case "April":
-      return 3;
-    case "May":
-      return 4;
-    case "June":
-      return 5;
-    case "July":
-      return 6;
-    case "August":
-      return 7;
-    case "September":
-      return 8;
-    case "October":
-      return 9;
-    case "November":
-      return 10;
-    case "December":
-      return 11;
-    default:
-      return -1;
-  }
-};
-
 type SessionsCalendarProps = {
   sessions: CreateCampSession[];
 };
@@ -76,11 +45,10 @@ type CalendarSession = {
 const SessionsCalendar = ({
   sessions,
 }: SessionsCalendarProps): React.ReactElement => {
-  // Check that this doesn't refresh unnecessarily
   const today = new Date();
 
   const [displayMonth, setDisplayMonth] = useState<string>(
-    MONTHS[today.getMonth()],
+    today.toLocaleString("en-US", { month: "long" }),
   );
   const [displayYear, setDisplayYear] = useState<string>(
     today.getFullYear().toString(),
@@ -188,7 +156,7 @@ const SessionsCalendar = ({
   };
 
   return (
-    <VStack spacing={4} align="center">
+    <VStack spacing={4} align="flex-start">
       <CalendarHeader
         month={displayMonth}
         year={displayYear}

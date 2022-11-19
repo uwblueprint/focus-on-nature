@@ -38,7 +38,7 @@ const CalendarHeader = ({
           onChangeMonthSelection(event.currentTarget.value)
         }
       >
-        {MONTHS.map((monthName: string) => {
+        {Object.keys(MONTHS).map((monthName: string) => {
           return <option key={monthName}>{monthName}</option>;
         })}
       </Select>
