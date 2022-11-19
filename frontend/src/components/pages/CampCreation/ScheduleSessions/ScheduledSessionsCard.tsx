@@ -26,7 +26,7 @@ const ScheduledSessionsCard = ({
   const { selectedWeekDays } = scheduledSession;
 
   const updateSelectedSessionDays = (day: string) => {
-    // set the new start date to the sunday beginning in the week
+    // set the new start date to the sunday in the same week
     const updatedStartDate = new Date(scheduledSession.startDate.getTime());
     updatedStartDate.setDate(
       updatedStartDate.getDate() - scheduledSession.startDate.getDay(),
