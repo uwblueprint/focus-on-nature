@@ -57,7 +57,7 @@ const CurrentSessionsView = ({
   };
 
   return (
-    <Box paddingX="64px" paddingY="80px" h="inherit">
+    <Box paddingX="64px" paddingY="80px" minH="100%" maxH="100%">
       <DeleteModal
         title="Delete Session?"
         bodyText={`Are you sure you want to delete "Session ${
@@ -76,7 +76,7 @@ const CurrentSessionsView = ({
         </Button>
       </HStack>
       <Divider marginY={5} />
-      <Box height="80vh" overflowY="scroll">
+      <Box h="55vh" overflowY="scroll">
         <VStack alignItems="flex-start" spacing={5}>
           <>
             {scheduledSessions.map((session, currIndex) => (

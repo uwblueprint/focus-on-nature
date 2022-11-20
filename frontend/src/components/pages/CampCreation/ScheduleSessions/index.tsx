@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionSidePanel from "./SidePanel";
 import SessionsCalendar from "./Calendar";
@@ -16,21 +16,21 @@ const ScheduleSessions = ({
   setScheduledSessions,
 }: ScheduleSessionsProps): React.ReactElement => {
   return (
-    <Box m={-20}>
-      <HStack alignItems="flex-start" h="inherit">
-        <VStack alignItems="flex-start" m={20}>
+    <Flex justify="flex-end" w="100%" h="100%">
+      <VStack alignItems="center" py="5vh" px="5vw" flex="1">
+        <Box>
           <Text textStyle="displayXLarge">Schedule Sessions</Text>
           <Text textStyle="heading" mb={8}>
             {campTitle}
           </Text>
           <SessionsCalendar sessions={scheduledSessions} />
-        </VStack>
-        <SessionSidePanel
-          scheduledSessions={scheduledSessions}
-          setScheduledSessions={setScheduledSessions}
-        />
-      </HStack>
-    </Box>
+        </Box>
+      </VStack>
+      <SessionSidePanel
+        scheduledSessions={scheduledSessions}
+        setScheduledSessions={setScheduledSessions}
+      />
+    </Flex>
   );
 };
 

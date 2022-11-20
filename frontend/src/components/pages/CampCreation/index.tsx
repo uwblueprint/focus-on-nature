@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, useToast } from "@chakra-ui/react";
+import { Box, VStack, useToast } from "@chakra-ui/react";
 import CampDetails from "./CampDetails";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
@@ -156,7 +156,7 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   return (
-    <>
+    <VStack w="100vw" h="calc(100vh - 75px)">
       <CampCreationNavStepper
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -164,8 +164,10 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-      <Box m={20}>{getCampCreationStepComponent(currentPage)}</Box>
-    </>
+      <Box w="100%" flex="1" mt={[0, "0 !important"]}>
+        {getCampCreationStepComponent(currentPage)}
+      </Box>
+    </VStack>
   );
 };
 

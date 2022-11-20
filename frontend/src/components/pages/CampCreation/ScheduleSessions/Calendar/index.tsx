@@ -94,8 +94,6 @@ const SessionsCalendar = ({
   const mapSessionsDataToCalendarSessions = (
     inputSessions: CreateCampSession[],
   ): Array<CalendarSession> => {
-    console.log(inputSessions);
-
     const allSessionCalendarSessions = inputSessions.flatMap(
       (session, sessionIndex) => {
         const calendarSessions = session.dates.reduce(
@@ -170,7 +168,7 @@ const SessionsCalendar = ({
           setDisplayYear(newYear);
         }}
       />
-      <Box w="45vw" h="55vh">
+      <Box w="50vw">
         <FullCalendar
           ref={calendar}
           headerToolbar={false}
@@ -180,6 +178,7 @@ const SessionsCalendar = ({
           navLinks={false}
           defaultAllDay
           handleWindowResize
+          aspectRatio={1.75}
         />
       </Box>
     </VStack>
