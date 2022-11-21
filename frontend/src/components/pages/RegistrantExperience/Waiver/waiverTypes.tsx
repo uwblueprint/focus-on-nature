@@ -1,9 +1,9 @@
 import { Waiver, WaiverClause } from "../../../../types/AdminTypes";
 
 export enum WaiverActions {
-  CLICKOPTIONALCLAUSE,
-  ClICKREQUIREDCLAUSE,
-  LOADEDWAIVER,
+  CLICK_OPTIONAL_CLAUSE,
+  ClICK_REQUIRED_CLAUSE,
+  LOADED_WAIVER,
 }
 
 export interface OptionalClauseResponse extends WaiverClause {

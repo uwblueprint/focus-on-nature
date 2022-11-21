@@ -31,7 +31,7 @@ enum RegistrantExperienceSteps {
 
 const waiverReducer = (waiverInterface: WaiverInterface, action: any) => {
   switch (action.type) {
-    case WaiverActions.LOADEDWAIVER: {
+    case WaiverActions.LOADED_WAIVER: {
       const optionalClauses: OptionalClauseResponse[] = [];
       const requiredClauses: RequiredClauseResponse[] = [];
       const { waiver } = action.payload;
@@ -49,13 +49,13 @@ const waiverReducer = (waiverInterface: WaiverInterface, action: any) => {
         loadingWaiver: false,
       };
     }
-    case WaiverActions.ClICKREQUIREDCLAUSE:
+    case WaiverActions.ClICK_REQUIRED_CLAUSE:
       return {
         ...waiverInterface,
         agreedRequiredClauses: !waiverInterface.agreedRequiredClauses,
       };
 
-    case WaiverActions.CLICKOPTIONALCLAUSE: {
+    case WaiverActions.CLICK_OPTIONAL_CLAUSE: {
       if (!waiverInterface.optionalClauses) return waiverInterface;
       const changedClause: OptionalClauseResponse = action.payload;
 
@@ -95,7 +95,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   });
   useEffect(() => {
     AdminAPIClient.getWaiver().then((waiver) => {
-      waiverDispatch({ type: WaiverActions.LOADEDWAIVER, payload: { waiver } });
+      waiverDispatch({ type: WaiverActions.LOADED_WAIVER, payload: { waiver } });
     });
   }, []);
 
