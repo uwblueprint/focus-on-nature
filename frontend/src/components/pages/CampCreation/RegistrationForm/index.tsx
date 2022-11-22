@@ -79,7 +79,7 @@ const RegistrationFormPage = ({
           + Add Question
         </Button>
       </HStack>
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={0}>
         <QuestionsAccordionItem
           accordionTitle="Camper Information"
           fixedQuestions={[

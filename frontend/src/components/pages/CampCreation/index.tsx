@@ -15,40 +15,32 @@ const CampCreationPage = (): React.ReactElement => {
   const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
   const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
   const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
-  const [scheduleSessionsDummyOne, setScheduleSessionsDummyOne] = useState(
-    false,
-  );
-  const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(
-    false,
-  );
+  const [scheduleSessionsDummyOne, setScheduleSessionsDummyOne] = useState(false);
+  const [scheduleSessionsDummyTwo, setScheduleSessionsDummyTwo] = useState(false);
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled =
-    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
-  const isScheduleSessionsFilled =
-    scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
+  const isCampDetailsFilled = campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isScheduleSessionsFilled = scheduleSessionsDummyOne && scheduleSessionsDummyTwo;
   const isRegistrationFormFilled = visitedRegistrationPage;
   // State of what page to display.
-  const [currentPage, setCurrentPage] = useState<CampCreationPages>(
-    CampCreationPages.CampCreationDetailsPage,
-  );
+  const [currentPage, setCurrentPage] = useState<CampCreationPages>(CampCreationPages.CampCreationDetailsPage);
   /* eslint-enable */
 
   // All state for registration form page.
 
   const [
-    formTemplateQuestions,
-    setFormTemplateQuestions,
+    formTemplate,
+    setFormTemplate,
   ] = useState<FormTemplate>();
 
   useEffect(() => {
     const getFormTemplate = async () => {
-      const formTemplate = await AdminAPIClient.getFormTemplate();
-      if (formTemplate) {
-        setFormTemplateQuestions(formTemplate);
+      const formTemplateFromDB = await AdminAPIClient.getFormTemplate();
+      if (formTemplateFromDB) {
+        setFormTemplate(formTemplateFromDB);
       }
     };
     getFormTemplate();
@@ -147,7 +139,7 @@ const CampCreationPage = (): React.ReactElement => {
         return (
           <RegistrationForm
             formTemplateQuestions={
-              formTemplateQuestions ? formTemplateQuestions.formQuestions : []
+              formTemplate ? formTemplate.formQuestions : []
             }
             customQuestions={customQuestions}
             onAddCustomQuestion={onAddCustomQuestion}

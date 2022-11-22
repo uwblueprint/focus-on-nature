@@ -58,7 +58,6 @@ const AddQuestionModal = ({
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
-      // eslint-disable
       setQuestion(questionToBeEdited.question);
       setQuestionCategory(questionToBeEdited.category);
       setQuestionType(questionToBeEdited.type);
@@ -74,7 +73,6 @@ const AddQuestionModal = ({
           : [...questionToBeEdited.options],
       );
       setIsQuestionInvalid(false);
-      // eslint-enable
     } else {
       setQuestion("");
       setQuestionCategory("PersonalInfo");
