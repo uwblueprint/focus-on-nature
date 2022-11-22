@@ -80,7 +80,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, any>
   >(waiverReducer, {
-    // NOTE!?: issues with reducer code
+    campName: "Guelph Summer Camp 2022", // TODO: Add support to WaiverDTO and WaiverReducer to get the actual name of the camp being accesses.
     waiver: undefined,
     optionalClauses: [],
     requiredClauses: [],

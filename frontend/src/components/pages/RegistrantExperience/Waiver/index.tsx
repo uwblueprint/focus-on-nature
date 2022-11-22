@@ -74,7 +74,7 @@ const WaiverPage = ({
     <Box>
       <VStack spacing={8} pt="1" align="stretch">
         <Text textStyle="displayXLarge">Camp Registration</Text>
-        <Text textStyle="displayLarge">Guelph Summer Camp 2022</Text>
+        <Text textStyle="displayLarge">{waiverInterface.campName}</Text>
         <Text textStyle="displayLarge" color="primary.green.100">
           Waiver
         </Text>

@@ -14,6 +14,7 @@ export interface OptionalClauseResponse extends WaiverClause {
 export interface RequiredClauseResponse extends WaiverClause {}
 
 export type WaiverInterface = {
+  campName: string | undefined;
   waiver: Waiver | undefined;
   optionalClauses: OptionalClauseResponse[];
   requiredClauses: RequiredClauseResponse[];
