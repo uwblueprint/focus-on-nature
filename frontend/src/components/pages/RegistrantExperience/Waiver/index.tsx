@@ -59,7 +59,7 @@ const WaiverPage = ({
       <VStack spacing={8} pt="1" align="stretch">
         <Text textStyle="displayXLarge">Camp Registration</Text>
         <Text textStyle="displayLarge">Guelph Summer Camp 2022</Text>
-        <Text textStyle="displayLarge" color="#11741A">
+        <Text textStyle="displayLarge" color="primary.green.100">
           Waiver
         </Text>
         <Text textStyle="displayMedium" fontWeight="bold">
@@ -74,7 +74,7 @@ const WaiverPage = ({
       </VStack>
 
       <VStack spacing={5} pt="10" align="stretch">
-        <Text color="#0162A5" fontWeight="bold">
+        <Text color="primary.green.100" fontWeight="bold">
           Identity and Waiver of Liability
         </Text>
 
@@ -100,7 +100,7 @@ const WaiverPage = ({
       </VStack>
 
       <VStack spacing={5} pt="10" align="stretch">
-        <Text color="#0162A5" fontWeight="bold">
+        <Text color="primary.green.100" fontWeight="bold">
           Additional Clauses
         </Text>
         {optionalClausesJSX}
