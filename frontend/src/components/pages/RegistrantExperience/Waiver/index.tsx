@@ -6,6 +6,9 @@ import {
   Checkbox,
   ListItem,
   OrderedList,
+  Stack,
+  Radio,
+  RadioGroup,
 } from "@chakra-ui/react";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import {
@@ -30,18 +33,34 @@ const WaiverPage = ({
   waiverInterface.optionalClauses?.forEach(
     (clause: OptionalClauseResponse, index: number) => {
       optionalClausesJSX.push(
-        <Checkbox
-          isChecked={clause.agreed}
-          onChange={() =>
-            waiverDispatch({
-              type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
-              payload: clause,
-            })
-          }
-          key={index}
-        >
-          {clause.text}
-        </Checkbox>,
+        <VStack spacing={6} pt="2" align="stretch" key={index}>
+          <Text>{clause.text}</Text>
+          <RadioGroup
+            onChange={() =>
+              waiverDispatch({
+                type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
+                payload: clause,
+              })
+            }
+            key={index}
+            value={String(clause.agreed)}
+          >
+            <Stack spacing={5} direction="row">
+              <Radio value="true" mb="0">
+                {" "}
+                {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
+                I agree
+              </Radio>
+              <Radio value="false">
+                I{" "}
+                <Text as="span" fontWeight="bold">
+                  do not
+                </Text>{" "}
+                agree
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </VStack>,
       );
     },
   );
@@ -61,12 +80,12 @@ const WaiverPage = ({
         </Text>
         <Text textStyle="displayMedium" fontWeight="bold">
           In consideration of the participation of my child/children, (the
-          “child or children“), in the Focus on Nature photography
-          camp/workshop and all activities associated therewith,
+          “child or children“), in the Focus on Nature photography camp/workshop
+          and all activities associated therewith,
         </Text>
         <Text fontWeight="bold">
-          I, the undersigned parent/guardian of the child/children, agree to
-          the following terms and conditions:
+          I, the undersigned parent/guardian of the child/children, agree to the
+          following terms and conditions:
         </Text>
       </VStack>
 
@@ -80,8 +99,8 @@ const WaiverPage = ({
 
       <VStack spacing={5} pt="10" align="stretch">
         <Text fontWeight="bold">
-          By clicking the checkbox below, you agree to the terms and
-          conditions above.
+          By clicking the checkbox below, you agree to the terms and conditions
+          above.
         </Text>
         <Checkbox
           isChecked={waiverInterface.agreedRequiredClauses}

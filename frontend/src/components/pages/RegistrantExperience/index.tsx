@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useReducer,
-  Reducer,
-} from "react";
+import React, { useEffect, useState, useReducer, Reducer } from "react";
 
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
@@ -94,7 +89,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   });
   useEffect(() => {
     AdminAPIClient.getWaiver().then((waiver) => {
-      waiverDispatch({ type: WaiverActions.LOADED_WAIVER, payload: { waiver } });
+      waiverDispatch({
+        type: WaiverActions.LOADED_WAIVER,
+        payload: { waiver },
+      });
     });
   }, []);
 
