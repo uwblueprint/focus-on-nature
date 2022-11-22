@@ -2,10 +2,7 @@ import React from "react";
 import {
   Box,
   Text,
-  Heading,
   VStack,
-  StackDivider,
-  Stack,
   Checkbox,
   ListItem,
   OrderedList,
