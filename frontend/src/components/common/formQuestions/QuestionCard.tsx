@@ -1,20 +1,48 @@
 import React from "react";
 
-import { Box, Flex, HStack, Spacer, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Spacer,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 
-import { FormQuestion } from "../../../types/CampsTypes";
-import RequiredTag from "../camps/RequiredTag";
+import { CreateFormQuestion } from "../../../types/CampsTypes";
 import { getTextFromQuestionType } from "../../../utils/CampUtils";
+import RequiredTag from "../camps/RequiredTag";
+import DeleteCustomQuestionModal from "../../pages/CampCreation/RegistrationForm/DeleteCustomQuestionModal";
+import AddQuestionModal from "./AddQuestionModal/index";
 
 type QuestionCardProps = {
-  question: FormQuestion;
+  question: CreateFormQuestion;
   viewOnly: boolean;
+  onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
+  onEditCustomQuestion?: (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => void;
 };
 
 const QuestionCard = ({
   question,
   viewOnly,
+  onDeleteCustomQuestion,
+  onEditCustomQuestion,
 }: QuestionCardProps): React.ReactElement => {
+  const {
+    isOpen: isDeleteCustomQuestionOpen,
+    onOpen: onDeleteCustomQuestionOpen,
+    onClose: onDeleteCustomQuestionClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditCustomQuestionOpen,
+    onOpen: onEditCustomQuestionOpen,
+    onClose: onEditCustomQuestionClose,
+  } = useDisclosure();
+
   const getQuestionDescription = (): string => {
     let questionDescription: string = getTextFromQuestionType(question.type);
 
@@ -39,6 +67,19 @@ const QuestionCard = ({
       my="12px"
       height="fit-content"
     >
+      <DeleteCustomQuestionModal
+        isOpen={isDeleteCustomQuestionOpen}
+        onClose={onDeleteCustomQuestionClose}
+        onDelete={onDeleteCustomQuestion}
+        question={question}
+      />
+      <AddQuestionModal
+        editing
+        isOpen={isEditCustomQuestionOpen}
+        onClose={onEditCustomQuestionClose}
+        onEdit={onEditCustomQuestion && onEditCustomQuestion}
+        questionToBeEdited={question}
+      />
       <Flex pb="14px">
         <HStack spacing="20px" fontWeight="bold">
           <Text size="18px">{question.question}</Text>
@@ -50,7 +91,7 @@ const QuestionCard = ({
             <Text
               textStyle="buttonSemiBold"
               _hover={{ cursor: "pointer" }}
-              //   onClick={editModalOnOpen}
+              onClick={onEditCustomQuestionOpen}
               color="text.success.100"
             >
               Edit
@@ -60,7 +101,7 @@ const QuestionCard = ({
             <Text
               textStyle="buttonSemiBold"
               _hover={{ cursor: "pointer" }}
-              //   onClick={deleteModalOnOpen}
+              onClick={onDeleteCustomQuestionOpen}
               color="text.critical.100"
             >
               Delete

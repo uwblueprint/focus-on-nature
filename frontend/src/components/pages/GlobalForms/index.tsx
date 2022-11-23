@@ -16,7 +16,7 @@ import {
   Waiver,
   WaiverClause,
 } from "../../../types/AdminTypes";
-import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
+import { CreateFormQuestion } from "../../../types/CampsTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -36,7 +36,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   );
 
   const [formTemplateQuestions, setFormTemplateQuestions] = React.useState<
-    Array<FormQuestion>
+    Array<CreateFormQuestion>
   >([]);
   const [refetchFormTemplate, setRefetchFormTemplate] = React.useState<boolean>(
     true,
@@ -194,6 +194,45 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
+  const onDeleteCustomQuestion = (questionToBeDeleted: CreateFormQuestion) => {
+    setFormTemplateQuestions((oldArr: CreateFormQuestion[]) =>
+      oldArr.filter(
+        (question: CreateFormQuestion) => question !== questionToBeDeleted,
+      ),
+    );
+    toast({
+      description: "Question has been successfully deleted.",
+      status: "success",
+      duration: 3000,
+      isClosable: false,
+      variant: "subtle",
+    });
+  };
+
+  const onEditCustomQuestion = (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => {
+    setFormTemplateQuestions((oldArr: CreateFormQuestion[]) => {
+      const newArr = [...oldArr];
+      for (let i = 0; i < newArr.length; i += 1) {
+        if (newArr[i] === oldQuestion) {
+          newArr[i] = newQuestion;
+          break;
+        }
+      }
+      return newArr;
+    });
+
+    toast({
+      description: "Question has been successfully edited.",
+      status: "success",
+      duration: 3000,
+      isClosable: false,
+      variant: "subtle",
+    });
+  };
+
   return (
     <>
       <Container
@@ -225,6 +264,8 @@ const GlobalFormsPage = (): React.ReactElement => {
               <TabPanel>
                 <RegistrationFormTemplateTab
                   templateQuestions={formTemplateQuestions}
+                  onDeleteCustomQuestion={onDeleteCustomQuestion}
+                  onEditCustomQuestion={onEditCustomQuestion}
                 />
               </TabPanel>
               <TabPanel>

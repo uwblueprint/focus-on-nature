@@ -16,7 +16,7 @@ import NoRegistrationQuestionsCard from "../../pages/CampCreation/RegistrationFo
 
 type QuestionsAccordionItemProps = {
   fixedQuestions: Array<FormQuestion>; // A question for presentational purposes only, Admin can not edit or delete this
-  dynamicQuestions: Array<FormQuestion>; // Questions added by the admin during the respective workflow which can be editted + deleted
+  dynamicQuestions: Array<CreateFormQuestion>; // Questions added by the admin during the respective workflow which can be editted + deleted
   accordionTitle: string;
   onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
   onEditCustomQuestion?: (
@@ -66,6 +66,8 @@ const QuestionsAccordionItem = ({
               question={question}
               viewOnly={false}
               key={`${question.question}_${index + fixedQuestions.length + 1}`}
+              onDeleteCustomQuestion={onDeleteCustomQuestion}
+              onEditCustomQuestion={onEditCustomQuestion}
             />
           ))}
         </AccordionPanel>

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Accordion } from "@chakra-ui/react";
-import { FormQuestion } from "../../../../types/CampsTypes";
+import { CreateFormQuestion } from "../../../../types/CampsTypes";
 import {
   fixedCamperInfoQuestions,
   fixedEmergencyContactQuestions,
@@ -9,11 +9,18 @@ import {
 import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccordionItem";
 
 type RegistrationFormTemplateTabProps = {
-  templateQuestions: Array<FormQuestion>;
+  templateQuestions: Array<CreateFormQuestion>;
+  onDeleteCustomQuestion: (questionToBeDeleted: CreateFormQuestion) => void;
+  onEditCustomQuestion: (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => void;
 };
 
 const RegistrationFormTemplateTab = ({
   templateQuestions,
+  onDeleteCustomQuestion,
+  onEditCustomQuestion,
 }: RegistrationFormTemplateTabProps): React.ReactElement => {
   return (
     <div>
@@ -24,6 +31,8 @@ const RegistrationFormTemplateTab = ({
             (question) => question.category === "PersonalInfo",
           )}
           accordionTitle="Camper Information"
+          onDeleteCustomQuestion={onDeleteCustomQuestion}
+          onEditCustomQuestion={onEditCustomQuestion}
         />
         <QuestionsAccordionItem
           fixedQuestions={fixedEmergencyContactQuestions}
@@ -31,6 +40,8 @@ const RegistrationFormTemplateTab = ({
             (question) => question.category === "EmergencyContact",
           )}
           accordionTitle="Emergency Contact"
+          onDeleteCustomQuestion={onDeleteCustomQuestion}
+          onEditCustomQuestion={onEditCustomQuestion}
         />
       </Accordion>
     </div>
