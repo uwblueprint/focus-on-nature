@@ -27,48 +27,43 @@ const WaiverPage = ({
   waiverInterface,
   waiverDispatch,
 }: WaiverPageProps): React.ReactElement => {
-  const optionalClausesJSX: ReactJSXElement[] = [];
-  const requiredClausesJSX: ReactJSXElement[] = [];
+  const optionalClausesJSX: ReactJSXElement[] = Array.from(
+    waiverInterface.optionalClauses,
+  ).map((clause: OptionalClauseResponse, index: number) => (
+    <VStack spacing={6} pt="2" align="stretch" key={index}>
+      <Text>{clause.text}</Text>
+      <RadioGroup
+        onChange={() =>
+          waiverDispatch({
+            type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
+            payload: clause,
+          })
+        }
+        key={index}
+        value={String(clause.agreed)}
+      >
+        <Stack spacing={5} direction="row">
+          <Radio value="true" mb="0">
+            {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
+            I agree
+          </Radio>
+          <Radio value="false">
+            I{" "}
+            <Text as="span" fontWeight="bold">
+              do not
+            </Text>{" "}
+            agree
+          </Radio>
+        </Stack>
+      </RadioGroup>
+    </VStack>
+  ));
 
-  waiverInterface.optionalClauses?.forEach(
-    (clause: OptionalClauseResponse, index: number) => {
-      optionalClausesJSX.push(
-        <VStack spacing={6} pt="2" align="stretch" key={index}>
-          <Text>{clause.text}</Text>
-          <RadioGroup
-            onChange={() =>
-              waiverDispatch({
-                type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
-                payload: clause,
-              })
-            }
-            key={index}
-            value={String(clause.agreed)}
-          >
-            <Stack spacing={5} direction="row">
-              <Radio value="true" mb="0">
-                {" "}
-                {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
-                I agree
-              </Radio>
-              <Radio value="false">
-                I{" "}
-                <Text as="span" fontWeight="bold">
-                  do not
-                </Text>{" "}
-                agree
-              </Radio>
-            </Stack>
-          </RadioGroup>
-        </VStack>,
-      );
-    },
-  );
-  waiverInterface.requiredClauses?.forEach(
-    (clause: RequiredClauseResponse, index: number) => {
-      requiredClausesJSX.push(<ListItem key={index}>{clause.text}</ListItem>);
-    },
-  );
+  const requiredClausesJSX: ReactJSXElement[] = Array.from(
+    waiverInterface.requiredClauses,
+  ).map((clause: RequiredClauseResponse, index: number) => (
+    <ListItem key={index}>{clause.text}</ListItem>
+  ));
 
   return (
     <Box>
