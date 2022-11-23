@@ -10,6 +10,7 @@ import {
 import { WaiverClause } from "../../../../types/AdminTypes";
 import EditWaiverModal from "./EditWaiverModal";
 import DeleteWaiverModal from "./DeleteWaiverModal";
+import RequiredTag from "../../../common/camps/RequiredTag";
 
 interface WaiverSectionCardProps {
   clauseIdx: number;
@@ -48,16 +49,7 @@ const WaiverSectionCard = ({
             <Text textStyle="displaySmallSemiBold">
               {getSectionTitle(clauseIdx)}
             </Text>
-            {clauseData.required && (
-              <Text
-                borderRadius="50px"
-                px={4}
-                bg="background.required.100"
-                color="text.critical.100"
-              >
-                required
-              </Text>
-            )}
+            {clauseData.required && <RequiredTag />}
           </HStack>
           <Spacer />
           <HStack spacing="20px">

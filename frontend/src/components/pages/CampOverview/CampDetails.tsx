@@ -23,7 +23,7 @@ import ageIcon from "../../../assets/person.svg";
 import UserSelect from "./UserSelect";
 import {
   locationString,
-  campStatus,
+  getCampStatus,
   CampStatusColor,
 } from "../../../utils/CampUtils";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
@@ -36,7 +36,7 @@ type CampDetailsProps = {
 
 const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   const [users, setUsers] = useState([] as UserResponse[]);
-  const status = campStatus(camp);
+  const status = getCampStatus(camp);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -89,7 +89,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
     setCamp({ ...camp, campCounsellors });
   };
 
-  const handleVolunteerChange = (e: any) => {
+  const handleVolunteerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCamp({ ...camp, volunteers: e.target.value });
   };
 
@@ -152,7 +152,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
             <Input
               onChange={handleVolunteerChange}
               placeholder="Add volunteer(s)"
-              _placeholder={{ color: "text.grey.100" }}
+              _placeholder={{ color: "text.grey.600" }}
               size="sm"
               _focusVisible={{ outline: "0" }}
               value={camp.volunteers}

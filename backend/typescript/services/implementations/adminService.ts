@@ -163,6 +163,73 @@ class AdminService implements IAdminService {
       await session.endSession();
     }
   }
+
+  async removeQuestionFromTemplate(formQuestionId: string): Promise<boolean> {
+    try {
+      await MgFormTemplate.updateOne(
+        {},
+        {
+          $pull: {
+            formQuestions: formQuestionId,
+          },
+        },
+      );
+      return true;
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to remove form question from form template. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
+
+  async editQuestionInTemplate(
+    oldQuestionId: string,
+    newFormQuestion: CreateFormQuestionDTO,
+  ): Promise<boolean> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Get the formTemplate which has the oldQuestionId in its list of questions
+      const formTemplate = await MgFormTemplate.findOne(
+        { formQuestions: oldQuestionId },
+        {},
+        { session },
+      );
+
+      if (!formTemplate) {
+        throw new Error(
+          `Failed to retrieve the form template, no template with question of id: ${oldQuestionId}`,
+        );
+      }
+
+      const newQuestion = new MgFormQuestion(newFormQuestion);
+      await newQuestion.save({ session });
+
+      // Replace the old question id with the new id
+      await MgFormTemplate.updateOne(
+        { formQuestions: oldQuestionId },
+        { $set: { "formQuestions.$": newQuestion._id } },
+        { session },
+      );
+
+      await session.commitTransaction();
+      return true;
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to edit the form question in form template. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
 }
 
 export default AdminService;

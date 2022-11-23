@@ -44,6 +44,13 @@ export type CampSession = {
   dates: string[];
 };
 
+export type CreateCampSession = {
+  startDate: Date;
+  endDate: Date;
+  dates: Date[];
+  selectedWeekDays: Map<string, boolean>;
+};
+
 export type CampSessionResponse = CampSession & { campPriceId: string };
 
 export type ManageCampSessionDetails = Omit<

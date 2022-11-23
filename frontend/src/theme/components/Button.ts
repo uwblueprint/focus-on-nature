@@ -16,6 +16,27 @@ const Button = {
       py: "20px",
       px: "35px",
     },
+    primary: {
+      bg: "primary.green.100",
+      color: "white",
+      _hover: {
+        bg: `primary.green.200`,
+      },
+    },
+    secondary: {
+      border: "2px",
+      borderColor: "primary.green.100",
+      color: "primary.green.100",
+      _hover: {
+        bg: `background.grey.400`,
+      },
+    },
+    backgroundInteractive: {
+      bg: "background.interactive.100",
+      _hover: {
+        bg: `primary.interactive.200`,
+      },
+    },
   },
 };
 

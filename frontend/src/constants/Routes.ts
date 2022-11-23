@@ -15,3 +15,5 @@ export const GLOBAL_FORMS_PAGE = "/admin/global-forms";
 export const ACCESS_CONTROL_PAGE = "/admin/access-control";
 
 export const CAMP_OVERVIEW_PAGE = "/admin/camp/:id";
+
+export const CAMP_REGISTER_PAGE = "/register/camp/:id";

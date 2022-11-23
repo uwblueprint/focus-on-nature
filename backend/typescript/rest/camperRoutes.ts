@@ -20,6 +20,7 @@ const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
 
+// ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
@@ -34,6 +35,7 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   }
 });
 
+// ROLES: Admin + CC
 /* Get all campers, optionally filter by camp ID or charge ID */
 camperRouter.get("/", async (req, res) => {
   const { campId, chargeId } = req.query;
@@ -95,6 +97,7 @@ camperRouter.get("/", async (req, res) => {
   }
 });
 
+// ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   const { chargeId } = req.params;
   try {
@@ -107,6 +110,7 @@ camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   }
 });
 
+// ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 /* Get campers that have the specified charge ID and session ID */
 camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
   const { chargeId, sessionId } = req.params;
@@ -121,6 +125,7 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
   }
 });
 
+// ROLES: Leaving unprotected as the registration flow probs needs this endpoint to waitlist @dhruv
 camperRouter.post(
   "/waitlist",
   createWaitlistedCamperDtoValidator,
@@ -144,6 +149,7 @@ camperRouter.post(
   },
 );
 
+// ROLES: Admin
 camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
   try {
     const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
@@ -158,6 +164,7 @@ camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
   }
 });
 
+// ROLES: Admin
 /* Update the camper with the specified camperId */
 camperRouter.patch(
   "/",
@@ -185,6 +192,7 @@ camperRouter.patch(
   },
 );
 
+// ROLES: Leave unprotected as we'll probably need this in cancellation flow
 /* Cancel registration for the list of campers with the chargeId */
 camperRouter.delete(
   "/cancel-registration",
@@ -202,6 +210,7 @@ camperRouter.delete(
   },
 );
 
+// ROLES: Admin
 /* Delete campers (single or multiple) */
 camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
   try {
@@ -212,6 +221,7 @@ camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
   }
 });
 
+// ROLES: Admin
 /* Delete a waitlisted camper */
 camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
   try {

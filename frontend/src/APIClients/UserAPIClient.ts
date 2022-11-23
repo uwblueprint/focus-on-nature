@@ -18,7 +18,7 @@ const updateUserById = async (
   userData: UserRequest,
 ): Promise<boolean> => {
   try {
-    const { data } = await baseAPIClient.put(`/users/${id}`, userData, {
+    await baseAPIClient.put(`/users/${id}`, userData, {
       headers: { Authorization: BEARER_TOKEN },
     });
     return true;

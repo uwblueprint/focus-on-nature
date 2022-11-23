@@ -44,6 +44,31 @@ interface IAdminService {
   addQuestionToTemplate(
     formQuestion: CreateFormQuestionDTO,
   ): Promise<FormQuestionDTO>;
+
+  /**
+   * Removes a question from the form template
+   * NOTE: does NOT delete the formQuestion as old camps may have references to this formQuestion
+   * @returns true if successfully removed the formQuestion, false otherwise
+   * @param formQuestionId is the objectID of the form question to be removed from the template
+   * @throws Error if removing fails (db query to remove fails etc.)
+   */
+  removeQuestionFromTemplate(formQuestionId: string): Promise<boolean>;
+
+  /**
+   * Edits a question in the form template
+   * NOTE: Form template includes a list of form question ids referencing documents in the formQuestion collection.
+   *       This implementation does NOT edit the old question object, as older camps should keep reference to the pre-edited version.
+   *       New camps should refer to the "updated" question, which is a new question with the "edited" values;
+   *       this question replaces the old question in the template.
+   * @returns true if successfully edited the template, false otherwise
+   * @param oldQuestionId is the objectID as string of the form question to be removed from the template
+   * @param newformQuestion is the data for the edited form question
+   * @throws Error if editing fails (db query to create / remove fails etc.)
+   */
+  editQuestionInTemplate(
+    oldQuestionId: string,
+    newformQuestion: CreateFormQuestionDTO,
+  ): Promise<boolean>;
 }
 
 export default IAdminService;

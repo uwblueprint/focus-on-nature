@@ -6,6 +6,20 @@ import {
 } from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
 
+const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
+  try {
+    const { data } = await baseAPIClient.get(
+      `/camp?campYear=${year?.toString()}`,
+      {
+        headers: { Authorization: BEARER_TOKEN },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as CampResponse[];
+  }
+};
+
 const getCampById = async (id: string): Promise<CampResponse> => {
   try {
     const { data } = await baseAPIClient.get(`/camp/${id}`, {
@@ -90,10 +104,23 @@ const deleteCampSessionsByIds = async (
   }
 };
 
+const getCampSessionCsv = async (id: string): Promise<string> => {
+  try {
+    const { data } = await baseAPIClient.get(`/camp/csv/${id}`, {
+      headers: { Authorization: BEARER_TOKEN },
+    });
+    return data;
+  } catch (error) {
+    return "ERROR";
+  }
+};
+
 export default {
+  getAllCamps,
   getCampById,
   editCampById,
   deleteCamp,
   updateCampSessions,
   deleteCampSessionsByIds,
+  getCampSessionCsv,
 };

@@ -38,7 +38,9 @@ const Footer = ({
     ? waiverAddSectionOnOpen
     : onAddQuestionOpen;
 
-  const buttonText = isWaiverFooter ? "+ Add form section" : "+ Add question";
+  const buttonText = isWaiverFooter
+    ? "+ Add waiver section"
+    : "+ Add form question";
 
   return (
     <Container pos="fixed">

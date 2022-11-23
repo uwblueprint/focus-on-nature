@@ -100,6 +100,7 @@ authRouter.post(
   },
 );
 
+// TODO: Remove this functionality since we don't support? @Dhruv
 /* Emails a password reset link to the user with the specified email */
 authRouter.post(
   "/resetPassword/:email",

@@ -82,3 +82,13 @@ export const downloadCSV = (data: string, fileName: string): void => {
     URL.revokeObjectURL(url);
   });
 };
+
+/**
+ * @param campCity name of Camp City (e.g. "Waterloo")
+ * @param campSessionDate camp session start date (e.g. "Thu Jun 30 2022 00:00:00 GMT+0000 (Coordinated Universal Time)")
+ * @return name of the CSV file (e.g. "Waterloo_Jun_3_2022")
+ */
+export const generateCSVName = (campCity: string, campSessionDate: string): string => {
+  const startDate = new Date(campSessionDate);
+  return `${campCity}_${startDate.toLocaleString('default', { month: 'short' })}_${startDate.getDay()}_${startDate.getFullYear()}`;
+};
