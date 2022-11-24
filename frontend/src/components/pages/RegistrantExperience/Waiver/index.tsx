@@ -1,11 +1,26 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Checkbox, Text } from "@chakra-ui/react";
 
-const Waiver = (): React.ReactElement => {
+type WaiverProps = {
+  isChecked: boolean;
+  toggleChecked: () => void;
+};
+
+const Waiver = ({
+  isChecked,
+  toggleChecked,
+}: WaiverProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Camp Registration</Text>
       <Text>Waiver</Text>
+
+      <Checkbox
+        size="lg"
+        borderColor="black"
+        isChecked={isChecked}
+        onChange={toggleChecked}
+      />
     </Box>
   );
 };

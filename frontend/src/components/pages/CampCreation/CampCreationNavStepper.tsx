@@ -7,9 +7,9 @@ import {
   faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import StepperTab from "../../common/StepperNavigation/StepperTab";
-import CampCreationPages from "./CampCreationPages";
-
-const CAMP_CREATION_NUM_STEPS = 3;
+import CampCreationPages, {
+  CAMP_CREATION_NUM_STEPS,
+} from "./CampCreationPages";
 
 type CampCreationNavStepperProps = {
   currentPage: CampCreationPages;
