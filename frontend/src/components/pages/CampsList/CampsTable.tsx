@@ -25,7 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import {
@@ -38,10 +38,12 @@ import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
 interface CampsTableProps {
   year: number;
+  onDrawerOpen: ()=>void
+  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>
 }
 
 const CampsTable = (props: CampsTableProps): JSX.Element => {
-  const { year } = props;
+  const { year, onDrawerOpen, setCampDrawerInfo } = props;
 
   const filterOptions = [
     CampStatus.PUBLISHED,
@@ -62,7 +64,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
-      if (res) setCamps(res);
+      if (res){ setCamps(res); setCampDrawerInfo(res[0])}
     };
 
     getCamps();
@@ -203,8 +205,13 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         <Tbody>
           {tableData.map((camp, key) => (
             <Tr key={key}>
-              <Td>
-                <Text textStyle="bodyBold">{camp.name}</Text>
+              <Td
+                cursor="pointer"
+                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+              >
+                <Text 
+                  textStyle="bodyBold"
+                >{camp.name}</Text>
                 <Text textStyle="bodyRegular">
                   {locationString(camp.location)}
                 </Text>
