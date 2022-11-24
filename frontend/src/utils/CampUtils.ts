@@ -96,7 +96,7 @@ export const getSessionDates = (
     daysAfterStartDate < 7;
     daysAfterStartDate += 1
   ) {
-    // only add days that the user selected
+    // only add dates corresponding to selected weekdays
     // e.g. only add Mondays - Fridays dates, don't add weekends
     if (selectedWeekDayValues[currDay]) {
       const newDate = new Date(sessionStartDate.getTime()); // creates deep copy
