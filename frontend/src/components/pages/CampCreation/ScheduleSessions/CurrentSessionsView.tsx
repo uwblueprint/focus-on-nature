@@ -69,7 +69,7 @@ const CurrentSessionsView = ({
         onClose={onClose}
         onDelete={confirmDeleteSession}
       />
-      <HStack justifyContent="space-between">
+      <HStack justifyContent="space-between" flexWrap="wrap">
         <Text textStyle="displayLarge">Current Sessions</Text>
         <Button variant="secondary" onClick={() => setShowAddSessions(true)}>
           Add more session(s)
