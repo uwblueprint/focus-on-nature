@@ -62,7 +62,8 @@ const PageTwo = ({
                     camperIsSelected.reduce<number>(
                       (prev, cur) => (cur ? prev + 1 : prev),
                       0,
-                    )
+                    ) ||
+                  new Date(campSessionsItem.dates[1]) < new Date()
                 }
               >
                 Session {campSessionsIdx + 1}:{" "}

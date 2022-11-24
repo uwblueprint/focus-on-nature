@@ -46,26 +46,27 @@ const MoveCamperModal = ({
     // Check if the camper object is not null
     if (Object.keys(camper).length !== 0) {
       // Check if camper has group members
-      CamperAPIClient.getCampersByChargeId(camper.chargeId).then(
-        (campersByChargeId) => {
-          if (campersByChargeId.length > 1) {
-            setCampers(campersByChargeId);
-            setCamperIsSelected(
-              Array<boolean>(campersByChargeId.length).fill(true),
-            );
-            setModalPage(1);
-          } else {
-            setCampers([camper]);
-            setCamperIsSelected(Array<boolean>(1).fill(true));
-            setSelectedCampSession(
-              campSessions.find(
-                (campSessionItem) => campSessionItem.id !== camper.campSession,
-              )?.id ?? selectedCampSession,
-            );
-            setModalPage(2);
-          }
-        },
-      );
+      CamperAPIClient.getCampersByChargeIdAndSessionId(
+        camper.chargeId,
+        camper.campSession,
+      ).then((campersByChargeId) => {
+        if (campersByChargeId.length > 1) {
+          setCampers(campersByChargeId);
+          setCamperIsSelected(
+            Array<boolean>(campersByChargeId.length).fill(true),
+          );
+          setModalPage(1);
+        } else {
+          setCampers([camper]);
+          setCamperIsSelected(Array<boolean>(1).fill(true));
+          setSelectedCampSession(
+            campSessions.find(
+              (campSessionItem) => campSessionItem.id !== camper.campSession,
+            )?.id ?? selectedCampSession,
+          );
+          setModalPage(2);
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camper, moveCamperModalIsOpen, campSession.camp]);
