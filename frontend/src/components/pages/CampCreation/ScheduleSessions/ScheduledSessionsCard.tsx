@@ -32,8 +32,7 @@ const ScheduledSessionsCard = ({
       updatedStartDate.getDate() - scheduledSession.startDate.getDay(),
     );
 
-    const updatedScheduledSession = scheduledSession;
-    const updatedWeekDays = updatedScheduledSession.selectedWeekDays;
+    const updatedWeekDays = scheduledSession.selectedWeekDays;
 
     const daySelected: boolean = updatedWeekDays.get(day) ?? false;
     updatedWeekDays.set(day, !daySelected);
@@ -44,9 +43,12 @@ const ScheduledSessionsCard = ({
       updatedWeekDayValues,
     );
 
-    updatedScheduledSession.dates = updatedDates;
-    updatedScheduledSession.startDate = updatedStartDate;
-    updatedScheduledSession.endDate = updatedDates[updatedDates.length - 1];
+    const updatedScheduledSession = {
+      startDate: updatedStartDate,
+      endDate: updatedDates[updatedDates.length - 1],
+      dates: updatedDates,
+      selectedWeekDays: updatedWeekDays,
+    };
 
     updateSession(currIndex, updatedScheduledSession);
   };
@@ -81,7 +83,7 @@ const ScheduledSessionsCard = ({
             <SessionDayButton
               key={day}
               day={day}
-              active={selectedWeekDays.get(day)}
+              selected={selectedWeekDays.get(day)}
               onSelect={updateSelectedSessionDays}
             />
           ))}

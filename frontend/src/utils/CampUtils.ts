@@ -55,6 +55,7 @@ export const getFormattedDateString = (dates: Array<string>): string => {
   return `${startDate} - ${endDate}`;
 };
 
+// returns in the form "Jan 1 - Feb 2, 2022"
 export const getFormattedDateStringFromDateArray = (dates: Date[]): string => {
   if (dates.length === 0) return "No dates selected";
 
@@ -98,7 +99,7 @@ export const getSessionDates = (
     // only add days that the user selected
     // e.g. only add Mondays - Fridays dates, don't add weekends
     if (selectedWeekDayValues[currDay]) {
-      const newDate = new Date(sessionStartDate.getTime());
+      const newDate = new Date(sessionStartDate.getTime()); // creates deep copy
       newDate.setDate(newDate.getDate() + daysAfterStartDate);
       dates.push(newDate);
     }

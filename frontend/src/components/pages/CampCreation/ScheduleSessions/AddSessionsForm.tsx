@@ -135,7 +135,7 @@ const AddSessionsForm = ({
                 <SessionDayButton
                   key={day}
                   day={day}
-                  active={selectedWeekDays.get(day)}
+                  selected={selectedWeekDays.get(day)}
                   onSelect={updateSelectedSessionDays}
                 />
               ))}

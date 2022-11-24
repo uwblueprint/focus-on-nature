@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-interface GeneralDeleteModalProps {
+interface DeleteModalProps {
   title: string;
   bodyText: string;
   bodyNote?: string;
@@ -22,7 +22,7 @@ interface GeneralDeleteModalProps {
   onClose: () => void;
   onDelete: () => void;
 }
-const GeneralDeleteModal = ({
+const DeleteModal = ({
   title,
   bodyText,
   bodyNote,
@@ -30,7 +30,7 @@ const GeneralDeleteModal = ({
   isOpen,
   onClose,
   onDelete,
-}: GeneralDeleteModalProps): JSX.Element => {
+}: DeleteModalProps): JSX.Element => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -60,4 +60,4 @@ const GeneralDeleteModal = ({
   );
 };
 
-export default GeneralDeleteModal;
+export default DeleteModal;

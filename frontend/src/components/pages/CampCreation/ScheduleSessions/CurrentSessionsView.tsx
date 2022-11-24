@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import ScheduledSessionsCard from "./ScheduledSessionsCard";
-import GeneralDeleteModal from "../../../common/GeneralDeleteModal";
+import DeleteModal from "../../../common/DeleteModal";
 
 type CurrentSessionsViewProps = {
   scheduledSessions: CreateCampSession[];
@@ -58,7 +58,7 @@ const CurrentSessionsView = ({
 
   return (
     <Box paddingX="64px" paddingY="80px">
-      <GeneralDeleteModal
+      <DeleteModal
         title="Delete Session?"
         bodyText={`Are you sure you want to delete "Session ${
           sessionToDeleteIndex + 1
