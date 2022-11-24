@@ -9,6 +9,9 @@ import {
   Stack,
   Radio,
   RadioGroup,
+  FormControl,
+  FormLabel,
+  Input,
 } from "@chakra-ui/react";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import {
@@ -116,6 +119,16 @@ const WaiverPage = ({
         </Text>
         {optionalClausesJSX}
       </VStack>
+
+      <FormControl pt="9" width="40%">
+        <FormLabel fontWeight="bold">Name</FormLabel>
+        <Input fontFamily="cursive" />
+      </FormControl>
+
+      <FormControl pt="5" width="40%">
+        <FormLabel fontWeight="bold">Date</FormLabel>
+        <Input />
+      </FormControl>
     </Box>
   );
 };
