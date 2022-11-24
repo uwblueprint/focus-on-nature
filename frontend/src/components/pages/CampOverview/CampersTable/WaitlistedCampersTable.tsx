@@ -33,7 +33,7 @@ import {
 } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import { WaitlistDetailsBadgeGroup } from "./CamperDetailsBadge";
-import RemoveCamperModal from "../../../common/RemoveCamperModal";
+import DeleteModal from "../../../common/DeleteModal";
 
 type WaitlistedCampersTableProps = {
   waitlistedCampers: WaitlistedCamper[];
@@ -131,14 +131,14 @@ const WaitlistedCampersTable = ({
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {waitlistedCampers.length > 0 ? (
         <>
-          <RemoveCamperModal
+          <DeleteModal
             title={`Remove ${camperToDeleteName}`}
             bodyText={`Are you sure you want to remove ${camperToDeleteName} from the waitlist?`}
             bodyNote="Note: this action is irreversible."
             buttonLabel="Remove"
             isOpen={isOpen}
             onClose={onClose}
-            onRemove={() => confirmDeleteWaitlistedCamper(camperToDelete)}
+            onDelete={() => confirmDeleteWaitlistedCamper(camperToDelete)}
           />
           <HStack spacing={12} px="18">
             <InputGroup>

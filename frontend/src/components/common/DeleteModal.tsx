@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -11,26 +12,25 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
 
-interface GeneralDeleteCamperModalProps {
+interface DeleteModalProps {
   title: string;
   bodyText: string;
   bodyNote?: string;
   buttonLabel: string;
   isOpen: boolean;
   onClose: () => void;
-  onRemove: () => void;
+  onDelete: () => void;
 }
-const RemoveCamperModal = ({
+const DeleteModal = ({
   title,
   bodyText,
   bodyNote,
   buttonLabel,
   isOpen,
   onClose,
-  onRemove,
-}: GeneralDeleteCamperModalProps): JSX.Element => {
+  onDelete,
+}: DeleteModalProps): JSX.Element => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -50,7 +50,7 @@ const RemoveCamperModal = ({
             <Button mr={3} onClick={onClose}>
               <Text>Cancel</Text>
             </Button>
-            <Button colorScheme="red" onClick={onRemove}>
+            <Button colorScheme="red" onClick={onDelete}>
               {buttonLabel}
             </Button>
           </HStack>
@@ -60,4 +60,4 @@ const RemoveCamperModal = ({
   );
 };
 
-export default RemoveCamperModal;
+export default DeleteModal;

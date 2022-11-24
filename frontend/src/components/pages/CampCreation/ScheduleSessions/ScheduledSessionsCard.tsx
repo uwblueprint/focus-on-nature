@@ -2,27 +2,62 @@ import React from "react";
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
-import { getSessionDatesRangeString } from "../../../../utils/CampUtils";
+import {
+  getFormattedDateStringFromDateArray,
+  getSessionDates,
+} from "../../../../utils/CampUtils";
 
 type ScheduledSessionsCardProps = {
   currIndex: number;
   scheduledSession: CreateCampSession;
+  updateSession: (index: number, updatedSession: CreateCampSession) => void;
   onDelete: (index: number) => void;
 };
 
 const ScheduledSessionsCard = ({
   currIndex,
   scheduledSession,
+  updateSession,
   onDelete,
 }: ScheduledSessionsCardProps): JSX.Element => {
-  const weekDays: Map<string, boolean> = scheduledSession.selectedWeekDays;
-  const sessionDatesRangeString = getSessionDatesRangeString(scheduledSession);
+  const sessionDatesRangeString = getFormattedDateStringFromDateArray(
+    scheduledSession.dates,
+  );
+  const { selectedWeekDays } = scheduledSession;
+
+  const updateSelectedSessionDays = (day: string) => {
+    // set the new start date to the sunday in the same week
+    const updatedStartDate = new Date(scheduledSession.startDate.getTime());
+    updatedStartDate.setDate(
+      updatedStartDate.getDate() - scheduledSession.startDate.getDay(),
+    );
+
+    const updatedWeekDays = scheduledSession.selectedWeekDays;
+
+    const daySelected: boolean = updatedWeekDays.get(day) ?? false;
+    updatedWeekDays.set(day, !daySelected);
+
+    const updatedWeekDayValues = Array.from(updatedWeekDays.values());
+    const updatedDates: Date[] = getSessionDates(
+      updatedStartDate,
+      updatedWeekDayValues,
+    );
+
+    const updatedScheduledSession = {
+      startDate: updatedStartDate,
+      endDate: updatedDates[updatedDates.length - 1],
+      dates: updatedDates,
+      selectedWeekDays: updatedWeekDays,
+    };
+
+    updateSession(currIndex, updatedScheduledSession);
+  };
 
   return (
     <Box
       key={currIndex}
       backgroundColor="background.white.100"
-      width="100%"
+      minWidth="100%"
       padding={5}
       borderRadius={10}
     >
@@ -44,12 +79,12 @@ const ScheduledSessionsCard = ({
           {sessionDatesRangeString}
         </Text>
         <HStack spacing="10px">
-          {Array.from(weekDays.keys()).map((day) => (
+          {Array.from(selectedWeekDays.keys()).map((day) => (
             <SessionDayButton
               key={day}
               day={day}
-              active={weekDays.get(day)}
-              onSelect={() => {}}
+              selected={selectedWeekDays.get(day)}
+              onSelect={updateSelectedSessionDays}
             />
           ))}
         </HStack>
