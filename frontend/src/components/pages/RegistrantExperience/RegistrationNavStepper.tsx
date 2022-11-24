@@ -8,9 +8,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StepperTab from "../../common/StepperNavigation/StepperTab";
-import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
-
-const REGISTRATION_NUM_STEPS = 4;
+import RegistrantExperienceSteps, {
+  REGISTRATION_NUM_STEPS,
+} from "./RegistrationExperienceSteps";
 
 export type RegistrationNavStepperProps = {
   currentStep: RegistrantExperienceSteps;
