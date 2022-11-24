@@ -18,7 +18,7 @@ const SessionDayButton = ({
       aria-label="week day button"
       icon={<Text textStyle="bodyBold">{day}</Text>}
       isRound
-      size="lg"
+      size="md"
       variant={selected ? "primary" : "backgroundInteractive"}
       onClick={() => onSelect(day)}
     />

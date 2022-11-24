@@ -57,7 +57,7 @@ const ScheduledSessionsCard = ({
     <Box
       key={currIndex}
       backgroundColor="background.white.100"
-      width="100%"
+      minWidth="100%"
       padding={5}
       borderRadius={10}
     >

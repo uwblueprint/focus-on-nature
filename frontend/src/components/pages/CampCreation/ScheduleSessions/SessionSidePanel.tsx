@@ -17,7 +17,7 @@ const SessionSidePanel = ({
 
   return (
     <Box
-      minWidth="35vw"
+      width="35vw"
       minHeight="100vh"
       position="absolute"
       right="0"

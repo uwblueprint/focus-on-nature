@@ -22,6 +22,8 @@ const Button = {
       _hover: {
         bg: `primary.green.200`,
       },
+      whiteSpace: "normal",
+      wordWrap: "break-word",
     },
     secondary: {
       border: "2px",
@@ -30,6 +32,8 @@ const Button = {
       _hover: {
         bg: `background.grey.400`,
       },
+      whiteSpace: "normal",
+      wordWrap: "break-word",
     },
     backgroundInteractive: {
       bg: "background.interactive.100",
