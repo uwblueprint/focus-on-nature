@@ -38,8 +38,8 @@ import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
 interface CampsTableProps {
   year: number;
-  onDrawerOpen: ()=>void
-  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>
+  onDrawerOpen: () => void;
+  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>;
 }
 
 const CampsTable = (props: CampsTableProps): JSX.Element => {
@@ -64,7 +64,10 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
-      if (res){ setCamps(res); setCampDrawerInfo(res[0])}
+      if (res) {
+        setCamps(res);
+        setCampDrawerInfo(res[0]);
+      }
     };
 
     getCamps();
@@ -207,11 +210,12 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
             <Tr key={key}>
               <Td
                 cursor="pointer"
-                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
               >
-                <Text 
-                  textStyle="bodyBold"
-                >{camp.name}</Text>
+                <Text textStyle="bodyBold">{camp.name}</Text>
                 <Text textStyle="bodyRegular">
                   {locationString(camp.location)}
                 </Text>
