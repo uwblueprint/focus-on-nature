@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Modal,
@@ -28,13 +28,22 @@ import QuestionOptionSection from "./QuestionOptionSection";
 type AddQuestionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (formQuestion: CreateFormQuestion) => void;
+  onSave?: (formQuestion: CreateFormQuestion) => void;
+  onEdit?: (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => void;
+  questionToBeEdited?: CreateFormQuestion;
+  editing?: boolean;
 };
 
 const AddQuestionModal = ({
   isOpen,
   onClose,
   onSave,
+  onEdit,
+  questionToBeEdited,
+  editing = false,
 }: AddQuestionModalProps): React.ReactElement => {
   const [question, setQuestion] = useState<string>("");
   const [questionCategory, setQuestionCategory] = useState<string>(
@@ -48,14 +57,36 @@ const AddQuestionModal = ({
   const [isQuestionInvalid, setIsQuestionInvalid] = useState<boolean>(false);
 
   const setDefaultState = () => {
-    setQuestion("");
-    setQuestionCategory("PersonalInfo");
-    setQuestionType("Text");
-    setQuestionDescription("");
-    setIsRequiredQuestion(false);
-    setQuestionOptions([]);
-    setIsQuestionInvalid(false);
+    if (editing && questionToBeEdited) {
+      setQuestion(questionToBeEdited.question);
+      setQuestionCategory(questionToBeEdited.category);
+      setQuestionType(questionToBeEdited.type);
+      setQuestionDescription(
+        questionToBeEdited.description === undefined
+          ? ""
+          : questionToBeEdited.description,
+      );
+      setIsRequiredQuestion(questionToBeEdited.required);
+      setQuestionOptions(
+        questionToBeEdited.options === undefined
+          ? []
+          : [...questionToBeEdited.options],
+      );
+      setIsQuestionInvalid(false);
+    } else {
+      setQuestion("");
+      setQuestionCategory("PersonalInfo");
+      setQuestionType("Text");
+      setQuestionDescription("");
+      setIsRequiredQuestion(false);
+      setQuestionOptions([]);
+      setIsQuestionInvalid(false);
+    }
   };
+
+  useEffect(() => {
+    setDefaultState();
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const closeModal = () => {
     setDefaultState();
@@ -82,7 +113,11 @@ const AddQuestionModal = ({
     if (questionOptions.length > 0 && questionType !== "Text") {
       formQuestion.options = questionOptions;
     }
-    onSave(formQuestion);
+    if (editing && questionToBeEdited && onEdit) {
+      onEdit(questionToBeEdited, formQuestion);
+    } else if (onSave) {
+      onSave(formQuestion);
+    }
     closeModal();
   };
 
@@ -102,7 +137,7 @@ const AddQuestionModal = ({
         backgroundColor="background.grey.100"
       >
         <ModalHeader paddingTop="40px" marginRight="30px" marginLeft="30px">
-          Add Question
+          {editing ? "Edit Question" : "Add Question"}
         </ModalHeader>
         <ModalBody marginRight="30px" marginLeft="30px">
           <VStack align="start">
@@ -149,7 +184,16 @@ const AddQuestionModal = ({
               </Select>
             </FormControl>
 
-            {questionType !== "Text" && (
+            {questionType !== "Text" && editing && (
+              <QuestionOptionSection
+                questionType={questionType}
+                setOptionsArray={setQuestionOptions}
+                optionsToBeEdited={questionToBeEdited?.options}
+                editing
+              />
+            )}
+
+            {questionType !== "Text" && !editing && (
               <QuestionOptionSection
                 questionType={questionType}
                 setOptionsArray={setQuestionOptions}
@@ -168,7 +212,9 @@ const AddQuestionModal = ({
             <Box paddingTop="14px">
               <Checkbox
                 isChecked={isRequiredQuestion}
-                onChange={(e) => setIsRequiredQuestion(e.target.checked)}
+                onChange={(e) => {
+                  setIsRequiredQuestion(e.target.checked);
+                }}
               >
                 Required question
               </Checkbox>
@@ -196,7 +242,7 @@ const AddQuestionModal = ({
               height="48px"
               onClick={onSaveQuestion}
             >
-              Save question
+              {editing ? "Edit Question" : "Save question"}
             </Button>
           </HStack>
         </ModalFooter>

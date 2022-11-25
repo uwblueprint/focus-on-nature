@@ -1,38 +1,118 @@
-import React from "react";
-import { Box, Checkbox, Text } from "@chakra-ui/react";
+import React, { useEffect } from "react";
+import {
+  Accordion,
+  Button,
+  HStack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { FormQuestion, CreateFormQuestion } from "../../../../types/CampsTypes";
+import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal";
+import {
+  fixedCamperInfoQuestions,
+  fixedEmergencyContactQuestions,
+} from "../../../../constants/FixedQuestions";
+import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccordionItem";
 
-type RegistrationFormProps = {
-  registrationFormDummyOne: boolean;
-  registrationFormDummyTwo: boolean;
-  toggleRegistrationFormDummyOne: () => void;
-  toggleRegistrationFormDummyTwo: () => void;
+type RegistrationFormPageProps = {
+  formTemplateQuestions: Array<FormQuestion>;
+  customQuestions: Array<CreateFormQuestion>;
+  onAddCustomQuestion: (newQuestion: CreateFormQuestion) => void;
+  onDeleteCustomQuestion: (questionToBeDeleted: CreateFormQuestion) => void;
+  onEditCustomQuestion: (
+    oldQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => void;
+  setVisitedRegistrationPage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const RegistrationForm = ({
-  registrationFormDummyOne,
-  registrationFormDummyTwo,
-  toggleRegistrationFormDummyOne,
-  toggleRegistrationFormDummyTwo,
-}: RegistrationFormProps): React.ReactElement => {
+const RegistrationFormPage = ({
+  formTemplateQuestions,
+  customQuestions,
+  onAddCustomQuestion,
+  onDeleteCustomQuestion,
+  onEditCustomQuestion,
+  setVisitedRegistrationPage,
+}: RegistrationFormPageProps): JSX.Element => {
+  useEffect(() => {
+    setVisitedRegistrationPage(true);
+  });
+
+  const formTemplateCamperInfoQuestions = formTemplateQuestions.filter(
+    (question) => question.category === "PersonalInfo",
+  );
+  const formTemplateEmergencyContactQuestions = formTemplateQuestions.filter(
+    (question) => question.category === "EmergencyContact",
+  );
+
+  const customCamperInfoQuestions = customQuestions.filter(
+    (question) => question.category === "PersonalInfo",
+  );
+  const customEmergencyContactQuestions = customQuestions.filter(
+    (question) => question.category === "EmergencyContact",
+  );
+  const customCampSpecificQuestions = customQuestions.filter(
+    (question) => question.category === "CampSpecific",
+  );
+
+  const {
+    isOpen: isAddQuestionOpen,
+    onOpen: onAddQuestionOpen,
+    onClose: onAddQuestionClose,
+  } = useDisclosure();
+
   return (
-    <Box>
-      <Text textStyle="displayXLarge">Registration Form</Text>
-      <Text>registrationFormDummyOne: {String(registrationFormDummyOne)}</Text>
-      <Checkbox
-        size="lg"
-        borderColor="black"
-        isChecked={registrationFormDummyOne}
-        onChange={toggleRegistrationFormDummyOne}
+    <>
+      <AddQuestionModal
+        isOpen={isAddQuestionOpen}
+        onClose={onAddQuestionClose}
+        onSave={onAddCustomQuestion}
       />
-      <Text>registrationFormDummyTwo: {String(registrationFormDummyTwo)}</Text>
-      <Checkbox
-        size="lg"
-        borderColor="black"
-        isChecked={registrationFormDummyTwo}
-        onChange={toggleRegistrationFormDummyTwo}
-      />
-    </Box>
+      <HStack
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={10}
+      >
+        <Text textStyle="displayXLarge">Registration Information</Text>
+        <Button onClick={onAddQuestionOpen} variant="secondary">
+          + Add Question
+        </Button>
+      </HStack>
+      <Accordion allowToggle defaultIndex={0}>
+        <QuestionsAccordionItem
+          accordionTitle="Camper Information"
+          fixedQuestions={[
+            ...fixedCamperInfoQuestions,
+            ...formTemplateCamperInfoQuestions,
+          ]}
+          dynamicQuestions={customCamperInfoQuestions as FormQuestion[]}
+          onDeleteCustomQuestion={onDeleteCustomQuestion}
+          onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
+        />
+        <QuestionsAccordionItem
+          accordionTitle="Emergency Contact Information"
+          fixedQuestions={[
+            ...fixedEmergencyContactQuestions,
+            ...formTemplateEmergencyContactQuestions,
+          ]}
+          dynamicQuestions={customEmergencyContactQuestions as FormQuestion[]}
+          onDeleteCustomQuestion={onDeleteCustomQuestion}
+          onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
+        />
+        <QuestionsAccordionItem
+          accordionTitle="Camp Specific Information"
+          fixedQuestions={[]}
+          dynamicQuestions={customCampSpecificQuestions as FormQuestion[]}
+          onDeleteCustomQuestion={onDeleteCustomQuestion}
+          onEditCustomQuestion={onEditCustomQuestion}
+          isTemplatePage={false}
+        />
+      </Accordion>
+    </>
   );
 };
 
-export default RegistrationForm;
+export default RegistrationFormPage;

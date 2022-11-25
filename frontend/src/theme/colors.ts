@@ -40,6 +40,7 @@ const colors = {
     grey: {
       50: "#FFFFFF",
       100: "#FFFFFF",
+      500: "#A3AEBE",
       600: "#A3AEBE",
     },
     secondary: {
