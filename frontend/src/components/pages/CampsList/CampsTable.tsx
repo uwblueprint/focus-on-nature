@@ -65,7 +65,10 @@ const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampD
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
-      if (res){ setCamps(res); setCampDrawerInfo(res[0])}
+      if (res) {
+        setCamps(res);
+        setCampDrawerInfo(res[0]);
+      }
     };
 
     getCamps();
@@ -213,11 +216,12 @@ const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampD
             >
               <Td
                 cursor="pointer"
-                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
               >
-                <Text 
-                  textStyle="bodyBold"
-                >{camp.name}</Text>
+                <Text textStyle="bodyBold">{camp.name}</Text>
                 <Text textStyle="bodyRegular">
                   {locationString(camp.location)}
                 </Text>

@@ -7,14 +7,18 @@ import PreviewCampDrawer from "./PreviewCampDrawer";
 
 const CampsListPage = (): React.ReactElement => {
   const [year, setYear] = useState(new Date().getFullYear());
-  const {isOpen:isDrawerOpen, onOpen:onDrawerOpen, onClose:onDrawerClose} = useDisclosure()
-  const [campDrawerInfo, setCampDrawerInfo] = useState<CampResponse>()
+  const {
+    isOpen: isDrawerOpen,
+    onOpen: onDrawerOpen,
+    onClose: onDrawerClose,
+  } = useDisclosure();
+  const [campDrawerInfo, setCampDrawerInfo] = useState<CampResponse>();
 
   return (
-    <Flex 
-      width={isDrawerOpen?"calc(100% - 500px)":"100%"}
+    <Flex
+      width={isDrawerOpen ? "calc(100% - 500px)" : "100%"}
       transition="width 0.5s"
-      top = "68px"
+      top="68px"
     >
       <Box
         minHeight="100vh"
@@ -25,8 +29,14 @@ const CampsListPage = (): React.ReactElement => {
       >
         <CampsNavigationHeading
           year={year}
-          onNavigateLeft={() => {setYear(year - 1); onDrawerClose()}}
-          onNavigateRight={() => {setYear(year + 1); onDrawerClose()}}
+          onNavigateLeft={() => {
+            setYear(year - 1);
+            onDrawerClose();
+          }}
+          onNavigateRight={() => {
+            setYear(year + 1);
+            onDrawerClose();
+          }}
         />
         <CampsTable 
           year={year}
@@ -36,7 +46,11 @@ const CampsListPage = (): React.ReactElement => {
           setCampDrawerInfo={setCampDrawerInfo}
         />
       </Box>
-      <PreviewCampDrawer isOpen={isDrawerOpen} onClose={onDrawerClose} camp={campDrawerInfo}/>
+      <PreviewCampDrawer
+        isOpen={isDrawerOpen}
+        onClose={onDrawerClose}
+        camp={campDrawerInfo}
+      />
     </Flex>
   );
 };

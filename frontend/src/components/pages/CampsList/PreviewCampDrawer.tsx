@@ -3,7 +3,8 @@ import React from 'react'
 import { FontWeights } from "../../../theme/textStyles"
 import CampStatusLabel from './CampStatusLabel'
 import {
-  getCampStatus, locationString, getFormattedDateString
+  getCampStatus,
+  locationString,
 } from "../../../utils/CampUtils";
 import { CampResponse, CampSession } from '../../../types/CampsTypes';
 import PreviewModalSessionRow from './PreviewModalSessionRow';
@@ -19,22 +20,19 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
   return camp?(
     
     <Flex
-        bg="background.white.100"
-        w="500px"
-        h="calc(100vh - 68px)"
-        position="absolute"
-        pos="fixed"
-        right={isOpen?"0px":"-500px"}
-        transition="right 0.5s"
-        borderWidth= "1px 0 1px 1px"
-        borderColor="border.secondary.100"
-        flexDirection="column"
+      bg="background.white.100"
+      w="500px"
+      h="calc(100vh - 68px)"
+      position="absolute"
+      pos="fixed"
+      right={isOpen ? "0px" : "-500px"}
+      transition="right 0.5s"
+      borderWidth="1px 0 1px 1px"
+      borderColor="border.secondary.100"
+      flexDirection="column"
     >
-      <Box
-        paddingRight="32px"
-        paddingLeft="32px"
-      >
-        <Text 
+      <Box paddingRight="32px" paddingLeft="32px">
+        <Text
           onClick={onClose}
           color="#A3AEBE"
           textDecoration="underline"
@@ -45,10 +43,7 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
         >
           Close
         </Text>
-        <Text 
-          textStyle="displayMediumBold"
-          marginTop="20px"
-        >
+        <Text textStyle="displayMediumBold" marginTop="20px">
           {camp.name}
         </Text>
         
@@ -56,11 +51,8 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
             {locationString(camp.location)}
         </Text>
 
-        <Box
-          marginTop="12px"
-          w="fit-content"
-        >
-          {camp?<CampStatusLabel status={getCampStatus(camp)} />:""}
+        <Box marginTop="12px" w="fit-content">
+          {camp ? <CampStatusLabel status={getCampStatus(camp)} /> : ""}
         </Box>
         <Box
           marginTop="20px"
@@ -70,7 +62,7 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
           borderColor="border.input.100"
         >
           <Text textStyle="buttonSemiBold">
-            Daily Camp Fee:{" "} 
+            Daily Camp Fee:{" "}
             <Text as="span" textStyle="buttonRegular">
               ${camp.fee} per day
             </Text>
@@ -81,11 +73,8 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
               {camp.ageLower} to {camp.ageUpper}
             </Text>
           </Text>
-
         </Box>
-        <Box
-          margin="20px 0"
-        >
+        <Box margin="20px 0">
           <Button
             marginRight="20px"
             aria-label="View Camp"
@@ -117,31 +106,28 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
         bg="background.grey.100"
         paddingRight="32px"
         paddingLeft="32px"
-        borderTop= "1px"
+        borderTop="1px"
         borderColor="border.secondary.100"
         overflowY="auto"
         flexGrow="1"
         flexDirection="column"
         sx={{
-          '&::-webkit-scrollbar': {
+          "&::-webkit-scrollbar": {
             backgroundColor: `white`,
           },
-          '&::-webkit-scrollbar-thumb': {
-            width: '8px',
-            borderRadius: '12px',
+          "&::-webkit-scrollbar-thumb": {
+            width: "8px",
+            borderRadius: "12px",
             backgroundColor: `#A3AEBE`,
           },
-          '&::-webkit-scrollbar-button': {
+          "&::-webkit-scrollbar-button": {
             display: `none`,
           },
         }}
       >
-        <Text
-          textStyle="buttonSemiBold"
-          marginTop="24px"
-          marginBottom="20px"
-        >
-          {camp.campSessions.length} Session{camp.campSessions.length!==1?"s":""}
+        <Text textStyle="buttonSemiBold" marginTop="24px" marginBottom="20px">
+          {camp.campSessions.length} Session
+          {camp.campSessions.length !== 1 ? "s" : ""}
         </Text>
         
         {camp.campSessions.map((session:CampSession, key:number) => {
@@ -152,8 +138,9 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
 
       </Flex>
     </Flex>
-    
-  ):<></>
-}
+  ) : (
+    <></>
+  );
+};
 
-export default PreviewCampDrawer
+export default PreviewCampDrawer;

@@ -34,7 +34,11 @@ import ViewCamperModal from "../ViewCamperModal/index";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import RemoveCamperModal from "../RemoveCamperModal/index";
 
-const ExportButton = ({generateCsv}: {generateCsv: () => void}): JSX.Element => {  
+const ExportButton = ({
+  generateCsv,
+}: {
+  generateCsv: () => void;
+}): JSX.Element => {
   return (
     <Box>
       <Button
@@ -185,7 +189,7 @@ const CampersTable = ({
                 </Tag>
               );
             })}
-            <ExportButton generateCsv={generateCsv}/>
+            <ExportButton generateCsv={generateCsv} />
           </HStack>
 
           <Table
