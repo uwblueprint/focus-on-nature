@@ -17,8 +17,6 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 
 const userRouter: Router = Router();
-userRouter.use(isAuthorizedByRole(new Set(["Admin"])));
-
 const userService: IUserService = new UserService();
 const emailService: IEmailService = new EmailService(nodemailerConfig);
 const authService: IAuthService = new AuthService(userService, emailService);
@@ -27,7 +25,7 @@ const authService: IAuthService = new AuthService(userService, emailService);
 /* Get all users, optionally filter by a userId or email query parameter to retrieve a single user */
 userRouter.get(
   "/",
-  isAuthorizedByRole(new Set(["Admin"])),
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
   async (req, res) => {
     const { userId, email } = req.query;
     const contentType = req.headers["content-type"];
