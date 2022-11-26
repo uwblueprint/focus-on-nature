@@ -36,14 +36,15 @@ import {
 import CampStatusLabel from "./CampStatusLabel";
 import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
-interface CampsTableProps {
-  year: number;
+type CampsTableProps = {
+  year: number
+  isDrawerOpen: boolean
   onDrawerOpen: ()=>void
+  campDrawerInfo: CampResponse | undefined
   setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>
 }
 
-const CampsTable = (props: CampsTableProps): JSX.Element => {
-  const { year, onDrawerOpen, setCampDrawerInfo } = props;
+const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampDrawerInfo }: CampsTableProps): JSX.Element => {
 
   const filterOptions = [
     CampStatus.PUBLISHED,
@@ -155,7 +156,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         py="20px"
         maxWidth="100vw"
         backgroundColor="background.grey.100"
-        borderRadius="20px"
+        borderRadius="20px 20px 0 0"
       >
         <HStack spacing={12}>
           <InputGroup>
@@ -189,10 +190,9 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         </HStack>
       </Container>
       <Table
-        background="background.white.100"
         variant="simple"
         colorScheme="blackAlpha"
-        style={{ borderCollapse: "separate" }}
+        background="background.white.100"
       >
         <Thead>
           <Tr>
@@ -204,7 +204,13 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         </Thead>
         <Tbody>
           {tableData.map((camp, key) => (
-            <Tr key={key}>
+            <Tr 
+              key={key}
+              _hover={{
+                background: "background.grey.100"
+              }}
+              background={isDrawerOpen && camp === campDrawerInfo?"background.grey.100":"background.white.100"}
+            >
               <Td
                 cursor="pointer"
                 onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
@@ -216,7 +222,10 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                   {locationString(camp.location)}
                 </Text>
               </Td>
-              <Td>
+              <Td
+                cursor="pointer"
+                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+              >
                 {camp.campSessions.length > 0
                   ? getFormattedCampDateRange(
                       camp.campSessions[0].dates,
@@ -224,7 +233,12 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                     )
                   : ""}
               </Td>
-              <Td padding="0px" mr="px">
+              <Td
+                padding="0px"
+                mr="px"
+                cursor="pointer"
+                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+              >
                 <CampStatusLabel status={getCampStatus(camp)} />
               </Td>
               <Td>

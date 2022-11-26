@@ -28,7 +28,13 @@ const CampsListPage = (): React.ReactElement => {
           onNavigateLeft={() => {setYear(year - 1); onDrawerClose()}}
           onNavigateRight={() => {setYear(year + 1); onDrawerClose()}}
         />
-        <CampsTable year={year} onDrawerOpen={onDrawerOpen} setCampDrawerInfo={setCampDrawerInfo}/>
+        <CampsTable 
+          year={year}
+          isDrawerOpen={isDrawerOpen} 
+          onDrawerOpen={onDrawerOpen}
+          campDrawerInfo={campDrawerInfo}
+          setCampDrawerInfo={setCampDrawerInfo}
+        />
       </Box>
       <PreviewCampDrawer isOpen={isDrawerOpen} onClose={onDrawerClose} camp={campDrawerInfo}/>
     </Flex>

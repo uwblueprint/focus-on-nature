@@ -1,19 +1,21 @@
 import { Box, Button, Text, Flex, Tag } from '@chakra-ui/react'
 import React from 'react'
+import { FontWeights } from "../../../theme/textStyles"
 import CampStatusLabel from './CampStatusLabel'
 import {
   getCampStatus, locationString, getFormattedDateString
 } from "../../../utils/CampUtils";
 import { CampResponse, CampSession } from '../../../types/CampsTypes';
+import PreviewModalSessionRow from './PreviewModalSessionRow';
 
-interface IDrawer{
+type CampDrawerProps = {
     isOpen:boolean,
     onClose: ()=>void,
     camp:CampResponse | undefined,
-
 }
 
-const PreviewCampDrawer = ({isOpen, onClose, camp}:IDrawer) => {
+const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Element => {
+
   return camp?(
     
     <Flex
@@ -50,7 +52,7 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}:IDrawer) => {
           {camp.name}
         </Text>
         
-        <Text textStyle="displayMediumRegular">
+        <Text textStyle="heading" fontWeight= {FontWeights.REGULAR}>
             {locationString(camp.location)}
         </Text>
 
@@ -144,47 +146,7 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}:IDrawer) => {
         
         {camp.campSessions.map((session:CampSession, key:number) => {
           return(
-            <Box
-              marginBottom="12px"
-              key={key}
-            >
-              <Flex>
-                <>
-                  <Text textStyle="subHeading" marginRight="12px">
-                    Session {key+1}
-                  </Text>
-                  {
-                    (() => {
-                        if (getCampStatus(camp) === "Published"){
-                          return session.campers.length >= session.capacity ? (
-                            <Tag colorScheme="orange" borderRadius="full" size="sm">
-                              Session full
-                            </Tag>
-                          ) : (
-                            <Tag colorScheme="green" borderRadius="full" size="sm">
-                              Session available
-                            </Tag>
-                          )
-                        }
-                        return ""
-                    })()
-                  }
-                </>
-              </Flex>
-              <Text textStyle="subHeading">
-                {getFormattedDateString(session.dates)}
-              </Text> 
-              <Text textStyle="caption">
-                Registrations (
-                  <Text
-                    as="span"
-                    textStyle={getCampStatus(camp) === "Published" && session.campers.length >= session.capacity?"subHeading":"caption"}
-                  >
-                    {session.campers.length}/{session.capacity}
-                  </Text>
-                ) | Waitlist ({session.waitlist.length})
-              </Text>
-            </Box>
+              <PreviewModalSessionRow key={key} sessionNum={key+1} status={getCampStatus(camp)} session={session}/>
           )
           })}
 
