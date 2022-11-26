@@ -1,9 +1,7 @@
 import { Button, HStack, Select } from "@chakra-ui/react";
 import React from "react";
-import {
-  MONTHS,
-  YEARS,
-} from "../../../../../constants/CampManagementConstants";
+import MONTHS from "../../../../../constants/CampManagementConstants";
+import { getYearsArray } from "../../../../../utils/CampUtils";
 
 type CalendarHeaderProps = {
   month: string;
@@ -49,7 +47,7 @@ const CalendarHeader = ({
           onChangeYearSelection(event.currentTarget.value)
         }
       >
-        {YEARS.map((yearString: string) => {
+        {getYearsArray().map((yearString: string) => {
           return <option key={yearString}>{yearString}</option>;
         })}
       </Select>

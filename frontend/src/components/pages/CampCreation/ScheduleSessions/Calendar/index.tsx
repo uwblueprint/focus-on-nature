@@ -4,31 +4,14 @@ import React, { useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import CalendarHeader from "./CalendarHeader";
-import { getMonthIndex } from "../../../../../constants/CampManagementConstants";
+import {
+  getMonthIndex,
+  getMonthName,
+  getSessionBorderColor,
+  getSessionFillColor,
+} from "../../../../../utils/CampUtils";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
-
-const FILL_COLORS = [
-  "#FFF6F2",
-  "#FCFCFC",
-  "#FFF8EC",
-  "#ECF2F9",
-  "#F1FFF9",
-  "#FDF0FB",
-  "#EFF0FF",
-  "#FFE9E9",
-];
-const BORDER_COLORS = [
-  "#FFA27A",
-  "#98C6CD",
-  "#E1B878",
-  "#8C9196",
-  "#95C9B4",
-  "#DAA8D2",
-  "#8B8ECE",
-  "#FF8989",
-];
-
-const TEXT_DEFAULT_100 = "#1A1A1A";
+import colors from "../../../../../theme/colors";
 
 type SessionsCalendarProps = {
   sessions: CreateCampSession[];
@@ -47,9 +30,7 @@ const SessionsCalendar = ({
 }: SessionsCalendarProps): React.ReactElement => {
   const today = new Date();
 
-  const [displayMonth, setDisplayMonth] = useState<string>(
-    today.toLocaleString("en-US", { month: "long" }),
-  );
+  const [displayMonth, setDisplayMonth] = useState<string>(getMonthName(today));
   const [displayYear, setDisplayYear] = useState<string>(
     today.getFullYear().toString(),
   );
@@ -60,6 +41,11 @@ const SessionsCalendar = ({
     if (calendar.current) {
       calendar.current.getApi().today();
     }
+
+    // When user changes date via dropdowns, they are the month/year source of truth
+    // When user changes date via today button, update dropdowns to reflect this
+    setDisplayMonth(getMonthName(today));
+    setDisplayYear(today.getFullYear().toString());
   };
 
   const jumpToDate = (month: string, year: string) => {
@@ -117,13 +103,12 @@ const SessionsCalendar = ({
               // eslint-disable-next-line no-param-reassign
               formattedSessions[formattedSessions.length - 1].end = currentDate;
             } else {
-              const colorIndex = sessionIndex % 8;
               formattedSessions.push({
                 title: `Session ${sessionIndex + 1}`,
                 start: currentDate,
                 end: undefined,
-                backgroundColor: FILL_COLORS[colorIndex],
-                borderColor: BORDER_COLORS[colorIndex],
+                backgroundColor: getSessionFillColor(sessionIndex),
+                borderColor: getSessionBorderColor(sessionIndex),
               });
             }
 
@@ -174,8 +159,9 @@ const SessionsCalendar = ({
           headerToolbar={false}
           plugins={[dayGridPlugin]}
           events={mapSessionsDataToCalendarSessions(sessions)}
-          eventTextColor={TEXT_DEFAULT_100}
+          eventTextColor={colors.text.default[100]}
           navLinks={false}
+          fixedWeekCount={false}
           defaultAllDay
           handleWindowResize
           aspectRatio={1.75}

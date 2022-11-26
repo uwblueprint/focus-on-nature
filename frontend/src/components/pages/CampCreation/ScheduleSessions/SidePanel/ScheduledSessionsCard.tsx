@@ -4,6 +4,7 @@ import SessionDayButton from "./SessionDayButton";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 import {
   getFormattedDateStringFromDateArray,
+  getSessionBorderColor,
   getSessionDates,
 } from "../../../../../utils/CampUtils";
 
@@ -57,9 +58,11 @@ const ScheduledSessionsCard = ({
     <Box
       key={currIndex}
       backgroundColor="background.white.100"
-      minWidth="100%"
+      width="100%"
       padding={5}
       borderRadius={10}
+      borderColor={getSessionBorderColor(currIndex)}
+      borderWidth="1.75px"
     >
       <Box alignItems="flex-start" flexDirection="column">
         <HStack justifyContent="space-between" w="full">
@@ -78,7 +81,7 @@ const ScheduledSessionsCard = ({
         <Text marginBottom={3} textStyle="bodyRegular">
           {sessionDatesRangeString}
         </Text>
-        <HStack spacing="10px">
+        <HStack justify="space-between" flexWrap="wrap">
           {Array.from(selectedWeekDays.keys()).map((day) => (
             <SessionDayButton
               key={day}

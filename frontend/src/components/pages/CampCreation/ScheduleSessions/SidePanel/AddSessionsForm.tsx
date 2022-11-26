@@ -65,31 +65,6 @@ const AddSessionsForm = ({
     setSelectedWeekDays(new Map(emptyWeekDays));
   };
 
-  // get dates of the selected week days within a week of the start date
-  const getSessionDates = (
-    sessionStartDate: Date,
-    selectedWeekDayValues: boolean[],
-  ): Date[] => {
-    const dates: Date[] = [];
-
-    let currDay = sessionStartDate.getDay();
-    for (
-      let daysAfterStartDate = 0;
-      daysAfterStartDate < 7;
-      daysAfterStartDate += 1
-    ) {
-      // only add days that the user selected
-      // e.g. only add Mondays - Fridays dates, don't add weekends
-      if (selectedWeekDayValues[currDay]) {
-        const newDate = new Date(sessionStartDate.getTime());
-        newDate.setDate(newDate.getDate() + daysAfterStartDate);
-        dates.push(newDate);
-      }
-      currDay = (currDay + 1) % 7;
-    }
-    return dates;
-  };
-
   const onAddSesssionsToCamp = (e: React.FormEvent) => {
     if (noSessionDaysSelected()) {
       setSessionDaysHasError(true);
@@ -135,7 +110,7 @@ const AddSessionsForm = ({
   };
 
   return (
-    <Box paddingX="64px" paddingY="80px" h="inherit">
+    <Box paddingX="64px" paddingY="80px">
       <Text textStyle="displayLarge" marginBottom={10}>
         Add Camp Session(s)
       </Text>

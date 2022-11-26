@@ -16,7 +16,7 @@ const SessionSidePanel = ({
   const [showAddSessionView, setShowAddSessionView] = React.useState(false);
 
   return (
-    <Box minWidth="35vw" h="100%" background="background.grey.200" zIndex="10">
+    <Box w="35vw" h="100%" background="background.grey.200" zIndex="10">
       {scheduledSessions.length === 0 || showAddSessionView ? (
         <AddSessionsForm
           scheduledSessions={scheduledSessions}
