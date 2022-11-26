@@ -10,10 +10,13 @@ import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { WaiverClause } from "../../../types/AdminTypes";
 import {
+  ClickOptionalClause,
+  LoadedWaiver,
   OptionalClauseResponse,
   RequiredClauseResponse,
   WaiverActions,
   WaiverInterface,
+  WaiverReducerDispatch,
 } from "./Waiver/waiverTypes";
 
 enum RegistrantExperienceSteps {
@@ -23,12 +26,15 @@ enum RegistrantExperienceSteps {
   ReviewRegistrationPage,
 }
 
-const waiverReducer = (waiverInterface: WaiverInterface, action: any) => {
+const waiverReducer = (
+  waiverInterface: WaiverInterface,
+  action: WaiverReducerDispatch,
+) => {
   switch (action.type) {
     case WaiverActions.LOADED_WAIVER: {
       const optionalClauses: OptionalClauseResponse[] = [];
       const requiredClauses: RequiredClauseResponse[] = [];
-      const { waiver } = action.payload;
+      const { waiver } = action as LoadedWaiver;
 
       waiver.clauses.forEach((clause: WaiverClause) => {
         if (clause.required) optionalClauses.push({ ...clause, agreed: false });
@@ -51,13 +57,16 @@ const waiverReducer = (waiverInterface: WaiverInterface, action: any) => {
 
     case WaiverActions.CLICK_OPTIONAL_CLAUSE: {
       if (!waiverInterface.optionalClauses) return waiverInterface;
-      const changedClause: OptionalClauseResponse = action.payload;
+      const { optionalClauseId } = action as ClickOptionalClause;
 
       const newOptionalClauses:
         | OptionalClauseResponse[]
         | undefined = waiverInterface.optionalClauses?.map(
-        (optionalClause: OptionalClauseResponse): OptionalClauseResponse => {
-          if (optionalClause.text === changedClause.text) {
+        (
+          optionalClause: OptionalClauseResponse,
+          index: number,
+        ): OptionalClauseResponse => {
+          if (index === optionalClauseId) {
             return { ...optionalClause, agreed: !optionalClause.agreed };
           }
           return optionalClause;
@@ -78,7 +87,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     RegistrantExperienceSteps.PersonalInfoPage,
   );
   const [waiverInterface, waiverDispatch] = useReducer<
-    Reducer<WaiverInterface, any>
+    Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
     campName: "Guelph Summer Camp 2022", // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
     waiver: undefined,
@@ -91,7 +100,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     AdminAPIClient.getWaiver().then((waiver) => {
       waiverDispatch({
         type: WaiverActions.LOADED_WAIVER,
-        payload: { waiver },
+        waiver,
       });
     });
   }, []);

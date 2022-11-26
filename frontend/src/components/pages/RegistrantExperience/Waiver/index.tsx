@@ -19,11 +19,12 @@ import {
   RequiredClauseResponse,
   WaiverActions,
   WaiverInterface,
+  WaiverReducerDispatch,
 } from "./waiverTypes";
 
 interface WaiverPageProps {
   waiverInterface: WaiverInterface;
-  waiverDispatch: any;
+  waiverDispatch: React.Dispatch<WaiverReducerDispatch>;
 }
 
 const WaiverPage = ({
@@ -39,7 +40,7 @@ const WaiverPage = ({
         onChange={() =>
           waiverDispatch({
             type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
-            payload: clause,
+            optionalClauseId: index,
           })
         }
         key={index}

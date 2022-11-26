@@ -1,5 +1,25 @@
 import { Waiver, WaiverClause } from "../../../../types/AdminTypes";
 
+export type WaiverReducerDispatch =
+  | LoadedWaiver
+  | ClickOptionalClause
+  | ClickRequiredClauses;
+export interface WaiverReducerDispatchBase {
+  type: WaiverActions;
+}
+
+export interface LoadedWaiver extends WaiverReducerDispatchBase {
+  type: WaiverActions;
+  waiver: Waiver;
+}
+export interface ClickOptionalClause extends WaiverReducerDispatchBase {
+  type: WaiverActions;
+  optionalClauseId: number; // Currently, the id is set to be index of the the optional clause in the array its stored.
+}
+
+/* eslint-disable-next-line */
+export interface ClickRequiredClauses extends WaiverReducerDispatchBase{}
+
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
