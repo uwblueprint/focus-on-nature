@@ -17,7 +17,7 @@ const CampersTables = ({
   campSession,
   formQuestions,
   handleRefetch,
-  generateCsv
+  generateCsv,
 }: CampersTablesProps): JSX.Element => {
   return (
     <Box>
