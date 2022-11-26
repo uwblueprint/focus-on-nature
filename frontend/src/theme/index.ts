@@ -24,11 +24,11 @@ const customTheme = extendTheme({
   layerStyles,
   textStyles,
   colors,
-  //   breakpoints: {
-  //     sm: "320px",
-  //     md: "768px",
-  //     lg: "960px",
-  //   },
+  breakpoints: {
+    sm: "320px",
+    md: "768px",
+    lg: "960px",
+  },
   components: {
     Button,
     // Steps,
