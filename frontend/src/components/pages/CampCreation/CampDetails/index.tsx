@@ -1,5 +1,10 @@
 import React from "react";
+<<<<<<< HEAD
 import { Box, Checkbox, Input, Text } from "@chakra-ui/react";
+=======
+import { Box, Text } from "@chakra-ui/react";
+import CampCreationForm from "./CampCreationForm";
+>>>>>>> 963db1b (first commit)
 
 type CampCreationDetailsProps = {
   campDetailsDummyOne: boolean;
@@ -23,6 +28,7 @@ const CampCreationDetails = ({
   return (
     <Box mx="8vw" my="5vh">
       <Text textStyle="displayXLarge">Camp Details</Text>
+<<<<<<< HEAD
       <Text>campDetailsDummyOne: {String(campDetailsDummyOne)}</Text>
       <Checkbox
         size="lg"
@@ -42,6 +48,9 @@ const CampCreationDetails = ({
         value={campDetailsDummyThree}
         onChange={handleCampDetailsDummyThree}
       />
+=======
+      <CampCreationForm/>
+>>>>>>> 963db1b (first commit)
     </Box>
   );
 };
