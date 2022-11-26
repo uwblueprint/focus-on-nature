@@ -59,9 +59,7 @@ const waiverReducer = (
       if (!waiverInterface.optionalClauses) return waiverInterface;
       const { optionalClauseId } = action as ClickOptionalClause;
 
-      const newOptionalClauses:
-        | OptionalClauseResponse[]
-        | undefined = waiverInterface.optionalClauses?.map(
+      const newOptionalClauses: OptionalClauseResponse[] = waiverInterface.optionalClauses?.map(
         (
           optionalClause: OptionalClauseResponse,
           index: number,
@@ -89,7 +87,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
-    campName: "Guelph Summer Camp 2022", // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
+    // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
+    campName: "Guelph Summer Camp 2022",
     waiver: undefined,
     optionalClauses: [],
     requiredClauses: [],
