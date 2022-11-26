@@ -31,44 +31,6 @@ const WaiverPage = ({
   waiverInterface,
   waiverDispatch,
 }: WaiverPageProps): React.ReactElement => {
-  const optionalClausesJSX: ReactJSXElement[] = Array.from(
-    waiverInterface.optionalClauses,
-  ).map((clause: OptionalClauseResponse, index: number) => (
-    <VStack spacing={6} pt="2" align="stretch" key={index}>
-      <Text>{clause.text}</Text>
-      <RadioGroup
-        onChange={() =>
-          waiverDispatch({
-            type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
-            optionalClauseId: index,
-          })
-        }
-        key={index}
-        value={String(clause.agreed)}
-      >
-        <Stack spacing={5} direction="row">
-          <Radio value="true" mb="0">
-            {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
-            I agree
-          </Radio>
-          <Radio value="false">
-            I{" "}
-            <Text as="span" fontWeight="bold">
-              do not
-            </Text>{" "}
-            agree
-          </Radio>
-        </Stack>
-      </RadioGroup>
-    </VStack>
-  ));
-
-  const requiredClausesJSX: ReactJSXElement[] = Array.from(
-    waiverInterface.requiredClauses,
-  ).map((clause: RequiredClauseResponse, index: number) => (
-    <ListItem key={index}>{clause.text}</ListItem>
-  ));
-
   return (
     <Box>
       <VStack spacing={8} pt="1" align="stretch">
@@ -93,7 +55,13 @@ const WaiverPage = ({
           Identity and Waiver of Liability
         </Text>
 
-        <OrderedList pl="10">{requiredClausesJSX}</OrderedList>
+        <OrderedList pl="10">
+          {waiverInterface.requiredClauses.map(
+            (clause: RequiredClauseResponse, index: number) => (
+              <ListItem key={index}>{clause.text}</ListItem>
+            ),
+          )}
+        </OrderedList>
       </VStack>
 
       <VStack spacing={5} pt="10" align="stretch">
@@ -118,7 +86,37 @@ const WaiverPage = ({
         <Text color="primary.green.100" fontWeight="bold">
           Additional Clauses
         </Text>
-        {optionalClausesJSX}
+        {waiverInterface.optionalClauses.map(
+          (clause: OptionalClauseResponse, index: number) => (
+            <VStack spacing={6} pt="2" align="stretch" key={index}>
+              <Text>{clause.text}</Text>
+              <RadioGroup
+                onChange={() =>
+                  waiverDispatch({
+                    type: WaiverActions.CLICK_OPTIONAL_CLAUSE,
+                    optionalClauseId: index,
+                  })
+                }
+                key={index}
+                value={String(clause.agreed)}
+              >
+                <Stack spacing={5} direction="row">
+                  <Radio value="true" mb="0">
+                    {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
+                    I agree
+                  </Radio>
+                  <Radio value="false">
+                    I{" "}
+                    <Text as="span" fontWeight="bold">
+                      do not
+                    </Text>{" "}
+                    agree
+                  </Radio>
+                </Stack>
+              </RadioGroup>
+            </VStack>
+          ),
+        )}
       </VStack>
 
       <FormControl pt="9" width="40%">
