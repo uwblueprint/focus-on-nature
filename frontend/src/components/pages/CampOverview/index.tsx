@@ -186,9 +186,17 @@ const CampOverviewPage = (): JSX.Element => {
   };
 
   const generateCsv = async () => {
-    const csvResponse = await CampsAPIClient.getCampSessionCsv(camp.campSessions[currentCampSession].id);
+    const csvResponse = await CampsAPIClient.getCampSessionCsv(
+      camp.campSessions[currentCampSession].id,
+    );
     if (csvResponse !== "ERROR") {
-      downloadCSV(csvResponse, generateCSVName(camp.location.city, camp.campSessions[currentCampSession].dates[0]));
+      downloadCSV(
+        csvResponse,
+        generateCSVName(
+          camp.location.city,
+          camp.campSessions[currentCampSession].dates[0],
+        ),
+      );
     } else {
       toast({
         description: `An error occurred while exporting the CSV. Please try again.`,
@@ -197,7 +205,7 @@ const CampOverviewPage = (): JSX.Element => {
         duration: 3000,
       });
     }
-  }
+  };
 
   return (
     <Container
