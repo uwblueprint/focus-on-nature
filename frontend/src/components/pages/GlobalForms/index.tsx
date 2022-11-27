@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Button,
   Container,
   Tab,
   TabList,
@@ -24,107 +23,6 @@ import {
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
-import { CreateCamperRequest } from "../../../types/CamperTypes";
-import CamperAPIClient from "../../../APIClients/CamperAPIClient";
-
-const campers: CreateCamperRequest[] = [
-  {
-    campSession: "63139cdec3d7b55b44a01541",
-    firstName: "test",
-    lastName: "test",
-    age: 12,
-    allergies: "",
-    earlyDropoff: [new Date("2022-04-06T00:00:00.000+00:00")],
-    latePickup: [new Date("2022-04-06T00:00:00.000+00:00")],
-    specialNeeds: "",
-    contacts: [
-      {
-        firstName: "Mommy",
-        lastName: "?",
-        email: "mommyyy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "mommy",
-      },
-      {
-        firstName: "Daddy",
-        lastName: "?",
-        email: "daddy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "daddy",
-      },
-    ],
-    registrationDate: new Date("2022-04-06T00:00:00.000+00:00"),
-    hasPaid: false,
-    // formResponses: "622cfedaaf70bf090031d064","five",
-    chargeId: "hi",
-    charges: {
-      camp: 20,
-      earlyDropoff: 0,
-      latePickup: 0,
-    },
-    optionalClauses: [
-      {
-        clause: "",
-        agreed: true,
-      },
-    ],
-  },
-  {
-    campSession: "63139cdec3d7b55b44a01541",
-    firstName: "test2",
-    lastName: "test2",
-    age: 12,
-    allergies: "",
-    // earlyDropoff: [new Date("2022-04-06T00:00:00.000+00:00")],
-    earlyDropoff: [],
-    latePickup: [new Date("2022-04-06T00:00:00.000+00:00")],
-    // latePickup: [],
-    specialNeeds: "",
-    contacts: [
-      {
-        firstName: "Mommy",
-        lastName: "?",
-        email: "mommyyy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "mommy",
-      },
-      {
-        firstName: "Daddy",
-        lastName: "?",
-        email: "daddy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "daddy",
-      },
-    ],
-    registrationDate: new Date("2022-04-06T00:00:00.000+00:00"),
-    hasPaid: false,
-    // formResponses: "622cfedaaf70bf090031d064","five",
-    chargeId: "hi",
-    charges: {
-      camp: 20,
-      earlyDropoff: 0,
-      latePickup: 0,
-    },
-    optionalClauses: [
-      {
-        clause: "",
-        agreed: true,
-      },
-    ],
-  },
-];
-
-function thing(): void {
-  CamperAPIClient.registerCampers(campers);
-}
-
-const ProductDisplay = () => (
-  <Container>
-    <Button onClick={thing}>
-      <Text>click here</Text>
-    </Button>
-  </Container>
-);
 
 const GlobalFormsPage = (): React.ReactElement => {
   enum TabOption {
@@ -408,7 +306,6 @@ const GlobalFormsPage = (): React.ReactElement => {
           </Tabs>
         </Box>
       </Container>
-      <ProductDisplay />
       <Footer
         isWaiverFooter={selectedTab === TabOption.waiver}
         onAddWaiverSectionClick={onAddWaiverSectionClick}

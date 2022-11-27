@@ -382,7 +382,10 @@ class CamperService implements ICamperService {
   ): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ chargeId, campSession: sessionId });
+      const campers: Camper[] = await MgCamper.find({
+        chargeId,
+        campSession: sessionId,
+      });
 
       if (!campers || campers.length === 0) {
         throw new Error(

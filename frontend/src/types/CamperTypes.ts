@@ -82,3 +82,5 @@ export type WaitlistedCamper = {
   campSession: string;
   linkExpiry?: Date;
 };
+
+export type CheckoutUrl = { checkoutSessionUrl: string };

@@ -27,7 +27,7 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
     const checkoutSessionUrl = await camperService.createCampersCheckoutSession(
       campers,
     );
-    res.redirect(303, checkoutSessionUrl);
+    res.status(200).json({ checkoutSessionUrl });
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

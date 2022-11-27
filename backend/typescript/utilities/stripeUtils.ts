@@ -96,8 +96,8 @@ export async function createStripeCheckoutSession(
   const checkoutSession = await stripe.checkout.sessions.create({
     line_items: lineItems,
     mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/success.html`,
-    cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
+    success_url: `${process.env.CLIENT_URL}/register/success`,
+    cancel_url: `${process.env.CLIENT_URL}/register/cancel`,
   });
 
   return checkoutSession.url;
