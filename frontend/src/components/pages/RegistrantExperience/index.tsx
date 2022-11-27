@@ -37,8 +37,8 @@ const waiverReducer = (
       const { waiver } = action as LoadedWaiver;
 
       waiver.clauses.forEach((clause: WaiverClause) => {
-        if (clause.required) optionalClauses.push({ ...clause, agreed: false });
-        else requiredClauses.push(clause);
+        if (clause.required) requiredClauses.push(clause);
+        else optionalClauses.push({ ...clause, agreed: false });
       });
       return {
         ...waiverInterface,
