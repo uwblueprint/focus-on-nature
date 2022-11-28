@@ -1,4 +1,4 @@
-import { BEARER_TOKEN } from "../constants/AuthConstants";
+import { getBearerToken } from "../constants/AuthConstants";
 import {
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
@@ -27,7 +27,7 @@ const updateCampersById = async (
     }
 
     const { data } = await baseAPIClient.patch(`/campers`, body, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
 
     return data;
@@ -41,7 +41,7 @@ const getWaitlistedCamperById = async (
 ): Promise<WaitlistedCamper> => {
   try {
     const { data } = await baseAPIClient.get(`/campers/waitlist/${id}`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return data;
   } catch (error) {
@@ -58,7 +58,7 @@ const updateCamperRegistrationStatus = async (
       `/campers/waitlist/${id}`,
       updatedStatus,
       {
-        headers: { Authorization: BEARER_TOKEN },
+        headers: { Authorization: getBearerToken() },
       },
     );
     return data;
@@ -70,7 +70,7 @@ const updateCamperRegistrationStatus = async (
 const deleteWaitlistedCamperById = async (id: string): Promise<boolean> => {
   try {
     await baseAPIClient.delete(`/campers/waitlist/${id}`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return true;
   } catch (error) {
@@ -81,7 +81,7 @@ const deleteWaitlistedCamperById = async (id: string): Promise<boolean> => {
 const deleteMultipleCampersById = async (ids: string[]): Promise<boolean> => {
   try {
     await baseAPIClient.delete(`/campers/`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
       data: {
         camperIds: ids,
       },
@@ -100,7 +100,7 @@ const getCampersByChargeIdAndSessionId = async (
     const { data } = await baseAPIClient.get(
       `/campers/${chargeId}/${sessionId}`,
       {
-        headers: { Authorization: BEARER_TOKEN },
+        headers: { Authorization: getBearerToken() },
       },
     );
     return data;

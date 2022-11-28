@@ -1,4 +1,4 @@
-import { BEARER_TOKEN } from "../constants/AuthConstants";
+import { getBearerToken } from "../constants/AuthConstants";
 import {
   CampResponse,
   CampSessionResponse,
@@ -11,7 +11,7 @@ const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
     const { data } = await baseAPIClient.get(
       `/camp?campYear=${year?.toString()}`,
       {
-        headers: { Authorization: BEARER_TOKEN },
+        headers: { Authorization: getBearerToken() },
       },
     );
     return data;
@@ -23,7 +23,7 @@ const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
 const getCampById = async (id: string): Promise<CampResponse> => {
   try {
     const { data } = await baseAPIClient.get(`/camp/${id}`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return data;
   } catch (error) {
@@ -45,7 +45,7 @@ const editCampById = async (
     formData.append("data", JSON.stringify(fieldsToUpdate));
     const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
       headers: {
-        Authorization: BEARER_TOKEN,
+        Authorization: getBearerToken(),
       },
     });
     return data;
@@ -57,7 +57,7 @@ const editCampById = async (
 const deleteCamp = async (id: string): Promise<boolean> => {
   try {
     await baseAPIClient.delete(`/camp/${id}`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return true;
   } catch (error) {
@@ -72,7 +72,7 @@ const updateCampSessions = async (
   try {
     const { data } = await baseAPIClient.patch(`/camp/${campId}/session`, {
       headers: {
-        Authorization: BEARER_TOKEN,
+        Authorization: getBearerToken(),
       },
       data: {
         updatedCampSessions,
@@ -92,7 +92,7 @@ const deleteCampSessionsByIds = async (
   try {
     await baseAPIClient.delete(`/camp/${campId}/session`, {
       headers: {
-        Authorization: BEARER_TOKEN,
+        Authorization: getBearerToken(),
       },
       data: {
         campSessionIds,
@@ -107,7 +107,7 @@ const deleteCampSessionsByIds = async (
 const getCampSessionCsv = async (id: string): Promise<string> => {
   try {
     const { data } = await baseAPIClient.get(`/camp/csv/${id}`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return data;
   } catch (error) {
