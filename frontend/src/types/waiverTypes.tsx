@@ -1,9 +1,10 @@
-import { Waiver, WaiverClause } from "../../../../types/AdminTypes";
+import { Waiver, WaiverClause } from "./AdminTypes";
 
 export type WaiverReducerDispatch =
   | LoadedWaiver
   | ClickOptionalClause
   | ClickRequiredClauses;
+
 export interface WaiverReducerDispatchBase {
   type: WaiverActions;
 }

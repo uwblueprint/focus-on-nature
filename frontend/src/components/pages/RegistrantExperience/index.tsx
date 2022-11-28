@@ -17,7 +17,7 @@ import {
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "./Waiver/waiverTypes";
+} from "../../../types/waiverTypes";
 
 enum RegistrantExperienceSteps {
   PersonalInfoPage,

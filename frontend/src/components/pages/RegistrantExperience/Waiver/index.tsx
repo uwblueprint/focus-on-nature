@@ -6,7 +6,6 @@ import {
   Checkbox,
   ListItem,
   OrderedList,
-  Stack,
   Radio,
   RadioGroup,
   FormControl,
@@ -14,6 +13,7 @@ import {
   Input,
   Divider,
   HStack,
+  Wrap,
 } from "@chakra-ui/react";
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import {
@@ -22,7 +22,7 @@ import {
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "./waiverTypes";
+} from "../../../../types/waiverTypes";
 
 interface WaiverPageProps {
   waiverInterface: WaiverInterface;
@@ -84,7 +84,7 @@ const WaiverPage = ({
           </Text>
         </Checkbox>
       </VStack>
-      <Divider pt={4} pb={4} borderColor="border.secondary.100" />
+      <Divider py={4} borderColor="border.secondary.100" />
       <VStack spacing={5} pt={8} align="stretch">
         <Text color="primary.green.100" textStyle="heading">
           Additional Clauses
@@ -103,7 +103,7 @@ const WaiverPage = ({
                 key={index}
                 value={String(clause.agreed)}
               >
-                <Stack spacing={5} direction="row">
+                <HStack spacing={5}>
                   <Radio value="true" mb={0}>
                     {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
                     <Text textStyle="bodyRegular">I agree</Text>
@@ -117,7 +117,7 @@ const WaiverPage = ({
                       agree
                     </Text>
                   </Radio>
-                </Stack>
+                </HStack>
               </RadioGroup>
             </VStack>
           ),
@@ -134,8 +134,8 @@ const WaiverPage = ({
         discharge Focus on Nature, its employees, and volunteers from all
         liabilities to which I have agreed to above.
       </Text>
-      <HStack pt={4} spacing={6}>
-        <FormControl width="30%">
+      <Wrap pt={4} spacing={6}>
+        <FormControl minWidth="250px" width="30vw">
           <FormLabel>
             <Text textStyle="buttonSemiBold">
               Full Name{" "}
@@ -152,7 +152,7 @@ const WaiverPage = ({
           <Input textStyle="bodyRegular" fontFamily="cursive" />
         </FormControl>
 
-        <FormControl width="30%">
+        <FormControl minWidth="250px" width="30vw">
           <FormLabel textStyle="buttonSemiBold">
             <Text textStyle="buttonSemiBold">
               Date{" "}
@@ -168,7 +168,7 @@ const WaiverPage = ({
           </FormLabel>
           <Input textStyle="bodyRegular" type="date" />
         </FormControl>
-      </HStack>
+      </Wrap>
     </Box>
   );
 };
