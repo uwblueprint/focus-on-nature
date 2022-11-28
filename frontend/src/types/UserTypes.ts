@@ -1,3 +1,4 @@
+import { WaiverClause, Waiver } from "./AdminTypes";
 import { Role } from "./AuthTypes";
 
 export type UserRequest = {

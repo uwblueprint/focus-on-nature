@@ -1,17 +1,103 @@
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useReducer,
+  Reducer,
+} from "react";
 
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
 import AdditionalInfo from "./AdditionalInfo";
-import Waiver from "./Waiver";
+import WaiverPage from "./WaiverPage";
 import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import { WaiverClause } from "../../../types/AdminTypes";
+import {
+  OptionalClauseResponse,
+  RequiredClauseResponse,
+  WaiverActions,
+  WaiverInterface,
+} from "./WaiverPage/waiverTypes";
+
+enum RegistrantExperienceSteps {
+  PersonalInfoPage,
+  AdditionalInfoPage,
+  ToWaiverPage,
+  ReviewRegistrationPage,
+}
+
+const waiverReducer = (waiverInterface: WaiverInterface, action: any) => {
+  switch (action.type) {
+    case WaiverActions.LOADEDWAIVER: {
+      const optionalClauses: OptionalClauseResponse[] = [];
+      const requiredClauses: RequiredClauseResponse[] = [];
+      const { waiver } = action.payload;
+
+      waiver.clauses.forEach((clause: WaiverClause) => {
+        if (clause.required) optionalClauses.push({ ...clause, agreed: false });
+        else requiredClauses.push(clause);
+      });
+      return {
+        ...waiverInterface,
+        optionalClauses,
+        requiredClauses,
+        waiver,
+        agreedRequiredClauses: false,
+        loadingWaiver: false,
+      };
+    }
+    case WaiverActions.ClICKREQUIREDCLAUSE:
+      return {
+        ...waiverInterface,
+        agreedRequiredClauses: !waiverInterface.agreedRequiredClauses,
+      };
+
+    case WaiverActions.CLICKOPTIONALCLAUSE: {
+      if (!waiverInterface.optionalClauses) return waiverInterface;
+      const changedClause: OptionalClauseResponse = action.payload;
+
+      const newOptionalClauses:
+        | OptionalClauseResponse[]
+        | undefined = waiverInterface.optionalClauses?.map(
+        (optionalClause: OptionalClauseResponse): OptionalClauseResponse => {
+          if (optionalClause.text === changedClause.text) {
+            return { ...optionalClause, agreed: !optionalClause.agreed };
+          }
+          return optionalClause;
+        },
+      );
+      return {
+        ...waiverInterface,
+        optionalClauses: newOptionalClauses,
+      };
+    }
+    default:
+      return waiverInterface;
+  }
+};
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
+  const [waiverInterface, waiverDispatch] = useReducer<
+    Reducer<WaiverInterface, any>
+  >(waiverReducer, {
+    // NOTE!?: issues with reducer code
+    waiver: undefined,
+    optionalClauses: [],
+    requiredClauses: [],
+    agreedRequiredClauses: false,
+    loadingWaiver: true,
+  });
+  useEffect(() => {
+    AdminAPIClient.getWaiver().then((waiver) => {
+      waiverDispatch({ type: WaiverActions.LOADEDWAIVER, payload: { waiver } });
+    });
+  }, []);
 
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
@@ -41,11 +127,11 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
           />
         );
-      case RegistrantExperienceSteps.WaiverPage:
+      case RegistrantExperienceSteps.ToWaiverPage:
         return (
-          <Waiver
-            isChecked={sampleWaiverField}
-            toggleChecked={() => setSampleWaiverField(!sampleWaiverField)}
+          <WaiverPage
+            waiverInterface={waiverInterface}
+            waiverDispatch={waiverDispatch}
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
@@ -59,7 +145,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         throw new Error("unexpected page");
     }
   };
-
   return (
     <Box>
       <RegistrationNavStepper
@@ -71,7 +156,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         setCurrentStep={setCurrentStep}
       />
 
-      <Box my="50px" mx="228px">
+      <Box my="50px" mx="10vw">
         {getCurrentRegistrantStepComponent(currentStep)}
       </Box>
     </Box>
