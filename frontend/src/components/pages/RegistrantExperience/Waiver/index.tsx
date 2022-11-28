@@ -149,7 +149,16 @@ const WaiverPage = ({
               </Text>
             </Text>
           </FormLabel>
-          <Input textStyle="bodyRegular" fontFamily="cursive" />
+          <Input
+            textStyle="bodyRegular"
+            fontFamily="cursive"
+            onChange={(event) =>
+              waiverDispatch({
+                type: WaiverActions.WRITE_NAME,
+                name: event.target.value,
+              })
+            }
+          />
         </FormControl>
 
         <FormControl minWidth="250px" width="30vw">
@@ -166,7 +175,16 @@ const WaiverPage = ({
               </Text>
             </Text>
           </FormLabel>
-          <Input textStyle="bodyRegular" type="date" />
+          <Input
+            textStyle="bodyRegular"
+            type="date"
+            onChange={(event) =>
+              waiverDispatch({
+                type: WaiverActions.WRITE_DATE,
+                date: event.target.value,
+              })
+            }
+          />
         </FormControl>
       </Wrap>
     </Box>

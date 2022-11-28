@@ -11,6 +11,8 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { WaiverClause } from "../../../types/AdminTypes";
 import {
   ClickOptionalClause,
+  FillDate,
+  FillName,
   LoadedWaiver,
   OptionalClauseResponse,
   RequiredClauseResponse,
@@ -75,6 +77,16 @@ const waiverReducer = (
         optionalClauses: newOptionalClauses,
       };
     }
+    case WaiverActions.WRITE_NAME: {
+      const { name } = action as FillName;
+      if (name) return { ...waiverInterface, wroteName: true };
+      return { ...waiverInterface, wroteName: false };
+    }
+    case WaiverActions.WRITE_DATE: {
+      const { date } = action as FillDate;
+      if (date) return { ...waiverInterface, wroteDate: true };
+      return { ...waiverInterface, wroteDate: false };
+    }
     default:
       return waiverInterface;
   }
@@ -94,6 +106,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     requiredClauses: [],
     agreedRequiredClauses: false,
     loadingWaiver: true,
+    wroteDate: false,
+    wroteName: false,
   });
   useEffect(() => {
     AdminAPIClient.getWaiver().then((waiver) => {
