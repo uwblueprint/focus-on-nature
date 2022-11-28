@@ -21,13 +21,6 @@ import {
   WaiverReducerDispatch,
 } from "../../../types/waiverTypes";
 
-enum RegistrantExperienceSteps {
-  PersonalInfoPage,
-  AdditionalInfoPage,
-  WaiverPage,
-  ReviewRegistrationPage,
-}
-
 const waiverReducer = (
   waiverInterface: WaiverInterface,
   action: WaiverReducerDispatch,
