@@ -15,6 +15,7 @@ import {
   Divider,
   HStack,
 } from "@chakra-ui/react";
+import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import {
   OptionalClauseResponse,
   RequiredClauseResponse,
@@ -79,9 +80,7 @@ const WaiverPage = ({
         >
           <Text textStyle="bodyRegular">
             I agree to the above identity and liability waiver conditions{" "}
-            <Text as="span" color="text.critical.100" verticalAlign="super">
-              *
-            </Text>
+            <RequiredAsterisk />
           </Text>
         </Checkbox>
       </VStack>
@@ -105,16 +104,18 @@ const WaiverPage = ({
                 value={String(clause.agreed)}
               >
                 <Stack spacing={5} direction="row">
-                  <Radio value="true" mb={0} textStyle="bodyRegular">
+                  <Radio value="true" mb={0}>
                     {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
-                    I agree
+                    <Text textStyle="bodyRegular">I agree</Text>
                   </Radio>
-                  <Radio value="false" textStyle="bodyRegular">
-                    I{" "}
-                    <Text as="span" textStyle="bodyBold">
-                      do not
-                    </Text>{" "}
-                    agree
+                  <Radio value="false">
+                    <Text textStyle="bodyRegular">
+                      I{" "}
+                      <Text as="span" textStyle="bodyBold">
+                        do not
+                      </Text>{" "}
+                      agree
+                    </Text>
                   </Radio>
                 </Stack>
               </RadioGroup>
@@ -130,7 +131,7 @@ const WaiverPage = ({
       />
       <Text textStyle="heading" pt={6}>
         By typing my name below, I hereby declare that I fully release and
-        discharge Focus on Nature, its employees and volunteers from all
+        discharge Focus on Nature, its employees, and volunteers from all
         liabilities to which I have agreed to above.
       </Text>
       <HStack pt={4} spacing={6}>
@@ -144,7 +145,7 @@ const WaiverPage = ({
                 fontSize="xs"
                 verticalAlign="super"
               >
-                *
+                <RequiredAsterisk />
               </Text>
             </Text>
           </FormLabel>
@@ -161,7 +162,7 @@ const WaiverPage = ({
                 fontSize="xs"
                 verticalAlign="super"
               >
-                *
+                <RequiredAsterisk />
               </Text>
             </Text>
           </FormLabel>
