@@ -38,9 +38,9 @@ const CampsListPage = (): React.ReactElement => {
             onDrawerClose();
           }}
         />
-        <CampsTable 
+        <CampsTable
           year={year}
-          isDrawerOpen={isDrawerOpen} 
+          isDrawerOpen={isDrawerOpen}
           onDrawerOpen={onDrawerOpen}
           campDrawerInfo={campDrawerInfo}
           setCampDrawerInfo={setCampDrawerInfo}

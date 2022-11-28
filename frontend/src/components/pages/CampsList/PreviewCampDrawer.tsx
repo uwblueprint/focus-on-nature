@@ -1,24 +1,23 @@
-import { Box, Button, Text, Flex, Tag } from '@chakra-ui/react'
-import React from 'react'
-import { FontWeights } from "../../../theme/textStyles"
-import CampStatusLabel from './CampStatusLabel'
-import {
-  getCampStatus,
-  locationString,
-} from "../../../utils/CampUtils";
-import { CampResponse, CampSession } from '../../../types/CampsTypes';
-import PreviewModalSessionRow from './PreviewModalSessionRow';
+import { Box, Button, Text, Flex, Tag } from "@chakra-ui/react";
+import React from "react";
+import { FontWeights } from "../../../theme/textStyles";
+import CampStatusLabel from "./CampStatusLabel";
+import { getCampStatus, locationString } from "../../../utils/CampUtils";
+import { CampResponse, CampSession } from "../../../types/CampsTypes";
+import PreviewModalSessionRow from "./PreviewModalSessionRow";
 
 type CampDrawerProps = {
-    isOpen:boolean,
-    onClose: ()=>void,
-    camp:CampResponse | undefined,
-}
+  isOpen: boolean;
+  onClose: () => void;
+  camp: CampResponse | undefined;
+};
 
-const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Element => {
-
-  return camp?(
-    
+const PreviewCampDrawer = ({
+  isOpen,
+  onClose,
+  camp,
+}: CampDrawerProps): JSX.Element => {
+  return camp ? (
     <Flex
       bg="background.white.100"
       w="500px"
@@ -46,9 +45,9 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
         <Text textStyle="displayMediumBold" marginTop="20px">
           {camp.name}
         </Text>
-        
-        <Text textStyle="heading" fontWeight= {FontWeights.REGULAR}>
-            {locationString(camp.location)}
+
+        <Text textStyle="heading" fontWeight={FontWeights.REGULAR}>
+          {locationString(camp.location)}
         </Text>
 
         <Box marginTop="12px" w="fit-content">
@@ -129,13 +128,17 @@ const PreviewCampDrawer = ({isOpen, onClose, camp}: CampDrawerProps): JSX.Elemen
           {camp.campSessions.length} Session
           {camp.campSessions.length !== 1 ? "s" : ""}
         </Text>
-        
-        {camp.campSessions.map((session:CampSession, key:number) => {
-          return(
-              <PreviewModalSessionRow key={key} sessionNum={key+1} status={getCampStatus(camp)} session={session}/>
-          )
-          })}
 
+        {camp.campSessions.map((session: CampSession, key: number) => {
+          return (
+            <PreviewModalSessionRow
+              key={key}
+              sessionNum={key + 1}
+              status={getCampStatus(camp)}
+              session={session}
+            />
+          );
+        })}
       </Flex>
     </Flex>
   ) : (

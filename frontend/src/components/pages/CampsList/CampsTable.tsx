@@ -37,15 +37,20 @@ import CampStatusLabel from "./CampStatusLabel";
 import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
 type CampsTableProps = {
-  year: number
-  isDrawerOpen: boolean
-  onDrawerOpen: ()=>void
-  campDrawerInfo: CampResponse | undefined
-  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>
-}
+  year: number;
+  isDrawerOpen: boolean;
+  onDrawerOpen: () => void;
+  campDrawerInfo: CampResponse | undefined;
+  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>;
+};
 
-const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampDrawerInfo }: CampsTableProps): JSX.Element => {
-
+const CampsTable = ({
+  year,
+  isDrawerOpen,
+  onDrawerOpen,
+  campDrawerInfo,
+  setCampDrawerInfo,
+}: CampsTableProps): JSX.Element => {
   const filterOptions = [
     CampStatus.PUBLISHED,
     CampStatus.DRAFT,
@@ -207,12 +212,16 @@ const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampD
         </Thead>
         <Tbody>
           {tableData.map((camp, key) => (
-            <Tr 
+            <Tr
               key={key}
               _hover={{
-                background: "background.grey.100"
+                background: "background.grey.100",
               }}
-              background={isDrawerOpen && camp === campDrawerInfo?"background.grey.100":"background.white.100"}
+              background={
+                isDrawerOpen && camp === campDrawerInfo
+                  ? "background.grey.100"
+                  : "background.white.100"
+              }
             >
               <Td
                 cursor="pointer"
@@ -228,7 +237,10 @@ const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampD
               </Td>
               <Td
                 cursor="pointer"
-                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
               >
                 {camp.campSessions.length > 0
                   ? getFormattedCampDateRange(
@@ -241,7 +253,10 @@ const CampsTable = ({ year, isDrawerOpen, onDrawerOpen, campDrawerInfo, setCampD
                 padding="0px"
                 mr="px"
                 cursor="pointer"
-                onClick={() => {onDrawerOpen(); setCampDrawerInfo(camp);}}
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
               >
                 <CampStatusLabel status={getCampStatus(camp)} />
               </Td>
