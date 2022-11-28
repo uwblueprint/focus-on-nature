@@ -9,7 +9,7 @@ import React, {
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
 import AdditionalInfo from "./AdditionalInfo";
-import WaiverPage from "./WaiverPage";
+import Waiver from "./Waiver";
 import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
@@ -20,12 +20,12 @@ import {
   RequiredClauseResponse,
   WaiverActions,
   WaiverInterface,
-} from "./WaiverPage/waiverTypes";
+} from "./Waiver/waiverTypes";
 
 enum RegistrantExperienceSteps {
   PersonalInfoPage,
   AdditionalInfoPage,
-  ToWaiverPage,
+  WaiverPage,
   ReviewRegistrationPage,
 }
 
@@ -127,9 +127,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
           />
         );
-      case RegistrantExperienceSteps.ToWaiverPage:
+      case RegistrantExperienceSteps.WaiverPage:
         return (
-          <WaiverPage
+          <Waiver
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
           />
