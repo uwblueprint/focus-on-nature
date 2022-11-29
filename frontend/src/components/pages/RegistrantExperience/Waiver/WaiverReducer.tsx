@@ -14,7 +14,7 @@ import { WaiverClause } from "../../../../types/AdminTypes";
 const waiverReducer = (
   waiverInterface: WaiverInterface,
   action: WaiverReducerDispatch,
-) => {
+): WaiverInterface => {
   const newWaiverInterface: WaiverInterface = { ...waiverInterface };
   switch (action.type) {
     case WaiverActions.LOADED_WAIVER: {

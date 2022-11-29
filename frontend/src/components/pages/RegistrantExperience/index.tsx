@@ -87,9 +87,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         throw new Error("unexpected page");
     }
   };
-  console.log(
-    waiverInterface
-  );
   return (
     <Box>
       <RegistrationNavStepper

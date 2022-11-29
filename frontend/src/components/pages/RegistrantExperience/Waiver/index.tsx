@@ -45,7 +45,8 @@ const WaiverPage = ({
         date: "",
       });
     };
-  }, []);
+    // As a note, waiverDispatch is stable (should't change) but we need to pass it into dependency to make linter happy
+  }, [waiverDispatch]);
 
   return (
     <Box>
