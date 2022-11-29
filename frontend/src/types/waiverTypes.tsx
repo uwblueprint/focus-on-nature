@@ -56,4 +56,5 @@ export type WaiverInterface = {
   loadingWaiver: boolean;
   wroteName: boolean;
   wroteDate: boolean;
+  waiverCompleted: boolean
 };
