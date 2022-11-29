@@ -167,4 +167,27 @@ const colors = {
   },
 };
 
+// For calendar, want ordered list of color constants
+export const FILL_COLORS = [
+  "#FFF6F2",
+  "#FCFCFC",
+  "#FFF8EC",
+  "#ECF2F9",
+  "#F1FFF9",
+  "#FDF0FB",
+  "#EFF0FF",
+  "#FFE9E9",
+];
+
+export const BORDER_COLORS = [
+  "#FFA27A",
+  "#98C6CD",
+  "#E1B878",
+  "#8C9196",
+  "#95C9B4",
+  "#DAA8D2",
+  "#8B8ECE",
+  "#FF8989",
+];
+
 export default colors;

@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Box,
+  Flex,
   HStack,
   Text,
   Button,
@@ -9,9 +10,9 @@ import {
   useToast,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 import ScheduledSessionsCard from "./ScheduledSessionsCard";
-import DeleteModal from "../../../common/DeleteModal";
+import DeleteModal from "../../../../common/DeleteModal";
 
 type CurrentSessionsViewProps = {
   scheduledSessions: CreateCampSession[];
@@ -57,7 +58,7 @@ const CurrentSessionsView = ({
   };
 
   return (
-    <Box paddingX="64px" paddingY="80px">
+    <Flex direction="column" paddingX="64px" paddingY="80px" height="100%">
       <DeleteModal
         title="Delete Session?"
         bodyText={`Are you sure you want to delete "Session ${
@@ -76,7 +77,7 @@ const CurrentSessionsView = ({
         </Button>
       </HStack>
       <Divider marginY={5} />
-      <Box height="80vh" overflowY="scroll">
+      <Box overflowY="auto" flex="1 1 0">
         <VStack alignItems="flex-start" spacing={5}>
           <>
             {scheduledSessions.map((session, currIndex) => (
@@ -91,7 +92,7 @@ const CurrentSessionsView = ({
           </>
         </VStack>
       </Box>
-    </Box>
+    </Flex>
   );
 };
 

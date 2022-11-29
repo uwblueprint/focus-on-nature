@@ -1,59 +1,36 @@
 import React from "react";
-import { Box, Checkbox, HStack, Text, VStack } from "@chakra-ui/react";
-import SessionSidePanel from "./SessionSidePanel";
+import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../types/CampsTypes";
+import SessionSidePanel from "./SidePanel";
+import SessionsCalendar from "./Calendar";
 
 type ScheduleSessionsProps = {
-  scheduleSessionsDummyOne: boolean;
-  scheduleSessionsDummyTwo: boolean;
-  toggleScheduleSessionsDummyOne: () => void;
-  toggleScheduleSessionsDummyTwo: () => void;
+  campTitle: string;
+  scheduledSessions: CreateCampSession[];
+  setScheduledSessions: (newSessions: CreateCampSession[]) => void;
 };
 
 const ScheduleSessions = ({
-  scheduleSessionsDummyOne,
-  scheduleSessionsDummyTwo,
-  toggleScheduleSessionsDummyOne,
-  toggleScheduleSessionsDummyTwo,
+  campTitle,
+  scheduledSessions,
+  setScheduledSessions,
 }: ScheduleSessionsProps): React.ReactElement => {
-  const [scheduledSessions, setScheduledSessions] = React.useState<
-    CreateCampSession[]
-  >([]);
-
   return (
-    <Box m={-20}>
-      <HStack alignItems="flex-start">
-        <VStack alignItems="flex-start" m={20}>
+    <Flex justify="flex-end" w="100%" h="100%">
+      <VStack alignItems="center" py="5vh" px="5vw" flex="1">
+        <Box>
           <Text textStyle="displayXLarge">Schedule Sessions</Text>
           <Text textStyle="heading" mb={8}>
-            Waterloo Photography Camp 2022 @7:00 AM - 3:00PM
+            {campTitle}
           </Text>
-          <Text>
-            scheduleSessionsDummyOne: {String(scheduleSessionsDummyOne)}
-          </Text>
-          <Checkbox
-            size="lg"
-            borderColor="black"
-            isChecked={scheduleSessionsDummyOne}
-            onChange={toggleScheduleSessionsDummyOne}
-          />
-          <Text>
-            scheduleSessionsDummyTwo: {String(scheduleSessionsDummyTwo)}
-          </Text>
-          <Checkbox
-            size="lg"
-            borderColor="black"
-            isChecked={scheduleSessionsDummyTwo}
-            onChange={toggleScheduleSessionsDummyTwo}
-          />
-        </VStack>
-        {/* <SessionsCalendar sessions={scheduledSessions}/> */}
-        <SessionSidePanel
-          scheduledSessions={scheduledSessions}
-          setScheduledSessions={setScheduledSessions}
-        />
-      </HStack>
-    </Box>
+          <SessionsCalendar sessions={scheduledSessions} />
+        </Box>
+      </VStack>
+      <SessionSidePanel
+        scheduledSessions={scheduledSessions}
+        setScheduledSessions={setScheduledSessions}
+      />
+    </Flex>
   );
 };
 

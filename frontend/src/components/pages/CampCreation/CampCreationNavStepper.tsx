@@ -31,6 +31,7 @@ const CampCreationNavStepper = ({
       bg="white"
       boxShadow="sm"
       minH="92px"
+      width="100vw"
       align="center"
       justify="center"
       flexWrap="wrap"
