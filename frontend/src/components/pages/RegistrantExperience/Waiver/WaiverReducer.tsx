@@ -15,8 +15,7 @@ const waiverReducer = (
   waiverInterface: WaiverInterface,
   action: WaiverReducerDispatch,
 ) => {
-
-  const newWaiverInterface: WaiverInterface = {...waiverInterface}
+  const newWaiverInterface: WaiverInterface = { ...waiverInterface };
   switch (action.type) {
     case WaiverActions.LOADED_WAIVER: {
       const optionalClauses: OptionalClauseResponse[] = [];
@@ -35,7 +34,7 @@ const waiverReducer = (
       break;
     }
     case WaiverActions.ClICK_REQUIRED_CLAUSE: {
-      newWaiverInterface.agreedRequiredClauses = !newWaiverInterface.agreedRequiredClauses
+      newWaiverInterface.agreedRequiredClauses = !newWaiverInterface.agreedRequiredClauses;
       break;
     }
 
@@ -54,7 +53,7 @@ const waiverReducer = (
           return optionalClause;
         },
       );
-      newWaiverInterface.optionalClauses = newOptionalClauses
+      newWaiverInterface.optionalClauses = newOptionalClauses;
       break;
     }
     case WaiverActions.WRITE_NAME: {
@@ -69,7 +68,10 @@ const waiverReducer = (
     }
     default:
   }
-  newWaiverInterface.waiverCompleted = newWaiverInterface.agreedRequiredClauses && newWaiverInterface.wroteDate && newWaiverInterface.wroteName;
+  newWaiverInterface.waiverCompleted =
+    newWaiverInterface.agreedRequiredClauses &&
+    newWaiverInterface.wroteDate &&
+    newWaiverInterface.wroteName;
   return newWaiverInterface;
 };
 

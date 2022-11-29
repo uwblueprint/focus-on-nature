@@ -31,7 +31,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     loadingWaiver: true,
     wroteDate: false,
     wroteName: false,
-    waiverCompleted: false
+    waiverCompleted: false,
   });
   useEffect(() => {
     AdminAPIClient.getWaiver().then((waiver) => {
@@ -87,7 +87,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         throw new Error("unexpected page");
     }
   };
-  console.log(waiverInterface.waiverCompleted, waiverInterface.agreedRequiredClauses, waiverInterface.wroteDate, waiverInterface.wroteName)
+  console.log(
+    waiverInterface
+  );
   return (
     <Box>
       <RegistrationNavStepper

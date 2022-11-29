@@ -33,20 +33,19 @@ const WaiverPage = ({
   waiverInterface,
   waiverDispatch,
 }: WaiverPageProps): React.ReactElement => {
-
   useEffect(() => {
     return function cleanup() {
       // Reset the wroteName and wroteDate which resets waiverCompleted
       waiverDispatch({
         type: WaiverActions.WRITE_NAME,
         name: "",
-      })
+      });
       waiverDispatch({
         type: WaiverActions.WRITE_DATE,
         date: "",
-      })
-    }
-  }, [])
+      });
+    };
+  }, []);
 
   return (
     <Box>
