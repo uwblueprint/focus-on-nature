@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import {
+  Box,
   Accordion,
   Button,
   HStack,
@@ -62,7 +63,7 @@ const RegistrationFormPage = ({
   } = useDisclosure();
 
   return (
-    <>
+    <Box mx="8vw" my="5vh">
       <AddQuestionModal
         isOpen={isAddQuestionOpen}
         onClose={onAddQuestionClose}
@@ -111,7 +112,7 @@ const RegistrationFormPage = ({
           isTemplatePage={false}
         />
       </Accordion>
-    </>
+    </Box>
   );
 };
 

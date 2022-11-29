@@ -21,7 +21,7 @@ const CampCreationDetails = ({
   handleCampDetailsDummyThree,
 }: CampCreationDetailsProps): React.ReactElement => {
   return (
-    <Box>
+    <Box mx="8vw" my="5vh">
       <Text textStyle="displayXLarge">Camp Details</Text>
       <Text>campDetailsDummyOne: {String(campDetailsDummyOne)}</Text>
       <Checkbox

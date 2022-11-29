@@ -1,5 +1,5 @@
-import { Box, Button, Text, Flex, Tag } from "@chakra-ui/react";
 import React from "react";
+import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { FontWeights } from "../../../theme/textStyles";
 import CampStatusLabel from "./CampStatusLabel";
 import { getCampStatus, locationString } from "../../../utils/CampUtils";

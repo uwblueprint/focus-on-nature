@@ -77,7 +77,7 @@ const CampsTable = ({
     };
 
     getCamps();
-  }, [year]);
+  }, [year, setCampDrawerInfo]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
