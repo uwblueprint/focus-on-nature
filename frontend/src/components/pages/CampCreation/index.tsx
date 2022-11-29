@@ -31,10 +31,7 @@ const CampCreationPage = (): React.ReactElement => {
 
   // All state for registration form page.
 
-  const [
-    formTemplate,
-    setFormTemplate,
-  ] = useState<FormTemplate>();
+  const [formTemplate, setFormTemplate] = useState<FormTemplate>();
 
   useEffect(() => {
     const getFormTemplate = async () => {
