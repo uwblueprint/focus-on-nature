@@ -227,7 +227,7 @@ const GlobalFormsPage = (): React.ReactElement => {
       newQuestion,
     );
 
-    if (res) {
+    if (!(res instanceof Error)) {
       setFormTemplateQuestions((oldArr: FormQuestion[]) => {
         const newArr = [...oldArr];
         for (let i = 0; i < newArr.length; i += 1) {
