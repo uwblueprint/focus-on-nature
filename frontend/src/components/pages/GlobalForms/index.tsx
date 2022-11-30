@@ -195,38 +195,64 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   const onDeleteCustomQuestion = async (formQuestion: FormQuestion) => {
-    );
-    toast({
-      description: "Question has been successfully deleted.",
-      status: "success",
-      duration: 3000,
-      isClosable: false,
-      variant: "subtle",
-    });
+    const res = await AdminAPIClient.deleteFormQuestion(formQuestion.id);
+
+    if (res) {
+      setFormTemplateQuestions((oldArr: FormQuestion[]) =>
+        oldArr.filter((question: FormQuestion) => question !== formQuestion),
+      );
+      toast({
+        description: "Question has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: false,
+        variant: "subtle",
+      });
+    } else {
+      toast({
+        description: `An error occurred with deleting this question. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
   };
 
-  const onEditCustomQuestion = (
+  const onEditCustomQuestion = async (
     oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => {
-    setFormTemplateQuestions((oldArr: CreateFormQuestion[]) => {
-      const newArr = [...oldArr];
-      for (let i = 0; i < newArr.length; i += 1) {
-        if (newArr[i] === oldQuestion) {
-          newArr[i] = newQuestion;
-          break;
-        }
-      }
-      return newArr;
-    });
+    const res = await AdminAPIClient.editFormQuestion(
+      oldQuestion.id,
+      newQuestion,
+    );
 
-    toast({
-      description: "Question has been successfully edited.",
-      status: "success",
-      duration: 3000,
-      isClosable: false,
-      variant: "subtle",
-    });
+    if (res) {
+      setFormTemplateQuestions((oldArr: FormQuestion[]) => {
+        const newArr = [...oldArr];
+        for (let i = 0; i < newArr.length; i += 1) {
+          if (newArr[i] === oldQuestion) {
+            newArr[i] = res;
+            break;
+          }
+        }
+        return newArr;
+      });
+      toast({
+        description: "Question has been successfully edited.",
+        status: "success",
+        duration: 3000,
+        isClosable: false,
+        variant: "subtle",
+      });
+    } else {
+      toast({
+        description: `An error occurred with editing this question. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
   };
 
   return (
