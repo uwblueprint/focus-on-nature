@@ -16,7 +16,7 @@ import {
   Waiver,
   WaiverClause,
 } from "../../../types/AdminTypes";
-import { CreateFormQuestion } from "../../../types/CampsTypes";
+import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -36,7 +36,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   );
 
   const [formTemplateQuestions, setFormTemplateQuestions] = React.useState<
-    Array<CreateFormQuestion>
+    Array<FormQuestion>
   >([]);
   const [refetchFormTemplate, setRefetchFormTemplate] = React.useState<boolean>(
     true,
@@ -194,11 +194,7 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
-  const onDeleteCustomQuestion = (questionToBeDeleted: CreateFormQuestion) => {
-    setFormTemplateQuestions((oldArr: CreateFormQuestion[]) =>
-      oldArr.filter(
-        (question: CreateFormQuestion) => question !== questionToBeDeleted,
-      ),
+  const onDeleteCustomQuestion = async (formQuestion: FormQuestion) => {
     );
     toast({
       description: "Question has been successfully deleted.",
@@ -210,7 +206,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   const onEditCustomQuestion = (
-    oldQuestion: CreateFormQuestion,
+    oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => {
     setFormTemplateQuestions((oldArr: CreateFormQuestion[]) => {

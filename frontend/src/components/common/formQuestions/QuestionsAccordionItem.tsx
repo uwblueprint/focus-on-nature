@@ -16,11 +16,11 @@ import NoRegistrationQuestionsCard from "../../pages/CampCreation/RegistrationFo
 
 type QuestionsAccordionItemProps = {
   fixedQuestions: Array<FormQuestion>; // A question for presentational purposes only, Admin can not edit or delete this
-  dynamicQuestions: Array<CreateFormQuestion>; // Questions added by the admin during the respective workflow which can be editted + deleted
+  dynamicQuestions: Array<FormQuestion>; // Questions added by the admin during the respective workflow which can be editted + deleted
   accordionTitle: string;
-  onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
+  onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
-    oldQuestion: CreateFormQuestion,
+    oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => void;
   isTemplatePage?: boolean;

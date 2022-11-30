@@ -9,18 +9,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { CreateFormQuestion } from "../../../types/CampsTypes";
+import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
 import { getTextFromQuestionType } from "../../../utils/CampUtils";
 import RequiredTag from "../camps/RequiredTag";
 import DeleteCustomQuestionModal from "../../pages/CampCreation/RegistrationForm/DeleteCustomQuestionModal";
 import AddQuestionModal from "./AddQuestionModal/index";
 
 type QuestionCardProps = {
-  question: CreateFormQuestion;
+  question: FormQuestion;
   viewOnly: boolean;
-  onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
+  onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
-    oldQuestion: CreateFormQuestion,
+    oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => void;
 };
@@ -77,7 +77,7 @@ const QuestionCard = ({
         editing
         isOpen={isEditCustomQuestionOpen}
         onClose={onEditCustomQuestionClose}
-        onEdit={onEditCustomQuestion && onEditCustomQuestion}
+        onEdit={onEditCustomQuestion}
         questionToBeEdited={question}
       />
       <Flex pb="14px">

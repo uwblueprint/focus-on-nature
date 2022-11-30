@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import {
   CreateFormQuestion,
+  FormQuestion,
   QuestionCategory,
   QuestionType,
 } from "../../../../types/CampsTypes";
@@ -29,11 +30,8 @@ type AddQuestionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (formQuestion: CreateFormQuestion) => void;
-  onEdit?: (
-    oldQuestion: CreateFormQuestion,
-    newQuestion: CreateFormQuestion,
-  ) => void;
-  questionToBeEdited?: CreateFormQuestion;
+  onEdit?: (oldQuestion: FormQuestion, newQuestion: CreateFormQuestion) => void;
+  questionToBeEdited?: FormQuestion;
   editing?: boolean;
 };
 

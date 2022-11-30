@@ -17,12 +17,12 @@ import DeleteCustomQuestionModal from "./DeleteCustomQuestionModal";
 import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal/index";
 
 type RegistrationQuestionCardProps = {
-  question: FormQuestion | CreateFormQuestion;
+  question: FormQuestion;
   questionNumber: number;
   viewOnly: boolean;
-  onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
+  onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
-    oldQuestion: CreateFormQuestion,
+    oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => void;
 };
