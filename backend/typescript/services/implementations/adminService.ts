@@ -188,7 +188,7 @@ class AdminService implements IAdminService {
   async editQuestionInTemplate(
     oldQuestionId: string,
     newFormQuestion: CreateFormQuestionDTO,
-  ): Promise<boolean> {
+  ): Promise<FormQuestionDTO> {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -217,7 +217,7 @@ class AdminService implements IAdminService {
       );
 
       await session.commitTransaction();
-      return true;
+      return newQuestion;
     } catch (error: unknown) {
       Logger.error(
         `Failed to edit the form question in form template. Reason = ${getErrorMessage(
