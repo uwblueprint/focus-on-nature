@@ -75,12 +75,12 @@ const deleteFormQuestion = async (formQuestionId: string): Promise<boolean> => {
 
 const editFormQuestion = async (
   oldQuestionId: string,
-  newFormQuestion: CreateFormQuestion,
+  question: CreateFormQuestion,
 ): Promise<FormQuestion> => {
   try {
     const { data } = await baseAPIClient.patch(
       `/admin/formTemplate/formQuestion/${oldQuestionId}`,
-      newFormQuestion,
+      { newFormQuestion: question },
       {
         headers: { Authorization: BEARER_TOKEN },
       },
