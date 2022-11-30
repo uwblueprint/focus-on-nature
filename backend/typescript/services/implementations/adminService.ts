@@ -112,17 +112,19 @@ class AdminService implements IAdminService {
       );
       throw error;
     }
-    return { formQuestions: form.formQuestions.map((formQuestion: FormQuestionDTO) => {
-      return {
-        id: formQuestion.id,
-        category: formQuestion.category,
-        type: formQuestion.type,
-        question: formQuestion.question,
-        required: formQuestion.required,
-        description: formQuestion.description,
-        options: formQuestion.options,
-      };
-    })};
+    return {
+      formQuestions: form.formQuestions.map((formQuestion: FormQuestionDTO) => {
+        return {
+          id: formQuestion.id,
+          category: formQuestion.category,
+          type: formQuestion.type,
+          question: formQuestion.question,
+          required: formQuestion.required,
+          description: formQuestion.description,
+          options: formQuestion.options,
+        };
+      }),
+    };
   }
 
   async addQuestionToTemplate(
