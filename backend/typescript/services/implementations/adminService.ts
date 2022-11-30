@@ -112,7 +112,17 @@ class AdminService implements IAdminService {
       );
       throw error;
     }
-    return form;
+    return { formQuestions: form.formQuestions.map((formQuestion: FormQuestionDTO) => {
+      return {
+        id: formQuestion.id,
+        category: formQuestion.category,
+        type: formQuestion.type,
+        question: formQuestion.question,
+        required: formQuestion.required,
+        description: formQuestion.description,
+        options: formQuestion.options,
+      };
+    })};
   }
 
   async addQuestionToTemplate(
@@ -206,18 +216,26 @@ class AdminService implements IAdminService {
         );
       }
 
-      const newQuestion = new MgFormQuestion(newFormQuestion);
-      await newQuestion.save({ session });
+      const createdQuestion = new MgFormQuestion(newFormQuestion);
+      await createdQuestion.save({ session });
 
       // Replace the old question id with the new id
       await MgFormTemplate.updateOne(
         { formQuestions: oldQuestionId },
-        { $set: { "formQuestions.$": newQuestion._id } },
+        { $set: { "formQuestions.$": createdQuestion._id } },
         { session },
       );
 
       await session.commitTransaction();
-      return newQuestion;
+      return {
+        type: createdQuestion.type,
+        question: createdQuestion.question,
+        required: createdQuestion.required,
+        description: createdQuestion.description,
+        options: createdQuestion.options,
+        id: createdQuestion.id,
+        category: createdQuestion.category,
+      };
     } catch (error: unknown) {
       Logger.error(
         `Failed to edit the form question in form template. Reason = ${getErrorMessage(
