@@ -245,7 +245,7 @@ export type WaiverDTO = {
 };
 
 export type FormTemplateDTO = {
-  formQuestions: [FormQuestionDTO];
+  formQuestions: FormQuestionDTO[];
 };
 
 export type WaitlistedCamperStatus =
