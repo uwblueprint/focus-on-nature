@@ -5,6 +5,7 @@ import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
 import CampCreationPages from "./CampCreationPages";
 import CampCreationNavStepper from "./CampCreationNavStepper";
+import CampCreationFooter from "./CampCreationFooter";
 import { FormTemplate } from "../../../types/AdminTypes";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
@@ -19,19 +20,29 @@ const CampCreationPage = (): React.ReactElement => {
   const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
   const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
 
-  const [scheduledSessions, setScheduledSessions] = React.useState<
-    CreateCampSession[]
-  >([]);
+  const [scheduledSessions, setScheduledSessions] = React.useState<CreateCampSession[]>([]);
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled =
-    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isCampDetailsFilled = campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
   const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
+
+  const isCurrentStepCompleted = (step: CampCreationPages) => {
+    switch (step) {
+      case CampCreationPages.CampCreationDetailsPage:
+        return isCampDetailsFilled;
+      case CampCreationPages.ScheduleSessionsPage:
+        return isScheduleSessionsFilled;
+      case CampCreationPages.RegistrationFormPage:
+        return isRegistrationFormFilled;
+      default:
+        return false;
+    }
+  };
 
   // State of what page to display.
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
@@ -155,6 +166,13 @@ const CampCreationPage = (): React.ReactElement => {
     }
   };
 
+  const handleStepNavigation = (stepsToMove: number) => {
+    const desiredStep = currentPage + stepsToMove;
+    if (CampCreationPages[desiredStep]) {
+      setCurrentPage(currentPage + stepsToMove);
+    }
+  };
+
   return (
     <VStack w="100vw" h="calc(100vh - 75px)">
       <CampCreationNavStepper
@@ -164,9 +182,14 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-      <Box w="100%" flex="1" mt={[0, "0 !important"]}>
+      <Box w="100%" flex="1" mt={[0, "0 !important"]} pb={20}>
         {getCampCreationStepComponent(currentPage)}
       </Box>
+      <CampCreationFooter
+        currentStep={currentPage}
+        isCurrentStepCompleted={isCurrentStepCompleted(currentPage)}
+        handleStepNavigation={handleStepNavigation}
+      />
     </VStack>
   );
 };
