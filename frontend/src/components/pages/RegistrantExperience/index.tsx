@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useReducer, Reducer } from "react";
 
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
@@ -8,20 +8,48 @@ import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
 import RegistrationFooter from "./RegistrationFooter";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import {
+  WaiverActions,
+  WaiverInterface,
+  WaiverReducerDispatch,
+} from "../../../types/waiverTypes";
+import waiverReducer from "./Waiver/WaiverReducer";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
+  const [waiverInterface, waiverDispatch] = useReducer<
+    Reducer<WaiverInterface, WaiverReducerDispatch>
+  >(waiverReducer, {
+    // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
+    campName: "Guelph Summer Camp 2022",
+    waiver: undefined,
+    optionalClauses: [],
+    requiredClauses: [],
+    agreedRequiredClauses: false,
+    loadingWaiver: true,
+    wroteDate: false,
+    wroteName: false,
+    waiverCompleted: false,
+  });
+  useEffect(() => {
+    AdminAPIClient.getWaiver().then((waiver) => {
+      waiverDispatch({
+        type: WaiverActions.LOADED_WAIVER,
+        waiver,
+      });
+    });
+  }, []);
 
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
-  const [sampleWaiverField, setSampleWaiverField] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
 
   const isPersonalInfoFilled = samplePersonalInfo;
   const isAdditionalInfoFilled = sampleAdditionalInfo;
-  const isWaiverFilled = sampleWaiverField;
+  const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
@@ -60,8 +88,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.WaiverPage:
         return (
           <Waiver
-            isChecked={sampleWaiverField}
-            toggleChecked={() => setSampleWaiverField(!sampleWaiverField)}
+            waiverInterface={waiverInterface}
+            waiverDispatch={waiverDispatch}
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
@@ -97,7 +125,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         isReviewRegistrationFilled={isReviewRegistrationFilled}
         setCurrentStep={setCurrentStep}
       />
-      <Box my="50px" mx="228px">
+      <Box my="50px" mx="10vw">
         {getCurrentRegistrantStepComponent(currentStep)}
       </Box>
       <RegistrationFooter

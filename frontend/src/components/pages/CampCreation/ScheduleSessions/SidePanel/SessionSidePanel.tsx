@@ -1,8 +1,8 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
 import AddSessionsForm from "./AddSessionsForm";
 import CurrentSessionsView from "./CurrentSessionsView";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 
 type SessionSidePanelProps = {
   scheduledSessions: CreateCampSession[];
@@ -18,10 +18,12 @@ const SessionSidePanel = ({
   return (
     <Box
       width="35vw"
-      minHeight="100vh"
+      minH="inherit"
       position="absolute"
       right="0"
       background="background.grey.200"
+      flex="1"
+      zIndex="10"
     >
       {scheduledSessions.length === 0 || showAddSessionView ? (
         <AddSessionsForm

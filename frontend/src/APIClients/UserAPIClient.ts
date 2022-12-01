@@ -1,11 +1,11 @@
-import { BEARER_TOKEN } from "../constants/AuthConstants";
+import { getBearerToken } from "../constants/AuthConstants";
 import baseAPIClient from "./BaseAPIClient";
 import { UserRequest, UserResponse } from "../types/UserTypes";
 
 const getAllUsers = async (): Promise<Array<UserResponse>> => {
   try {
     const { data } = await baseAPIClient.get(`/users`, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return data;
   } catch (error) {
@@ -19,7 +19,7 @@ const updateUserById = async (
 ): Promise<boolean> => {
   try {
     await baseAPIClient.put(`/users/${id}`, userData, {
-      headers: { Authorization: BEARER_TOKEN },
+      headers: { Authorization: getBearerToken() },
     });
     return true;
   } catch (error) {

@@ -10,12 +10,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { CreateCampSession } from "../../../../types/CampsTypes";
+import { CreateCampSession } from "../../../../../types/CampsTypes";
 import SessionDayButton from "./SessionDayButton";
 import {
   getSessionDates,
   sortScheduledSessions,
-} from "../../../../utils/CampUtils";
+} from "../../../../../utils/CampUtils";
 
 const emptyWeekDays = new Map<string, boolean>([
   ["Su", false],
@@ -65,7 +65,7 @@ const AddSessionsForm = ({
     setSelectedWeekDays(new Map(emptyWeekDays));
   };
 
-  const onAddSesssionsToCamp = (e: any) => {
+  const onAddSesssionsToCamp = (e: React.FormEvent) => {
     if (noSessionDaysSelected()) {
       setSessionDaysHasError(true);
     } else {

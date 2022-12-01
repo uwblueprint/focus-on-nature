@@ -1,4 +1,6 @@
 import { format } from "date-fns";
+import MONTHS from "../constants/CampManagementConstants";
+import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
 import {
   CampResponse,
   CampSession,
@@ -135,3 +137,25 @@ export const getFormattedCampDateRange = (
   }
   return "";
 };
+
+export const getMonthIndex = (month: string): number => MONTHS[month];
+
+export const getMonthName = (date: Date): string =>
+  date.toLocaleString("en-US", { month: "long" });
+
+export const getYearsArray = (): string[] => {
+  const todayYear = new Date().getFullYear();
+
+  // Calendar component has year picker for present to 10 years from now
+  const yearStrings = Array.from({ length: 10 }, (_v, index) =>
+    (index + todayYear).toString(),
+  );
+
+  return yearStrings;
+};
+
+export const getSessionBorderColor = (sessionIndex: number): string =>
+  BORDER_COLORS[sessionIndex % 8];
+
+export const getSessionFillColor = (sessionIndex: number): string =>
+  FILL_COLORS[sessionIndex % 8];

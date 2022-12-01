@@ -25,7 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import {
@@ -36,13 +36,21 @@ import {
 import CampStatusLabel from "./CampStatusLabel";
 import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
 
-interface CampsTableProps {
+type CampsTableProps = {
   year: number;
-}
+  isDrawerOpen: boolean;
+  onDrawerOpen: () => void;
+  campDrawerInfo: CampResponse | undefined;
+  setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>;
+};
 
-const CampsTable = (props: CampsTableProps): JSX.Element => {
-  const { year } = props;
-
+const CampsTable = ({
+  year,
+  isDrawerOpen,
+  onDrawerOpen,
+  campDrawerInfo,
+  setCampDrawerInfo,
+}: CampsTableProps): JSX.Element => {
   const filterOptions = [
     CampStatus.PUBLISHED,
     CampStatus.DRAFT,
@@ -62,11 +70,14 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
-      if (res) setCamps(res);
+      if (res) {
+        setCamps(res);
+        setCampDrawerInfo(res[0]);
+      }
     };
 
     getCamps();
-  }, [year]);
+  }, [year, setCampDrawerInfo]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
@@ -153,7 +164,7 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         py="20px"
         maxWidth="100vw"
         backgroundColor="background.grey.100"
-        borderRadius="20px"
+        borderRadius="20px 20px 0 0"
       >
         <HStack spacing={12}>
           <InputGroup>
@@ -187,10 +198,9 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         </HStack>
       </Container>
       <Table
-        background="background.white.100"
         variant="simple"
         colorScheme="blackAlpha"
-        style={{ borderCollapse: "separate" }}
+        background="background.white.100"
       >
         <Thead>
           <Tr>
@@ -202,14 +212,36 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
         </Thead>
         <Tbody>
           {tableData.map((camp, key) => (
-            <Tr key={key}>
-              <Td>
+            <Tr
+              key={key}
+              _hover={{
+                background: "background.grey.100",
+              }}
+              background={
+                isDrawerOpen && camp === campDrawerInfo
+                  ? "background.grey.100"
+                  : "background.white.100"
+              }
+            >
+              <Td
+                cursor="pointer"
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
+              >
                 <Text textStyle="bodyBold">{camp.name}</Text>
                 <Text textStyle="bodyRegular">
                   {locationString(camp.location)}
                 </Text>
               </Td>
-              <Td>
+              <Td
+                cursor="pointer"
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
+              >
                 {camp.campSessions.length > 0
                   ? getFormattedCampDateRange(
                       camp.campSessions[0].dates,
@@ -217,7 +249,15 @@ const CampsTable = (props: CampsTableProps): JSX.Element => {
                     )
                   : ""}
               </Td>
-              <Td padding="0px" mr="px">
+              <Td
+                padding="0px"
+                mr="px"
+                cursor="pointer"
+                onClick={() => {
+                  onDrawerOpen();
+                  setCampDrawerInfo(camp);
+                }}
+              >
                 <CampStatusLabel status={getCampStatus(camp)} />
               </Td>
               <Td>

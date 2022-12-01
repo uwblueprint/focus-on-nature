@@ -73,6 +73,7 @@ const NavBar = (): JSX.Element => {
       <Flex
         direction="row"
         justifyContent="space-between"
+        height="40px"
         marginLeft="80px"
         marginRight="80px"
         marginTop="14px"
