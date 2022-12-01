@@ -7,6 +7,7 @@ import Waiver from "./Waiver";
 import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
+import RegistrationFooter from "./RegistrationFooter";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
   WaiverActions,
@@ -51,6 +52,21 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
 
+  const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
+    switch (step) {
+      case RegistrantExperienceSteps.PersonalInfoPage:
+        return isPersonalInfoFilled;
+      case RegistrantExperienceSteps.AdditionalInfoPage:
+        return isAdditionalInfoFilled;
+      case RegistrantExperienceSteps.WaiverPage:
+        return isWaiverFilled;
+      case RegistrantExperienceSteps.ReviewRegistrationPage:
+        return isReviewRegistrationFilled;
+      default:
+        return false;
+    }
+  };
+
   const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
   ) => {
@@ -87,6 +103,18 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         throw new Error("unexpected page");
     }
   };
+
+  const handleStepNavigation = (stepsToMove: number) => {
+    const desiredStep = currentStep + stepsToMove;
+    if (RegistrantExperienceSteps[desiredStep]) {
+      setCurrentStep(currentStep + stepsToMove);
+    } else if (desiredStep < 0) {
+      alert("PLACEHOLDER - go to initial registration");
+    } else {
+      alert("PLACEHOLDER - go to payment");
+    }
+  };
+
   return (
     <Box>
       <RegistrationNavStepper
@@ -97,10 +125,14 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         isReviewRegistrationFilled={isReviewRegistrationFilled}
         setCurrentStep={setCurrentStep}
       />
-
       <Box my="50px" mx="10vw">
         {getCurrentRegistrantStepComponent(currentStep)}
       </Box>
+      <RegistrationFooter
+        currentStep={currentStep}
+        isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
+        handleStepNavigation={handleStepNavigation}
+      />
     </Box>
   );
 };
