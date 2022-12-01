@@ -53,6 +53,7 @@ const Footer = ({
         isOpen={isAddQuestionOpen && !isWaiverFooter}
         onClose={onAddQuestionClose}
         onSave={onAddFormQuestionToTemplateClick}
+        isTemplatePage
       />
       <Flex
         pos="fixed"
