@@ -643,8 +643,10 @@ class CampService implements ICampService {
   async createCampSessions(
     campId: string,
     campSessions: CreateCampSessionsDTO,
+    dbSession?: mongoose.ClientSession,
   ): Promise<CampSessionDTO[]> {
     const insertCampSessions: Omit<CampSessionDTO, "id">[] = [];
+
     campSessions.forEach((campSession) => {
       insertCampSessions.push({
         camp: campId,
@@ -656,7 +658,7 @@ class CampService implements ICampService {
       });
     });
 
-    const camp = await MgCamp.findById(campId);
+    const camp = await MgCamp.findById(campId, {}, { session: dbSession });
     if (!camp) {
       throw new Error(`camp with id ${campId} not found`);
     }
@@ -695,34 +697,25 @@ class CampService implements ICampService {
     let newCampSessionsIds: Array<string>;
 
     try {
-      newCampSessions = await MgCampSession.insertMany(insertCampSessions);
+      newCampSessions = await MgCampSession.insertMany(insertCampSessions, {
+        session: dbSession,
+      });
       newCampSessionsIds = newCampSessions.map((session) => session.id);
+
       await MgCamp.findByIdAndUpdate(
         campId,
         {
           $push: { campSessions: newCampSessionsIds },
         },
-        { runValidators: true },
+        { runValidators: true, session: dbSession },
       );
     } catch (error: unknown) {
-      try {
-        Promise.all(
-          newCampSessions.map(async (session) => {
-            MgCampSession.findByIdAndDelete(session.id);
-          }),
-        );
-      } catch (rollbackError: unknown) {
-        Logger.error(
-          `Failed to rollback camp session creation error. Reason = ${getErrorMessage(
-            rollbackError,
-          )}`,
-        );
-      }
-
       Logger.error(
         `Failed to create CampSession. Reason = ${getErrorMessage(error)}`,
       );
-      throw error;
+      throw new Error(
+        `Could not create CampSessions. Reason = ${getErrorMessage(error)}`,
+      );
     }
 
     return newCampSessions.map(
@@ -924,7 +917,6 @@ class CampService implements ICampService {
       // eslint-disable-next-line no-restricted-syntax
       for await (const updatedSession of newCampSessionPromises) {
         newCampSessions.push(updatedSession);
-        console.log(newCampSessions);
       }
 
       if (newCampSessions.length !== campSessionIds.length) {
@@ -1214,6 +1206,11 @@ class CampService implements ICampService {
 
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     let newCamp: Camp;
+    let newSessions: CampSessionDTO[];
+    let newFormQuestions: FormQuestionDTO[];
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
       const fileName = camp.filePath ? uuidv4() : "";
@@ -1250,6 +1247,7 @@ class CampService implements ICampService {
         };
       }
 
+      // Create a camp with the default values first for FormQuestions + CampSessions
       newCamp = new MgCamp({
         name: camp.name,
         active: camp.active,
@@ -1275,29 +1273,20 @@ class CampService implements ICampService {
         ...priceIds,
       });
 
-      try {
-        await newCamp.save();
-      } catch (error: unknown) {
-        // rollback incomplete camp creation
+      newCamp = await newCamp.save({ session });
+      newSessions = await this.createCampSessions(
+        newCamp.id,
+        camp.campSessions,
+        session,
+      );
 
-        try {
-          MgCamp.findByIdAndDelete(newCamp.id);
-        } catch (rollbackError: unknown) {
-          Logger.error(
-            `Failed to rollback camp creation error. Reason = ${getErrorMessage(
-              rollbackError,
-            )}`,
-          );
-        }
-
-        Logger.error(
-          `Failed to create camp. Reason = ${getErrorMessage(error)}`,
-        );
-        throw error;
-      }
+      await session.commitTransaction();
     } catch (error: unknown) {
       Logger.error(`Failed to create camp. Reason = ${getErrorMessage(error)}`);
+      await session.abortTransaction();
       throw error;
+    } finally {
+      session.endSession();
     }
 
     return {
@@ -1305,7 +1294,7 @@ class CampService implements ICampService {
       active: newCamp.active,
       ageLower: newCamp.ageLower,
       ageUpper: newCamp.ageUpper,
-      campSessions: newCamp.campSessions.map((session) => session.toString()),
+      campSessions: newSessions.map((s) => s.toString()),
       campCoordinators: newCamp.campCoordinators.map((coordinator) =>
         coordinator.toString(),
       ),

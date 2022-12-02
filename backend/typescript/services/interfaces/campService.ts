@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   CampDTO,
   CamperCSVInfoDTO,
@@ -50,6 +51,7 @@ interface ICampService {
   createCampSessions(
     campId: string,
     campSessions: CreateCampSessionsDTO,
+    dbSession?: mongoose.ClientSession,
   ): Promise<CampSessionDTO[]>;
 
   updateCampSessionById(

@@ -98,6 +98,7 @@ campRouter.post(
         startTime: body.startTime,
         endTime: body.endTime,
         volunteers: body.volunteers,
+        campSessions: body.campSessions,
       });
 
       if (req.file?.path) {
