@@ -107,11 +107,11 @@ adminRouter.patch(
   isAuthorizedByRole(new Set(["Admin"])),
   async (req, res) => {
     try {
-      const isSuccess = await adminService.editQuestionInTemplate(
+      const newQuestion = await adminService.editQuestionInTemplate(
         req.params.oldQuestionId,
         req.body.newFormQuestion,
       );
-      res.status(200).json(isSuccess);
+      res.status(200).json(newQuestion);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }
