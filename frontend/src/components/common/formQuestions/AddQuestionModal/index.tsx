@@ -35,7 +35,7 @@ type AddQuestionModalProps = {
   ) => void;
   questionToBeEdited?: CreateFormQuestion;
   editing?: boolean;
-  isTemplatePage?: boolean;
+  isFormTemplatePage?: boolean;
 };
 
 const AddQuestionModal = ({
@@ -45,7 +45,7 @@ const AddQuestionModal = ({
   onEdit,
   questionToBeEdited,
   editing = false,
-  isTemplatePage = false,
+  isFormTemplatePage = false,
 }: AddQuestionModalProps): React.ReactElement => {
   const [question, setQuestion] = useState<string>("");
   const [questionCategory, setQuestionCategory] = useState<string>(
@@ -151,7 +151,7 @@ const AddQuestionModal = ({
               >
                 <option value="PersonalInfo">Camper Information</option>
                 <option value="EmergencyContact">Emergency Contact</option>
-                {!isTemplatePage && (
+                {!isFormTemplatePage && (
                   <option value="CampSpecific">
                     Camp Specific Information
                   </option>
