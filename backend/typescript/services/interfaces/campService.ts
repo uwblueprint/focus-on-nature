@@ -82,15 +82,16 @@ interface ICampService {
   generateCampersCSV(campId: string): Promise<string>;
 
   /**
-   * Adds form questions to db
+   * Creates new FormQuestions in the db and adds it to the formQuestions field in the camp
    * @param campId camp's id
    * @param formQuestions the form questions to be associated with camp
    * @returns formQuestion ids that were successfully inserted
    * @throws Error if formQuestions cannot be inserted
    */
-  createFormQuestions(
+  addFormQuestionsToCamp(
     campId: string,
     formQuestions: FormQuestionDTO[],
+    dbSession?: mongoose.ClientSession,
   ): Promise<string[]>;
 
   /**

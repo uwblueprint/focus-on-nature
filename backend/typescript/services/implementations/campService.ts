@@ -13,6 +13,7 @@ import {
   CreateCampSessionsDTO,
   FormQuestionDTO,
   UpdateCampSessionsDTO,
+  CreateFormQuestionDTO,
 } from "../../types";
 
 import ICampService from "../interfaces/campService";
@@ -1207,7 +1208,7 @@ class CampService implements ICampService {
   async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
     let newCamp: Camp;
     let newSessions: CampSessionDTO[];
-    let newFormQuestions: FormQuestionDTO[];
+    let newFormQuestions: string[];
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -1279,6 +1280,11 @@ class CampService implements ICampService {
         camp.campSessions,
         session,
       );
+      newFormQuestions = await this.addFormQuestionsToCamp(
+        newCamp.id,
+        camp.formQuestions,
+        session,
+      );
 
       await session.commitTransaction();
     } catch (error: unknown) {
@@ -1309,9 +1315,7 @@ class CampService implements ICampService {
       latePickup: newCamp.latePickup,
       location: newCamp.location,
       fee: newCamp.fee,
-      formQuestions: newCamp.formQuestions.map((formQuestion) =>
-        formQuestion.toString(),
-      ),
+      formQuestions: newFormQuestions,
       fileName: newCamp.fileName,
       startTime: newCamp.startTime,
       endTime: newCamp.endTime,
@@ -1345,16 +1349,17 @@ class CampService implements ICampService {
     }
   }
 
-  async createFormQuestions(
+  async addFormQuestionsToCamp(
     campId: string,
-    formQuestions: FormQuestionDTO[],
+    formQuestions: CreateFormQuestionDTO[],
+    dbSession?: mongoose.ClientSession,
   ): Promise<string[]> {
     const formQuestionIds: string[] = [];
 
     try {
       await Promise.all(
         formQuestions.map(async (formQuestion) => {
-          const question = await MgFormQuestion.create({
+          const question = new MgFormQuestion({
             category: formQuestion.category,
             type: formQuestion.type,
             question: formQuestion.question,
@@ -1362,7 +1367,8 @@ class CampService implements ICampService {
             description: formQuestion.description,
             options: formQuestion.options,
           });
-          formQuestionIds.push(question._id);
+          const createdQuestion = await question.save({ session: dbSession });
+          formQuestionIds.push(createdQuestion._id);
         }),
       );
     } catch (error: unknown) {
@@ -1373,9 +1379,13 @@ class CampService implements ICampService {
     }
 
     try {
-      await MgCamp.findByIdAndUpdate(campId, {
-        formQuestions: formQuestionIds,
-      });
+      await MgCamp.findByIdAndUpdate(
+        campId,
+        {
+          formQuestions: formQuestionIds,
+        },
+        { session: dbSession },
+      );
     } catch (error: unknown) {
       Logger.error(
         `Failed to insert question ids into camp ${campId}. Reason = ${getErrorMessage(
