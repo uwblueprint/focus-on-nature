@@ -99,6 +99,7 @@ campRouter.post(
         endTime: body.endTime,
         volunteers: body.volunteers,
         campSessions: body.campSessions,
+        formQuestions: body.formQuestions,
       });
 
       if (req.file?.path) {
@@ -257,7 +258,7 @@ campRouter.post(
   createFormQuestionsValidator,
   async (req, res) => {
     try {
-      const successfulFormQuestions = await campService.createFormQuestions(
+      const successfulFormQuestions = await campService.addFormQuestionsToCamp(
         req.params.campId,
         req.body.formQuestions,
       );

@@ -172,7 +172,7 @@ export type CreateCampDTO = Omit<
 > & {
   filePath?: string;
   fileContentType?: string;
-  // formQuestions: CreateFormQuestionDTO[];
+  formQuestions: CreateFormQuestionDTO[];
   campSessions: CreateCampSessionsDTO;
 };
 

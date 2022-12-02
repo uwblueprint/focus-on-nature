@@ -150,9 +150,18 @@ export const createCampDtoValidator = async (
   if (body.volunteers && !validatePrimitive(body.volunteers, "string")) {
     return res.status(400).send(getApiValidationError("volunteers", "string"));
   }
-  if (body.formQuestions) {
-    return res.status(400).send("formQuestions should be empty");
+  if (!body.formQuestions) {
+    return res.status(400).send("formQuestions is required");
   }
+
+  for (let i = 0; i < body.formQuestions.length; i += 1) {
+    const formQuestion = body.formQuestions[i];
+    const isValid = validateFormQuestion(formQuestion);
+    if (!isValid) {
+      return false;
+    }
+  }
+
   if (body.campSessions) {
     for (let i = 0; i < body.campSessions.length; i += 1) {
       const campSession = body.campSessions[i];
