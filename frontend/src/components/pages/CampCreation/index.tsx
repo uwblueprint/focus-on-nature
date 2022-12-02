@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, VStack, useToast } from "@chakra-ui/react";
-import CampDetails from "./CampDetails";
+import { Text, Box, VStack, useToast } from "@chakra-ui/react";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
 import CampCreationPages from "./CampCreationPages";
@@ -11,13 +10,29 @@ import {
   CreateFormQuestion,
   CreateCampSession,
 } from "../../../types/CampsTypes";
+import CampCreationDetails from "./CampDetails";
 
 const CampCreationPage = (): React.ReactElement => {
   /* eslint-disable */
   // All response state from the three page components.
-  const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
-  const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
-  const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
+  const [campName, setCampName] = useState<string>("");
+  const [campDescription, setCampDescription] = useState<string>("");
+  const [dailyCampFee, setDailyCampFee] = useState<number>(0);
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
+  const [ageLower, setAgeLower] = useState<number>(0);
+  const [ageUpper, setAgeUpper] = useState<number>(0);
+  const [campCapacity, setCampCapacity] = useState<number>(0);
+  const [offersEDLP, setOffersEDLP] = useState<boolean>(false);
+  const [earliestDropOffTime, setEarliestDropOffTime] = useState<string>("");
+  const [latestPickUpTime, setLatestPickUpTime] = useState<string>("");
+  const [priceEDLP, setPriceEDLP] = useState<number>(0);
+  const [addressLine1, setAddresLine1] = useState<string>("");
+  const [addressLine2, setAddresLine2] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [postalCode, setPostalCode] = useState<string>("");
+  const [campImageURL, setCampImageURL] = useState<string>("");
 
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
@@ -28,8 +43,27 @@ const CampCreationPage = (): React.ReactElement => {
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled =
-    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isCampDetailsFilled = (
+    campName !=="" && 
+    campDescription !== "" &&
+    dailyCampFee !== 0 &&
+    startTime !== "" &&
+    endTime !== "" &&
+    ageLower !== 0 &&
+    ageUpper !== 0 &&
+    (offersEDLP?
+      earliestDropOffTime !== "" &&
+      latestPickUpTime !== "" &&
+      priceEDLP !== 0
+      :
+      true
+    ) &&
+    campCapacity !== 0 &&
+    addressLine1 !== "" &&
+    city !== "" &&
+    province !== "" &&
+    postalCode !== ""
+    );
   const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 
@@ -114,18 +148,75 @@ const CampCreationPage = (): React.ReactElement => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
         return (
-          <CampDetails
-            campDetailsDummyOne={campDetailsDummyOne}
-            campDetailsDummyTwo={campDetailsDummyTwo}
-            campDetailsDummyThree={campDetailsDummyThree}
-            toggleCampDetailsDummyOne={() =>
-              setCampDetailsDummyOne(!campDetailsDummyOne)
+          <CampCreationDetails
+            campName={campName}
+            campDescription={campDescription}
+            dailyCampFee={dailyCampFee}
+            startTime={startTime}
+            endTime={endTime}
+            ageLower={ageLower}
+            ageUpper={ageUpper}
+            campCapacity={campCapacity}
+            offersEDLP={offersEDLP}
+            earliestDropOffTime={earliestDropOffTime}
+            latestPickUpTime={latestPickUpTime}
+            priceEDLP={priceEDLP}
+            addressLine1={addressLine1}
+            addressLine2={addressLine2}
+            city={city}
+            province={province}
+            postalCode={postalCode}
+            campImageURL={campImageURL}
+            handleCampName={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setCampName(event.target.value)
             }
-            toggleCampDetailsDummyTwo={() =>
-              setCampDetailsDummyTwo(!campDetailsDummyTwo)
+            handleCampDescription={(event:React.ChangeEvent<HTMLTextAreaElement>) =>
+              setCampDescription(event.target.value)
             }
-            handleCampDetailsDummyThree={(event) =>
-              setCampDetailsDummyThree(event.target.value)
+            handleDailyCampFee={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setDailyCampFee(Number(event.target.value))
+            }
+            handleStartTime={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setStartTime(event.target.value)
+            }
+            handleEndTime={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setEndTime(event.target.value)
+            }
+            handleAgeLower={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setAgeLower(Number(event.target.value))
+            }
+            handleAgeUpper={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setAgeUpper(Number(event.target.value))
+            }
+            handleCampCapacity={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setCampCapacity(Number(event.target.value))
+            }
+            toggleEDLP={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setOffersEDLP(Boolean(event.target.checked))
+            }
+            handleEarliestDropOffTime={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setEarliestDropOffTime(event.target.value)
+            }
+            handleLatestPickUpTime={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setLatestPickUpTime(event.target.value)
+            }
+            handlePriceEDLP={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setPriceEDLP(Number(event.target.value))
+            }
+            handleAddressLine1={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setAddresLine1(event.target.value)
+            }
+            handleAddressLine2={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setAddresLine2(event.target.value)
+            }
+            handleCity={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setCity(event.target.value)
+            }
+            handleProvince={(event:React.ChangeEvent<HTMLSelectElement>) =>
+              setProvince(event.target.value)
+            }
+            handlePostalCode={(event:React.ChangeEvent<HTMLInputElement>) =>
+              setPostalCode(event.target.value)
             }
           />
         );
@@ -164,7 +255,27 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-      <Box w="100%" flex="1" mt={[0, "0 !important"]}>
+
+      <Text>{campName}</Text>
+      <Text>{campDescription}</Text>
+      <Text>{dailyCampFee}</Text>
+      <Text>{startTime}</Text>
+      <Text>{endTime}</Text>
+      <Text>{ageLower}</Text>
+      <Text>{ageUpper}</Text>
+      <Text>{campCapacity}</Text>
+      <Text>{offersEDLP}</Text>
+      <Text>{earliestDropOffTime}</Text>
+      <Text>{latestPickUpTime}</Text>
+      <Text>{priceEDLP}</Text>
+      <Text>{addressLine1}</Text>
+      <Text>{addressLine2}</Text>
+      <Text>{city} </Text>
+      <Text>{province}</Text>
+      <Text>{postalCode}</Text>
+      <Text>{campImageURL}</Text>
+
+      <Box w="100%" flex="1" mt={[0, "0 !important"]} paddingLeft="200px">
         {getCampCreationStepComponent(currentPage)}
       </Box>
     </VStack>
