@@ -8,6 +8,8 @@ export const HOOKS_PAGE = "/hooks";
 
 export const CAMPS_PAGE = "/admin";
 
+export const ADMIN_PREFIX_LENGTH = CAMPS_PAGE.length;
+
 export const CAMP_CREATION_PAGE = "/admin/add-camp";
 
 export const GLOBAL_FORMS_PAGE = "/admin/global-forms";
