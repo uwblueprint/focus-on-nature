@@ -15,24 +15,24 @@ import CampCreationDetails from "./CampDetails";
 const CampCreationPage = (): React.ReactElement => {
   /* eslint-disable */
   // All response state from the three page components.
-  const [campName, setCampName] = useState<string>("");
-  const [campDescription, setCampDescription] = useState<string>("");
-  const [dailyCampFee, setDailyCampFee] = useState<number>(0);
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
-  const [ageLower, setAgeLower] = useState<number>(0);
-  const [ageUpper, setAgeUpper] = useState<number>(0);
-  const [campCapacity, setCampCapacity] = useState<number>(0);
+  const [campName, setCampName] = useState<string>();
+  const [campDescription, setCampDescription] = useState<string>();
+  const [dailyCampFee, setDailyCampFee] = useState<number>();
+  const [startTime, setStartTime] = useState<string>();
+  const [endTime, setEndTime] = useState<string>();
+  const [ageLower, setAgeLower] = useState<number>();
+  const [ageUpper, setAgeUpper] = useState<number>();
+  const [campCapacity, setCampCapacity] = useState<number>();
   const [offersEDLP, setOffersEDLP] = useState<boolean>(false);
-  const [earliestDropOffTime, setEarliestDropOffTime] = useState<string>("");
-  const [latestPickUpTime, setLatestPickUpTime] = useState<string>("");
-  const [priceEDLP, setPriceEDLP] = useState<number>(0);
-  const [addressLine1, setAddresLine1] = useState<string>("");
-  const [addressLine2, setAddresLine2] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [province, setProvince] = useState<string>("");
-  const [postalCode, setPostalCode] = useState<string>("");
-  const [campImageURL, setCampImageURL] = useState<string>("");
+  const [earliestDropOffTime, setEarliestDropOffTime] = useState<string>();
+  const [latestPickUpTime, setLatestPickUpTime] = useState<string>();
+  const [priceEDLP, setPriceEDLP] = useState<number>();
+  const [addressLine1, setAddresLine1] = useState<string>();
+  const [addressLine2, setAddresLine2] = useState<string>();
+  const [city, setCity] = useState<string>();
+  const [province, setProvince] = useState<string>();
+  const [postalCode, setPostalCode] = useState<string>();
+  const [campImageURL, setCampImageURL] = useState<string>();
 
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
@@ -43,27 +43,33 @@ const CampCreationPage = (): React.ReactElement => {
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled = (
-    campName !=="" && 
-    campDescription !== "" &&
-    dailyCampFee !== 0 &&
-    startTime !== "" &&
-    endTime !== "" &&
-    ageLower !== 0 &&
-    ageUpper !== 0 &&
+  let isCampDetailsFilled = false
+    
+  if(campName && 
+    campDescription &&
+    dailyCampFee &&
+    startTime &&
+    endTime &&
+    ageLower &&
+    ageUpper &&
     (offersEDLP?
-      earliestDropOffTime !== "" &&
-      latestPickUpTime !== "" &&
-      priceEDLP !== 0
+      earliestDropOffTime &&
+      latestPickUpTime &&
+      priceEDLP
       :
       true
     ) &&
-    campCapacity !== 0 &&
-    addressLine1 !== "" &&
-    city !== "" &&
-    province !== "" &&
-    postalCode !== ""
-    );
+    campCapacity &&
+    addressLine1 &&
+    city &&
+    province &&
+    province &&
+    postalCode
+    )
+    isCampDetailsFilled = true
+  else
+    isCampDetailsFilled = false
+
   const isScheduleSessionsFilled = scheduledSessions.length != 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 
@@ -218,6 +224,7 @@ const CampCreationPage = (): React.ReactElement => {
             handlePostalCode={(event:React.ChangeEvent<HTMLInputElement>) =>
               setPostalCode(event.target.value)
             }
+            setCampImageURL={setCampImageURL}
           />
         );
       case CampCreationPages.ScheduleSessionsPage:
@@ -255,25 +262,6 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-
-      <Text>{campName}</Text>
-      <Text>{campDescription}</Text>
-      <Text>{dailyCampFee}</Text>
-      <Text>{startTime}</Text>
-      <Text>{endTime}</Text>
-      <Text>{ageLower}</Text>
-      <Text>{ageUpper}</Text>
-      <Text>{campCapacity}</Text>
-      <Text>{offersEDLP}</Text>
-      <Text>{earliestDropOffTime}</Text>
-      <Text>{latestPickUpTime}</Text>
-      <Text>{priceEDLP}</Text>
-      <Text>{addressLine1}</Text>
-      <Text>{addressLine2}</Text>
-      <Text>{city} </Text>
-      <Text>{province}</Text>
-      <Text>{postalCode}</Text>
-      <Text>{campImageURL}</Text>
 
       <Box w="100%" flex="1" mt={[0, "0 !important"]} paddingLeft="200px">
         {getCampCreationStepComponent(currentPage)}

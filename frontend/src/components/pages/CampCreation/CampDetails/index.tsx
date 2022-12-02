@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef} from "react";
 import {
   Text,
   Textarea,
@@ -9,12 +9,11 @@ import {
   Box, Select,
   HStack,
   Checkbox,
-  Divider,
-  FormControl,
-  FormLabel,
   Button,
+  Image,
 } from "@chakra-ui/react";
 import { WaiverClause } from "../../../../types/AdminTypes";
+import IconImage from "../../../../assets/icon_image.svg"
 
 
 interface WaiverSectionCardProps {
@@ -25,24 +24,24 @@ interface WaiverSectionCardProps {
 }
 
 type CampCreationDetailsProps = {
-  campName:string,
-  campDescription:string,
-  dailyCampFee:number,
-  startTime:string,
-  endTime:string,
-  ageLower:number,
-  ageUpper:number,
-  campCapacity:number,
-  offersEDLP:boolean,
-  earliestDropOffTime:string,
-  latestPickUpTime:string,
-  priceEDLP:number,
-  addressLine1:string,
-  addressLine2:string,
-  city:string,
-  province:string,
-  postalCode:string,
-  campImageURL:string,
+  campName:string | undefined,
+  campDescription:string | undefined,
+  dailyCampFee:number | undefined,
+  startTime:string | undefined,
+  endTime:string | undefined,
+  ageLower:number | undefined,
+  ageUpper:number | undefined,
+  campCapacity:number | undefined,
+  offersEDLP:boolean | undefined,
+  earliestDropOffTime:string | undefined,
+  latestPickUpTime:string | undefined,
+  priceEDLP:number | undefined,
+  addressLine1:string | undefined,
+  addressLine2:string | undefined,
+  city:string | undefined,
+  province:string | undefined,
+  postalCode:string | undefined,
+  campImageURL:string | undefined,
   handleCampName: (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
@@ -94,6 +93,7 @@ type CampCreationDetailsProps = {
   handlePostalCode: (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
+  setCampImageURL: React.Dispatch<React.SetStateAction<string | undefined>>
 };
 
 const CampCreationDetails = ({
@@ -132,9 +132,10 @@ const CampCreationDetails = ({
   handleCity,
   handleProvince,
   handlePostalCode,
+  setCampImageURL,
 }: CampCreationDetailsProps): JSX.Element => {
   const [showErrors, setShowErrors] = useState<boolean>(false)
-  console.log(showErrors)
+  const [showImageError, setShowImageError] = useState<boolean>(false)
 
   const errorText = (input: boolean|string|number|undefined, message:string) => {
     return(      
@@ -142,6 +143,47 @@ const CampCreationDetails = ({
         {message}
       </Text>)
   }
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCampImageClick = () => {
+    if(imageInputRef && imageInputRef.current)
+      imageInputRef.current.click();
+  };
+
+  const handleFile = (file: File) => {
+    if(file){
+      const fileType = file.type.split('/')[0]
+      const fileSize = Math.round(file.size/1024)
+
+      if (fileType === 'image' && fileSize <= 5*1024){
+          const url = URL.createObjectURL(file)
+          setCampImageURL(url);
+          setShowImageError(false)
+      }
+      else
+        setShowImageError(true)
+    }
+  }
+
+
+  const handleCampImageURL=(event:React.ChangeEvent<HTMLInputElement>) =>{
+    if(event && event.target && event.target.files){
+      handleFile(event.target.files[0])
+    }
+  }
+
+  const handleOnDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  }
+
+  const handleOnDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault(); 
+    event.stopPropagation(); 
+    const imageFile = event.dataTransfer.files[0];
+    handleFile(imageFile);
+  }
+
 
   function getSectionTitle(number: number) {
     const code = "A".charCodeAt(0);
@@ -166,7 +208,6 @@ const CampCreationDetails = ({
     <>
       <Text textStyle="displayXLarge" marginTop="56px">Camp Details</Text>
       <Text textStyle="displayLarge" marginTop="32px">Overview</Text>
-      <Button onClick={() => setShowErrors(true)}>Dummy Submit</Button>
 
       <Text textStyle="buttonSemiBold" marginTop="32px"> 
         Camp Name{" "}
@@ -246,7 +287,7 @@ const CampCreationDetails = ({
           </Text>
           <HStack alignItems="start" spacing={4} marginTop="8px">
             <Box width="100px">
-              <Input type="number" width="100px" height="52px"
+              <Input type="number" width="100px" height="52px" maxLength={2}
                 value={ageLower}
                 borderColor={!ageLower && showErrors?"red":"gray.200"}
                 borderWidth={!ageLower && showErrors?"2px":"1px"}onChange={handleAgeLower}/>
@@ -254,7 +295,7 @@ const CampCreationDetails = ({
             </Box>
             <Text paddingTop="14px"> to </Text>
             <Box width="100px">
-              <Input type="number" width="100px" height="52px"
+              <Input type="number" width="100px" height="52px" maxLength={2}
                 value={ageUpper}
                 borderColor={!ageUpper && showErrors?"red":"gray.200"}
                 borderWidth={!ageUpper && showErrors?"2px":"1px"}onChange={handleAgeUpper}/>
@@ -353,7 +394,9 @@ const CampCreationDetails = ({
       <Text textStyle="buttonSemiBold" marginTop="24px">
         Address Line 2{" "}
       </Text>
-      <Input width="575px" height="52px" marginTop="8px"onChange={handleAddressLine2}/>
+      <Input width="575px" height="52px" marginTop="8px"
+        value={addressLine2}
+        onChange={handleAddressLine2}/>
 
       <HStack alignItems="start" marginTop="24px" spacing="20px">
         <Box width="250px">
@@ -366,7 +409,7 @@ const CampCreationDetails = ({
               borderColor={!city && showErrors?"red":"gray.200"}
               borderWidth={!city && showErrors?"2px":"1px"}
               onChange={handleCity}/> 
-            {errorText(addressLine1,"You must enter a city name.")}
+            {errorText(city,"You must enter a city name.")}
         </Box>
         <Box width="250px">
             <Text textStyle="buttonSemiBold">
@@ -413,11 +456,63 @@ const CampCreationDetails = ({
 
       <Text textStyle="displayLarge">Camp Image</Text>
 
-      <Box marginTop="32px" bg="tomato" width="200px" marginBottom="56px">image thing</Box>
-      <Input type="file" width="500px"/>
+      <input
+          type="file"                                                                                                                                               
+          onChange={handleCampImageURL}
+          ref={imageInputRef}
+          style={{display: 'none',}}
+          accept="image/*"
+      />          
+      <Box marginTop="32px" bg="background.grey.200" width="528px" height="325px"
+        border="3px"borderStyle="dashed" borderColor="gray.200"
+        onDragOver = {handleOnDragOver}
+        onDrop = {handleOnDrop}
+        _hover={{
+          borderColor: "gray.400",
+        }}
+        onClick={handleCampImageClick}
+        cursor="pointer"
+      >
+        {!campImageURL?(
+          <>
+            <Image margin="35px auto 0 auto" src={IconImage} alt="File upload icon" width="190px" />
+            <Text textStyle="buttonSemiBold" textAlign="center" marginTop="30px">Click or drag and drop to add an image  
+            <br/>Max File Size: 5 MB </Text>
+          </>
+        ):(            
+          <Image 
+          width="528px" height="319px"
+          src={campImageURL} alt="camp" />   
+        )}
 
+      </Box>
+      <Text textStyle="caption" color="red" marginTop="8px" display={showImageError?"":"none"}>
+        Please upload images less than 5 MB.
+      </Text>
+      
+      <Button
+        marginTop="8px"
+        marginRight="20px"
+        aria-label="Replace Image"
+        border="1px"
+        borderRadius="5px"
+        color="primary.green.100"
+        bg="white"
+        borderColor="primary.green.100"
+        minWidth="-webkit-fit-content"
+        display={!campImageURL?"none":""}
+        cursor='pointer'
+        onClick={handleCampImageClick}
+      >
+        Replace Image
+      </Button>
+     
+    
 
-
+      
+      <Box marginTop="20px" >
+        <Button onClick={() => setShowErrors(true)}>Dummy Submit</Button>
+      </Box>
     </>
   );
 };
