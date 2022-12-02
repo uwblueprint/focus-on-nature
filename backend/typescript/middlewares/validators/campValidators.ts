@@ -154,7 +154,32 @@ export const createCampDtoValidator = async (
     return res.status(400).send("formQuestions should be empty");
   }
   if (body.campSessions) {
-    return res.status(400).send("campSessions should be empty");
+    for (let i = 0; i < body.campSessions.length; i += 1) {
+      const campSession = body.campSessions[i];
+      if (!validateArray(campSession.dates, "string")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "string", true));
+      }
+      if (!campSession.dates?.every(validateDate)) {
+        return res
+          .status(400)
+          .send(getApiValidationError("dates", "Date string"));
+      }
+      if (!validatePrimitive(campSession.capacity, "integer")) {
+        return res
+          .status(400)
+          .send(getApiValidationError("capacity", "integer"));
+      }
+      if (campSession.campers) {
+        return res.status(400).send("campers should be empty");
+      }
+      if (campSession.waitlist) {
+        return res.status(400).send("waitlist should be empty");
+      }
+    }
+  } else {
+    return res.status(400).send("campSessions are required");
   }
   if (body.campers) {
     return res.status(400).send("campers should be empty");
