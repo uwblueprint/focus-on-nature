@@ -10,8 +10,8 @@ import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccor
 
 type RegistrationFormTemplateTabProps = {
   templateQuestions: Array<FormQuestion>;
-  onDeleteCustomQuestion: (questionToBeDeleted: FormQuestion) => void;
-  onEditCustomQuestion: (
+  onRemoveFormQuestion: (questionToRemove: FormQuestion) => void;
+  onEditFormQuestion: (
     oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => void;
@@ -19,8 +19,8 @@ type RegistrationFormTemplateTabProps = {
 
 const RegistrationFormTemplateTab = ({
   templateQuestions,
-  onDeleteCustomQuestion,
-  onEditCustomQuestion,
+  onRemoveFormQuestion,
+  onEditFormQuestion,
 }: RegistrationFormTemplateTabProps): React.ReactElement => {
   return (
     <div>
@@ -31,8 +31,8 @@ const RegistrationFormTemplateTab = ({
             (question) => question.category === "PersonalInfo",
           )}
           accordionTitle="Camper Information"
-          onDeleteCustomQuestion={onDeleteCustomQuestion}
-          onEditCustomQuestion={onEditCustomQuestion}
+          onDeleteCustomQuestion={onRemoveFormQuestion}
+          onEditCustomQuestion={onEditFormQuestion}
         />
         <QuestionsAccordionItem
           fixedQuestions={fixedEmergencyContactQuestions}
@@ -40,8 +40,8 @@ const RegistrationFormTemplateTab = ({
             (question) => question.category === "EmergencyContact",
           )}
           accordionTitle="Emergency Contact"
-          onDeleteCustomQuestion={onDeleteCustomQuestion}
-          onEditCustomQuestion={onEditCustomQuestion}
+          onDeleteCustomQuestion={onRemoveFormQuestion}
+          onEditCustomQuestion={onEditFormQuestion}
         />
       </Accordion>
     </div>

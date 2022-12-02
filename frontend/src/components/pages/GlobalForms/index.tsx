@@ -194,8 +194,10 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
-  const onDeleteCustomQuestion = async (formQuestion: FormQuestion) => {
-    const res = await AdminAPIClient.deleteFormQuestion(formQuestion.id);
+  const removeFormQuestionFromTemplate = async (formQuestion: FormQuestion) => {
+    const res = await AdminAPIClient.removeFormQuestionFromTemplate(
+      formQuestion.id,
+    );
 
     if (res) {
       setFormTemplateQuestions((oldArr: FormQuestion[]) =>
@@ -218,7 +220,7 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
-  const onEditCustomQuestion = async (
+  const editFormQuestion = async (
     oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => {
@@ -286,8 +288,8 @@ const GlobalFormsPage = (): React.ReactElement => {
               <TabPanel>
                 <RegistrationFormTemplateTab
                   templateQuestions={formTemplateQuestions}
-                  onDeleteCustomQuestion={onDeleteCustomQuestion}
-                  onEditCustomQuestion={onEditCustomQuestion}
+                  onRemoveFormQuestion={removeFormQuestionFromTemplate}
+                  onEditFormQuestion={editFormQuestion}
                 />
               </TabPanel>
               <TabPanel>

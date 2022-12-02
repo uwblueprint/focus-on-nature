@@ -59,7 +59,9 @@ const getFormTemplate = async (): Promise<FormTemplate> => {
   }
 };
 
-const deleteFormQuestion = async (formQuestionId: string): Promise<boolean> => {
+const removeFormQuestionFromTemplate = async (
+  formQuestionId: string,
+): Promise<boolean> => {
   try {
     await baseAPIClient.delete(
       `/admin/formTemplate/formQuestion/${formQuestionId}`,
@@ -96,6 +98,6 @@ export default {
   getWaiver,
   addQuestionToTemplate,
   getFormTemplate,
-  deleteFormQuestion,
+  removeFormQuestionFromTemplate,
   editFormQuestion,
 };
