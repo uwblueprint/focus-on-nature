@@ -140,6 +140,8 @@ campRouter.patch(
         startTime: body.startTime,
         endTime: body.endTime,
         volunteers: body.volunteers,
+        campSessions: body.campSessions,
+        formQuestions: body.formQuestions,
       });
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);

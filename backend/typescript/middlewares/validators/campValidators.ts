@@ -16,6 +16,30 @@ import {
 } from "./util";
 import { getErrorMessage } from "../../utilities/errorUtils";
 
+const createCampSessionDTOValidator = (campSession: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}): boolean => {
+  if (!validateArray(campSession.dates, "string")) {
+    throw new Error(getApiValidationError("dates", "string", true));
+  }
+  if (!campSession.dates?.every(validateDate)) {
+    throw new Error(getApiValidationError("dates", "Date string"));
+  }
+  if (!validatePrimitive(campSession.capacity, "integer")) {
+    throw new Error(getApiValidationError("capacity", "integer"));
+  }
+  if (campSession.campers) {
+    throw new Error("campers should be empty");
+  }
+  if (campSession.waitlist) {
+    throw new Error("waitlist should be empty");
+  }
+  return true;
+};
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable-next-line import/prefer-default-export */
 export const getCampDtoValidator = async (
   req: Request,
   res: Response,
@@ -153,38 +177,22 @@ export const createCampDtoValidator = async (
   if (!body.formQuestions) {
     return res.status(400).send("formQuestions is required");
   }
-
   for (let i = 0; i < body.formQuestions.length; i += 1) {
     const formQuestion = body.formQuestions[i];
     const isValid = validateFormQuestion(formQuestion);
     if (!isValid) {
-      return false;
+      return res.status(400).send("formQuestion is formatted incorrectly");
     }
   }
 
   if (body.campSessions) {
     for (let i = 0; i < body.campSessions.length; i += 1) {
       const campSession = body.campSessions[i];
-      if (!validateArray(campSession.dates, "string")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "string", true));
-      }
-      if (!campSession.dates?.every(validateDate)) {
-        return res
-          .status(400)
-          .send(getApiValidationError("dates", "Date string"));
-      }
-      if (!validatePrimitive(campSession.capacity, "integer")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("capacity", "integer"));
-      }
-      if (campSession.campers) {
-        return res.status(400).send("campers should be empty");
-      }
-      if (campSession.waitlist) {
-        return res.status(400).send("waitlist should be empty");
+      try {
+        createCampSessionDTOValidator(campSession);
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        res.status(400).send(err.message);
       }
     }
   } else {
@@ -327,12 +335,31 @@ export const updateCampDtoValidator = async (
   if (body.fee < 0) {
     return res.status(400).send("fee cannot be negative");
   }
-  if (body.formQuestions) {
-    return res.status(400).send("formQuestions should be empty");
+  if (!body.formQuestions) {
+    return res.status(400).send("formQuestions is required");
   }
-  if (body.campSessions) {
-    return res.status(400).send("campSessions should be empty");
+  for (let i = 0; i < body.formQuestions.length; i += 1) {
+    const formQuestion = body.formQuestions[i];
+    const isValid = validateFormQuestion(formQuestion);
+    if (!isValid) {
+      return res.status(400).send("formQuestion is formatted incorrectly");
+    }
   }
+
+  if (!body.campSessions) {
+    return res.status(400).send("campSessions is required");
+  }
+
+  for (let i = 0; i < body.campSessions.length; i += 1) {
+    const campSession = body.campSessions[i];
+    try {
+      createCampSessionDTOValidator(campSession);
+    } catch (err: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      res.status(400).send(err.message);
+    }
+  }
+
   if (req.file && !validateImageType(req.file.mimetype)) {
     fs.unlinkSync(req.file.path);
     return res.status(400).send(getImageTypeValidationError(req.file.mimetype));

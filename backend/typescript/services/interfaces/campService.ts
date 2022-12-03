@@ -46,6 +46,7 @@ interface ICampService {
   deleteCampSessionsByIds(
     campId: string,
     campSessionIds: Array<string>,
+    dbSession?: mongoose.ClientSession,
   ): Promise<void>;
 
   createCampSessions(
@@ -85,6 +86,7 @@ interface ICampService {
    * Creates new FormQuestions in the db and adds it to the formQuestions field in the camp
    * @param campId camp's id
    * @param formQuestions the form questions to be associated with camp
+   * @param dbSession an optional session object used by parent functions if this is part of a series of changes
    * @returns formQuestion ids that were successfully inserted
    * @throws Error if formQuestions cannot be inserted
    */
@@ -114,6 +116,17 @@ interface ICampService {
    * @throws Error if formQuestions cannot be found or deleted
    */
   deleteFormQuestion(campId: string, formQuestionId: string): Promise<void>;
+
+  /**
+   * deleteFormQuestionsByIds deletes the formQuestions provided
+   * @param formQuestionIds the ids of the formQuestions to delete
+   * @param dbSession an optional session object used by parent functions if this is part of a series of changes
+   * @throws Error if formQuestions cannot be deleted
+   */
+  deleteFormQuestionsByIds(
+    formQuestionIds: string[],
+    dbSession?: mongoose.ClientSession,
+  ): Promise<void>;
 
   /**
    * Append form questions to existing camp
