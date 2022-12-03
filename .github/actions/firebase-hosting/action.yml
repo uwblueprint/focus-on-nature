@@ -1,0 +1,36 @@
+name: "Deploy frontend to Firebase"
+
+inputs:
+  channel-id:
+    required: false
+    default: ""
+    type: string
+  backend-url:
+    description: "URL for backend deployment of application"
+    required: true
+  oauth-client-id:
+    required: true
+  repo-token:
+    required: true
+  firebase-service-account:
+    required: true
+  firebase-project-id:
+    required: true
+
+defaults:
+  run:
+    working-directory: frontend
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "REACT_APP_BACKEND_URL=${{ inputs.backend-url }}" > .env
+    - run: echo "REACT_APP_OAUTH_CLIENT_ID=${{ inputs.oauth-client-id }}" >> .env
+    - run: rm -rf node_modules && yarn install --frozen-lockfile && yarn build
+    - uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ inputs.repo-token }}"
+        firebaseServiceAccount: "${{ inputs.firebase-service-account }}"
+        projectId: "${{ inputs.firebase-project-id }}"
+        channelId: "${{ inputs.channel-id }}"
+        entryPoint: ./frontend

@@ -1,14 +1,12 @@
-name: Deploy backend to Heroku dev environment
+name: Deploy application to production
 
 on:
   push:
     branches:
-      - dev
-    paths:
-      - "backend/typescript/**"
+      - main
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
     environment: fon-staging
     steps:
@@ -16,7 +14,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Deploy to Heroku
+      - name: Deploy frontend to Firebase
+        uses: ./.github/actions/firebase-hosting
+        with:
+          channel-id: live
+          backend-url: "${{ secrets.PREVIEW_BACKEND_URL }}"
+          oauth-client-id: "${{ secrets.OAUTH_CLIENT_ID }}"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          firebase-service-account: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS_ON_NATURE }}"
+          firebase-project-id: "${{ secrets.FIREBASE_PROJECT_ID }}"
+      - name: Deploy backend to Heroku
         uses: ./.github/actions/heroku-deploy
         with:
           heroku-api-key: "${{ secrets.HEROKU_API_KEY }}"
