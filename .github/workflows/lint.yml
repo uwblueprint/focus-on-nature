@@ -8,7 +8,6 @@ on:
     paths:
       - "frontend/**"
       - "backend/typescript/**"
-      - "backend/python/**"
   pull_request:
     branches:
       - main
@@ -16,7 +15,6 @@ on:
     paths:
       - "frontend/**"
       - "backend/typescript/**"
-      - "backend/python/**"
 
 jobs:
   run-lint:
@@ -34,8 +32,6 @@ jobs:
               - "frontend/**"
             typescript-backend:
               - "backend/typescript/**"
-            python-backend:
-              - "backend/python/**"
 
       - name: Set up Node.js
         if: steps.changes.outputs.frontend == 'true' || steps.changes.outputs.typescript-backend == 'true'
@@ -60,8 +56,3 @@ jobs:
         if: steps.changes.outputs.typescript-backend == 'true'
         working-directory: ./backend/typescript
         run: yarn lint
-
-      - name: Lint Python backend
-        if: steps.changes.outputs.python-backend == 'true'
-        working-directory: ./backend/python
-        run: pip install black && python -m black --check .
