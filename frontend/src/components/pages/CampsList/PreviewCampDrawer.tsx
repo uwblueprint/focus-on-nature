@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { FontWeights } from "../../../theme/textStyles";
 import CampStatusLabel from "./CampStatusLabel";
@@ -9,6 +10,7 @@ import {
   CampStatus,
 } from "../../../types/CampsTypes";
 import PreviewModalSessionRow from "./PreviewModalSessionRow";
+import { CAMP_OVERVIEW_PAGE } from "../../../constants/Routes";
 
 type CampDrawerProps = {
   isOpen: boolean;
@@ -78,18 +80,20 @@ const PreviewCampDrawer = ({
           </Text>
         </Box>
         <Box margin="20px 0">
-          <Button
-            marginRight="20px"
-            aria-label="View Camp"
-            border="1px"
-            borderRadius="5px"
-            color="primary.green.100"
-            bg="white"
-            borderColor="primary.green.100"
-            minWidth="-webkit-fit-content"
-          >
-            View Camp
-          </Button>
+          <Link to={CAMP_OVERVIEW_PAGE.replace(":id", camp.id)}>
+            <Button
+              marginRight="20px"
+              aria-label="View Camp"
+              border="1px"
+              borderRadius="5px"
+              color="primary.green.100"
+              bg="white"
+              borderColor="primary.green.100"
+              minWidth="-webkit-fit-content"
+            >
+              View Camp
+            </Button>
+          </Link>
           {getCampStatus(camp) !== CampStatus.COMPLETED && (
             <Button
               marginRight="20px"
