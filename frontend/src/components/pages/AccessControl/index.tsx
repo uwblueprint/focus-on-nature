@@ -2,6 +2,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
   Button,
+  Center,
   Container,
   HStack,
   IconButton,
@@ -13,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Select,
+  Spinner,
   Table,
   Tag,
   TagLabel,
@@ -52,6 +54,7 @@ const AccessControlPage = (): JSX.Element => {
     UserStatusStates.INACTIVE_CAPITALIZED,
   ];
 
+  const [loading, setLoading] = React.useState(true);
   const [users, setUsers] = React.useState([] as UserResponse[]);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<UserStatusStates>(
@@ -69,6 +72,7 @@ const AccessControlPage = (): JSX.Element => {
     const getUsers = async () => {
       const res = await UserAPIClient.getAllUsers();
       if (res.length !== undefined) setUsers(res);
+      setLoading(false);
     };
 
     getUsers();
@@ -329,6 +333,21 @@ const AccessControlPage = (): JSX.Element => {
           ))}
         </Tbody>
       </Table>
+      {loading && (
+        <Center bg="background.white.100" p="30px">
+          <Spinner />
+        </Center>
+      )}
+      {!loading && tableData.length === 0 && (
+        <Center
+          bg="background.white.100"
+          color="text.grey.600"
+          p="30px"
+          textStyle="buttonSemiBold"
+        >
+          No results found
+        </Center>
+      )}
     </Container>
   );
 };
