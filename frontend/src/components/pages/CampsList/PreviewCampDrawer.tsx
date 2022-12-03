@@ -3,7 +3,11 @@ import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { FontWeights } from "../../../theme/textStyles";
 import CampStatusLabel from "./CampStatusLabel";
 import { getCampStatus, locationString } from "../../../utils/CampUtils";
-import { CampResponse, CampSession } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CampSession,
+  CampStatus,
+} from "../../../types/CampsTypes";
 import PreviewModalSessionRow from "./PreviewModalSessionRow";
 
 type CampDrawerProps = {
@@ -86,18 +90,20 @@ const PreviewCampDrawer = ({
           >
             View Camp
           </Button>
-          <Button
-            marginRight="20px"
-            aria-label="View Camp"
-            border="1px"
-            borderRadius="5px"
-            color="secondary.critical.100"
-            bg="white"
-            borderColor="secondary.critical.100"
-            minWidth="-webkit-fit-content"
-          >
-            Delete Camp
-          </Button>
+          {getCampStatus(camp) !== CampStatus.COMPLETED && (
+            <Button
+              marginRight="20px"
+              aria-label="View Camp"
+              border="1px"
+              borderRadius="5px"
+              color="secondary.critical.100"
+              bg="white"
+              borderColor="secondary.critical.100"
+              minWidth="-webkit-fit-content"
+            >
+              Delete Camp
+            </Button>
+          )}
         </Box>
       </Box>
 
