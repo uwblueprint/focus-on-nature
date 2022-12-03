@@ -66,7 +66,7 @@ const removeFormQuestionFromTemplate = async (
     await baseAPIClient.delete(
       `/admin/formTemplate/formQuestion/${formQuestionId}`,
       {
-        headers: { Authorization: BEARER_TOKEN },
+        headers: { Authorization: getBearerToken() },
       },
     );
     return true;
@@ -84,7 +84,7 @@ const editFormQuestion = async (
       `/admin/formTemplate/formQuestion/${oldQuestionId}`,
       { newFormQuestion: question },
       {
-        headers: { Authorization: BEARER_TOKEN },
+        headers: { Authorization: getBearerToken() },
       },
     );
     return data;
