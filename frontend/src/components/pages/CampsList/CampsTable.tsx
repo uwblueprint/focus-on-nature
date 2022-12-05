@@ -34,7 +34,7 @@ import {
   locationString,
 } from "../../../utils/CampUtils";
 import CampStatusLabel from "./CampStatusLabel";
-import DeleteCampConfirmationModel from "./DeleteCampConfirmationModel";
+import DeleteModal from "../../common/DeleteModal";
 
 type CampsTableProps = {
   year: number;
@@ -150,15 +150,14 @@ const CampsTable = ({
 
   return (
     <>
-      <DeleteCampConfirmationModel
+      <DeleteModal
         title="Delete Camp"
         bodyText={`Are you sure you want to delete ${campToEdit?.name}?`}
-        bodyText2="Note: This action is irreversible."
+        bodyNote="Note: This action is irreversible."
         buttonLabel="Remove"
-        buttonColor="red"
         isOpen={isOpen}
         onClose={onClose}
-        onConfirmation={() => handleConfirmDelete()}
+        onDelete={() => handleConfirmDelete()}
       />
       <Container
         py="20px"
@@ -251,7 +250,6 @@ const CampsTable = ({
               </Td>
               <Td
                 padding="0px"
-                mr="px"
                 cursor="pointer"
                 onClick={() => {
                   onDrawerOpen();
