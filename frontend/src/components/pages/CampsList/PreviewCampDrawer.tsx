@@ -16,12 +16,14 @@ type CampDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
   camp: CampResponse | undefined;
+  onDeleteClick: (camp: CampResponse) => void;
 };
 
 const PreviewCampDrawer = ({
   isOpen,
   onClose,
   camp,
+  onDeleteClick,
 }: CampDrawerProps): JSX.Element => {
   return camp ? (
     <Flex
@@ -104,6 +106,9 @@ const PreviewCampDrawer = ({
               bg="white"
               borderColor="secondary.critical.100"
               minWidth="-webkit-fit-content"
+              onClick={() => {
+                onDeleteClick(camp);
+              }}
             >
               Delete Camp
             </Button>

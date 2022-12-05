@@ -22,62 +22,42 @@ import {
   Th,
   Thead,
   Tr,
-  useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
-import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import {
   getCampStatus,
   getFormattedCampDateRange,
   locationString,
 } from "../../../utils/CampUtils";
 import CampStatusLabel from "./CampStatusLabel";
-import DeleteModal from "../../common/DeleteModal";
 
 type CampsTableProps = {
-  year: number;
+  camps: CampResponse[];
   isDrawerOpen: boolean;
   onDrawerOpen: () => void;
   campDrawerInfo: CampResponse | undefined;
   setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>;
+  onDeleteClick: (camp: CampResponse) => void;
 };
 
 const CampsTable = ({
-  year,
+  camps,
   isDrawerOpen,
   onDrawerOpen,
   campDrawerInfo,
   setCampDrawerInfo,
+  onDeleteClick,
 }: CampsTableProps): JSX.Element => {
   const filterOptions = [
     CampStatus.PUBLISHED,
     CampStatus.DRAFT,
     CampStatus.COMPLETED,
   ];
-
-  const [camps, setCamps] = React.useState([] as CampResponse[]);
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<CampStatus | "">(
     "",
   );
-  const [campToEdit, setCampToEdit] = React.useState<CampResponse | null>(null);
-
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  React.useEffect(() => {
-    const getCamps = async () => {
-      const res = await CampsAPIClient.getAllCamps(year);
-      if (res) {
-        setCamps(res);
-        setCampDrawerInfo(res[0]);
-      }
-    };
-
-    getCamps();
-  }, [year, setCampDrawerInfo]);
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
@@ -114,51 +94,8 @@ const CampsTable = ({
     }
   };
 
-  const handleStatusChangePopoverTrigger = (camp: CampResponse) => {
-    setCampToEdit(camp);
-    onOpen();
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!campToEdit) {
-      return;
-    }
-    const res = await CampsAPIClient.deleteCamp(campToEdit.id);
-    if (res) {
-      toast({
-        description: `${campToEdit.name} has been succesfully deleted`,
-        status: "success",
-        variant: "subtle",
-        duration: 3000,
-      });
-
-      const newCampsList: CampResponse[] = await camps.filter((camp) => {
-        return camp.id !== campToEdit.id;
-      });
-      setCamps(newCampsList);
-    } else {
-      toast({
-        description: `An error occurred with deleting ${campToEdit.name}. Please try again.`,
-        status: "error",
-        variant: "subtle",
-        duration: 3000,
-      });
-    }
-    onClose();
-    setCampToEdit(null);
-  };
-
   return (
     <>
-      <DeleteModal
-        title="Delete Camp"
-        bodyText={`Are you sure you want to delete ${campToEdit?.name}?`}
-        bodyNote="Note: This action is irreversible."
-        buttonLabel="Remove"
-        isOpen={isOpen}
-        onClose={onClose}
-        onDelete={() => handleConfirmDelete()}
-      />
       <Container
         py="20px"
         maxWidth="100vw"
@@ -271,7 +208,7 @@ const CampsTable = ({
                     <PopoverBody
                       as={Button}
                       bg="background.white.100"
-                      onClick={() => handleStatusChangePopoverTrigger(camp)}
+                      onClick={() => onDeleteClick(camp)}
                       padding="1.5em 2em"
                     >
                       <Text textStyle="buttonRegular" color="text.critical.100">
