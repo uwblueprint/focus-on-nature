@@ -29,6 +29,8 @@ export type CampResponse = {
   location: Location;
   startTime: string;
   fee: number;
+  pickupFee: number;
+  dropoffFee: number;
   formQuestions: FormQuestion[];
   campSessions: CampSession[];
   volunteers: string;

@@ -77,6 +77,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
             borderColor="primary.green.100"
             variant="outline"
             p="16px"
+            onClick={() => history.push(`/admin/edit-camp/${camp.id}`)}
           >
             Edit draft
           </Button>
