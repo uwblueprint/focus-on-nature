@@ -1,21 +1,29 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { FontWeights } from "../../../theme/textStyles";
 import CampStatusLabel from "./CampStatusLabel";
 import { getCampStatus, locationString } from "../../../utils/CampUtils";
-import { CampResponse, CampSession } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CampSession,
+  CampStatus,
+} from "../../../types/CampsTypes";
 import PreviewModalSessionRow from "./PreviewModalSessionRow";
+import { CAMP_OVERVIEW_PAGE } from "../../../constants/Routes";
 
 type CampDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
   camp: CampResponse | undefined;
+  onDeleteClick: (camp: CampResponse) => void;
 };
 
 const PreviewCampDrawer = ({
   isOpen,
   onClose,
   camp,
+  onDeleteClick,
 }: CampDrawerProps): JSX.Element => {
   return camp ? (
     <Flex
@@ -74,30 +82,40 @@ const PreviewCampDrawer = ({
           </Text>
         </Box>
         <Box margin="20px 0">
-          <Button
-            marginRight="20px"
-            aria-label="View Camp"
-            border="1px"
-            borderRadius="5px"
-            color="primary.green.100"
-            bg="white"
-            borderColor="primary.green.100"
-            minWidth="-webkit-fit-content"
+          <Link
+            to={CAMP_OVERVIEW_PAGE.replace(":id", camp.id)}
+            style={{ textDecoration: "none" }}
           >
-            View Camp
-          </Button>
-          <Button
-            marginRight="20px"
-            aria-label="View Camp"
-            border="1px"
-            borderRadius="5px"
-            color="secondary.critical.100"
-            bg="white"
-            borderColor="secondary.critical.100"
-            minWidth="-webkit-fit-content"
-          >
-            Delete Camp
-          </Button>
+            <Button
+              marginRight="20px"
+              aria-label="View Camp"
+              border="1px"
+              borderRadius="5px"
+              color="primary.green.100"
+              bg="white"
+              borderColor="primary.green.100"
+              minWidth="-webkit-fit-content"
+            >
+              View Camp
+            </Button>
+          </Link>
+          {getCampStatus(camp) !== CampStatus.COMPLETED && (
+            <Button
+              marginRight="20px"
+              aria-label="View Camp"
+              border="1px"
+              borderRadius="5px"
+              color="secondary.critical.100"
+              bg="white"
+              borderColor="secondary.critical.100"
+              minWidth="-webkit-fit-content"
+              onClick={() => {
+                onDeleteClick(camp);
+              }}
+            >
+              Delete Camp
+            </Button>
+          )}
         </Box>
       </Box>
 

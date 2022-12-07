@@ -11,13 +11,13 @@ import {
   Button,
   Text,
 } from "@chakra-ui/react";
-import { CreateFormQuestion } from "../../../../types/CampsTypes";
+import { FormQuestion } from "../../../../types/CampsTypes";
 
 type DeleteCustomQuestionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: ((questionToBeDeleted: CreateFormQuestion) => void) | undefined;
-  question: CreateFormQuestion;
+  onDelete: ((questionToBeDeleted: FormQuestion) => void) | undefined;
+  question: FormQuestion;
 };
 
 const DeleteCustomQuestionModal = ({

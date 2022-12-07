@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import {
   CreateFormQuestion,
+  FormQuestion,
   QuestionCategory,
   QuestionType,
 } from "../../../../types/CampsTypes";
@@ -29,12 +30,10 @@ type AddQuestionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (formQuestion: CreateFormQuestion) => void;
-  onEdit?: (
-    oldQuestion: CreateFormQuestion,
-    newQuestion: CreateFormQuestion,
-  ) => void;
-  questionToBeEdited?: CreateFormQuestion;
+  onEdit?: (oldQuestion: FormQuestion, newQuestion: CreateFormQuestion) => void;
+  questionToBeEdited?: FormQuestion;
   editing?: boolean;
+  isFormTemplatePage?: boolean;
 };
 
 const AddQuestionModal = ({
@@ -44,6 +43,7 @@ const AddQuestionModal = ({
   onEdit,
   questionToBeEdited,
   editing = false,
+  isFormTemplatePage = false,
 }: AddQuestionModalProps): React.ReactElement => {
   const [question, setQuestion] = useState<string>("");
   const [questionCategory, setQuestionCategory] = useState<string>(
@@ -149,7 +149,11 @@ const AddQuestionModal = ({
               >
                 <option value="PersonalInfo">Camper Information</option>
                 <option value="EmergencyContact">Emergency Contact</option>
-                <option value="CampSpecific">Camp Specific Information</option>
+                {!isFormTemplatePage && (
+                  <option value="CampSpecific">
+                    Camp Specific Information
+                  </option>
+                )}
               </Select>
             </FormControl>
 

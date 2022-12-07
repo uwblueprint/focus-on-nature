@@ -18,9 +18,9 @@ type QuestionsAccordionItemProps = {
   fixedQuestions: Array<FormQuestion>; // A question for presentational purposes only, Admin can not edit or delete this
   dynamicQuestions: Array<FormQuestion>; // Questions added by the admin during the respective workflow which can be editted + deleted
   accordionTitle: string;
-  onDeleteCustomQuestion?: (questionToBeDeleted: CreateFormQuestion) => void;
+  onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
-    oldQuestion: CreateFormQuestion,
+    oldQuestion: FormQuestion,
     newQuestion: CreateFormQuestion,
   ) => void;
   isTemplatePage?: boolean;
@@ -66,6 +66,8 @@ const QuestionsAccordionItem = ({
               question={question}
               viewOnly={false}
               key={`${question.question}_${index + fixedQuestions.length + 1}`}
+              onDeleteCustomQuestion={onDeleteCustomQuestion}
+              onEditCustomQuestion={onEditCustomQuestion}
             />
           ))}
         </AccordionPanel>

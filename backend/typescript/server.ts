@@ -17,9 +17,8 @@ import adminRouter from "./rest/adminRoutes";
 dotenv.config();
 
 const CORS_ALLOW_LIST = [
-  "http://localhost:3000",
-  // Staging
-  "https://focus-on-nature.web.app",
+  "http://localhost:3000", // Local dev
+  "https://focus-on-nature.web.app", // Staging
 ];
 
 const CORS_OPTIONS: cors.CorsOptions = {

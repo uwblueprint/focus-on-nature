@@ -14,5 +14,5 @@ export type UpdateWaiverRequest = {
 };
 
 export type FormTemplate = {
-  formQuestions: [FormQuestion];
+  formQuestions: FormQuestion[];
 };

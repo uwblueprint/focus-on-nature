@@ -68,7 +68,7 @@ interface IAdminService {
   editQuestionInTemplate(
     oldQuestionId: string,
     newformQuestion: CreateFormQuestionDTO,
-  ): Promise<boolean>;
+  ): Promise<FormQuestionDTO>;
 }
 
 export default IAdminService;

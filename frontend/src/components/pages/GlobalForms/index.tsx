@@ -194,6 +194,69 @@ const GlobalFormsPage = (): React.ReactElement => {
     }
   };
 
+  const removeFormQuestionFromTemplate = async (formQuestion: FormQuestion) => {
+    const res = await AdminAPIClient.removeFormQuestionFromTemplate(
+      formQuestion.id,
+    );
+
+    if (res) {
+      setFormTemplateQuestions((oldArr: FormQuestion[]) =>
+        oldArr.filter((question: FormQuestion) => question !== formQuestion),
+      );
+      toast({
+        description: "Question has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: false,
+        variant: "subtle",
+      });
+    } else {
+      toast({
+        description: `An error occurred with deleting this question. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  };
+
+  const editFormQuestion = async (
+    oldQuestion: FormQuestion,
+    newQuestion: CreateFormQuestion,
+  ) => {
+    const res = await AdminAPIClient.editFormQuestion(
+      oldQuestion.id,
+      newQuestion,
+    );
+
+    if (!(res instanceof Error)) {
+      setFormTemplateQuestions((oldArr: FormQuestion[]) => {
+        const newArr = [...oldArr];
+        for (let i = 0; i < newArr.length; i += 1) {
+          if (newArr[i] === oldQuestion) {
+            newArr[i] = res;
+            break;
+          }
+        }
+        return newArr;
+      });
+      toast({
+        description: "Question has been successfully edited.",
+        status: "success",
+        duration: 3000,
+        isClosable: false,
+        variant: "subtle",
+      });
+    } else {
+      toast({
+        description: `An error occurred with editing this question. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <Container
@@ -225,6 +288,8 @@ const GlobalFormsPage = (): React.ReactElement => {
               <TabPanel>
                 <RegistrationFormTemplateTab
                   templateQuestions={formTemplateQuestions}
+                  onRemoveFormQuestion={removeFormQuestionFromTemplate}
+                  onEditFormQuestion={editFormQuestion}
                 />
               </TabPanel>
               <TabPanel>

@@ -59,9 +59,45 @@ const getFormTemplate = async (): Promise<FormTemplate> => {
   }
 };
 
+const removeFormQuestionFromTemplate = async (
+  formQuestionId: string,
+): Promise<boolean> => {
+  try {
+    await baseAPIClient.delete(
+      `/admin/formTemplate/formQuestion/${formQuestionId}`,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const editFormQuestion = async (
+  oldQuestionId: string,
+  question: CreateFormQuestion,
+): Promise<FormQuestion> => {
+  try {
+    const { data } = await baseAPIClient.patch(
+      `/admin/formTemplate/formQuestion/${oldQuestionId}`,
+      { newFormQuestion: question },
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as FormQuestion;
+  }
+};
+
 export default {
   updateWaiver,
   getWaiver,
   addQuestionToTemplate,
   getFormTemplate,
+  removeFormQuestionFromTemplate,
+  editFormQuestion,
 };
