@@ -19,7 +19,6 @@ import CampCreationDetails from "./CampDetails";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
 
-
 const CampCreationPage = (): React.ReactElement => {
   // All response state from the three page components.
   const [campName, setCampName] = useState<string>("");
@@ -212,6 +211,34 @@ const CampCreationPage = (): React.ReactElement => {
           },
         );
         setCustomQuestions(currentFormQuestions);
+
+        // Set basic camp details
+        setCampName(editCamp.name);
+        setCampDescription(editCamp.description);
+        setDailyCampFee(editCamp.fee);
+        setStartTime(editCamp.startTime);
+        setEndTime(editCamp.endTime);
+        setAgeLower(editCamp.ageLower);
+        setAgeUpper(editCamp.ageUpper);
+        setOffersEDLP(
+          editCamp.earlyDropoff.length !== 0 ||
+            editCamp.latePickup.length !== 0,
+        );
+        setEarliestDropOffTime(editCamp.earlyDropoff);
+        setLatestPickUpTime(editCamp.latePickup);
+        setPriceEDLP(editCamp.pickupFee);
+        setAddresLine1(editCamp.location.streetAddress1);
+        setAddresLine2(editCamp.location.streetAddress2 ?? "");
+        setCity(editCamp.location.city);
+        setProvince(editCamp.location.province);
+        setPostalCode(editCamp.location.postalCode);
+        setCampImageURL(editCamp.campPhotoUrl);
+
+        // Set camp level capacity from camp sessions
+        if (editCamp.campSessions.length > 0) {
+          // At the creation stage, all the sessions should have the same capacity
+          setCampCapacity(editCamp.campSessions[0].capacity);
+        }
       }
     };
 

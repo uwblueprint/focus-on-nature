@@ -174,7 +174,7 @@ const CampCreationDetails = ({
       {errorText(campName, "You must add a name.")}
 
       <Text textStyle="buttonSemiBold" marginTop="24px">
-        Short Description (max 200 characters){" "}
+        Short Description (max 400 characters){" "}
         <Text as="span" textStyle="buttonSemiBold" color="red">
           *
         </Text>
@@ -182,7 +182,7 @@ const CampCreationDetails = ({
       <Textarea
         width="575px"
         marginTop="8px"
-        maxLength={200}
+        maxLength={400}
         defaultValue={campDescription}
         borderColor={!campDescription && showErrors ? "red" : "gray.200"}
         borderWidth={!campDescription && showErrors ? "2px" : "1px"}
@@ -204,6 +204,7 @@ const CampCreationDetails = ({
           type="number"
           placeholder="0.00"
           defaultValue={dailyCampFee}
+          key={dailyCampFee ? "loaded-camp-fee" : "loading-camp-fee"}
           borderColor={!dailyCampFee && showErrors ? "red" : "gray.200"}
           borderWidth={!dailyCampFee && showErrors ? "2px" : "1px"}
           onChange={handleDailyCampFee}
@@ -280,6 +281,7 @@ const CampCreationDetails = ({
                 height="52px"
                 maxLength={2}
                 defaultValue={ageLower}
+                key={ageLower ? "loaded-age-lower" : "loading-age-lower"}
                 borderColor={!ageLower && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageLower && showErrors ? "2px" : "1px"}
                 onChange={handleAgeLower}
@@ -294,6 +296,7 @@ const CampCreationDetails = ({
                 height="52px"
                 maxLength={2}
                 defaultValue={ageUpper}
+                key={ageUpper ? "loaded-age-upper" : "loading-age-upper"}
                 borderColor={!ageUpper && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageUpper && showErrors ? "2px" : "1px"}
                 onChange={handleAgeUpper}
@@ -317,6 +320,9 @@ const CampCreationDetails = ({
               height="52px"
               marginTop="8px"
               defaultValue={campCapacity}
+              key={
+                campCapacity ? "loaded-camp-capacity" : "loading-camp-capacity"
+              }
               borderColor={!campCapacity && showErrors ? "red" : "gray.200"}
               borderWidth={!campCapacity && showErrors ? "2px" : "1px"}
               onChange={handleCampCapacity}
@@ -326,7 +332,7 @@ const CampCreationDetails = ({
         </Box>
       </HStack>
 
-      <Checkbox marginTop="8px" onChange={toggleEDLP}>
+      <Checkbox marginTop="8px" onChange={toggleEDLP} isChecked={offersEDLP}>
         <Text textStyle="buttonSemiBold">
           Camp offers early drop-off and late pick-up
         </Text>
@@ -405,6 +411,7 @@ const CampCreationDetails = ({
               type="number"
               placeholder="0.00"
               defaultValue={priceEDLP}
+              key={priceEDLP ? "loaded-priceEDLP" : "loading-priceEDLP"}
               borderColor={!priceEDLP && showErrors ? "red" : "gray.200"}
               borderWidth={!priceEDLP && showErrors ? "2px" : "1px"}
               onChange={handlePriceEDLP}
@@ -463,6 +470,7 @@ const CampCreationDetails = ({
             height="52px"
             marginTop="8px"
             defaultValue={city}
+            key={city ? "loaded-city" : "loading-city"}
             borderColor={!city && showErrors ? "red" : "gray.200"}
             borderWidth={!city && showErrors ? "2px" : "1px"}
             onChange={handleCity}
@@ -480,6 +488,7 @@ const CampCreationDetails = ({
             height="52px"
             marginTop="8px"
             defaultValue={province}
+            key={province === "-" ? "loading-province" : "loaded-province"}
             borderColor={
               (!province || province === "-") && showErrors ? "red" : "gray.200"
             }
@@ -522,6 +531,7 @@ const CampCreationDetails = ({
             marginTop="8px"
             maxLength={7}
             defaultValue={postalCode}
+            key={postalCode ? "loaded-postalCode" : "loading-postalCode"}
             borderColor={!postalCode && showErrors ? "red" : "gray.200"}
             borderWidth={!postalCode && showErrors ? "2px" : "1px"}
             onChange={handlePostalCode}
