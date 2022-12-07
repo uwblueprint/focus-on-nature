@@ -9,18 +9,25 @@ import DeleteModal from "../../common/DeleteModal";
 
 const CampsListPage = (): React.ReactElement => {
   const [year, setYear] = useState(new Date().getFullYear());
+
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
+
   const [camps, setCamps] = React.useState([] as CampResponse[]);
 
   const [campDrawerInfo, setCampDrawerInfo] = useState<CampResponse>();
   const [campToDelete, setCampToDelete] = React.useState<CampResponse | null>(
     null,
   );
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure();
 
   const toast = useToast();
 
@@ -49,7 +56,7 @@ const CampsListPage = (): React.ReactElement => {
         duration: 3000,
       });
 
-      const newCampsList: CampResponse[] = await camps.filter((camp) => {
+      const newCampsList: CampResponse[] = camps.filter((camp) => {
         return camp.id !== campToDelete.id;
       });
       setCamps(newCampsList);
@@ -61,13 +68,13 @@ const CampsListPage = (): React.ReactElement => {
         duration: 3000,
       });
     }
-    onClose();
+    onDeleteModalClose();
     setCampToDelete(null);
   };
 
   const onDeleteClick = (camp: CampResponse) => {
     setCampToDelete(camp);
-    onOpen();
+    onDeleteModalOpen();
   };
 
   return (
@@ -77,8 +84,8 @@ const CampsListPage = (): React.ReactElement => {
         bodyText={`Are you sure you want to delete ${campToDelete?.name}?`}
         bodyNote="Note: This action is irreversible."
         buttonLabel="Remove"
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
         onDelete={() => handleConfirmDelete()}
       />
       <Flex

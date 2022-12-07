@@ -82,7 +82,10 @@ const PreviewCampDrawer = ({
           </Text>
         </Box>
         <Box margin="20px 0">
-          <Link to={CAMP_OVERVIEW_PAGE.replace(":id", camp.id)}>
+          <Link
+            to={CAMP_OVERVIEW_PAGE.replace(":id", camp.id)}
+            style={{ textDecoration: "none" }}
+          >
             <Button
               marginRight="20px"
               aria-label="View Camp"
