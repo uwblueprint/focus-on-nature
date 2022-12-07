@@ -1,20 +1,25 @@
 name: "Deploy frontend to Firebase"
+description: "Github Action for all logic pertaining to frontend deployment. Only code in the frontend/ directory is deployed."
 
 inputs:
   channel-id:
+    description: "Pass live (pushes to domain) or no parameter (creates preview link)."
     required: false
     default: ""
-    type: string
   backend-url:
-    description: "URL for backend deployment of application"
+    description: "URL for backend deployment of application."
     required: true
   oauth-client-id:
+    description: "OAuth client ID from cloud dev console."
     required: true
   repo-token:
+    description: "Github token for identifying repository, auto-generated."
     required: true
   firebase-service-account:
+    description: "Firebase service account JSON key, specific to Firebase project so will differ between staging and prod."
     required: true
   firebase-project-id:
+    description: "Firebase project ID, specific to Firebase project so will differ between staging and prod. See .firebaserc for aliases."
     required: true
 
 runs:

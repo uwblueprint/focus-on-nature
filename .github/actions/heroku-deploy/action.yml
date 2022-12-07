@@ -1,41 +1,58 @@
 name: Deploy backend to Heroku environment
+description: "Pushes all code in backend/typescript to main branch in Heroku deployment"
 
 inputs:
   heroku-api-key:
+    description: "Heroku API key, applies for all projects under single account"
     required: true
   heroku-email:
+    description: "Heroku account email, applies for all projects under single account"
     required: true
   heroku-app-name:
+    description: "Heroku project name"
     required: true
   mg-database-url:
+    description: "Connection string for MongoDB"
     required: true
   firebase-web-api-key:
+    description: "Web client API key, created in cloud dev console"
     required: true
   firebase-request-uri:
+    description: "URI to which the IDP redirects the user back"
     required: true
   firebase-storage-default-bucket:
+    description: "Project-specific storage bucket"
     required: true
   firebase-project-id:
+    description: "Firebase project ID, specific to Firebase project so will differ between staging and prod. See .firebaserc for aliases."
     required: true
   firebase-svc-account-private-key:
+    description: "Service account private key, from credentials JSON"
     required: true
   firebase-svc-account-client-email:
+    description: "Service account email, from credentials JSON"
     required: true
   mailer-user:
+    description: "Sender for mail service, should be FON email"
     required: true
   mailer-client-id:
+    description: "Generated client ID for mail service, accessible in credentails in cloud dev console"
     required: true
   mailer-client-secret:
+    description: "Generated client secret for mail service, accessible in credentails in cloud dev console"
     required: true
   mailer-refresh-token:
+    description: "Generated refresh token for mail service"
     required: true
   stripe-publishable-key:
+    description: "Stripe publishable key for checkout flow"
     required: true
   stripe-secret-key:
+    description: "Stripe secret key for checkout flow"
     required: true
   deploy-branch:
+    description: "Source branch for deployment. Expected to be dev or main"
     required: true
-    type: "string"
 
 runs:
   using: "composite"

@@ -29,7 +29,7 @@ jobs:
           heroku-api-key: "${{ secrets.HEROKU_API_KEY }}"
           heroku-email: "${{ secrets.HEROKU_EMAIL }}"
           heroku-app-name: "${{ secrets.PRODUCTION_HEROKU_APP_NAME }}"
-          mg-database-url: "${{ secrets.MG_DATABASE_URL }}"
+          mg-database-url: "${{ secrets.PRODUCTION_MG_DATABASE_URL }}"
           firebase-web-api-key: "${{ secrets.PRODUCTION_FIREBASE_WEB_API_KEY }}"
           firebase-request-uri: "${{ secrets.PRODUCTION_FIREBASE_REQUEST_URI }}"
           firebase-storage-default-bucket: "${{ secrets.PRODUCTION_FIREBASE_STORAGE_DEFAULT_BUCKET }}"
