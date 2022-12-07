@@ -32,7 +32,7 @@ const DeleteModal = ({
   onDelete,
 }: DeleteModalProps): JSX.Element => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered preserveScrollBarGap>
       <ModalOverlay />
       <ModalContent p="20px" minWidth="30vw">
         <ModalHeader textStyle="heading">
