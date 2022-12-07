@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useReducer, Reducer } from "react";
+import Params, { useParams} from "react-router-dom";
 
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
@@ -8,7 +9,9 @@ import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
 import RegistrationFooter from "./RegistrationFooter";
+import { CampResponse } from "../../../types/CampsTypes";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import {
   WaiverActions,
   WaiverInterface,
@@ -34,6 +37,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     wroteName: false,
     waiverCompleted: false,
   });
+
   useEffect(() => {
     AdminAPIClient.getWaiver().then((waiver) => {
       waiverDispatch({
@@ -43,12 +47,30 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, []);
 
+  const [camp, setCamp] = React.useState<CampResponse>();
+  console.log(camp)
+
+  const { id } = useParams<{ id: string }>()
+
+  useEffect(() => {
+    const getCamps = async () => {
+      const res = await CampsAPIClient.getCampById(id);
+      if (res) {
+        setCamp(res);
+      }
+    };
+
+    getCamps();
+  }, []);
+
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
-  const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
+  const [edlpChoices, setEdlpChoices] = useState<Record<string, unknown>>({});
+  console.log(edlpChoices)
+  const [edlpFees, setEdlpFees] = useState(0);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
 
   const isPersonalInfoFilled = samplePersonalInfo;
-  const isAdditionalInfoFilled = sampleAdditionalInfo;
+  const isAdditionalInfoFilled = true;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
 
@@ -81,8 +103,13 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            isChecked={sampleAdditionalInfo}
-            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            camp={camp}
+            edlpChoices={edlpChoices}
+            edlpFees={edlpFees}
+            setEdlpChoices={setEdlpChoices}
+            setEdlpFees={setEdlpFees}
+
+            // toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
