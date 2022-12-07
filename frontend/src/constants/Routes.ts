@@ -19,3 +19,5 @@ export const ACCESS_CONTROL_PAGE = "/admin/access-control";
 export const CAMP_OVERVIEW_PAGE = "/admin/camp/:id";
 
 export const CAMP_REGISTER_PAGE = "/register/camp/:id";
+
+export const CAMP_EDIT_PAGE = "/admin/edit-camp/:id";

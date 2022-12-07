@@ -138,6 +138,48 @@ export const getFormattedCampDateRange = (
   return "";
 };
 
+const getWeekDayKeyFromDateNum = (num: number): string => {
+  switch (num) {
+    case 0:
+      return "Su";
+    case 1:
+      return "Mo";
+    case 2:
+      return "Tu";
+    case 3:
+      return "We";
+    case 4:
+      return "Th";
+    case 5:
+      return "Fr";
+    default:
+      return "Sa";
+  }
+};
+
+// getSelectedWeekDaysFromDates takes an array of Dates and returns the weekdays that are part of this
+// session of camp. Days without camp for this session will have a value of false
+export const getSelectedWeekDaysFromDates = (
+  sessionDates: Date[],
+): Map<string, boolean> => {
+  const tempWeekDays = new Map<string, boolean>([
+    ["Su", false],
+    ["Mo", false],
+    ["Tu", false],
+    ["We", false],
+    ["Th", false],
+    ["Fr", false],
+    ["Sa", false],
+  ]);
+
+  sessionDates.forEach((date) => {
+    const key = getWeekDayKeyFromDateNum(date.getDay());
+    tempWeekDays.set(key, true);
+  });
+
+  return tempWeekDays;
+};
+
 export const getMonthIndex = (month: string): number => MONTHS[month];
 
 export const getMonthName = (date: Date): string =>

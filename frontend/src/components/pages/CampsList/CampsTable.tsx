@@ -1,3 +1,6 @@
+import React, { Dispatch, SetStateAction } from "react";
+
+import { useHistory } from "react-router-dom";
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
@@ -23,7 +26,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React, { Dispatch, SetStateAction } from "react";
+
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import {
   getCampStatus,
@@ -58,6 +61,8 @@ const CampsTable = ({
   const [selectedFilter, setSelectedFilter] = React.useState<CampStatus | "">(
     "",
   );
+
+  const history = useHistory();
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
@@ -215,6 +220,18 @@ const CampsTable = ({
                         Delete camp
                       </Text>
                     </PopoverBody>
+                    {getCampStatus(camp) === CampStatus.DRAFT && (
+                      <PopoverBody
+                        as={Button}
+                        bg="background.white.100"
+                        onClick={() =>
+                          history.push(`/admin/edit-camp/${camp.id}`)
+                        }
+                        padding="1.5em 2em"
+                      >
+                        <Text textStyle="buttonRegular">Edit camp</Text>
+                      </PopoverBody>
+                    )}
                   </PopoverContent>
                 </Popover>
               </Td>
