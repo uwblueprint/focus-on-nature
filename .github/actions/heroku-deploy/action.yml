@@ -33,6 +33,9 @@ inputs:
     required: true
   stripe-secret-key:
     required: true
+  deploy-branch:
+    required: true
+    type: "string"
 
 runs:
   using: "composite"
@@ -50,10 +53,13 @@ runs:
       env:
         HEROKU_API_KEY: "${{ inputs.heroku-api-key }}"
         HEROKU_EMAIL: "${{ inputs.heroku-email }}"
+        DEPLOY_BRANCH: "${{ inputs.deploy-branch }}"
+      shell: bash
     - name: Add Heroku git remote
       run: heroku git:remote --app $HEROKU_APP_NAME
       env:
         HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
+      shell: bash
     - name: Set Heroku config vars
       run: |
         heroku config:set MG_DATABASE_URL="${{ inputs.mg-database-url }}" -a $HEROKU_APP_NAME && \
@@ -72,5 +78,7 @@ runs:
         heroku config:set PREVIEW_DEPLOY=true -a $HEROKU_APP_NAME
       env:
         HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
+      shell: bash
     - name: Push to Heroku
-      run: git subtree push --prefix backend/typescript heroku dev
+      run: git subtree push --prefix backend/typescript heroku $DEPLOY_BRANCH:main
+      shell: bash
