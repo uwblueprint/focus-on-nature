@@ -98,10 +98,7 @@ const CampCreationDetails = ({
   const [showErrors, setShowErrors] = useState<boolean>(false);
   const [showImageError, setShowImageError] = useState<boolean>(false);
 
-  const errorText = (
-    input: boolean | string | number,
-    message: string,
-  ) => {
+  const errorText = (input: boolean | string | number, message: string) => {
     return (
       <Text
         textStyle="caption"
@@ -161,7 +158,9 @@ const CampCreationDetails = ({
 
       <Text textStyle="buttonSemiBold" marginTop="32px">
         Camp Name{" "}
-        <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+        <Text as="span" textStyle="buttonSemiBold" color="red">
+          *
+        </Text>
       </Text>
       <Input
         width="575px"
@@ -176,7 +175,9 @@ const CampCreationDetails = ({
 
       <Text textStyle="buttonSemiBold" marginTop="24px">
         Short Description (max 200 characters){" "}
-        <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+        <Text as="span" textStyle="buttonSemiBold" color="red">
+          *
+        </Text>
       </Text>
       <Textarea
         width="575px"
@@ -191,10 +192,10 @@ const CampCreationDetails = ({
 
       <Text textStyle="buttonSemiBold" marginTop="24px">
         Daily Camp Fee{" "}
-        <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+        <Text as="span" textStyle="buttonSemiBold" color="red">
+          *
+        </Text>
       </Text>
-      <Text>{dailyCampFee}</Text>
-      <Text>{dailyCampFee.toString()}</Text>
       <InputGroup width="275px" marginTop="8px">
         <InputLeftElement pointerEvents="none" color="black" fontSize="1.2em">
           $
@@ -214,7 +215,9 @@ const CampCreationDetails = ({
         <Box width="160px">
           <Text textStyle="buttonSemiBold">
             Start Time{" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
 
           <Input
@@ -235,8 +238,10 @@ const CampCreationDetails = ({
 
         <Box width="160px">
           <Text textStyle="buttonSemiBold">
-            End Time {" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            End Time{" "}
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
           <Input
             type="time"
@@ -261,8 +266,10 @@ const CampCreationDetails = ({
       >
         <Box>
           <Text textStyle="buttonSemiBold">
-            Age Range {" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            Age Range{" "}
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
 
           <HStack alignItems="start" spacing={4} marginTop="8px">
@@ -298,8 +305,10 @@ const CampCreationDetails = ({
 
         <Box>
           <Text textStyle="buttonSemiBold">
-            Camp Capacity {" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            Camp Capacity{" "}
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
           <Box width="200px">
             <Input
@@ -329,7 +338,9 @@ const CampCreationDetails = ({
             <Box width="160px">
               <Text textStyle="buttonSemiBold">
                 Earliest Drop-off{" "}
-                <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+                <Text as="span" textStyle="buttonSemiBold" color="red">
+                  *
+                </Text>
               </Text>
 
               <Input
@@ -353,7 +364,9 @@ const CampCreationDetails = ({
             <Box width="160px">
               <Text textStyle="buttonSemiBold">
                 Latest Pick-up{" "}
-                <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+                <Text as="span" textStyle="buttonSemiBold" color="red">
+                  *
+                </Text>
               </Text>
 
               <Input
@@ -375,7 +388,9 @@ const CampCreationDetails = ({
 
           <Text textStyle="buttonSemiBold" marginTop="24px">
             EDLP Price Per 30 Minutes{" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
 
           <InputGroup width="275px" marginTop="8px">
@@ -410,7 +425,9 @@ const CampCreationDetails = ({
 
       <Text textStyle="buttonSemiBold" marginTop="32px">
         Address Line 1{" "}
-        <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+        <Text as="span" textStyle="buttonSemiBold" color="red">
+          *
+        </Text>
       </Text>
       <Input
         width="575px"
@@ -438,7 +455,9 @@ const CampCreationDetails = ({
         <Box width="250px">
           <Text textStyle="buttonSemiBold">
             City{" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
           <Input
             height="52px"
@@ -453,7 +472,9 @@ const CampCreationDetails = ({
         <Box width="250px">
           <Text textStyle="buttonSemiBold">
             Province{" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
           <Select
             height="52px"
@@ -492,7 +513,9 @@ const CampCreationDetails = ({
         <Box width="250px">
           <Text textStyle="buttonSemiBold">
             Postal Code{" "}
-            <Text as="span" textStyle="buttonSemiBold" color="red">*</Text>
+            <Text as="span" textStyle="buttonSemiBold" color="red">
+              *
+            </Text>
           </Text>
           <Input
             height="52px"

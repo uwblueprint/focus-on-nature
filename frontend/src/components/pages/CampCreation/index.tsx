@@ -16,7 +16,7 @@ const CampCreationPage = (): React.ReactElement => {
   /* eslint-disable */
   // All response state from the three page components.
   const [campName, setCampName] = useState<string>("");
-  const [campDescription, setCampDescription] = useState<string>("camp");
+  const [campDescription, setCampDescription] = useState<string>("");
   const [dailyCampFee, setDailyCampFee] = useState<number>(0);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
