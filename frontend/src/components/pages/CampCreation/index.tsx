@@ -44,32 +44,28 @@ const CampCreationPage = (): React.ReactElement => {
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
 
-  let isCampDetailsFilled = false
-    
-  if(campName && 
+  let isCampDetailsFilled = false;
+
+  if (
+    campName &&
     campDescription &&
     dailyCampFee &&
     startTime &&
     endTime &&
     ageLower &&
     ageUpper &&
-    (offersEDLP?
-      earliestDropOffTime &&
-      latestPickUpTime &&
-      priceEDLP
-      :
-      true
-    ) &&
+    (offersEDLP
+      ? earliestDropOffTime && latestPickUpTime && priceEDLP
+      : true) &&
     campCapacity &&
     addressLine1 &&
     city &&
     province &&
     province &&
     postalCode
-    )
-    isCampDetailsFilled = true
-  else
-    isCampDetailsFilled = false
+  )
+    isCampDetailsFilled = true;
+  else isCampDetailsFilled = false;
 
   const isScheduleSessionsFilled = scheduledSessions.length !== 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
