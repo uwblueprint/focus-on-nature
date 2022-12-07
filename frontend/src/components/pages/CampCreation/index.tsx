@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+
+import { useParams } from "react-router-dom";
+
 import { Box, VStack, useToast } from "@chakra-ui/react";
 import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
@@ -10,8 +13,12 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
   CreateFormQuestion,
   CreateCampSession,
+  CampResponse,
 } from "../../../types/CampsTypes";
 import CampCreationDetails from "./CampDetails";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import { getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
+
 
 const CampCreationPage = (): React.ReactElement => {
   // All response state from the three page components.
@@ -159,6 +166,61 @@ const CampCreationPage = (): React.ReactElement => {
     });
   };
 
+  // The edit-camp route will have an id to identify the camp currently in draft state
+  const { id: editCampId } = useParams<{ id: string }>();
+  const [campToEdit, setCampToEdit] = useState<CampResponse>();
+
+  // This useEffect fetches the current state of the draft camp if we are editing camp
+  useEffect(() => {
+    const setInitialEditState = async () => {
+      // retrieve the current state of the camp to edit
+      const editCamp = await CampsAPIClient.getCampById(editCampId);
+
+      if (editCamp) {
+        setCampToEdit(editCamp); // Store the current state of the camp to edit
+
+        // Schedule Sessions need the data in a certain format. We convert the array of dates stored in the backend
+        // to this array of CreateCampSessions so that the sessions can be viewed/edited/deleted
+        const currentCampSessions: CreateCampSession[] = editCamp.campSessions.map(
+          (cs) => {
+            const dates = cs.dates
+              .map((date) => new Date(date))
+              .sort((a, b) => a.getTime() - b.getTime());
+            const currentWeekDays = getSelectedWeekDaysFromDates(dates);
+            return {
+              startDate: dates[0],
+              endDate: dates[dates.length - 1],
+              dates,
+              selectedWeekDays: currentWeekDays,
+            };
+          },
+        );
+        setScheduledSessions(currentCampSessions);
+
+        // We set the customQuestions to be the current questions stored on the backend so the admin
+        // can view and edit the questions in the ui smoothly
+        const currentFormQuestions: CreateFormQuestion[] = editCamp.formQuestions.map(
+          (fq) => {
+            return {
+              question: fq.question,
+              type: fq.type,
+              category: fq.category,
+              required: fq.required,
+              description: fq.description,
+              options: fq.options,
+            };
+          },
+        );
+        setCustomQuestions(currentFormQuestions);
+      }
+    };
+
+    // We only want to fetch the current state of the camp if we are editing a draft camp
+    if (editCampId) {
+      setInitialEditState();
+    }
+  }, [editCampId]);
+
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
@@ -239,7 +301,11 @@ const CampCreationPage = (): React.ReactElement => {
       case CampCreationPages.ScheduleSessionsPage:
         return (
           <ScheduleSessions
-            campTitle="Waterloo Photography Camp 2022 @7:00 AM - 3:00PM"
+            campTitle={
+              campToEdit
+                ? `${campToEdit.name} @${campToEdit.startTime} - ${campToEdit.endTime}`
+                : "Waterloo Photography Camp 2022 @7:00 AM - 3:00PM"
+            }
             scheduledSessions={scheduledSessions}
             setScheduledSessions={setScheduledSessions}
           />
