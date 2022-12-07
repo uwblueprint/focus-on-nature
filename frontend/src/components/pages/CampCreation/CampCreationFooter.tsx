@@ -14,9 +14,7 @@ const CampCreationFooter = ({
   handleStepNavigation,
 }: CampCreationFooterProps): React.ReactElement => {
   const onNextStep = () => {
-    if (isCurrentStepCompleted) {
-      handleStepNavigation(1);
-    }
+    handleStepNavigation(1);
     if (currentStep === CampCreationPages.RegistrationFormPage) {
       // eslint-disable-next-line no-console
       console.log("Publish camp."); // Temporary.
@@ -30,7 +28,6 @@ const CampCreationFooter = ({
       minH="92px"
       width="100vw"
       align="center"
-      justify={{ sm: "center", lg: "end" }}
       flexWrap="wrap"
       padding="20px"
       pr="40px"
@@ -40,29 +37,27 @@ const CampCreationFooter = ({
       zIndex="11"
     >
       <Button
-        width={{ sm: "95vw", lg: "auto" }}
+        width="auto"
         height="48px"
         variant="secondary"
         onClick={() => handleStepNavigation(-1)}
-        mb={{ sm: 4, md: 4, lg: 0 }}
         disabled // Temporary.
       >
         Save as draft
       </Button>
       <Spacer />
       <Button
-        width={{ sm: "95vw", lg: "auto" }}
+        width="auto"
         height="48px"
         variant="secondary"
         onClick={() => handleStepNavigation(-1)}
-        mb={{ sm: 4, md: 4, lg: 0 }}
-        mr={{ sm: 0, md: 0, lg: 4 }}
+        mr={4}
         disabled={currentStep === CampCreationPages.CampCreationDetailsPage}
       >
         Back
       </Button>
       <Button
-        width={{ sm: "95vw", lg: "auto" }}
+        width="auto"
         height="48px"
         variant="primary"
         onClick={onNextStep}

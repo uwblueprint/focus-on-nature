@@ -14,21 +14,23 @@ import {
 } from "../../../types/CampsTypes";
 
 const CampCreationPage = (): React.ReactElement => {
-  /* eslint-disable */
   // All response state from the three page components.
   const [campDetailsDummyOne, setCampDetailsDummyOne] = useState(false);
   const [campDetailsDummyTwo, setCampDetailsDummyTwo] = useState(false);
   const [campDetailsDummyThree, setCampDetailsDummyThree] = useState("");
 
-  const [scheduledSessions, setScheduledSessions] = React.useState<CreateCampSession[]>([]);
+  const [scheduledSessions, setScheduledSessions] = React.useState<
+    CreateCampSession[]
+  >([]);
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  const isCampDetailsFilled = campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
-  const isScheduleSessionsFilled = scheduledSessions.length != 0;
+  const isCampDetailsFilled =
+    campDetailsDummyOne && campDetailsDummyTwo && campDetailsDummyThree !== "";
+  const isScheduleSessionsFilled = scheduledSessions.length !== 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 
   const isCurrentStepCompleted = (step: CampCreationPages) => {
@@ -48,7 +50,6 @@ const CampCreationPage = (): React.ReactElement => {
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
     CampCreationPages.CampCreationDetailsPage,
   );
-  /* eslint-enable */
 
   // All state for registration form page.
 
