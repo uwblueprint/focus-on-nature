@@ -26,12 +26,11 @@ export type Camper = {
     earlyDropoff: number;
     latePickup: number;
   };
-  optionalClauses?: [
+  optionalClauses?: 
     {
       clause: string;
       agreed: boolean;
-    },
-  ];
+    }[];
 };
 
 export type EditCamperInfoFields = Omit<
