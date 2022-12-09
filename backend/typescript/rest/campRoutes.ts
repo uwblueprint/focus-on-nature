@@ -255,6 +255,7 @@ campRouter.get("/csv/:id", async (req, res) => {
 });
 
 // ROLES: Admin
+/* Creates a new formQuestion and adds it to the camp's list of formQuestions */
 campRouter.post(
   "/:campId/form/",
   createFormQuestionsValidator,
@@ -272,6 +273,7 @@ campRouter.post(
 );
 
 // ROLES: Admin
+/* Edits a FormQuestion */
 campRouter.put(
   "/:campId/form/:formQuestionId/",
   editFormQuestionValidator,

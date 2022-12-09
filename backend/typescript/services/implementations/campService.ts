@@ -495,7 +495,7 @@ class CampService implements ICampService {
       const currFormQuestions = (newCamp.formQuestions as FormQuestion[]).map(
         (fq) => fq.toString(),
       );
-      await this.deleteFormQuestionsByIds(currFormQuestions);
+      await this.deleteFormQuestionsByIds(currFormQuestions, session);
       newFormQuestions = await this.addFormQuestionsToCamp(
         newCamp.id,
         camp.formQuestions,
@@ -1543,7 +1543,7 @@ class CampService implements ICampService {
 
   async deleteFormQuestionsByIds(
     formQuestionIds: string[],
-    dbSession?: mongoose.ClientSession,
+    dbSession: mongoose.ClientSession,
   ): Promise<void> {
     try {
       await MgFormQuestion.deleteMany(
