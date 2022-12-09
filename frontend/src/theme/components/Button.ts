@@ -21,7 +21,11 @@ const Button = {
       color: "white",
       _hover: {
         bg: `primary.green.200`,
+        _disabled: {
+          bg: `primary.green.200`,
+        },
       },
+
       whiteSpace: "normal",
       wordWrap: "break-word",
     },

@@ -4,6 +4,7 @@ import ScheduleSessions from "./ScheduleSessions";
 import RegistrationForm from "./RegistrationForm";
 import CampCreationPages from "./CampCreationPages";
 import CampCreationNavStepper from "./CampCreationNavStepper";
+import CampCreationFooter from "./CampCreationFooter";
 import { FormTemplate } from "../../../types/AdminTypes";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
@@ -13,7 +14,6 @@ import {
 import CampCreationDetails from "./CampDetails";
 
 const CampCreationPage = (): React.ReactElement => {
-  /* eslint-disable */
   // All response state from the three page components.
   const [campName, setCampName] = useState<string>("");
   const [campDescription, setCampDescription] = useState<string>("");
@@ -43,41 +43,50 @@ const CampCreationPage = (): React.ReactElement => {
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
-  let isCampDetailsFilled = false
-    
-  if(campName && 
+
+  let isCampDetailsFilled = false;
+
+  if (
+    campName &&
     campDescription &&
     dailyCampFee &&
     startTime &&
     endTime &&
     ageLower &&
     ageUpper &&
-    (offersEDLP?
-      earliestDropOffTime &&
-      latestPickUpTime &&
-      priceEDLP
-      :
-      true
-    ) &&
+    (offersEDLP
+      ? earliestDropOffTime && latestPickUpTime && priceEDLP
+      : true) &&
     campCapacity &&
     addressLine1 &&
     city &&
     province &&
     province &&
     postalCode
-    )
-    isCampDetailsFilled = true
-  else
-    isCampDetailsFilled = false
+  )
+    isCampDetailsFilled = true;
+  else isCampDetailsFilled = false;
 
-  const isScheduleSessionsFilled = scheduledSessions.length != 0;
+  const isScheduleSessionsFilled = scheduledSessions.length !== 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
+
+  const isCurrentStepCompleted = (step: CampCreationPages) => {
+    switch (step) {
+      case CampCreationPages.CampCreationDetailsPage:
+        return isCampDetailsFilled;
+      case CampCreationPages.ScheduleSessionsPage:
+        return isScheduleSessionsFilled;
+      case CampCreationPages.RegistrationFormPage:
+        return isRegistrationFormFilled;
+      default:
+        return false;
+    }
+  };
 
   // State of what page to display.
   const [currentPage, setCurrentPage] = useState<CampCreationPages>(
     CampCreationPages.CampCreationDetailsPage,
   );
-  /* eslint-enable */
 
   // All state for registration form page.
 
@@ -253,6 +262,13 @@ const CampCreationPage = (): React.ReactElement => {
     }
   };
 
+  const handleStepNavigation = (stepsToMove: number) => {
+    const desiredStep = currentPage + stepsToMove;
+    if (CampCreationPages[desiredStep]) {
+      setCurrentPage(currentPage + stepsToMove);
+    }
+  };
+
   return (
     <VStack w="100vw" h="calc(100vh - 75px)">
       <CampCreationNavStepper
@@ -262,10 +278,14 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-
-      <Box w="100%" flex="1" mt={[0, "0 !important"]}>
+      <Box w="100%" flex="1" mt={[0, "0 !important"]} pb={20}>
         {getCampCreationStepComponent(currentPage)}
       </Box>
+      <CampCreationFooter
+        currentStep={currentPage}
+        isCurrentStepCompleted={isCurrentStepCompleted(currentPage)}
+        handleStepNavigation={handleStepNavigation}
+      />
     </VStack>
   );
 };
