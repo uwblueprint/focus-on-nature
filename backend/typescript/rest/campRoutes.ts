@@ -98,6 +98,8 @@ campRouter.post(
         startTime: body.startTime,
         endTime: body.endTime,
         volunteers: body.volunteers,
+        campSessions: body.campSessions,
+        formQuestions: body.formQuestions,
       });
 
       if (req.file?.path) {
@@ -138,6 +140,8 @@ campRouter.patch(
         startTime: body.startTime,
         endTime: body.endTime,
         volunteers: body.volunteers,
+        campSessions: body.campSessions,
+        formQuestions: body.formQuestions,
       });
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
@@ -251,12 +255,13 @@ campRouter.get("/csv/:id", async (req, res) => {
 });
 
 // ROLES: Admin
+/* Creates a new formQuestion and adds it to the camp's list of formQuestions */
 campRouter.post(
   "/:campId/form/",
   createFormQuestionsValidator,
   async (req, res) => {
     try {
-      const successfulFormQuestions = await campService.createFormQuestions(
+      const successfulFormQuestions = await campService.addFormQuestionsToCamp(
         req.params.campId,
         req.body.formQuestions,
       );
@@ -268,6 +273,7 @@ campRouter.post(
 );
 
 // ROLES: Admin
+/* Edits a FormQuestion */
 campRouter.put(
   "/:campId/form/:formQuestionId/",
   editFormQuestionValidator,

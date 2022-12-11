@@ -172,6 +172,8 @@ export type CreateCampDTO = Omit<
 > & {
   filePath?: string;
   fileContentType?: string;
+  formQuestions: CreateFormQuestionDTO[];
+  campSessions: CreateCampSessionsDTO;
 };
 
 export type UpdateCampDTO = Omit<
@@ -187,6 +189,8 @@ export type UpdateCampDTO = Omit<
 > & {
   filePath?: string;
   fileContentType?: string;
+  campSessions: CreateCampSessionsDTO;
+  formQuestions: CreateFormQuestionDTO[];
 };
 
 export type CreateCampSessionsDTO = Array<
@@ -201,8 +205,6 @@ export type UpdateCampSessionDTO = Partial<
 export type UpdateCampSessionsDTO = Partial<
   Omit<CampSessionDTO, "camp" | "campers" | "waitlist" | "campPriceId">
 > & { id: string };
-
-export type CreateFormQuestionsDTO = Omit<FormQuestionDTO, "id">[];
 
 export type UpdateFormQuestionDTO = Omit<FormQuestionDTO, "id">[];
 
