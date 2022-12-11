@@ -13,6 +13,7 @@ import { CampResponse } from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import { CAMP_EDIT_PAGE } from "../../../constants/Routes";
 
 type FooterProps = {
   camp: CampResponse;
@@ -46,6 +47,10 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
     onClose();
   };
 
+  const onEditCampClick = (campID: string): void => {
+    history.push(CAMP_EDIT_PAGE.replace(":id", campID));
+  };
+
   return (
     <Flex
       pos="fixed"
@@ -77,7 +82,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
             borderColor="primary.green.100"
             variant="outline"
             p="16px"
-            onClick={() => history.push(`/admin/edit-camp/${camp.id}`)}
+            onClick={() => onEditCampClick(camp.id)}
           >
             Edit draft
           </Button>

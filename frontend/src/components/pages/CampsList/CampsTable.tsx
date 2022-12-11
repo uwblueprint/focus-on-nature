@@ -34,6 +34,7 @@ import {
   locationString,
 } from "../../../utils/CampUtils";
 import CampStatusLabel from "./CampStatusLabel";
+import { CAMP_EDIT_PAGE } from "../../../constants/Routes";
 
 type CampsTableProps = {
   camps: CampResponse[];
@@ -63,6 +64,10 @@ const CampsTable = ({
   );
 
   const history = useHistory();
+
+  const onEditCampClick = (campID: string): void => {
+    history.push(CAMP_EDIT_PAGE.replace(":id", campID));
+  };
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
@@ -224,9 +229,7 @@ const CampsTable = ({
                       <PopoverBody
                         as={Button}
                         bg="background.white.100"
-                        onClick={() =>
-                          history.push(`/admin/edit-camp/${camp.id}`)
-                        }
+                        onClick={() => onEditCampClick(camp.id)}
                         padding="1.5em 2em"
                       >
                         <Text textStyle="buttonRegular">Edit camp</Text>
