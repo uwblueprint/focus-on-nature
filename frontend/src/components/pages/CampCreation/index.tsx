@@ -246,84 +246,86 @@ const CampCreationPage = (): React.ReactElement => {
     if (editCampId) {
       setInitialEditState();
     }
-  }, [editCampId]);
+  }, []);
 
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
         return (
-          <CampCreationDetails
-            campName={campName}
-            campDescription={campDescription}
-            dailyCampFee={dailyCampFee}
-            startTime={startTime}
-            endTime={endTime}
-            ageLower={ageLower}
-            ageUpper={ageUpper}
-            campCapacity={campCapacity}
-            offersEDLP={offersEDLP}
-            earliestDropOffTime={earliestDropOffTime}
-            latestPickUpTime={latestPickUpTime}
-            priceEDLP={priceEDLP}
-            addressLine1={addressLine1}
-            addressLine2={addressLine2}
-            city={city}
-            province={province}
-            postalCode={postalCode}
-            campImageURL={campImageURL}
-            handleCampName={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setCampName(event.target.value)
-            }
-            handleCampDescription={(
-              event: React.ChangeEvent<HTMLTextAreaElement>,
-            ) => setCampDescription(event.target.value)}
-            handleDailyCampFee={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setDailyCampFee(Number(event.target.value))
-            }
-            handleStartTime={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setStartTime(event.target.value)
-            }
-            handleEndTime={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setEndTime(event.target.value)
-            }
-            handleAgeLower={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setAgeLower(Number(event.target.value))
-            }
-            handleAgeUpper={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setAgeUpper(Number(event.target.value))
-            }
-            handleCampCapacity={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setCampCapacity(Number(event.target.value))
-            }
-            toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setOffersEDLP(Boolean(event.target.checked))
-            }
-            handleEarliestDropOffTime={(
-              event: React.ChangeEvent<HTMLInputElement>,
-            ) => setEarliestDropOffTime(event.target.value)}
-            handleLatestPickUpTime={(
-              event: React.ChangeEvent<HTMLInputElement>,
-            ) => setLatestPickUpTime(event.target.value)}
-            handlePriceEDLP={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setPriceEDLP(Number(event.target.value))
-            }
-            handleAddressLine1={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setAddresLine1(event.target.value)
-            }
-            handleAddressLine2={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setAddresLine2(event.target.value)
-            }
-            handleCity={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setCity(event.target.value)
-            }
-            handleProvince={(event: React.ChangeEvent<HTMLSelectElement>) =>
-              setProvince(event.target.value)
-            }
-            handlePostalCode={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setPostalCode(event.target.value)
-            }
-            setCampImageURL={setCampImageURL}
-          />
+          <React.Fragment key={campToEdit ? "loaded" : "loading"}>
+            <CampCreationDetails
+              campName={campName}
+              campDescription={campDescription}
+              dailyCampFee={dailyCampFee}
+              startTime={startTime}
+              endTime={endTime}
+              ageLower={ageLower}
+              ageUpper={ageUpper}
+              campCapacity={campCapacity}
+              offersEDLP={offersEDLP}
+              earliestDropOffTime={earliestDropOffTime}
+              latestPickUpTime={latestPickUpTime}
+              priceEDLP={priceEDLP}
+              addressLine1={addressLine1}
+              addressLine2={addressLine2}
+              city={city}
+              province={province}
+              postalCode={postalCode}
+              campImageURL={campImageURL}
+              handleCampName={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setCampName(event.target.value)
+              }
+              handleCampDescription={(
+                event: React.ChangeEvent<HTMLTextAreaElement>,
+              ) => setCampDescription(event.target.value)}
+              handleDailyCampFee={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setDailyCampFee(Number(event.target.value))}
+              handleStartTime={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setStartTime(event.target.value)
+              }
+              handleEndTime={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setEndTime(event.target.value)
+              }
+              handleAgeLower={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setAgeLower(Number(event.target.value))
+              }
+              handleAgeUpper={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setAgeUpper(Number(event.target.value))
+              }
+              handleCampCapacity={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setCampCapacity(Number(event.target.value))}
+              toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setOffersEDLP(Boolean(event.target.checked))
+              }
+              handleEarliestDropOffTime={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setEarliestDropOffTime(event.target.value)}
+              handleLatestPickUpTime={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setLatestPickUpTime(event.target.value)}
+              handlePriceEDLP={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setPriceEDLP(Number(event.target.value))
+              }
+              handleAddressLine1={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setAddresLine1(event.target.value)}
+              handleAddressLine2={(
+                event: React.ChangeEvent<HTMLInputElement>,
+              ) => setAddresLine2(event.target.value)}
+              handleCity={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setCity(event.target.value)
+              }
+              handleProvince={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                setProvince(event.target.value)
+              }
+              handlePostalCode={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setPostalCode(event.target.value)
+              }
+              setCampImageURL={setCampImageURL}
+            />
+          </React.Fragment>
         );
       case CampCreationPages.ScheduleSessionsPage:
         return (
