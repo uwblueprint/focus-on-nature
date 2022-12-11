@@ -13,4 +13,6 @@ const MONTHS: { [key: string]: number } = {
   December: 11,
 };
 
+export const MAX_CAMP_DESC_LENGTH = 400;
+
 export default MONTHS;

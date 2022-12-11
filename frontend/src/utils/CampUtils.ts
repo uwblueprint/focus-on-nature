@@ -157,12 +157,13 @@ const getWeekDayKeyFromDateNum = (num: number): string => {
   }
 };
 
-// getSelectedWeekDaysFromDates takes an array of Dates and returns the weekdays that are part of this
-// session of camp. Days without camp for this session will have a value of false
+// getSelectedWeekDaysFromDates takes an array of Dates and returns map of weekdays,
+// with value of true if camp session occurs on this weekday, otherwise false.
+// All camp sessions occur over a single week period.
 export const getSelectedWeekDaysFromDates = (
   sessionDates: Date[],
 ): Map<string, boolean> => {
-  const tempWeekDays = new Map<string, boolean>([
+  const campDays = new Map<string, boolean>([
     ["Su", false],
     ["Mo", false],
     ["Tu", false],
@@ -174,10 +175,10 @@ export const getSelectedWeekDaysFromDates = (
 
   sessionDates.forEach((date) => {
     const key = getWeekDayKeyFromDateNum(date.getDay());
-    tempWeekDays.set(key, true);
+    campDays.set(key, true);
   });
 
-  return tempWeekDays;
+  return campDays;
 };
 
 export const getMonthIndex = (month: string): number => MONTHS[month];
