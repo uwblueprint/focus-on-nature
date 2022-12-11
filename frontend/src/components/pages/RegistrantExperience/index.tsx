@@ -65,38 +65,40 @@ const RegistrantExperiencePage = (): React.ReactElement => {
 
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
-  const [campers, setCampers] = useState<Camper[]>([{
-    id: "",
-    campSession: "",
-    firstName: "",
-    lastName: "",
-    age: -1,
-    registrationDate: new Date(),
-    hasPaid: false,
-    contacts: [
-      {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        relationshipToCamper: "",
+  const [campers, setCampers] = useState<Camper[]>([
+    {
+      id: "",
+      campSession: "",
+      firstName: "",
+      lastName: "",
+      age: -1,
+      registrationDate: new Date(),
+      hasPaid: false,
+      contacts: [
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+      ],
+      chargeId: "",
+      charges: {
+        camp: -1,
+        earlyDropoff: -1,
+        latePickup: -1,
       },
-      {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        relationshipToCamper: "",
-      }
-    ],
-    chargeId: "",
-    charges: {
-      camp: -1,
-      earlyDropoff: -1,
-      latePickup: -1,
+      optionalClauses: [],
     },
-    optionalClauses: [],
-  }])
+  ]);
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
@@ -122,11 +124,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   ) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
-        return (
-          <PersonalInfo
-          campers={campers} setCampers={setCampers}
-          />
-        );
+        return <PersonalInfo campers={campers} setCampers={setCampers} />;
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo

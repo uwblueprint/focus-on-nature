@@ -11,7 +11,7 @@ import { Camper } from "../../../../types/CamperTypes";
 export const camperReducer = (
   setCampers: React.Dispatch<React.SetStateAction<Camper[]>>,
   action: PersonalInfoReducerDispatch,
-) => {
+): void => {
   setCampers((campers: Camper[]) => {
     const newCampers: Camper[] = JSON.parse(JSON.stringify(campers)); // Deep Copy
     switch (action.type) {
@@ -62,7 +62,7 @@ export const camperReducer = (
       case PersonalInfoActions.UPDATE_CONTACT: {
         const { contactId, field, data } = action as UpdateContact;
         /* eslint-disable-next-line */
-        for (const camper of campers) {
+        for (const camper of newCampers) {
           if (field === "firstName")
             camper.contacts[contactId][field] = data as string;
           else if (field === "lastName")
@@ -84,7 +84,7 @@ export const camperReducer = (
 
 export const usePersonalInfoHook = (
   setCampers: React.Dispatch<React.SetStateAction<Camper[]>>,
-) => {
+): ((action: PersonalInfoReducerDispatch) => void) => {
   const dispatch = (action: PersonalInfoReducerDispatch) => {
     camperReducer(setCampers, action);
   };
@@ -92,18 +92,14 @@ export const usePersonalInfoHook = (
 };
 
 export const checkPersonalInfoFilled = (campers: Camper[]): boolean => {
-
   if (!(campers.length >= 1)) return false;
   /* eslint-disable-next-line */
   for (const camper of campers) {
-    console.log("camper", camper)
     // Check camper card
-    if (!(camper.firstName && camper.lastName && camper.age > -1))
-      return false;
+    if (!(camper.firstName && camper.lastName && camper.age > -1)) return false;
 
     // Check contact cards
-    if (camper.contacts.length !== 2){
-      console.log("no 1")
+    if (camper.contacts.length !== 2) {
       return false; // Need to have 2 contacts
     }
     /* eslint-disable-next-line */
@@ -116,12 +112,10 @@ export const checkPersonalInfoFilled = (campers: Camper[]): boolean => {
           contact.phoneNumber &&
           contact.relationshipToCamper
         )
-      ){
-        console.log("no2", contact)
+      ) {
         return false;
       }
     }
   }
-  console.log("yes")
   return true;
 };
