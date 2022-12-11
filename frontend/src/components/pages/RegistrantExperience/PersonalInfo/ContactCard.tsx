@@ -1,11 +1,23 @@
 import React from "react";
-import { Box, Button, Checkbox, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Divider,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Spacer,
+  Text,
+  Textarea,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
 import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
 } from "../../../../types/PersonalInfoTypes";
-import { Camper, EmergencyContact } from "../../../../types/CamperTypes";
-import { usePersonalInfoHook } from "./personalInfoReducer";
+import { EmergencyContact } from "../../../../types/CamperTypes";
+import RequiredAsterisk from "../../../common/RequiredAsterisk";
 
 type ContactCardProps = {
   contact: EmergencyContact;
@@ -19,73 +31,137 @@ const ContactCard = ({
   setPersonalInfo,
 }: ContactCardProps): React.ReactElement => {
   return (
-    <Box pb="12">
-      {contactId === 0 ? (
-        <Text textStyle="displayXLarge">Primary Contact</Text>
-      ) : (
-        <Text textStyle="displayXLarge">Secondary Contact</Text>
-      )}
-      <Text>First Name</Text>
-      <Input
-        value={contact.firstName}
-        onChange={(event) =>
-          setPersonalInfo({
-            type: PersonalInfoActions.UPDATE_CONTACT,
-            field: "firstName",
-            contactId,
-            data: event.target.value,
-          })
-        }
-      />
-      <Text>Last Name</Text>
-      <Input
-        value={contact.lastName}
-        onChange={(event) =>
-          setPersonalInfo({
-            type: PersonalInfoActions.UPDATE_CONTACT,
-            field: "lastName",
-            contactId,
-            data: event.target.value,
-          })
-        }
-      />
-      <Text>email</Text>
-      <Input
-        value={contact.email}
-        onChange={(event) =>
-          setPersonalInfo({
-            type: PersonalInfoActions.UPDATE_CONTACT,
-            field: "email",
-            contactId,
-            data: event.target.value,
-          })
-        }
-      />
-      <Text>Phone Number</Text>
-      <Input
-        value={contact.phoneNumber}
-        onChange={(event) =>
-          setPersonalInfo({
-            type: PersonalInfoActions.UPDATE_CONTACT,
-            field: "phoneNumber",
-            contactId,
-            data: event.target.value,
-          })
-        }
-      />
+    <Box boxShadow="lg" rounded="xl" borderWidth={1}>
+      <Box backgroundColor="#FFFFFF" rounded="xl">
+        <Heading textStyle="displayLarge">
+          <Text
+            py="6"
+            px={{ sm: "5", lg: "20" }}
+            textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
+          >
+            {contactId === 0 ? "Primary Contact" : "Secondary Contact"}{" "}
+          </Text>
+        </Heading>
+        <Divider borderColor="border.secondary.100" />
+      </Box>
 
-      <Text>Relation To Camper</Text>
-      <Input
-        value={contact.relationshipToCamper}
-        onChange={(event) =>
-          setPersonalInfo({
-            type: PersonalInfoActions.UPDATE_CONTACT,
-            field: "relationshipToCamper",
-            contactId,
-            data: event.target.value,
-          })
-        }
-      />
+      <Box px={{ sm: "5", lg: "20" }}>
+        <Wrap pt="7">
+          <WrapItem>
+            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+              <FormLabel>
+                <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+                  First Name <RequiredAsterisk />
+                </Text>
+              </FormLabel>
+              <Input
+                backgroundColor="#FFFFFF"
+                value={contact.firstName}
+                onChange={(event) =>
+                  setPersonalInfo({
+                    type: PersonalInfoActions.UPDATE_CONTACT,
+                    field: "firstName",
+                    contactId,
+                    data: event.target.value,
+                  })
+                }
+              />
+            </FormControl>
+          </WrapItem>
+          <Spacer />
+          <WrapItem>
+            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+              <FormLabel>
+                <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+                  Last Name <RequiredAsterisk />
+                </Text>
+              </FormLabel>
+              <Input
+                backgroundColor="#FFFFFF"
+                value={contact.lastName}
+                onChange={(event) =>
+                  setPersonalInfo({
+                    type: PersonalInfoActions.UPDATE_CONTACT,
+                    field: "lastName",
+                    contactId,
+                    data: event.target.value,
+                  })
+                }
+              />
+            </FormControl>
+          </WrapItem>
+          <Spacer />
+          <WrapItem>
+            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+              <FormLabel>
+                <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+                  Email <RequiredAsterisk />
+                </Text>
+              </FormLabel>
+              <Input
+                backgroundColor="#FFFFFF"
+                value={contact.email}
+                onChange={(event) =>
+                  setPersonalInfo({
+                    type: PersonalInfoActions.UPDATE_CONTACT,
+                    field: "email",
+                    contactId,
+                    data: event.target.value,
+                  })
+                }
+              />
+            </FormControl>
+          </WrapItem>
+          <Spacer />
+
+          <WrapItem>
+            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+              <FormLabel>
+                <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+                  Phone Number <RequiredAsterisk />
+                </Text>
+              </FormLabel>
+              <Input
+                backgroundColor="#FFFFFF"
+                value={contact.phoneNumber}
+                onChange={(event) =>
+                  setPersonalInfo({
+                    type: PersonalInfoActions.UPDATE_CONTACT,
+                    field: "phoneNumber",
+                    contactId,
+                    data: event.target.value,
+                  })
+                }
+              />
+            </FormControl>
+          </WrapItem>
+          <Spacer />
+        </Wrap>
+
+        <Wrap py={7}>
+          <WrapItem width={{ sm: "100%", md: "47%" }}>
+            <FormControl>
+              <FormLabel>
+                <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+                  Relation To Camper <RequiredAsterisk />
+                </Text>
+              </FormLabel>
+              <Textarea
+                backgroundColor="#FFFFFF"
+                value={contact.relationshipToCamper}
+                onChange={(event) =>
+                  setPersonalInfo({
+                    type: PersonalInfoActions.UPDATE_CONTACT,
+                    field: "relationshipToCamper",
+                    contactId,
+                    data: event.target.value,
+                  })
+                }
+              />
+            </FormControl>
+          </WrapItem>
+        </Wrap>
+      </Box>
     </Box>
   );
 };

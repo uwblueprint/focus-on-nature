@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import React from "react";
+import { SmallAddIcon } from "@chakra-ui/icons";
+import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
 import { Camper } from "../../../../types/CamperTypes";
 import { usePersonalInfoHook } from "./personalInfoReducer";
 import CamperCard from "./CamperCard";
@@ -15,36 +16,62 @@ const PersonalInfo = ({
   campers,
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
-  console.log(campers);
   const setPersonalInfo = usePersonalInfoHook(setCampers);
   return (
-    <Box>
-      <Text textStyle="displayXLarge">Camp Registration</Text>
-      <Text>Personal Info</Text>
-      {campers.map((camper, index) => (
-        <CamperCard
-          key={index}
-          camper={camper}
-          setPersonalInfo={setPersonalInfo}
-          camperId={index}
-        />
-      ))}
+    <Box pb={14}>
+      <Text textStyle="displayXLarge">
+        Guelph Summer Camp 2022 Registration
+      </Text>
+      <Text
+        color="#10741A"
+        py={7}
+        textStyle={{ sm: "xSmallMedium", md: "xSmallBold", lg: "displayLarge" }}
+      >
+        Camper Information
+      </Text>
+      <VStack spacing={6} pb={6}>
+        {campers.map((camper, index) => (
+          <CamperCard
+            key={index}
+            camper={camper}
+            setPersonalInfo={setPersonalInfo}
+            camperId={index}
+          />
+        ))}
+      </VStack>
 
       <Button
+        w="100%"
+        backgroundColor="primary.green.100"
+        color="#ffffff"
         onClick={() =>
           setPersonalInfo({ type: PersonalInfoActions.ADD_CAMPER })
         }
       >
-        Add New Camper
+        <SmallAddIcon boxSize={6} />
+        <Text pl="3" textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+          Add Another Camper
+        </Text>
       </Button>
-      {campers[0].contacts.map((contact, index) => (
-        <ContactCard
-          key={index}
-          contact={contact}
-          setPersonalInfo={setPersonalInfo}
-          contactId={index}
-        />
-      ))}
+
+      <Divider py={4} borderColor="border.secondary.100" />
+      <Text
+        py={5}
+        color="#10741A"
+        textStyle={{ sm: "xSmallMedium", md: "xSmallBold", lg: "displayLarge" }}
+      >
+        Contact Information
+      </Text>
+      <VStack spacing={6} pb={6}>
+        {campers[0].contacts.map((contact, index) => (
+          <ContactCard
+            key={index}
+            contact={contact}
+            setPersonalInfo={setPersonalInfo}
+            contactId={index}
+          />
+        ))}
+      </VStack>
     </Box>
   );
 };
