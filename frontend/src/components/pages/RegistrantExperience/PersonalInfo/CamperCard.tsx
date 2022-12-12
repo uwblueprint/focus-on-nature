@@ -110,7 +110,7 @@ const CamperCard = ({
     <Box boxShadow="lg" rounded="xl" borderWidth={1}>
       <Box backgroundColor="#FFFFFF" rounded="xl">
         <Heading textStyle="displayLarge">
-          <Flex py="6" px={{ sm: "5", lg: "20" }} alignItems="center">
+          <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
             <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
               Camper #{camperId + 1}
             </Text>
@@ -121,9 +121,9 @@ const CamperCard = ({
         <Divider borderColor="border.secondary.100" />
       </Box>
       <Box px={{ sm: "5", lg: "20" }}>
-        <Wrap pt="7">
+        <Wrap pt={7}>
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "22vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   First Name{" "}
@@ -151,9 +151,8 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "22vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Last Name{" "}
@@ -181,9 +180,8 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "22vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Age{" "}
@@ -211,7 +209,6 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
         </Wrap>
 
         <Wrap py={7}>
