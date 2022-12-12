@@ -6,18 +6,38 @@ export type CampCreationFooterProps = {
   currentStep: CampCreationPages;
   isCurrentStepCompleted: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
+  isEditingCamp: boolean;
+  createNewCamp: (isPublishedCamp: boolean) => Promise<void>;
 };
 
 const CampCreationFooter = ({
   currentStep,
   isCurrentStepCompleted,
   handleStepNavigation,
+  createNewCamp,
+  isEditingCamp,
 }: CampCreationFooterProps): React.ReactElement => {
-  const onNextStep = () => {
+  const onNextStep = async () => {
     handleStepNavigation(1);
+
     if (currentStep === CampCreationPages.RegistrationFormPage) {
-      // eslint-disable-next-line no-console
-      console.log("Publish camp."); // Temporary.
+      // Publishing a new camp
+      if (!isEditingCamp) {
+        createNewCamp(true);
+      } else {
+        // Publishing a draft camp (should update the camp, not create a new camp)
+        console.log("Converting a draft camp to a published camp");
+      }
+    }
+  };
+
+  const onSaveAsDraft = async () => {
+    // Saving a new camp as draft
+    if (!isEditingCamp) {
+      createNewCamp(false);
+    } else {
+      // Saving a draft camp (should update the camp, not create a new camp)
+      console.log("Saving progress on a draft camp");
     }
   };
 
@@ -36,15 +56,16 @@ const CampCreationFooter = ({
       bottom="0"
       zIndex="11"
     >
-      <Button
-        width="auto"
-        height="48px"
-        variant="secondary"
-        onClick={() => handleStepNavigation(-1)}
-        disabled // Temporary.
-      >
-        Save as draft
-      </Button>
+      {currentStep !== CampCreationPages.CampCreationDetailsPage && (
+        <Button
+          width="auto"
+          height="48px"
+          variant="secondary"
+          onClick={() => onSaveAsDraft()}
+        >
+          Save as draft
+        </Button>
+      )}
       <Spacer />
       <Button
         width="auto"

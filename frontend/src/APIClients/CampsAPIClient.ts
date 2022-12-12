@@ -2,6 +2,8 @@ import { getBearerToken } from "../constants/AuthConstants";
 import {
   CampResponse,
   CampSessionResponse,
+  CreateCampRequest,
+  CreateCampResponse,
   UpdateCampSessionsRequest,
 } from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
@@ -28,6 +30,22 @@ const getCampById = async (id: string): Promise<CampResponse> => {
     return data;
   } catch (error) {
     return error as CampResponse;
+  }
+};
+
+const createNewCamp = async (
+  camp: CreateCampRequest,
+): Promise<CreateCampResponse> => {
+  try {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(camp));
+
+    const { data } = await baseAPIClient.post("/camp", formData, {
+      headers: { Authorization: getBearerToken() },
+    });
+    return data;
+  } catch (error: unknown) {
+    return error as CreateCampResponse;
   }
 };
 
@@ -118,6 +136,7 @@ const getCampSessionCsv = async (id: string): Promise<string> => {
 export default {
   getAllCamps,
   getCampById,
+  createNewCamp,
   editCampById,
   deleteCamp,
   updateCampSessions,
