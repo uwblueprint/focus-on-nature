@@ -75,8 +75,6 @@ campRouter.post(
   upload.single("file"),
   createCampDtoValidator,
   async (req, res) => {
-    // TODO: remove formQuestions and campSessions field
-
     try {
       const body = JSON.parse(req.body.data);
       const newCamp = await campService.createCamp({

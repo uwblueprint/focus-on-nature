@@ -37,6 +37,22 @@ export type CampResponse = {
   campPhotoUrl: string;
 };
 
+export type CreateCampRequest = Omit<
+  CampResponse,
+  "id" | "formQuestions" | "campSessions" | "campPhotoUrl"
+> & {
+  campSessions: CreateCampSessionRequest[];
+  formQuestions: CreateFormQuestion[];
+};
+
+export type CreateCampResponse = Omit<
+  CampResponse,
+  "formQuestions" | "campSessions"
+> & {
+  campSessions: string[];
+  formQuestions: string[];
+};
+
 export type CampSession = {
   id: string;
   camp: string;
@@ -52,6 +68,11 @@ export type CreateCampSession = {
   dates: Date[];
   selectedWeekDays: Map<string, boolean>;
 };
+
+export type CreateCampSessionRequest = Omit<
+  CampSession,
+  "id" | "camp" | "campers" | "waitlist"
+>;
 
 export type CampSessionResponse = CampSession & { campPriceId: string };
 

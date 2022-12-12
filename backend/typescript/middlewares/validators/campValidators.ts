@@ -75,29 +75,49 @@ export const createCampDtoValidator = async (
   if (!validatePrimitive(body.description, "string")) {
     return res.status(400).send(getApiValidationError("description", "string"));
   }
-  if (!validatePrimitive(body.earlyDropoff, "string")) {
+  if (body.earlyDropoff && !validatePrimitive(body.earlyDropoff, "string")) {
     return res
       .status(400)
       .send(getApiValidationError("earlyDropoff", "string"));
   }
-  if (!validateTime(body.earlyDropoff)) {
+  if (body.earlyDropoff && !validateTime(body.earlyDropoff)) {
     return res
       .status(400)
       .send(getApiValidationError("earlyDropoff", "24 hr time string"));
   }
-  if (!validatePrimitive(body.latePickup, "string")) {
+  if (body.latePickup && !validatePrimitive(body.latePickup, "string")) {
     return res.status(400).send(getApiValidationError("latePickup", "string"));
   }
-  if (!validateTime(body.latePickup)) {
+  if (body.latePickup && !validateTime(body.latePickup)) {
     return res
       .status(400)
       .send(getApiValidationError("latePickup", "24 hr time string"));
   }
-  if (!validatePrimitive(body.pickupFee, "number")) {
+  if (body.pickupFee && !validatePrimitive(body.pickupFee, "number")) {
     return res.status(400).send(getApiValidationError("pickupFee", "number"));
   }
-  if (!validatePrimitive(body.dropoffFee, "number")) {
+  if (body.dropoffFee && !validatePrimitive(body.dropoffFee, "number")) {
     return res.status(400).send(getApiValidationError("dropoffFee", "number"));
+  }
+  if (
+    (body.earlyDropoff && !body.dropoffFee) ||
+    (body.dropoffFee && !body.earlyDropoff)
+  ) {
+    return res
+      .status(400)
+      .send(
+        "If early dropoff timing is provided, you must provide the dropoff fee",
+      );
+  }
+  if (
+    (body.latePickup && !body.pickupFee) ||
+    (body.pickupFee && !body.latePickup)
+  ) {
+    return res
+      .status(400)
+      .send(
+        "If late pickup timing is provided, you must provide the pickup fee",
+      );
   }
   if (!validatePrimitive(body.startTime, "string")) {
     return res.status(400).send(getApiValidationError("startTime", "string"));

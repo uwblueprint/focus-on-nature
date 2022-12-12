@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import { Box, VStack, useToast } from "@chakra-ui/react";
 import ScheduleSessions from "./ScheduleSessions";
@@ -13,12 +13,18 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
   CreateFormQuestion,
   CreateCampSession,
+  CreateCampResponse,
+  CreateCampRequest,
 } from "../../../types/CampsTypes";
 import CampCreationDetails from "./CampDetails";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
+import { CAMPS_PAGE } from "../../../constants/Routes";
 
 const CampCreationPage = (): React.ReactElement => {
+  const toast = useToast();
+  const history = useHistory();
+
   // All response state from the three page components.
   const [campName, setCampName] = useState<string>("");
   const [campDescription, setCampDescription] = useState<string>("");
@@ -106,8 +112,6 @@ const CampCreationPage = (): React.ReactElement => {
     };
     getFormTemplate();
   }, []);
-
-  const toast = useToast();
 
   const [customQuestions, setCustomQuestions] = useState<CreateFormQuestion[]>(
     [],
@@ -244,6 +248,80 @@ const CampCreationPage = (): React.ReactElement => {
     }
   }, [editCampId]);
 
+  const createNewCamp = async (isPublishedCamp: boolean): Promise<void> => {
+    // Check if atleast the first step and 1 session is scheduled
+    if (!isCampDetailsFilled || scheduledSessions.length < 1) {
+      toast({
+        description: `You must fill out all the required fields in step 1 and schedule at least 1 session before creating a camp`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const campToCreate: CreateCampRequest = {
+      active: isPublishedCamp,
+      ageLower,
+      ageUpper,
+      campCoordinators: [],
+      campCounsellors: [],
+      name: campName,
+      description: campDescription,
+      earlyDropoff: earliestDropOffTime,
+      endTime,
+      latePickup: latestPickUpTime,
+      location: {
+        streetAddress1: addressLine1,
+        streetAddress2: addressLine2, // If line2 is empty string, omit it
+        city,
+        province,
+        postalCode,
+      },
+      startTime,
+      fee: dailyCampFee,
+      pickupFee: priceEDLP,
+      dropoffFee: priceEDLP,
+      formQuestions: customQuestions,
+      campSessions: scheduledSessions.map((campSession) => {
+        return {
+          dates: campSession.dates.map((date) => date.toString()),
+          capacity: campCapacity,
+        };
+      }),
+      volunteers: "",
+    };
+
+    try {
+      const createCampResponse: CreateCampResponse = await CampsAPIClient.createNewCamp(
+        campToCreate,
+      );
+      if (createCampResponse) {
+        history.push(CAMPS_PAGE);
+        toast({
+          description: `${createCampResponse.name} has been succesfully created`,
+          status: "success",
+          variant: "subtle",
+          duration: 3000,
+        });
+      } else {
+        toast({
+          description: `An error occurred with deleting ${campToCreate.name}. Please try again.`,
+          status: "error",
+          variant: "subtle",
+          duration: 3000,
+        });
+      }
+    } catch (error: unknown) {
+      toast({
+        description: `An error occurred with deleting ${campToCreate.name}. Please try again.`,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  };
+
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
@@ -292,9 +370,15 @@ const CampCreationPage = (): React.ReactElement => {
               handleCampCapacity={(
                 event: React.ChangeEvent<HTMLInputElement>,
               ) => setCampCapacity(Number(event.target.value))}
-              toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) =>
-                setOffersEDLP(Boolean(event.target.checked))
-              }
+              toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) => {
+                // If currently offers EDLP, reset the state of the timings to default values
+                if (offersEDLP) {
+                  setEarliestDropOffTime("");
+                  setLatestPickUpTime("");
+                  setPriceEDLP(0);
+                }
+                setOffersEDLP(Boolean(event.target.checked));
+              }}
               handleEarliestDropOffTime={(
                 event: React.ChangeEvent<HTMLInputElement>,
               ) => setEarliestDropOffTime(event.target.value)}
@@ -372,6 +456,8 @@ const CampCreationPage = (): React.ReactElement => {
         currentStep={currentPage}
         isCurrentStepCompleted={isCurrentStepCompleted(currentPage)}
         handleStepNavigation={handleStepNavigation}
+        createNewCamp={createNewCamp}
+        isEditingCamp={editCampId !== undefined}
       />
     </VStack>
   );

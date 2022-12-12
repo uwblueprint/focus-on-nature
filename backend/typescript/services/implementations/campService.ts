@@ -1291,8 +1291,9 @@ class CampService implements ICampService {
       const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
       const stripePickupProduct = await createStripePickupProduct(camp.name);
 
+      // Create the dropoff
       let priceIds = { dropoffPriceId: "", pickupPriceId: "" };
-      if (camp.active) {
+      if (camp.active && camp.dropoffFee && camp.pickupFee) {
         const dropoffPriceObject = await createStripePrice(
           stripeDropoffProduct.id,
           camp.dropoffFee * 100,

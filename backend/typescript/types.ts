@@ -169,11 +169,19 @@ export type CreateCampDTO = Omit<
   | "dropoffProductId"
   | "pickupPriceId"
   | "pickupProductId"
+  | "earlyDropoff"
+  | "latePickup"
+  | "pickupFee"
+  | "dropoffFee"
 > & {
   filePath?: string;
   fileContentType?: string;
   formQuestions: CreateFormQuestionDTO[];
   campSessions: CreateCampSessionsDTO;
+  earlyDropoff?: string;
+  latePickup?: string;
+  pickupFee?: number;
+  dropoffFee?: number;
 };
 
 export type UpdateCampDTO = Omit<
