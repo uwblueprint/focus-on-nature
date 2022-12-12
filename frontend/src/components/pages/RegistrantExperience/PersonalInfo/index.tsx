@@ -49,7 +49,7 @@ const PersonalInfo = ({
         }
       >
         <SmallAddIcon boxSize={6} />
-        <Text pl="3" textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+        <Text pl={3} textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
           Add Another Camper
         </Text>
       </Button>

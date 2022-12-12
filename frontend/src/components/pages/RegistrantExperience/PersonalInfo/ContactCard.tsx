@@ -6,7 +6,6 @@ import {
   FormLabel,
   Heading,
   Input,
-  Spacer,
   Text,
   Textarea,
   Wrap,
@@ -35,7 +34,7 @@ const ContactCard = ({
       <Box backgroundColor="#FFFFFF" rounded="xl">
         <Heading textStyle="displayLarge">
           <Text
-            py="6"
+            py={6}
             px={{ sm: "5", lg: "20" }}
             textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
           >
@@ -46,9 +45,9 @@ const ContactCard = ({
       </Box>
 
       <Box px={{ sm: "5", lg: "20" }}>
-        <Wrap pt="7">
+        <Wrap pt={7}>
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "12vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   First Name <RequiredAsterisk />
@@ -68,9 +67,8 @@ const ContactCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "12vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Last Name <RequiredAsterisk />
@@ -90,9 +88,8 @@ const ContactCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "12vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Email <RequiredAsterisk />
@@ -112,10 +109,9 @@ const ContactCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
 
           <WrapItem>
-            <FormControl minWidth="250px" width={{ sm: "35vw", lg: "12vw" }}>
+            <FormControl width={{ sm: "35vw", lg: "12vw" }}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Phone Number <RequiredAsterisk />
@@ -135,7 +131,6 @@ const ContactCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
         </Wrap>
 
         <Wrap py={7}>
