@@ -70,7 +70,6 @@ runs:
       env:
         HEROKU_API_KEY: "${{ inputs.heroku-api-key }}"
         HEROKU_EMAIL: "${{ inputs.heroku-email }}"
-        DEPLOY_BRANCH: "${{ inputs.deploy-branch }}"
       shell: bash
     - name: Add Heroku git remote
       run: heroku git:remote --app $HEROKU_APP_NAME
@@ -98,4 +97,6 @@ runs:
       shell: bash
     - name: Push to Heroku
       run: git subtree push --prefix backend/typescript heroku $DEPLOY_BRANCH:main
+      env:
+        DEPLOY_BRANCH: "${{ inputs.deploy-branch }}"
       shell: bash
