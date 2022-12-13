@@ -7,14 +7,14 @@ export type CampCreationFooterProps = {
   isCurrentStepCompleted: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
   isEditingCamp: boolean;
-  createNewCamp: (isPublishedCamp: boolean) => Promise<void>;
+  createUpdateCamp: (isPublishedCamp: boolean, isNewCamp: boolean) => Promise<void>;
 };
 
 const CampCreationFooter = ({
   currentStep,
   isCurrentStepCompleted,
   handleStepNavigation,
-  createNewCamp,
+  createUpdateCamp,
   isEditingCamp,
 }: CampCreationFooterProps): React.ReactElement => {
   const onNextStep = async () => {
@@ -23,10 +23,10 @@ const CampCreationFooter = ({
     if (currentStep === CampCreationPages.RegistrationFormPage) {
       // Publishing a new camp
       if (!isEditingCamp) {
-        createNewCamp(true);
+        createUpdateCamp(true, true);
       } else {
         // Publishing a draft camp (should update the camp, not create a new camp)
-        console.log("Converting a draft camp to a published camp");
+        createUpdateCamp(true, false);
       }
     }
   };
@@ -34,10 +34,10 @@ const CampCreationFooter = ({
   const onSaveAsDraft = async () => {
     // Saving a new camp as draft
     if (!isEditingCamp) {
-      createNewCamp(false);
+      createUpdateCamp(false, true);
     } else {
       // Saving a draft camp (should update the camp, not create a new camp)
-      console.log("Saving progress on a draft camp");
+      createUpdateCamp(false, false);
     }
   };
 

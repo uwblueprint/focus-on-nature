@@ -37,7 +37,7 @@ export type CampResponse = {
   campPhotoUrl: string;
 };
 
-export type CreateCampRequest = Omit<
+export type CreateUpdateCampRequest = Omit<
   CampResponse,
   "id" | "formQuestions" | "campSessions" | "campPhotoUrl"
 > & {
@@ -45,7 +45,7 @@ export type CreateCampRequest = Omit<
   formQuestions: CreateFormQuestion[];
 };
 
-export type CreateCampResponse = Omit<
+export type CreateUpdateCampResponse = Omit<
   CampResponse,
   "formQuestions" | "campSessions"
 > & {

@@ -55,7 +55,7 @@ export const getCampDtoValidator = async (
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable-next-line import/prefer-default-export */
-export const createCampDtoValidator = async (
+export const createUpdateCampDtoValidator = async (
   req: Request,
   res: Response,
   next: NextFunction,

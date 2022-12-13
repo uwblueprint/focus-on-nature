@@ -9,11 +9,12 @@ import {
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 
-import { CampResponse } from "../../../types/CampsTypes";
+import { CampResponse, CreateCampSession, CreateCampSessionRequest, CreateFormQuestion, CreateUpdateCampRequest } from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { CAMP_EDIT_PAGE } from "../../../constants/Routes";
+import { CAMPS_PAGE, CAMP_EDIT_PAGE } from "../../../constants/Routes";
+import { createUpdateCamp } from "../../../utils/CampUtils";
 
 type FooterProps = {
   camp: CampResponse;
@@ -25,17 +26,57 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
   const history = useHistory();
 
   const handlePublish = async () => {
-    const updatedCamp = camp;
-    updatedCamp.active = true;
-    const res = await CampsAPIClient.editCampById(camp.id, updatedCamp);
+    // Ensure that we are not dealing with a published camp already 
+    // (should not happen due to conditional rendering, but checking to be sure)
+    if(camp.active){
+      return;
+    }
+
+    // change formQuestions to CreateFormQuestions
+    const newFormQuestions : CreateFormQuestion[] = [];
+    for(const fq of camp.formQuestions){
+      const newFormQuestion: CreateFormQuestion = {...fq}
+      newFormQuestions.push({...newFormQuestion});
+    }
+
+    // change campSessions to CreateCampSessions
+    const newCampSessions: CreateCampSessionRequest[] = []
+    for(const cs of camp.campSessions){
+      const newCampSession: CreateCampSessionRequest = {...cs}
+      newCampSessions.push({...newCampSession});
+    }
+
+
+    const updateCampFields : CreateUpdateCampRequest = {
+      active : true,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators,
+      campCounsellors: camp.campCounsellors,
+      name: camp.name,
+      description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      endTime: camp.endTime,
+      latePickup: camp.latePickup,
+      location: camp.location,
+      startTime: camp.startTime,
+      fee: camp.fee,
+      pickupFee: camp.pickupFee,
+      dropoffFee: camp.dropoffFee,
+      formQuestions: newFormQuestions,
+      campSessions: newCampSessions,
+      volunteers: camp.volunteers
+    }
+
+    const res = await createUpdateCamp(updateCampFields, false, camp.id);
     if (res) {
+      history.push(CAMPS_PAGE);
       toast({
         description: `${camp.name} has been successfully published`,
         status: "success",
         variant: "subtle",
         duration: 3000,
       });
-      history.go(0);
     } else {
       toast({
         description: `An error occurred with publishing ${camp.name}`,

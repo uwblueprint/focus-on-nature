@@ -13,12 +13,12 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
   CreateFormQuestion,
   CreateCampSession,
-  CreateCampResponse,
-  CreateCampRequest,
+  CreateUpdateCampRequest,
+  CreateUpdateCampResponse,
 } from "../../../types/CampsTypes";
 import CampCreationDetails from "./CampDetails";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
+import { createUpdateCamp, getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
 import { CAMPS_PAGE } from "../../../constants/Routes";
 
 const CampCreationPage = (): React.ReactElement => {
@@ -170,6 +170,7 @@ const CampCreationPage = (): React.ReactElement => {
 
   // The edit-camp route will have an id to identify the camp currently in draft state
   const { id: editCampId } = useParams<{ id: string }>();
+  const [isLoadedCampData, setIsLoadedCampData] = useState<boolean>(false);
 
   // This useEffect fetches the current state of the draft camp if we are editing camp
   useEffect(() => {
@@ -239,6 +240,7 @@ const CampCreationPage = (): React.ReactElement => {
           // At the creation stage, all the sessions should have the same capacity
           setCampCapacity(editCamp.campSessions[0].capacity);
         }
+        setIsLoadedCampData(true);
       }
     };
 
@@ -248,19 +250,9 @@ const CampCreationPage = (): React.ReactElement => {
     }
   }, [editCampId]);
 
-  const createNewCamp = async (isPublishedCamp: boolean): Promise<void> => {
-    // Check if atleast the first step and 1 session is scheduled
-    if (!isCampDetailsFilled || scheduledSessions.length < 1) {
-      toast({
-        description: `You must fill out all the required fields in step 1 and schedule at least 1 session before creating a camp`,
-        status: "error",
-        variant: "subtle",
-        duration: 3000,
-      });
-      return;
-    }
 
-    const campToCreate: CreateCampRequest = {
+  const createUpdateCampHelper = async (isPublishedCamp: boolean, isNewCamp: boolean): Promise<void> => {
+    const campFields: CreateUpdateCampRequest = {
       active: isPublishedCamp,
       ageLower,
       ageUpper,
@@ -273,7 +265,7 @@ const CampCreationPage = (): React.ReactElement => {
       latePickup: latestPickUpTime,
       location: {
         streetAddress1: addressLine1,
-        streetAddress2: addressLine2, // If line2 is empty string, omit it
+        streetAddress2: addressLine2,
         city,
         province,
         postalCode,
@@ -291,22 +283,21 @@ const CampCreationPage = (): React.ReactElement => {
       }),
       volunteers: "",
     };
-
+    
     try {
-      const createCampResponse: CreateCampResponse = await CampsAPIClient.createNewCamp(
-        campToCreate,
-      );
-      if (createCampResponse) {
+      const campResponse = await createUpdateCamp(campFields, isNewCamp, editCampId);
+      
+      if (campResponse) {
         history.push(CAMPS_PAGE);
         toast({
-          description: `${createCampResponse.name} has been succesfully created`,
+          description: `${campResponse.name} has been succesfully ${isNewCamp ? "created" : "updated"}`,
           status: "success",
           variant: "subtle",
           duration: 3000,
         });
       } else {
         toast({
-          description: `An error occurred with deleting ${campToCreate.name}. Please try again.`,
+          description: `An error occurred with ${isNewCamp ? "creating" : "updating"} ${campFields.name}. Please try again.`,
           status: "error",
           variant: "subtle",
           duration: 3000,
@@ -314,19 +305,20 @@ const CampCreationPage = (): React.ReactElement => {
       }
     } catch (error: unknown) {
       toast({
-        description: `An error occurred with deleting ${campToCreate.name}. Please try again.`,
+        description: `An error occurred with ${isNewCamp ? "creating" : "updating"} ${campFields.name}. Please try again.`,
         status: "error",
         variant: "subtle",
         duration: 3000,
       });
     }
-  };
+
+  }
 
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
         return (
-          <React.Fragment key={editCampId ? "loaded" : "loading"}>
+          <React.Fragment key={!editCampId || isLoadedCampData ? "loaded" : "loading"}>
             <CampCreationDetails
               campName={campName}
               campDescription={campDescription}
@@ -457,7 +449,7 @@ const CampCreationPage = (): React.ReactElement => {
         currentStep={currentPage}
         isCurrentStepCompleted={isCurrentStepCompleted(currentPage)}
         handleStepNavigation={handleStepNavigation}
-        createNewCamp={createNewCamp}
+        createUpdateCamp={createUpdateCampHelper}
         isEditingCamp={editCampId !== undefined}
       />
     </VStack>

@@ -2,8 +2,8 @@ import { getBearerToken } from "../constants/AuthConstants";
 import {
   CampResponse,
   CampSessionResponse,
-  CreateCampRequest,
-  CreateCampResponse,
+  CreateUpdateCampRequest,
+  CreateUpdateCampResponse,
   UpdateCampSessionsRequest,
 } from "../types/CampsTypes";
 import baseAPIClient from "./BaseAPIClient";
@@ -34,8 +34,8 @@ const getCampById = async (id: string): Promise<CampResponse> => {
 };
 
 const createNewCamp = async (
-  camp: CreateCampRequest,
-): Promise<CreateCampResponse> => {
+  camp: CreateUpdateCampRequest,
+): Promise<CreateUpdateCampResponse> => {
   try {
     const formData = new FormData();
     formData.append("data", JSON.stringify(camp));
@@ -45,19 +45,17 @@ const createNewCamp = async (
     });
     return data;
   } catch (error: unknown) {
-    return error as CreateCampResponse;
+    return error as CreateUpdateCampResponse;
   }
 };
 
 const editCampById = async (
   id: string,
-  camp: CampResponse,
-): Promise<CampResponse> => {
+  camp: CreateUpdateCampRequest,
+): Promise<CreateUpdateCampResponse> => {
   try {
-    // formquestions and campsessions are edited separately
-    const fieldsToUpdate: Partial<CampResponse> = { ...camp };
-    delete fieldsToUpdate.formQuestions;
-    delete fieldsToUpdate.campSessions;
+
+    const fieldsToUpdate: CreateUpdateCampRequest = { ...camp };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(fieldsToUpdate));
@@ -68,7 +66,7 @@ const editCampById = async (
     });
     return data;
   } catch (error) {
-    return error as CampResponse;
+    return error as CreateUpdateCampResponse;
   }
 };
 

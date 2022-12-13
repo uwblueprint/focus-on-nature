@@ -7,7 +7,7 @@ import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import {
-  createCampDtoValidator,
+  createUpdateCampDtoValidator,
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
   deleteCampSessionsDtoValidator,
@@ -82,7 +82,7 @@ campRouter.post(
   "/",
   isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
-  createCampDtoValidator,
+  createUpdateCampDtoValidator,
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
@@ -125,7 +125,7 @@ campRouter.patch(
   "/:campId",
   isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
-  updateCampDtoValidator,
+  createUpdateCampDtoValidator,
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
