@@ -1,4 +1,4 @@
-name: Deploy backend to Heroku environment
+name: Deploy backend to Heroku
 description: "Pushes all code in backend/typescript to main branch in Heroku deployment"
 
 inputs:
