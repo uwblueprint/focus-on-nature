@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "focus-on-nature"
-  }
+    "default": "focus-on-nature",
+    "prod": "focus-on-nature-prod"
+  },
+  "targets": {},
+  "etags": {}
 }

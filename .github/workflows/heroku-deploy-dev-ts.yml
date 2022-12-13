@@ -10,45 +10,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: fon-staging
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set Heroku login credentials
-        run: |
-          cat > ~/.netrc <<EOF
-            machine api.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-            machine git.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-          EOF
-        env:
-          HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
-          HEROKU_EMAIL: "${{ secrets.HEROKU_EMAIL }}"
-      - name: Add Heroku git remote
-        run: heroku git:remote --app $HEROKU_APP_NAME
-        env:
-          HEROKU_APP_NAME: "${{ secrets.HEROKU_APP_NAME }}"
-      - name: Set Heroku config vars
-        run: |
-          heroku config:set MG_DATABASE_URL="${{ secrets.MG_DATABASE_URL }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_REQUEST_URI="${{ secrets.FIREBASE_REQUEST_URI }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_STORAGE_DEFAULT_BUCKET="${{ secrets.FIREBASE_STORAGE_DEFAULT_BUCKET }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_PROJECT_ID="${{ secrets.FIREBASE_PROJECT_ID }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_SVC_ACCOUNT_PRIVATE_KEY="${{ secrets.FIREBASE_SVC_ACCOUNT_PRIVATE_KEY }}" -a $HEROKU_APP_NAME && \
-          heroku config:set FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL="${{ secrets.FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL }}" -a $HEROKU_APP_NAME && \
-          heroku config:set MAILER_USER="${{ secrets.MAILER_USER }}" -a $HEROKU_APP_NAME && \
-          heroku config:set MAILER_CLIENT_ID="${{ secrets.MAILER_CLIENT_ID }}" -a $HEROKU_APP_NAME && \
-          heroku config:set MAILER_CLIENT_SECRET="${{ secrets.MAILER_CLIENT_SECRET }}" -a $HEROKU_APP_NAME && \
-          heroku config:set MAILER_REFRESH_TOKEN="${{ secrets.MAILER_REFRESH_TOKEN }}" -a $HEROKU_APP_NAME && \
-          heroku config:set STRIPE_PUBLISHABLE_TEST_KEY="${{ secrets.STRIPE_PUBLISHABLE_TEST_KEY }}" -a $HEROKU_APP_NAME && \
-          heroku config:set STRIPE_SECRET_TEST_KEY="${{ secrets.STRIPE_SECRET_TEST_KEY }}" -a $HEROKU_APP_NAME && \
-          heroku config:set PREVIEW_DEPLOY=true -a $HEROKU_APP_NAME
-        env:
-          HEROKU_APP_NAME: "${{ secrets.HEROKU_APP_NAME }}"
-      - name: Push to Heroku
-        run: git subtree push --prefix backend/typescript heroku dev:main
+      - name: Deploy to Heroku
+        uses: ./.github/actions/heroku-deploy
+        with:
+          heroku-api-key: "${{ secrets.HEROKU_API_KEY }}"
+          heroku-email: "${{ secrets.HEROKU_EMAIL }}"
+          heroku-app-name: "${{ secrets.HEROKU_APP_NAME }}"
+          mg-database-url: "${{ secrets.MG_DATABASE_URL }}"
+          firebase-web-api-key: "${{ secrets.FIREBASE_WEB_API_KEY }}"
+          firebase-request-uri: "${{ secrets.FIREBASE_REQUEST_URI }}"
+          firebase-storage-default-bucket: "${{ secrets.FIREBASE_STORAGE_DEFAULT_BUCKET }}"
+          firebase-project-id: "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase-svc-account-private-key: "${{ secrets.FIREBASE_SVC_ACCOUNT_PRIVATE_KEY }}"
+          firebase-svc-account-client-email: "${{ secrets.FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL }}"
+          mailer-user: "${{ secrets.MAILER_USER }}"
+          mailer-client-id: "${{ secrets.MAILER_CLIENT_ID }}"
+          mailer-client-secret: "${{ secrets.MAILER_CLIENT_SECRET }}"
+          mailer-refresh-token: "${{ secrets.MAILER_REFRESH_TOKEN }}"
+          stripe-publishable-key: "${{ secrets.STRIPE_PUBLISHABLE_TEST_KEY }}"
+          stripe-secret-key: "${{ secrets.STRIPE_SECRET_TEST_KEY }}"
+          deploy-branch: "dev"

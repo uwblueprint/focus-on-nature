@@ -19,6 +19,7 @@ dotenv.config();
 const CORS_ALLOW_LIST = [
   "http://localhost:3000", // Local dev
   "https://focus-on-nature.web.app", // Staging
+  "https://focusonnature.web.app", // Prod
 ];
 
 const CORS_OPTIONS: cors.CorsOptions = {
