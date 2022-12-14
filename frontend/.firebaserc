@@ -3,6 +3,14 @@
     "default": "focus-on-nature",
     "prod": "focus-on-nature-prod"
   },
-  "targets": {},
+  "targets": {
+    "prod": {
+      "hosting": {
+        "prodalias": [
+          "focusonnature"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

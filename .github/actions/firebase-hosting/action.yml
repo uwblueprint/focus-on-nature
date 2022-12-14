@@ -21,6 +21,9 @@ inputs:
   firebase-project-id:
     description: "Firebase project ID, specific to Firebase project so will differ between staging and prod. See .firebaserc for aliases."
     required: true
+  target:
+    description: "Target in .firebaserc if needed for deploy. See docs for multi-site Firebase hosting."
+    required: false
 
 runs:
   using: "composite"
@@ -41,3 +44,4 @@ runs:
         projectId: "${{ inputs.firebase-project-id }}"
         channelId: "${{ inputs.channel-id }}"
         entryPoint: ./frontend
+        target: "${{ inputs.target }}"
