@@ -4,10 +4,17 @@
     "prod": "focus-on-nature-prod"
   },
   "targets": {
-    "prod": {
+    "focus-on-nature-prod": {
       "hosting": {
-        "prodalias": [
+        "prod-alias": [
           "focusonnature"
+        ]
+      }
+    },
+    "focus-on-nature": {
+      "hosting": {
+        "staging": [
+          "focus-on-nature"
         ]
       }
     }
