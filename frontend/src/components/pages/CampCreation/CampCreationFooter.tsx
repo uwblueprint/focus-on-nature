@@ -7,7 +7,10 @@ export type CampCreationFooterProps = {
   isCurrentStepCompleted: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
   isEditingCamp: boolean;
-  createUpdateCamp: (isPublishedCamp: boolean, isNewCamp: boolean) => Promise<void>;
+  createUpdateCamp: (
+    isPublishedCamp: boolean,
+    isNewCamp: boolean,
+  ) => Promise<void>;
 };
 
 const CampCreationFooter = ({

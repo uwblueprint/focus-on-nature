@@ -9,10 +9,13 @@ import {
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 
-import { CampResponse, CreateCampSession, CreateCampSessionRequest, CreateFormQuestion, CreateUpdateCampRequest } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CreateCampSessionRequest,
+  CreateFormQuestion,
+  CreateUpdateCampRequest,
+} from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
-
-import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CAMPS_PAGE, CAMP_EDIT_PAGE } from "../../../constants/Routes";
 import { createUpdateCamp } from "../../../utils/CampUtils";
 
@@ -26,29 +29,38 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
   const history = useHistory();
 
   const handlePublish = async () => {
-    // Ensure that we are not dealing with a published camp already 
+    // Ensure that we are not dealing with a published camp already
     // (should not happen due to conditional rendering, but checking to be sure)
-    if(camp.active){
+    if (camp.active) {
       return;
     }
 
     // change formQuestions to CreateFormQuestions
-    const newFormQuestions : CreateFormQuestion[] = [];
-    for(const fq of camp.formQuestions){
-      const newFormQuestion: CreateFormQuestion = {...fq}
-      newFormQuestions.push({...newFormQuestion});
-    }
+    const newFormQuestions: CreateFormQuestion[] = [];
+    camp.formQuestions.forEach((fq) => {
+      const newFormQuestion: CreateFormQuestion = {
+        type: fq.type,
+        required: fq.required,
+        question: fq.question,
+        options: fq.options,
+        description: fq.description,
+        category: fq.category,
+      };
+      newFormQuestions.push({ ...newFormQuestion });
+    });
 
     // change campSessions to CreateCampSessions
-    const newCampSessions: CreateCampSessionRequest[] = []
-    for(const cs of camp.campSessions){
-      const newCampSession: CreateCampSessionRequest = {...cs}
-      newCampSessions.push({...newCampSession});
-    }
+    const newCampSessions: CreateCampSessionRequest[] = [];
+    camp.campSessions.forEach((cs) => {
+      const newCampSession: CreateCampSessionRequest = {
+        dates: cs.dates,
+        capacity: cs.capacity,
+      };
+      newCampSessions.push({ ...newCampSession });
+    });
 
-
-    const updateCampFields : CreateUpdateCampRequest = {
-      active : true,
+    const updateCampFields: CreateUpdateCampRequest = {
+      active: true,
       ageLower: camp.ageLower,
       ageUpper: camp.ageUpper,
       campCoordinators: camp.campCoordinators,
@@ -65,11 +77,12 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
       dropoffFee: camp.dropoffFee,
       formQuestions: newFormQuestions,
       campSessions: newCampSessions,
-      volunteers: camp.volunteers
-    }
+      volunteers: camp.volunteers,
+    };
 
     const res = await createUpdateCamp(updateCampFields, false, camp.id);
-    if (res) {
+
+    if (!(res instanceof Error)) {
       history.push(CAMPS_PAGE);
       toast({
         description: `${camp.name} has been successfully published`,

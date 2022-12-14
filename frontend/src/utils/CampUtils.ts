@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import CampsAPIClient from "../APIClients/CampsAPIClient";
 import MONTHS from "../constants/CampManagementConstants";
-import { CAMPS_PAGE } from "../constants/Routes";
 import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
 import {
   CampResponse,
@@ -207,23 +206,31 @@ export const getSessionBorderColor = (sessionIndex: number): string =>
 export const getSessionFillColor = (sessionIndex: number): string =>
   FILL_COLORS[sessionIndex % 8];
 
-
 // isEDLPValid checks if the EDLP config in the request object is valid
-const isEDLPValid = (camp: CreateUpdateCampRequest) : boolean => {
+const isEDLPValid = (camp: CreateUpdateCampRequest): boolean => {
   // Camp either doesn't have EDLP or has both
-  if ((camp.earlyDropoff && ! camp.latePickup) || (camp.latePickup && !camp.earlyDropoff)){
+  if (
+    (camp.earlyDropoff && !camp.latePickup) ||
+    (camp.latePickup && !camp.earlyDropoff)
+  ) {
     return false;
   }
   // Camp must have both late pickup and early dropoff fee if it has EDLP
-  if(camp.earlyDropoff && camp.latePickup && (!camp.dropoffFee || !camp.pickupFee)){
+  if (
+    camp.earlyDropoff &&
+    camp.latePickup &&
+    (!camp.dropoffFee || !camp.pickupFee)
+  ) {
     return false;
   }
   return true;
-}
+};
 
 // isMinCampDetailsFilled checks if the camp object has the minimum details required to create/update a camp
-export const isMinCampDetailsFilled = (camp : CreateUpdateCampRequest): boolean => {
-  if(
+export const isMinCampDetailsFilled = (
+  camp: CreateUpdateCampRequest,
+): boolean => {
+  if (
     camp.name &&
     camp.description &&
     camp.fee &&
@@ -236,46 +243,50 @@ export const isMinCampDetailsFilled = (camp : CreateUpdateCampRequest): boolean 
     camp.location.city &&
     camp.location.province &&
     camp.location.province &&
-    camp.location.postalCode && 
-    camp.campSessions.length > 0 && 
-    camp.campSessions.every(cs => cs.capacity > 0)
-  ){
-      return true;
+    camp.location.postalCode &&
+    camp.campSessions.length > 0 &&
+    camp.campSessions.every((cs) => cs.capacity > 0)
+  ) {
+    return true;
   }
   return false;
-}
+};
 
 // createUpdateCamp creates or updates a camp with the given fields
-export const createUpdateCamp = async (camp: CreateUpdateCampRequest, isNewCamp: boolean, editCampId = ""): Promise<CreateUpdateCampResponse> => {
-  
+export const createUpdateCamp = async (
+  camp: CreateUpdateCampRequest,
+  isNewCamp: boolean,
+  editCampId = "",
+): Promise<CreateUpdateCampResponse> => {
   // If isNewCamp is false, then editCampId must not be an empty string
-  if(!isNewCamp && !editCampId){
+  if (!isNewCamp && !editCampId) {
     throw new Error("You must provide the camp id if you are editing a camp");
   }
-  
+
   // Check if atleast the first step and 1 session is scheduled
   if (!isMinCampDetailsFilled(camp)) {
-    throw new Error(`You must fill out all the required fields in step 1 and schedule at least 1 session before ${isNewCamp ? "creation" : "updating"} a camp`);
+    throw new Error(
+      `You must fill out all the required fields in step 1 and schedule at least 1 session before ${
+        isNewCamp ? "creation" : "updating"
+      } a camp`,
+    );
   }
 
-  
-  let campResponse : CreateUpdateCampResponse;
-  
+  let campResponse: CreateUpdateCampResponse;
+
   if (isNewCamp) {
-    campResponse = await CampsAPIClient.createNewCamp(
-      camp,
-    );
+    campResponse = await CampsAPIClient.createNewCamp(camp);
   } else {
-    campResponse = await CampsAPIClient.editCampById(
-      editCampId,
-      camp,
-    );
+    campResponse = await CampsAPIClient.editCampById(editCampId, camp);
   }
 
   if (campResponse) {
     return campResponse;
-  } 
+  }
 
-  throw new Error(`An error occurred with ${isNewCamp ? "creating" : "updating"} ${camp.name}. Please try again.`);
-  
+  throw new Error(
+    `An error occurred with ${isNewCamp ? "creating" : "updating"} ${
+      camp.name
+    }. Please try again.`,
+  );
 };

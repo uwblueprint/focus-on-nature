@@ -208,6 +208,7 @@ const CampCreationDetails = ({
           borderColor={!dailyCampFee && showErrors ? "red" : "gray.200"}
           borderWidth={!dailyCampFee && showErrors ? "2px" : "1px"}
           onChange={handleDailyCampFee}
+          onWheel={(event) => event.currentTarget.blur()}
         />
       </InputGroup>
       {errorText(dailyCampFee, "You must add a fee.")}
@@ -284,6 +285,7 @@ const CampCreationDetails = ({
                 borderColor={!ageLower && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageLower && showErrors ? "2px" : "1px"}
                 onChange={handleAgeLower}
+                onWheel={(event) => event.currentTarget.blur()}
               />
               {errorText(ageLower, "You must enter an age.")}
             </Box>
@@ -298,6 +300,7 @@ const CampCreationDetails = ({
                 borderColor={!ageUpper && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageUpper && showErrors ? "2px" : "1px"}
                 onChange={handleAgeUpper}
+                onWheel={(event) => event.currentTarget.blur()}
               />
               {errorText(ageUpper, "You must enter an age.")}
             </Box>
@@ -321,6 +324,7 @@ const CampCreationDetails = ({
               borderColor={!campCapacity && showErrors ? "red" : "gray.200"}
               borderWidth={!campCapacity && showErrors ? "2px" : "1px"}
               onChange={handleCampCapacity}
+              onWheel={(event) => event.currentTarget.blur()}
             />
             {errorText(campCapacity, "You must enter a number.")}
           </Box>

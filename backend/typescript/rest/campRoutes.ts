@@ -13,7 +13,6 @@ import {
   deleteCampSessionsDtoValidator,
   editFormQuestionValidator,
   getCampDtoValidator,
-  updateCampDtoValidator,
   updateCampSessionDtoValidator,
   updateCampSessionsDtoValidator,
 } from "../middlewares/validators/campValidators";

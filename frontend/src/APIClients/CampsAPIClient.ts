@@ -54,7 +54,6 @@ const editCampById = async (
   camp: CreateUpdateCampRequest,
 ): Promise<CreateUpdateCampResponse> => {
   try {
-
     const fieldsToUpdate: CreateUpdateCampRequest = { ...camp };
 
     const formData = new FormData();

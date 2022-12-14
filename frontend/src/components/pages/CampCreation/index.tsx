@@ -14,11 +14,13 @@ import {
   CreateFormQuestion,
   CreateCampSession,
   CreateUpdateCampRequest,
-  CreateUpdateCampResponse,
 } from "../../../types/CampsTypes";
 import CampCreationDetails from "./CampDetails";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { createUpdateCamp, getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
+import {
+  createUpdateCamp,
+  getSelectedWeekDaysFromDates,
+} from "../../../utils/CampUtils";
 import { CAMPS_PAGE } from "../../../constants/Routes";
 
 const CampCreationPage = (): React.ReactElement => {
@@ -250,8 +252,10 @@ const CampCreationPage = (): React.ReactElement => {
     }
   }, [editCampId]);
 
-
-  const createUpdateCampHelper = async (isPublishedCamp: boolean, isNewCamp: boolean): Promise<void> => {
+  const createUpdateCampHelper = async (
+    isPublishedCamp: boolean,
+    isNewCamp: boolean,
+  ): Promise<void> => {
     const campFields: CreateUpdateCampRequest = {
       active: isPublishedCamp,
       ageLower,
@@ -283,21 +287,29 @@ const CampCreationPage = (): React.ReactElement => {
       }),
       volunteers: "",
     };
-    
+
     try {
-      const campResponse = await createUpdateCamp(campFields, isNewCamp, editCampId);
-      
+      const campResponse = await createUpdateCamp(
+        campFields,
+        isNewCamp,
+        editCampId,
+      );
+
       if (campResponse) {
         history.push(CAMPS_PAGE);
         toast({
-          description: `${campResponse.name} has been succesfully ${isNewCamp ? "created" : "updated"}`,
+          description: `${campResponse.name} has been succesfully ${
+            isNewCamp ? "created" : "updated"
+          }`,
           status: "success",
           variant: "subtle",
           duration: 3000,
         });
       } else {
         toast({
-          description: `An error occurred with ${isNewCamp ? "creating" : "updating"} ${campFields.name}. Please try again.`,
+          description: `An error occurred with ${
+            isNewCamp ? "creating" : "updating"
+          } ${campFields.name}. Please try again.`,
           status: "error",
           variant: "subtle",
           duration: 3000,
@@ -305,20 +317,23 @@ const CampCreationPage = (): React.ReactElement => {
       }
     } catch (error: unknown) {
       toast({
-        description: `An error occurred with ${isNewCamp ? "creating" : "updating"} ${campFields.name}. Please try again.`,
+        description: `An error occurred with ${
+          isNewCamp ? "creating" : "updating"
+        } ${campFields.name}. Please try again.`,
         status: "error",
         variant: "subtle",
         duration: 3000,
       });
     }
-
-  }
+  };
 
   const getCampCreationStepComponent = (page: CampCreationPages) => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
         return (
-          <React.Fragment key={!editCampId || isLoadedCampData ? "loaded" : "loading"}>
+          <React.Fragment
+            key={!editCampId || isLoadedCampData ? "loaded" : "loading"}
+          >
             <CampCreationDetails
               campName={campName}
               campDescription={campDescription}
