@@ -30,8 +30,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     requiredClauses: [],
     agreedRequiredClauses: false,
     loadingWaiver: true,
-    wroteDate: false,
-    wroteName: false,
+    date: "",
+    name: "",
     waiverCompleted: false,
   });
   useEffect(() => {
@@ -125,7 +125,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         isReviewRegistrationFilled={isReviewRegistrationFilled}
         setCurrentStep={setCurrentStep}
       />
-      <Box my="50px" mx="10vw">
+      <Box mt="144px" mb="168px" mx="10vw">
         {getCurrentRegistrantStepComponent(currentStep)}
       </Box>
       <RegistrationFooter

@@ -33,8 +33,9 @@ const CampCreationNavStepper = ({
       minH="92px"
       width="100vw"
       align="center"
-      justify="center"
+      justify="space-between"
       flexWrap="wrap"
+      px="200px"
     >
       <StepperTab
         title="Camp Details"
@@ -47,8 +48,6 @@ const CampCreationNavStepper = ({
         onClick={() =>
           setCurrentPage(CampCreationPages.CampCreationDetailsPage)
         }
-        marginLeft="0px"
-        marginRight="10vw"
       />
       <StepperTab
         title="Schedule Sessions"
@@ -59,8 +58,6 @@ const CampCreationNavStepper = ({
         available={isCampDetailsFilled}
         icon={<FontAwesomeIcon icon={faCalendarDays} />}
         onClick={() => setCurrentPage(CampCreationPages.ScheduleSessionsPage)}
-        marginLeft="10vw"
-        marginRight="10vw"
       />
       <StepperTab
         title="Registration Form"
@@ -71,8 +68,6 @@ const CampCreationNavStepper = ({
         available={isCampDetailsFilled && isScheduleSessionsFilled}
         icon={<FontAwesomeIcon icon={faCircleInfo} />}
         onClick={() => setCurrentPage(CampCreationPages.RegistrationFormPage)}
-        marginLeft="10vw"
-        marginRight="0px"
       />
     </Flex>
   );

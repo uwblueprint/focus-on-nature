@@ -30,7 +30,7 @@ export interface FillDate extends WaiverReducerDispatchBase {
 }
 
 /* eslint-disable-next-line */
-export interface ClickRequiredClauses extends WaiverReducerDispatchBase{}
+export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
@@ -54,7 +54,7 @@ export type WaiverInterface = {
   requiredClauses: RequiredClauseResponse[];
   agreedRequiredClauses: boolean;
   loadingWaiver: boolean;
-  wroteName: boolean;
-  wroteDate: boolean;
+  name: string;
+  date: string;
   waiverCompleted: boolean;
 };
