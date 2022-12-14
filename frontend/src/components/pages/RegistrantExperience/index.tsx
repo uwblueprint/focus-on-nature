@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer, Reducer } from "react";
+import React, { useEffect, useState, useReducer, Reducer, useRef } from "react";
 
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
@@ -105,7 +105,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
-  console.log(campers);
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
+
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
@@ -128,6 +129,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.PersonalInfoPage:
         return (
           <PersonalInfo
+            nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
             campSessions={campSessions}
@@ -185,6 +187,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         {getCurrentRegistrantStepComponent(currentStep)}
       </Box>
       <RegistrationFooter
+        nextBtnRef={nextBtnRef}
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import {
   AlertDialog,
@@ -24,6 +24,7 @@ import {
   useToast,
   Wrap,
   WrapItem,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import {
   PersonalInfoActions,
@@ -31,18 +32,52 @@ import {
 } from "../../../../types/PersonalInfoTypes";
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
 
 type CamperCardProps = {
+  nextBtnRef: React.RefObject<HTMLButtonElement>;
   camper: RegistrantExperienceCamper;
   camperId: number;
   setPersonalInfo: (action: PersonalInfoReducerDispatch) => void;
 };
 
 const CamperCard = ({
+  nextBtnRef,
   camper,
   camperId,
   setPersonalInfo,
 }: CamperCardProps): React.ReactElement => {
+  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
+  const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
+  const [isAgeInvalid, setIsAgeInvalid] = useState<boolean>(false);
+
+  useEffect(() => {
+    const updateFormErrorMsgs = () => {
+      console.log(
+        checkFirstName(camper.firstName),
+        checkLastName(camper.lastName),
+        checkAge(camper.age),
+        camper.firstName,
+        !!camper.firstName,
+      );
+      if (!checkFirstName(camper.firstName)) setIsFirstNameInvalid(true);
+      if (!checkLastName(camper.lastName)) setIsLastNameInvalid(true);
+      if (!checkAge(camper.age)) setIsAgeInvalid(true);
+    };
+
+    if (nextBtnRef && nextBtnRef.current) {
+      // Passing the same reference
+      nextBtnRef.current.addEventListener("click", updateFormErrorMsgs);
+    }
+
+    return () => {
+      // Passing the same reference
+      if (nextBtnRef && nextBtnRef.current) {
+        nextBtnRef.current.removeEventListener("click", updateFormErrorMsgs);
+      }
+    };
+  }, [camper]);
+
   function AlertDialogExample() {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -134,7 +169,7 @@ const CamperCard = ({
       <Box px={{ sm: "5", lg: "20" }}>
         <Wrap pt={7}>
           <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
-            <FormControl>
+            <FormControl isInvalid={isFirstNameInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   First Name{" "}
@@ -151,19 +186,21 @@ const CamperCard = ({
               <Input
                 backgroundColor="#FFFFFF"
                 value={camper.firstName}
-                onChange={(event) =>
+                onChange={(event) => {
+                  setIsFirstNameInvalid(false);
                   setPersonalInfo({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "firstName",
                     camperId,
                     data: event.target.value,
-                  })
-                }
+                  });
+                }}
               />
+              <FormErrorMessage>This field cannot be empty</FormErrorMessage>
             </FormControl>
           </WrapItem>
           <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
-            <FormControl>
+            <FormControl isInvalid={isLastNameInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Last Name{" "}
@@ -180,19 +217,21 @@ const CamperCard = ({
               <Input
                 backgroundColor="#FFFFFF"
                 value={camper.lastName}
-                onChange={(event) =>
+                onChange={(event) => {
+                  setIsLastNameInvalid(false);
                   setPersonalInfo({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "lastName",
                     camperId,
                     data: event.target.value,
-                  })
-                }
+                  });
+                }}
               />
+              <FormErrorMessage>This field cannot be empty</FormErrorMessage>
             </FormControl>
           </WrapItem>
           <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
-            <FormControl>
+            <FormControl isInvalid={isAgeInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Age{" "}
@@ -206,11 +245,11 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <NumberInput precision={0}>
+              <NumberInput precision={0} defaultValue={camper.age}>
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {
-                    console.log("age input ", event.target.value);
+                    setIsAgeInvalid(false);
                     setPersonalInfo({
                       type: PersonalInfoActions.UPDATE_CAMPER,
                       field: "age",
@@ -219,6 +258,9 @@ const CamperCard = ({
                     });
                   }}
                 />
+                <FormErrorMessage>
+                  Camper age must be between 7 - 10 years old
+                </FormErrorMessage>
               </NumberInput>
             </FormControl>
           </WrapItem>
