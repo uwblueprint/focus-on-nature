@@ -23,6 +23,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           firebase-service-account: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT_FOCUS_ON_NATURE_PROD }}"
           firebase-project-id: "${{ secrets.PRODUCTION_FIREBASE_PROJECT_ID }}"
+          target: "prodalias"
       - name: Deploy backend to Heroku
         uses: ./.github/actions/heroku-deploy
         with:
