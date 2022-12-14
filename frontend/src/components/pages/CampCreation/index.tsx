@@ -180,7 +180,7 @@ const CampCreationPage = (): React.ReactElement => {
       // retrieve the current state of the camp to edit
       const editCamp = await CampsAPIClient.getCampById(editCampId);
 
-      if (editCamp) {
+      if (!(editCamp instanceof Error)) {
         // Schedule Sessions need the data in a certain format. We convert the array of dates stored in the backend
         // to this array of CreateCampSessions so that the sessions can be viewed/edited/deleted
         const currentCampSessions: CreateCampSession[] = editCamp.campSessions.map(
@@ -243,6 +243,8 @@ const CampCreationPage = (): React.ReactElement => {
           setCampCapacity(editCamp.campSessions[0].capacity);
         }
         setIsLoadedCampData(true);
+      } else {
+        history.push(CAMPS_PAGE);
       }
     };
 
