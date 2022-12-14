@@ -34,6 +34,7 @@ const RegistrationFooter = ({
       padding="20px"
       position="fixed"
       bottom="0"
+      zIndex="5"
     >
       <Button
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}

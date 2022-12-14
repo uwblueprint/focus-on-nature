@@ -1,10 +1,51 @@
 import React from "react";
-import { Box, Checkbox, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import PaymentSummary from "./PaymentSummary";
+import { CartItem } from "../../../../types/RegistrationTypes";
+import ReviewInformation from "./ReviewInformation";
 
 type ReviewRegistrationProps = {
   isChecked: boolean;
   toggleChecked: () => void;
 };
+
+const items: CartItem[] = [
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+  {
+    name: "yes",
+    campers: 2,
+    totalPrice: 15.5,
+  },
+];
 
 const ReviewRegistration = ({
   isChecked,
@@ -12,15 +53,12 @@ const ReviewRegistration = ({
 }: ReviewRegistrationProps): React.ReactElement => {
   return (
     <Box>
-      <Text textStyle="displayXLarge">Camp Registration</Text>
-      <Text>Review Registration</Text>
-
-      <Checkbox
-        size="lg"
-        borderColor="black"
-        isChecked={isChecked}
-        onChange={toggleChecked}
+      <PaymentSummary
+        campName="Test camp name with longer name and extra"
+        items={items}
       />
+
+      {/* <ReviewInformation /> */}
     </Box>
   );
 };
