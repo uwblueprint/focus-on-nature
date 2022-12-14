@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Box,
   Text,
@@ -33,21 +33,6 @@ const WaiverPage = ({
   waiverInterface,
   waiverDispatch,
 }: WaiverPageProps): React.ReactElement => {
-  useEffect(() => {
-    return function cleanup() {
-      // Reset the wroteName and wroteDate which resets waiverCompleted
-      waiverDispatch({
-        type: WaiverActions.WRITE_NAME,
-        name: "",
-      });
-      waiverDispatch({
-        type: WaiverActions.WRITE_DATE,
-        date: "",
-      });
-    };
-    // As a note, waiverDispatch is stable (should't change) but we need to pass it into dependency to make linter happy
-  }, [waiverDispatch]);
-
   return (
     <Box>
       <VStack spacing={3} pt={1} align="stretch">
@@ -167,6 +152,7 @@ const WaiverPage = ({
           <Input
             textStyle="bodyRegular"
             fontFamily="cursive"
+            value={waiverInterface.name}
             onChange={(event) =>
               waiverDispatch({
                 type: WaiverActions.WRITE_NAME,
@@ -193,6 +179,7 @@ const WaiverPage = ({
           <Input
             textStyle="bodyRegular"
             type="date"
+            value={waiverInterface.date}
             onChange={(event) =>
               waiverDispatch({
                 type: WaiverActions.WRITE_DATE,

@@ -18,8 +18,6 @@ type StepperTabProps = {
   available: boolean;
   icon: JSX.Element;
   onClick: () => void;
-  marginLeft: string;
-  marginRight: string;
 };
 
 const StepperTab = ({
@@ -31,8 +29,6 @@ const StepperTab = ({
   available,
   icon,
   onClick,
-  marginLeft,
-  marginRight,
 }: StepperTabProps): React.ReactElement => {
   let iconColorScheme = "stepper.disabled";
   let tabState: TabState = TabState.Disabled;
@@ -51,8 +47,6 @@ const StepperTab = ({
     <Box
       onClick={available ? onClick : undefined}
       cursor={tabState === TabState.Disabled ? "not-allowed" : "pointer"}
-      ml={marginLeft}
-      mr={marginRight}
       my={5}
     >
       <HStack spacing={4}>
