@@ -15,10 +15,13 @@ import {
   FormLabel,
   Heading,
   Input,
+  NumberInputField,
+  NumberInput,
   Spacer,
   Text,
   Textarea,
   useDisclosure,
+  useToast,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
@@ -26,11 +29,11 @@ import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
 } from "../../../../types/PersonalInfoTypes";
-import { Camper } from "../../../../types/CamperTypes";
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
+import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
 type CamperCardProps = {
-  camper: Camper;
+  camper: RegistrantExperienceCamper;
   camperId: number;
   setPersonalInfo: (action: PersonalInfoReducerDispatch) => void;
 };
@@ -41,6 +44,7 @@ const CamperCard = ({
   setPersonalInfo,
 }: CamperCardProps): React.ReactElement => {
   function AlertDialogExample() {
+    const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const cancelRef = React.useRef(null);
 
@@ -92,6 +96,13 @@ const CamperCard = ({
                       type: PersonalInfoActions.DELETE_CAMPER,
                       camperId,
                     });
+                    toast({
+                      description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
+                      status: "success",
+                      duration: 6000,
+                      isClosable: true,
+                      variant: "subtle",
+                    });
                     onClose();
                   }}
                   ml={3}
@@ -107,7 +118,7 @@ const CamperCard = ({
   }
 
   return (
-    <Box boxShadow="lg" rounded="xl" borderWidth={1}>
+    <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%">
       <Box backgroundColor="#FFFFFF" rounded="xl">
         <Heading textStyle="displayLarge">
           <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
@@ -122,8 +133,8 @@ const CamperCard = ({
       </Box>
       <Box px={{ sm: "5", lg: "20" }}>
         <Wrap pt={7}>
-          <WrapItem>
-            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
+          <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
+            <FormControl>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   First Name{" "}
@@ -151,8 +162,8 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <WrapItem>
-            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
+          <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
+            <FormControl>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Last Name{" "}
@@ -180,8 +191,8 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <WrapItem>
-            <FormControl width={{ sm: "35vw", lg: "22vw" }}>
+          <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
+            <FormControl>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
                   Age{" "}
@@ -195,18 +206,20 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <Input
-                backgroundColor="#FFFFFF"
-                value={camper.age !== -1 ? camper.age : ""}
-                onChange={(event) =>
-                  setPersonalInfo({
-                    type: PersonalInfoActions.UPDATE_CAMPER,
-                    field: "age",
-                    camperId,
-                    data: event.target.value,
-                  })
-                }
-              />
+              <NumberInput precision={0}>
+                <NumberInputField
+                  backgroundColor="#FFFFFF"
+                  onChange={(event) => {
+                    console.log("age input ", event.target.value);
+                    setPersonalInfo({
+                      type: PersonalInfoActions.UPDATE_CAMPER,
+                      field: "age",
+                      camperId,
+                      data: parseInt(event.target.value, 10),
+                    });
+                  }}
+                />
+              </NumberInput>
             </FormControl>
           </WrapItem>
         </Wrap>

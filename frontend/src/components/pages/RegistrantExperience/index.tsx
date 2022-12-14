@@ -16,7 +16,8 @@ import {
 } from "../../../types/waiverTypes";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import { Camper } from "../../../types/CamperTypes";
+import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
+import { CampSession } from "../../../types/CampsTypes";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
@@ -47,13 +48,32 @@ const RegistrantExperiencePage = (): React.ReactElement => {
 
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
-  const [campers, setCampers] = useState<Camper[]>([
+  // TODO: Get campSessions from previous registration step (Currently using dummy value)
+  const campSessions: CampSession[] = [
+    {
+      id: "123456",
+      camp: "Guelph Summer Camp 2022",
+      capacity: 3,
+      campers: [],
+      waitlist: [],
+      dates: [],
+    },
+    {
+      id: "654321",
+      camp: "Guelph Summer Camp 2022",
+      capacity: 2,
+      campers: [],
+      waitlist: [],
+      dates: [],
+    },
+  ];
+  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
       id: "",
-      campSession: "",
+      campSessions: [campSessions[0].id, campSessions[1].id], // TODO: Edit this field when we get camp session data from previous step
       firstName: "",
       lastName: "",
-      age: -1,
+      age: NaN,
       registrationDate: new Date(),
       hasPaid: false,
       contacts: [
@@ -74,9 +94,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       ],
       chargeId: "",
       charges: {
-        camp: -1,
-        earlyDropoff: -1,
-        latePickup: -1,
+        camp: NaN,
+        earlyDropoff: NaN,
+        latePickup: NaN,
       },
       optionalClauses: [],
     },
@@ -85,7 +105,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
-
+  console.log(campers);
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
@@ -106,7 +126,14 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   ) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
-        return <PersonalInfo campers={campers} setCampers={setCampers} />;
+        return (
+          <PersonalInfo
+            campers={campers}
+            setCampers={setCampers}
+            campSessions={campSessions}
+            campName="Guelph Summer Camp 2022"
+          />
+        );
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
