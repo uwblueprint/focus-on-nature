@@ -255,6 +255,7 @@ const CampCreationPage = (): React.ReactElement => {
             onDeleteCustomQuestion={onDeleteCustomQuestion}
             onEditCustomQuestion={onEditCustomQuestion}
             setVisitedRegistrationPage={setVisitedRegistrationPage}
+            campOffersEDLP={offersEDLP}
           />
         );
       default:
