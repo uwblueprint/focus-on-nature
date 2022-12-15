@@ -53,7 +53,7 @@ const RegistrationFooter = ({
         onClick={onNextStep}
       >
         {currentStep === RegistrantExperienceSteps.ReviewRegistrationPage
-          ? "Pay"
+          ? "Go to checkout"
           : "Next"}
       </Button>
     </Flex>

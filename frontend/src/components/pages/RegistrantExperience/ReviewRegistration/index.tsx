@@ -7,6 +7,7 @@ import ReviewInformation from "./ReviewInformation";
 type ReviewRegistrationProps = {
   isChecked: boolean;
   toggleChecked: () => void;
+  campName: string;
 };
 
 const items: CartItem[] = [
@@ -14,6 +15,7 @@ const items: CartItem[] = [
     name: "yes",
     campers: 2,
     totalPrice: 15.5,
+    details: "Some sample details",
   },
   {
     name: "yes",
@@ -50,13 +52,11 @@ const items: CartItem[] = [
 const ReviewRegistration = ({
   isChecked,
   toggleChecked,
+  campName,
 }: ReviewRegistrationProps): React.ReactElement => {
   return (
     <Box>
-      <PaymentSummary
-        campName="Test camp name with longer name and extra"
-        items={items}
-      />
+      <PaymentSummary campName={campName} items={items} />
 
       {/* <ReviewInformation /> */}
     </Box>

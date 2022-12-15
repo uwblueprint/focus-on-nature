@@ -83,7 +83,7 @@ const getPageDetails = (
     case RegistrantExperienceSteps.ReviewRegistrationPage:
       return {
         pageName: STEPPER_TITLES.Review,
-        nextPageName: "Pay",
+        nextPageName: "Checkout",
         pageNumber: 4,
         progress: 100,
         isFilled: isReviewRegistrationFilled,

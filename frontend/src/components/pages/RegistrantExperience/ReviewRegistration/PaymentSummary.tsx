@@ -15,7 +15,7 @@ import React from "react";
 import { CartItem } from "../../../../types/RegistrationTypes";
 
 const tableHeadingTextStyles = {
-  base: "captionSemiBold",
+  base: "xSmallBold",
   lg: "displaySmallSemiBold",
 };
 
@@ -45,7 +45,11 @@ const PaymentSummary = ({
   return (
     <Box>
       <Text
-        textStyle={{ sm: "xSmallBold", md: "bodyBold", lg: "displayXLarge" }}
+        textStyle={{
+          sm: "xSmallBold",
+          md: "bodyBold",
+          lg: "displayXLarge",
+        }}
         mb={3}
       >
         {campName} Registration
@@ -79,7 +83,11 @@ const PaymentSummary = ({
                 pr={0}
                 isNumeric
               >
-                <Text textStyle={tableHeadingTextStyles}>
+                <Text
+                  textStyle={tableHeadingTextStyles}
+                  wordBreak="break-word"
+                  whiteSpace="normal"
+                >
                   Total Price (CAD)
                 </Text>
               </Th>
@@ -93,7 +101,20 @@ const PaymentSummary = ({
                 borderColor="border.secondary.100"
               >
                 <Td pl={0}>
-                  <Text textStyle={tableRowTextStyles}>{item.name}</Text>
+                  <Text
+                    textStyle={tableRowTextStyles}
+                    wordBreak="break-word"
+                    whiteSpace="normal"
+                  >
+                    {item.name}
+                  </Text>
+                  <Text
+                    textStyle={{ base: "xSmallRegular", lg: "xSmallMedium" }}
+                    wordBreak="break-word"
+                    whiteSpace="normal"
+                  >
+                    {item.details}
+                  </Text>
                 </Td>
                 <Td isNumeric>
                   <Text textStyle={tableRowTextStyles}>{item.campers}</Text>
