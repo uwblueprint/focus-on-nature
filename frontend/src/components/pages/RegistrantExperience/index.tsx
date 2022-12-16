@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useReducer, Reducer } from "react";
+import { useParams } from "react-router-dom";
 
-import { Box } from "@chakra-ui/react";
+import { Box, Text, Spinner, Flex } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
 import AdditionalInfo from "./AdditionalInfo";
 import Waiver from "./Waiver";
@@ -15,8 +16,15 @@ import {
   WaiverReducerDispatch,
 } from "../../../types/waiverTypes";
 import waiverReducer from "./Waiver/WaiverReducer";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
+import { CampResponse } from "../../../types/CampsTypes";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
+  const { id: campId } = useParams<{ id: string }>();
+
+  const [camp, setCamp] = useState<CampResponse | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
@@ -24,7 +32,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
     // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
-    campName: "Guelph Summer Camp 2022",
+    campName: camp?.name,
     waiver: undefined,
     optionalClauses: [],
     requiredClauses: [],
@@ -35,13 +43,20 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     waiverCompleted: false,
   });
   useEffect(() => {
+    CampsAPIClient.getCampById(campId).then((campResponse) => {
+      if (campResponse.id) {
+        setCamp(campResponse);
+      }
+      setIsLoading(false);
+    });
+
     AdminAPIClient.getWaiver().then((waiver) => {
       waiverDispatch({
         type: WaiverActions.LOADED_WAIVER,
         waiver,
       });
     });
-  }, []);
+  }, [campId]);
 
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
@@ -116,7 +131,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   return (
-    <Box>
+    <Flex w="100vw" pt="144px" pb="168px">
       <RegistrationNavStepper
         currentStep={currentStep}
         isPersonalInfoFilled={isPersonalInfoFilled}
@@ -125,15 +140,23 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         isReviewRegistrationFilled={isReviewRegistrationFilled}
         setCurrentStep={setCurrentStep}
       />
-      <Box mt="144px" mb="168px" mx="10vw">
-        {getCurrentRegistrantStepComponent(currentStep)}
-      </Box>
+      {!isLoading && (
+        <Box mx="10vw">
+          {camp ? (
+            getCurrentRegistrantStepComponent(currentStep)
+          ) : (
+            <Text>Error: Camp not found. Please go back and try again.</Text>
+          )}
+        </Box>
+      )}
+
+      {isLoading && <Spinner justifySelf="center" />}
       <RegistrationFooter
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}
       />
-    </Box>
+    </Flex>
   );
 };
 
