@@ -10,6 +10,7 @@ import {
 import { FormQuestion, CreateFormQuestion } from "../../../../types/CampsTypes";
 import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal";
 import {
+  EDLP_CAMPER_INFO_QUESTION,
   fixedCamperInfoQuestions,
   fixedEmergencyContactQuestions,
 } from "../../../../constants/FixedQuestions";
@@ -25,6 +26,7 @@ type RegistrationFormPageProps = {
     newQuestion: CreateFormQuestion,
   ) => void;
   setVisitedRegistrationPage: React.Dispatch<React.SetStateAction<boolean>>;
+  campOffersEDLP: boolean;
 };
 
 const RegistrationFormPage = ({
@@ -34,7 +36,8 @@ const RegistrationFormPage = ({
   onDeleteCustomQuestion,
   onEditCustomQuestion,
   setVisitedRegistrationPage,
-}: RegistrationFormPageProps): JSX.Element => {
+  campOffersEDLP,
+}: RegistrationFormPageProps): React.ReactElement => {
   useEffect(() => {
     setVisitedRegistrationPage(true);
   });
@@ -62,6 +65,10 @@ const RegistrationFormPage = ({
     onClose: onAddQuestionClose,
   } = useDisclosure();
 
+  const filteredFixedCamperInfoQuestions = campOffersEDLP
+    ? fixedCamperInfoQuestions.concat([EDLP_CAMPER_INFO_QUESTION])
+    : fixedCamperInfoQuestions;
+
   return (
     <Box mx="8vw" my="5vh">
       <AddQuestionModal
@@ -84,7 +91,7 @@ const RegistrationFormPage = ({
         <QuestionsAccordionItem
           accordionTitle="Camper Information"
           fixedQuestions={[
-            ...fixedCamperInfoQuestions,
+            ...filteredFixedCamperInfoQuestions,
             ...formTemplateCamperInfoQuestions,
           ]}
           dynamicQuestions={customCamperInfoQuestions as FormQuestion[]}
