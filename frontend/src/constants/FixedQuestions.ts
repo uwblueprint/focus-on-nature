@@ -2,8 +2,15 @@ import { FormQuestion } from "../types/CampsTypes";
 
 const PERSONAL_INFO = "PersonalInfo";
 const EMERGENCY_CONTACT = "EmergencyContact";
-export const EDLP_CAMPER_INFO_QUESTION =
-  "Please indicate if your child requires early dropoff and/or late pickup";
+export const EDLP_CAMPER_INFO_QUESTION: FormQuestion = {
+  type: "MultipleChoice",
+  question:
+    "Please indicate if your child requires early dropoff and/or late pickup",
+  required: true,
+  category: PERSONAL_INFO,
+  options: ["Yes", "No"],
+  id: "NONE",
+};
 
 export const fixedCamperInfoQuestions: Array<FormQuestion> = [
   {
@@ -40,14 +47,6 @@ export const fixedCamperInfoQuestions: Array<FormQuestion> = [
       "Please indicate if your child requires any additional accomodations (if not, please leave blank)",
     required: false,
     category: PERSONAL_INFO,
-    id: "NONE",
-  },
-  {
-    type: "MultipleChoice",
-    question: EDLP_CAMPER_INFO_QUESTION,
-    required: true,
-    category: PERSONAL_INFO,
-    options: ["Yes", "No"],
     id: "NONE",
   },
 ];

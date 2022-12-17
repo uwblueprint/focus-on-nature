@@ -66,10 +66,8 @@ const RegistrationFormPage = ({
   } = useDisclosure();
 
   const filteredFixedCamperInfoQuestions = campOffersEDLP
-    ? fixedCamperInfoQuestions
-    : fixedCamperInfoQuestions.filter(
-        (question) => question.question !== EDLP_CAMPER_INFO_QUESTION,
-      );
+    ? fixedCamperInfoQuestions.concat([EDLP_CAMPER_INFO_QUESTION])
+    : fixedCamperInfoQuestions;
 
   return (
     <Box mx="8vw" my="5vh">
