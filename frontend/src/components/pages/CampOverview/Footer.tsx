@@ -17,7 +17,7 @@ import {
 } from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
 import { CAMPS_PAGE, CAMP_EDIT_PAGE } from "../../../constants/Routes";
-import { createUpdateCamp } from "../../../utils/CampUtils";
+import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 
 type FooterProps = {
   camp: CampResponse;
@@ -80,17 +80,21 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
       volunteers: camp.volunteers,
     };
 
-    const res = await createUpdateCamp(updateCampFields, false, camp.id);
+    try {
+      const res = await CampsAPIClient.editCampById(camp.id, updateCampFields);
 
-    if (!(res instanceof Error)) {
-      history.push(CAMPS_PAGE);
-      toast({
-        description: `${camp.name} has been successfully published`,
-        status: "success",
-        variant: "subtle",
-        duration: 3000,
-      });
-    } else {
+      if (res) {
+        history.push(CAMPS_PAGE);
+        toast({
+          description: `${camp.name} has been successfully published`,
+          status: "success",
+          variant: "subtle",
+          duration: 3000,
+        });
+      } else {
+        throw new Error("Could not publish camp");
+      }
+    } catch (error: unknown) {
       toast({
         description: `An error occurred with publishing ${camp.name}`,
         status: "error",
@@ -98,6 +102,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
         duration: 3000,
       });
     }
+
     onClose();
   };
 

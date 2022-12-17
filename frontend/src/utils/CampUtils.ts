@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import CampsAPIClient from "../APIClients/CampsAPIClient";
 import MONTHS from "../constants/CampManagementConstants";
 import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
 import {
@@ -8,7 +7,6 @@ import {
   CampStatus,
   CreateCampSession,
   CreateUpdateCampRequest,
-  CreateUpdateCampResponse,
   Location,
   QuestionType,
 } from "../types/CampsTypes";
@@ -250,43 +248,4 @@ export const isMinCampDetailsFilled = (
     return true;
   }
   return false;
-};
-
-// createUpdateCamp creates or updates a camp with the given fields
-export const createUpdateCamp = async (
-  camp: CreateUpdateCampRequest,
-  isNewCamp: boolean,
-  editCampId = "",
-): Promise<CreateUpdateCampResponse> => {
-  // If isNewCamp is false, then editCampId must not be an empty string
-  if (!isNewCamp && !editCampId) {
-    throw new Error("You must provide the camp id if you are editing a camp");
-  }
-
-  // Check if atleast the first step and 1 session is scheduled
-  if (!isMinCampDetailsFilled(camp)) {
-    throw new Error(
-      `You must fill out all the required fields in step 1 and schedule at least 1 session before ${
-        isNewCamp ? "creation" : "updating"
-      } a camp`,
-    );
-  }
-
-  let campResponse: CreateUpdateCampResponse;
-
-  if (isNewCamp) {
-    campResponse = await CampsAPIClient.createNewCamp(camp);
-  } else {
-    campResponse = await CampsAPIClient.editCampById(editCampId, camp);
-  }
-
-  if (campResponse) {
-    return campResponse;
-  }
-
-  throw new Error(
-    `An error occurred with ${isNewCamp ? "creating" : "updating"} ${
-      camp.name
-    }. Please try again.`,
-  );
 };

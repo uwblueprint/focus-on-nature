@@ -106,7 +106,7 @@ export const createUpdateCampDtoValidator = async (
     return res
       .status(400)
       .send(
-        "If early dropoff timing is provided, you must provide the dropoff fee",
+        "You must provide either both the early dropoff timing and fee, or neither",
       );
   }
   if (
@@ -116,7 +116,7 @@ export const createUpdateCampDtoValidator = async (
     return res
       .status(400)
       .send(
-        "If late pickup timing is provided, you must provide the pickup fee",
+        "You must provide either both the late pickup timing and fee, or neither",
       );
   }
   if (!validatePrimitive(body.startTime, "string")) {

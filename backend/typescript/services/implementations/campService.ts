@@ -441,7 +441,7 @@ class CampService implements ICampService {
         );
       }
 
-      // Update base camp level info
+      // Update base camp level info. Note: If ED and LP must be both be present or neither
       if (
         camp.earlyDropoff &&
         camp.latePickup &&
@@ -596,7 +596,7 @@ class CampService implements ICampService {
         }
 
         await Promise.all(
-          (newCamp.campSessions as CampSession[]).map(async (campSession) => {
+          newCampSessions.map(async (campSession) => {
             const campSessionFeeInCents =
               campFee * campSession.dates.length * 100;
             const priceObject = await createStripePrice(

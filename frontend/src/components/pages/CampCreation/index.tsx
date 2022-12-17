@@ -14,13 +14,11 @@ import {
   CreateFormQuestion,
   CreateCampSession,
   CreateUpdateCampRequest,
+  CreateUpdateCampResponse,
 } from "../../../types/CampsTypes";
 import CampCreationDetails from "./CampDetails";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import {
-  createUpdateCamp,
-  getSelectedWeekDaysFromDates,
-} from "../../../utils/CampUtils";
+import { getSelectedWeekDaysFromDates } from "../../../utils/CampUtils";
 import { CAMPS_PAGE } from "../../../constants/Routes";
 
 const CampCreationPage = (): React.ReactElement => {
@@ -40,8 +38,8 @@ const CampCreationPage = (): React.ReactElement => {
   const [earliestDropOffTime, setEarliestDropOffTime] = useState<string>("");
   const [latestPickUpTime, setLatestPickUpTime] = useState<string>("");
   const [priceEDLP, setPriceEDLP] = useState<number>(0);
-  const [addressLine1, setAddresLine1] = useState<string>("");
-  const [addressLine2, setAddresLine2] = useState<string>("");
+  const [addressLine1, setAddressLine1] = useState<string>("");
+  const [addressLine2, setAddressLine2] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [province, setProvince] = useState<string>("-");
   const [postalCode, setPostalCode] = useState<string>("");
@@ -230,8 +228,8 @@ const CampCreationPage = (): React.ReactElement => {
         setEarliestDropOffTime(editCamp.earlyDropoff);
         setLatestPickUpTime(editCamp.latePickup);
         setPriceEDLP(editCamp.pickupFee);
-        setAddresLine1(editCamp.location.streetAddress1);
-        setAddresLine2(editCamp.location.streetAddress2 ?? "");
+        setAddressLine1(editCamp.location.streetAddress1);
+        setAddressLine2(editCamp.location.streetAddress2 ?? "");
         setCity(editCamp.location.city);
         setProvince(editCamp.location.province);
         setPostalCode(editCamp.location.postalCode);
@@ -252,7 +250,7 @@ const CampCreationPage = (): React.ReactElement => {
     if (editCampId) {
       setInitialEditState();
     }
-  }, [editCampId]);
+  }, [editCampId, history]);
 
   const createUpdateCampHelper = async (
     isPublishedCamp: boolean,
@@ -291,11 +289,16 @@ const CampCreationPage = (): React.ReactElement => {
     };
 
     try {
-      const campResponse = await createUpdateCamp(
-        campFields,
-        isNewCamp,
-        editCampId,
-      );
+      let campResponse: CreateUpdateCampResponse;
+
+      if (isNewCamp) {
+        campResponse = await CampsAPIClient.createNewCamp(campFields);
+      } else {
+        campResponse = await CampsAPIClient.editCampById(
+          editCampId,
+          campFields,
+        );
+      }
 
       if (campResponse) {
         history.push(CAMPS_PAGE);
@@ -308,14 +311,7 @@ const CampCreationPage = (): React.ReactElement => {
           duration: 3000,
         });
       } else {
-        toast({
-          description: `An error occurred with ${
-            isNewCamp ? "creating" : "updating"
-          } ${campFields.name}. Please try again.`,
-          status: "error",
-          variant: "subtle",
-          duration: 3000,
-        });
+        throw new Error("Unable to create or update camp");
       }
     } catch (error: unknown) {
       toast({
@@ -399,10 +395,10 @@ const CampCreationPage = (): React.ReactElement => {
               }
               handleAddressLine1={(
                 event: React.ChangeEvent<HTMLInputElement>,
-              ) => setAddresLine1(event.target.value)}
+              ) => setAddressLine1(event.target.value)}
               handleAddressLine2={(
                 event: React.ChangeEvent<HTMLInputElement>,
-              ) => setAddresLine2(event.target.value)}
+              ) => setAddressLine2(event.target.value)}
               handleCity={(event: React.ChangeEvent<HTMLInputElement>) =>
                 setCity(event.target.value)
               }
