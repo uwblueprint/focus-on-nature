@@ -1,23 +1,23 @@
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
 import React, { Reducer, useEffect, useReducer, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
-import AdditionalInfo from "./AdditionalInfo";
-import PersonalInfo from "./PersonalInfo";
-import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
-import RegistrationFooter from "./RegistrationFooter";
-import RegistrationNavStepper from "./RegistrationNavStepper";
-import ReviewRegistration from "./ReviewRegistration";
-import Waiver from "./Waiver";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { Camper, RegistrantExperienceCamper } from "../../../types/CamperTypes";
+import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import {
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../types/waiverTypes";
+import AdditionalInfo from "./AdditionalInfo";
+import PersonalInfo from "./PersonalInfo";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
+import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
+import RegistrationFooter from "./RegistrationFooter";
+import RegistrationNavStepper from "./RegistrationNavStepper";
+import ReviewRegistration from "./ReviewRegistration";
+import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
@@ -59,8 +59,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, [campId]);
 
-  // const [camp, setCamp] = useState<CampResponse>({} as CampResponse);
-
   React.useEffect(() => {
     const getCamp = async () => {
       const id = "63139c7bc3d7b55b44a01531";
@@ -69,12 +67,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     };
     getCamp();
   }, []);
-
-  const [personalInfo, setPersonalInfo] = useState([
-    { firstName: "Joe", lastName: "Smith1" },
-    { firstName: "Joe", lastName: "Smith2" },
-    { firstName: "Joe", lastName: "Smith3" },
-  ] as Camper[]);
 
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
@@ -168,19 +160,16 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
-        return (
-          <Box>
-            {/* <Text textStyle="displayXLarge">{`${camp.name} Registration`}</Text>
-            <AdditionalInfo
-              isChecked={sampleAdditionalInfo}
-              toggleChecked={() =>
-                setSampleAdditionalInfo(!sampleAdditionalInfo)
-              }
-              formQuestions={camp.formQuestions}
-              personalInfo={personalInfo}
-            /> */}
-          </Box>
-        );
+        return camp ? (
+          <AdditionalInfo
+            isChecked={sampleAdditionalInfo}
+            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            formQuestions={camp.formQuestions}
+            personalInfo={campers}
+            campName={camp.name}
+          />
+        ) : null;
+
       case RegistrantExperienceSteps.WaiverPage:
         return (
           <Waiver
@@ -223,7 +212,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         setCurrentStep={setCurrentStep}
       />
       {!isLoading && (
-        <Box mx="10vw">
+        <Box mx="10vw" w="inherit">
           {camp ? (
             getCurrentRegistrantStepComponent(currentStep)
           ) : (
