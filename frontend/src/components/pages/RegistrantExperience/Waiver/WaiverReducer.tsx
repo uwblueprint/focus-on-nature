@@ -58,20 +58,20 @@ const waiverReducer = (
     }
     case WaiverActions.WRITE_NAME: {
       const { name } = action as FillName;
-      newWaiverInterface.wroteName = !!name;
+      newWaiverInterface.name = name;
       break;
     }
     case WaiverActions.WRITE_DATE: {
       const { date } = action as FillDate;
-      newWaiverInterface.wroteDate = !!date;
+      newWaiverInterface.date = date;
       break;
     }
     default:
   }
   newWaiverInterface.waiverCompleted =
     newWaiverInterface.agreedRequiredClauses &&
-    newWaiverInterface.wroteDate &&
-    newWaiverInterface.wroteName;
+    newWaiverInterface.name !== "" &&
+    newWaiverInterface.date !== "";
   return newWaiverInterface;
 };
 

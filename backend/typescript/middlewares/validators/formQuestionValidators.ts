@@ -5,7 +5,7 @@ import { validateArray, validatePrimitive } from "./util";
 export const validateFormQuestion = (formQuestion: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
-}) => {
+}): boolean => {
   if (!validatePrimitive(formQuestion.category, "string")) {
     return false;
   }

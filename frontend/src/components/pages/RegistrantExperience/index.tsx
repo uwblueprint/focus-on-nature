@@ -1,6 +1,13 @@
 import React, { Reducer, useEffect, useReducer, useRef, useState } from "react";
-
-import { Box, Text } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
+import AdditionalInfo from "./AdditionalInfo";
+import PersonalInfo from "./PersonalInfo";
+import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
+import RegistrationFooter from "./RegistrationFooter";
+import RegistrationNavStepper from "./RegistrationNavStepper";
+import ReviewRegistration from "./ReviewRegistration";
+import Waiver from "./Waiver";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { Camper, RegistrantExperienceCamper } from "../../../types/CamperTypes";
@@ -10,17 +17,15 @@ import {
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../types/waiverTypes";
-import AdditionalInfo from "./AdditionalInfo";
-import PersonalInfo from "./PersonalInfo";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
-import RegistrationFooter from "./RegistrationFooter";
-import RegistrationNavStepper from "./RegistrationNavStepper";
-import ReviewRegistration from "./ReviewRegistration";
-import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
+  const { id: campId } = useParams<{ id: string }>();
+
+  const [camp, setCamp] = useState<CampResponse | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
@@ -28,26 +33,33 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
     // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
-    campName: "Guelph Summer Camp 2022",
+    campName: camp?.name,
     waiver: undefined,
     optionalClauses: [],
     requiredClauses: [],
     agreedRequiredClauses: false,
     loadingWaiver: true,
-    wroteDate: false,
-    wroteName: false,
+    date: "",
+    name: "",
     waiverCompleted: false,
   });
   useEffect(() => {
+    CampsAPIClient.getCampById(campId).then((campResponse) => {
+      if (campResponse.id) {
+        setCamp(campResponse);
+      }
+      setIsLoading(false);
+    });
+
     AdminAPIClient.getWaiver().then((waiver) => {
       waiverDispatch({
         type: WaiverActions.LOADED_WAIVER,
         waiver,
       });
     });
-  }, []);
+  }, [campId]);
 
-  const [camp, setCamp] = useState<CampResponse>({} as CampResponse);
+  // const [camp, setCamp] = useState<CampResponse>({} as CampResponse);
 
   React.useEffect(() => {
     const getCamp = async () => {
@@ -158,7 +170,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <Box>
-            <Text textStyle="displayXLarge">{`${camp.name} Registration`}</Text>
+            {/* <Text textStyle="displayXLarge">{`${camp.name} Registration`}</Text>
             <AdditionalInfo
               isChecked={sampleAdditionalInfo}
               toggleChecked={() =>
@@ -166,7 +178,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
               }
               formQuestions={camp.formQuestions}
               personalInfo={personalInfo}
-            />
+            /> */}
           </Box>
         );
       case RegistrantExperienceSteps.WaiverPage:
@@ -201,7 +213,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   console.log(camp);
 
   return (
-    <Box>
+    <Flex w="100vw" pt="144px" pb="168px">
       <RegistrationNavStepper
         currentStep={currentStep}
         isPersonalInfoFilled={isPersonalInfoFilled}
@@ -210,16 +222,24 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         isReviewRegistrationFilled={isReviewRegistrationFilled}
         setCurrentStep={setCurrentStep}
       />
-      <Box my="50px" mx="10vw">
-        {getCurrentRegistrantStepComponent(currentStep)}
-      </Box>
+      {!isLoading && (
+        <Box mx="10vw">
+          {camp ? (
+            getCurrentRegistrantStepComponent(currentStep)
+          ) : (
+            <Text>Error: Camp not found. Please go back and try again.</Text>
+          )}
+        </Box>
+      )}
+
+      {isLoading && <Spinner justifySelf="center" />}
       <RegistrationFooter
         nextBtnRef={nextBtnRef}
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}
       />
-    </Box>
+    </Flex>
   );
 };
 

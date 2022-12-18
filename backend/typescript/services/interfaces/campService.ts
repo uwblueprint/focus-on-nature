@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   CampDTO,
   CamperCSVInfoDTO,
@@ -9,6 +10,7 @@ import {
   CreateCampSessionsDTO,
   FormQuestionDTO,
   UpdateCampSessionsDTO,
+  CreateFormQuestionDTO,
 } from "../../types";
 
 interface ICampService {
@@ -45,11 +47,13 @@ interface ICampService {
   deleteCampSessionsByIds(
     campId: string,
     campSessionIds: Array<string>,
+    dbSession?: mongoose.ClientSession,
   ): Promise<void>;
 
   createCampSessions(
     campId: string,
     campSessions: CreateCampSessionsDTO,
+    dbSession?: mongoose.ClientSession,
   ): Promise<CampSessionDTO[]>;
 
   updateCampSessionById(
@@ -80,15 +84,21 @@ interface ICampService {
   generateCampersCSV(campId: string): Promise<string>;
 
   /**
-   * Adds form questions to db
+   * Creates new FormQuestions in the db and adds it to the formQuestions field in the camp
    * @param campId camp's id
    * @param formQuestions the form questions to be associated with camp
+   * @param dbSession, optional parameter passed if session already exists.
+   *        If this is the entrypoint method, called directly from the campRoutes,
+   *        no session exists and the method will begin the transaction. If this is called as
+   *        a utility method, the session was created previously and a transaction is therefore
+   *        in progress.
    * @returns formQuestion ids that were successfully inserted
    * @throws Error if formQuestions cannot be inserted
    */
-  createFormQuestions(
+  addFormQuestionsToCamp(
     campId: string,
-    formQuestions: FormQuestionDTO[],
+    formQuestions: CreateFormQuestionDTO[],
+    dbSession?: mongoose.ClientSession,
   ): Promise<string[]>;
 
   /**
@@ -111,6 +121,17 @@ interface ICampService {
    * @throws Error if formQuestions cannot be found or deleted
    */
   deleteFormQuestion(campId: string, formQuestionId: string): Promise<void>;
+
+  /**
+   * deleteFormQuestionsByIds deletes the formQuestions provided
+   * @param formQuestionIds the ids of the formQuestions to delete
+   * @param dbSession an optional session object used by parent functions if this is part of a series of changes
+   * @throws Error if formQuestions cannot be deleted
+   */
+  deleteFormQuestionsByIds(
+    formQuestionIds: string[],
+    dbSession: mongoose.ClientSession,
+  ): Promise<void>;
 
   /**
    * Append form questions to existing camp

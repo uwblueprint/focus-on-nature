@@ -326,7 +326,7 @@ const CampCreationDetails = ({
         </Box>
       </HStack>
 
-      <Checkbox marginTop="8px" onChange={toggleEDLP}>
+      <Checkbox marginTop="8px" onChange={toggleEDLP} isChecked={offersEDLP}>
         <Text textStyle="buttonSemiBold">
           Camp offers early drop-off and late pick-up
         </Text>

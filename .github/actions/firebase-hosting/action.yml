@@ -1,0 +1,47 @@
+name: "Deploy frontend to Firebase"
+description: "Github Action for all logic pertaining to frontend deployment. Only code in the frontend/ directory is deployed."
+
+inputs:
+  channel-id:
+    description: "Pass live (pushes to domain) or no parameter (creates preview link)."
+    required: false
+    default: ""
+  backend-url:
+    description: "URL for backend deployment of application."
+    required: true
+  oauth-client-id:
+    description: "OAuth client ID from cloud dev console."
+    required: true
+  repo-token:
+    description: "Github token for identifying repository, auto-generated."
+    required: true
+  firebase-service-account:
+    description: "Firebase service account JSON key, specific to Firebase project so will differ between staging and prod."
+    required: true
+  firebase-project-id:
+    description: "Firebase project ID, specific to Firebase project so will differ between staging and prod. See .firebaserc for aliases."
+    required: true
+  target:
+    description: "Target in .firebaserc if needed for deploy. See docs for multi-site Firebase hosting."
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "REACT_APP_BACKEND_URL=${{ inputs.backend-url }}" > .env
+      working-directory: frontend
+      shell: bash
+    - run: echo "REACT_APP_OAUTH_CLIENT_ID=${{ inputs.oauth-client-id }}" >> .env
+      working-directory: frontend
+      shell: bash
+    - run: rm -rf node_modules && yarn install --frozen-lockfile && yarn build
+      working-directory: frontend
+      shell: bash
+    - uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ inputs.repo-token }}"
+        firebaseServiceAccount: "${{ inputs.firebase-service-account }}"
+        projectId: "${{ inputs.firebase-project-id }}"
+        channelId: "${{ inputs.channel-id }}"
+        entryPoint: ./frontend
+        target: "${{ inputs.target }}"

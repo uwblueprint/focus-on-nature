@@ -36,36 +36,17 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
 
 // ROLES: Admin + CC
 /* Get all campers, optionally filter by camp ID */
-camperRouter.get("/", async (req, res) => {
-  const { campId } = req.query;
-  const contentType = req.headers["content-type"];
-  if (!campId) {
-    // get all campers from all camps
-    try {
-      const campers = await camperService.getAllCampers();
-      await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
-    } catch (error: unknown) {
-      await sendResponseByMimeType(res, 500, contentType, [
-        {
-          error: getErrorMessage(error),
-        },
-      ]);
-    }
-    return;
-  }
-
-  if (campId) {
-    if (typeof campId !== "string") {
-      res
-        .status(400)
-        .json({ error: "campId query parameter must be a string." });
-    } else {
+camperRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
+    const { campId } = req.query;
+    const contentType = req.headers["content-type"];
+    if (!campId) {
+      // get all campers from all camps
       try {
-        const campers = await camperService.getCampersByCampId(campId);
-        await sendResponseByMimeType<{
-          campers: CamperDTO[];
-          waitlist: WaitlistedCamperDTO[];
-        }>(res, 200, contentType, campers);
+        const campers = await camperService.getAllCampers();
+        await sendResponseByMimeType<CamperDTO>(res, 200, contentType, campers);
       } catch (error: unknown) {
         await sendResponseByMimeType(res, 500, contentType, [
           {
@@ -73,9 +54,32 @@ camperRouter.get("/", async (req, res) => {
           },
         ]);
       }
+      return;
     }
-  }
-});
+
+    if (campId) {
+      if (typeof campId !== "string") {
+        res
+          .status(400)
+          .json({ error: "campId query parameter must be a string." });
+      } else {
+        try {
+          const campers = await camperService.getCampersByCampId(campId);
+          await sendResponseByMimeType<{
+            campers: CamperDTO[];
+            waitlist: WaitlistedCamperDTO[];
+          }>(res, 200, contentType, campers);
+        } catch (error: unknown) {
+          await sendResponseByMimeType(res, 500, contentType, [
+            {
+              error: getErrorMessage(error),
+            },
+          ]);
+        }
+      }
+    }
+  },
+);
 
 // ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
@@ -130,26 +134,30 @@ camperRouter.post(
 );
 
 // ROLES: Admin
-camperRouter.patch("/waitlist/:waitlistedCamperId", async (req, res) => {
-  try {
-    const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
-      req.params.waitlistedCamperId,
-    );
-    res.status(200).json(updatedWaitlistedCamper);
-  } catch (error: unknown) {
-    res.status(500).json({
-      error: getErrorMessage(error),
-      id: req.params.waitlistedCamperId,
-    });
-  }
-});
+camperRouter.patch(
+  "/waitlist/:waitlistedCamperId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      const updatedWaitlistedCamper = await camperService.inviteWaitlistedCamper(
+        req.params.waitlistedCamperId,
+      );
+      res.status(200).json(updatedWaitlistedCamper);
+    } catch (error: unknown) {
+      res.status(500).json({
+        error: getErrorMessage(error),
+        id: req.params.waitlistedCamperId,
+      });
+    }
+  },
+);
 
 // ROLES: Admin
 /* Update the camper with the specified camperId */
 camperRouter.patch(
   "/",
-  updateCamperDtoValidator,
   isAuthorizedByRole(new Set(["Admin"])),
+  updateCamperDtoValidator,
   async (req, res) => {
     try {
       const updatedCampers = await camperService.updateCampersById(
@@ -192,26 +200,35 @@ camperRouter.delete(
 
 // ROLES: Admin
 /* Delete campers (single or multiple) */
-camperRouter.delete("/", deleteCamperDtoValidator, async (req, res) => {
-  try {
-    await camperService.deleteCampersById(req.body.camperIds);
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+camperRouter.delete(
+  "/",
+  isAuthorizedByRole(new Set(["Admin"])),
+  deleteCamperDtoValidator,
+  async (req, res) => {
+    try {
+      await camperService.deleteCampersById(req.body.camperIds);
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 // ROLES: Admin
 /* Delete a waitlisted camper */
-camperRouter.delete("/waitlist/:waitlistedCamperId", async (req, res) => {
-  try {
-    await camperService.deleteWaitlistedCamperById(
-      req.params.waitlistedCamperId,
-    );
-    res.status(204).send();
-  } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
-  }
-});
+camperRouter.delete(
+  "/waitlist/:waitlistedCamperId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    try {
+      await camperService.deleteWaitlistedCamperById(
+        req.params.waitlistedCamperId,
+      );
+      res.status(204).send();
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
 
 export default camperRouter;

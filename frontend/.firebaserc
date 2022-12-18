@@ -1,5 +1,23 @@
 {
   "projects": {
-    "default": "focus-on-nature"
-  }
+    "default": "focus-on-nature",
+    "prod": "focus-on-nature-prod"
+  },
+  "targets": {
+    "focus-on-nature-prod": {
+      "hosting": {
+        "prod-alias": [
+          "focusonnature"
+        ]
+      }
+    },
+    "focus-on-nature": {
+      "hosting": {
+        "staging": [
+          "focus-on-nature"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
