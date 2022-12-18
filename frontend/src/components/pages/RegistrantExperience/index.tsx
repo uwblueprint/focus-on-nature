@@ -198,6 +198,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       alert("PLACEHOLDER - go to payment");
     }
   };
+  console.log(camp);
 
   return (
     <Box>
