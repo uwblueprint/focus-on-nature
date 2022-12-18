@@ -96,7 +96,7 @@ runs:
         HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
       shell: bash
     - name: Push to Heroku
-      run: git subtree push --prefix backend/typescript heroku $DEPLOY_BRANCH:main
+      run: git push heroku `git subtree split --prefix backend/typescript $DEPLOY_BRANCH`:main --force
       env:
         DEPLOY_BRANCH: "${{ inputs.deploy-branch }}"
       shell: bash
