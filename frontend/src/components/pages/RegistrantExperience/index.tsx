@@ -59,7 +59,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, [campId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getCamp = async () => {
       const id = "63139c7bc3d7b55b44a01531";
       const campRes = await CampsAPIClient.getCampById(id);
@@ -165,7 +165,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             isChecked={sampleAdditionalInfo}
             toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
             formQuestions={camp.formQuestions}
-            personalInfo={campers}
+            campers={campers}
+            setCampers={setCampers}
             campName={camp.name}
           />
         ) : null;
