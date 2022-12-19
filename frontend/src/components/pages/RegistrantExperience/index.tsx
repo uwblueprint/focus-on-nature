@@ -59,15 +59,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, [campId]);
 
-  useEffect(() => {
-    const getCamp = async () => {
-      const id = "63139c7bc3d7b55b44a01531";
-      const campRes = await CampsAPIClient.getCampById(id);
-      if (campRes) setCamp(campRes);
-    };
-    getCamp();
-  }, []);
-
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
