@@ -2,7 +2,7 @@ import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Box, Button, Divider, Text, useToast, VStack } from "@chakra-ui/react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { usePersonalInfoHook } from "./personalInfoReducer";
+import { usePersonalInfoDispatcher } from "./personalInfoReducer";
 import CamperCard from "./CamperCard";
 import { PersonalInfoActions } from "../../../../types/PersonalInfoTypes";
 import ContactCard from "./ContactCard";
@@ -23,9 +23,7 @@ const checkSpaceAvailable = (
   campers: RegistrantExperienceCamper[],
 ): boolean => {
   // validate whether there is enough space for a new camper
-  let spaceAvailable = 100000000;
-  /* eslint-disable-next-line */
-  for (const campSession of campSessions) spaceAvailable = Math.min(spaceAvailable,campSession.capacity - campSession.campers.length - campers.length);
+  const spaceAvailable: number =  campSessions.reduce( (minSpaceAvailable, currentSession) =>{ return  Math.min(minSpaceAvailable,currentSession.capacity - currentSession.campers.length - campers.length) } ,  Number.MAX_SAFE_INTEGER)
   return spaceAvailable > 0;
 };
 
@@ -37,7 +35,7 @@ const PersonalInfo = ({
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
   const toast = useToast();
-  const setPersonalInfo = usePersonalInfoHook(setCampers);
+  const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   return (
     <Box pb={14}>
       <Text textStyle="displayXLarge">{campName} Registration</Text>
@@ -54,7 +52,7 @@ const PersonalInfo = ({
             nextBtnRef={nextBtnRef}
             key={index}
             camper={camper}
-            setPersonalInfo={setPersonalInfo}
+            dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             camperId={index}
           />
         ))}
@@ -66,7 +64,7 @@ const PersonalInfo = ({
         color="#ffffff"
         onClick={() => {
           if (checkSpaceAvailable(campSessions, campers))
-            setPersonalInfo({
+          dispatchPersonalInfoAction({
               type: PersonalInfoActions.ADD_CAMPER,
               campSessions,
             });
@@ -100,7 +98,7 @@ const PersonalInfo = ({
             nextBtnRef={nextBtnRef}
             key={index}
             contact={contact}
-            setPersonalInfo={setPersonalInfo}
+            dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             contactId={index}
           />
         ))}

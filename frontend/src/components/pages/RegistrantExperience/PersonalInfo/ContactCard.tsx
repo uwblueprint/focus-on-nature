@@ -31,14 +31,14 @@ type ContactCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   contact: EmergencyContact;
   contactId: number;
-  setPersonalInfo: (action: PersonalInfoReducerDispatch) => void;
+  dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
 };
 
 const ContactCard = ({
   nextBtnRef,
   contact,
   contactId,
-  setPersonalInfo,
+  dispatchPersonalInfoAction,
 }: ContactCardProps): React.ReactElement => {
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
@@ -106,7 +106,7 @@ const ContactCard = ({
                 value={contact.firstName}
                 onChange={(event) => {
                   setIsFirstNameInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "firstName",
                     contactId,
@@ -130,7 +130,7 @@ const ContactCard = ({
                 value={contact.lastName}
                 onChange={(event) => {
                   setIsLastNameInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "lastName",
                     contactId,
@@ -154,7 +154,7 @@ const ContactCard = ({
                 value={contact.email}
                 onChange={(event) => {
                   setIsEmailInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "email",
                     contactId,
@@ -178,7 +178,7 @@ const ContactCard = ({
                 value={contact.phoneNumber}
                 onChange={(event) => {
                   setIsPhoneNumberInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "phoneNumber",
                     contactId,
@@ -205,7 +205,7 @@ const ContactCard = ({
                 value={contact.relationshipToCamper}
                 onChange={(event) => {
                   setIsRelationInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "relationshipToCamper",
                     contactId,

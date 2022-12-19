@@ -92,7 +92,7 @@ export const CamperReducer = (
   });
 };
 
-export const usePersonalInfoHook = (
+export const usePersonalInfoDispatcher = (
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >,

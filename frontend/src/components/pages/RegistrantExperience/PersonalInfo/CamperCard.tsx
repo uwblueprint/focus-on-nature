@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
   Divider,
@@ -33,19 +27,20 @@ import {
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
+import DeleteModal from "../../../common/DeleteModal";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   camper: RegistrantExperienceCamper;
   camperId: number;
-  setPersonalInfo: (action: PersonalInfoReducerDispatch) => void;
+  dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
 };
 
 const CamperCard = ({
   nextBtnRef,
   camper,
   camperId,
-  setPersonalInfo,
+  dispatchPersonalInfoAction,
 }: CamperCardProps): React.ReactElement => {
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
@@ -78,10 +73,29 @@ const CamperCard = ({
     };
   }, [camper]);
 
-  function AlertDialogExample() {
+  function CamperDeleteButton() {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const cancelRef = React.useRef(null);
+    const deleteCamperModal = DeleteModal({title: "Remove Camper", 
+                 bodyText: "Are you sure you want to remove this camper from the registration form?", 
+                 bodyNote: "Note: this action is irreversible.", 
+                 buttonLabel: "Remove", 
+                 isOpen, 
+                 onClose, 
+                 onDelete: () => {
+                  dispatchPersonalInfoAction({
+                    type: PersonalInfoActions.DELETE_CAMPER,
+                    camperId,
+                  });
+                  toast({
+                    description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
+                    status: "success",
+                    duration: 6000,
+                    isClosable: true,
+                    variant: "subtle",
+                  });
+                  onClose();
+                }})
 
     return (
       <>
@@ -96,58 +110,7 @@ const CamperCard = ({
             Remove
           </Text>
         </Button>
-
-        <AlertDialog
-          isCentered
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay backgroundColor="overlay.dark.50">
-            <AlertDialogContent>
-              <AlertDialogHeader fontStyle="heading">
-                Remove Camper
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                <Text textStyle="bodyRegular">
-                  Are you sure you want to remove this camper from the
-                  registration form? <br />
-                  <br />
-                  <Text as="span" textStyle="bodyBold">
-                    Note: this action is irreversible.{" "}
-                  </Text>
-                </Text>
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button
-                  colorScheme="red"
-                  onClick={() => {
-                    setPersonalInfo({
-                      type: PersonalInfoActions.DELETE_CAMPER,
-                      camperId,
-                    });
-                    toast({
-                      description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
-                      status: "success",
-                      duration: 6000,
-                      isClosable: true,
-                      variant: "subtle",
-                    });
-                    onClose();
-                  }}
-                  ml={3}
-                >
-                  Delete
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
+        {deleteCamperModal}
       </>
     );
   }
@@ -161,7 +124,7 @@ const CamperCard = ({
               Camper #{camperId + 1}
             </Text>
             <Spacer />
-            {camperId > 0 ? AlertDialogExample() : null}
+            {camperId > 0 ? CamperDeleteButton() : null}
           </Flex>
         </Heading>
         <Divider borderColor="border.secondary.100" />
@@ -188,7 +151,7 @@ const CamperCard = ({
                 value={camper.firstName}
                 onChange={(event) => {
                   setIsFirstNameInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "firstName",
                     camperId,
@@ -219,7 +182,7 @@ const CamperCard = ({
                 value={camper.lastName}
                 onChange={(event) => {
                   setIsLastNameInvalid(false);
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "lastName",
                     camperId,
@@ -245,12 +208,12 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <NumberInput precision={0} defaultValue={camper.age}>
+              <NumberInput precision={0} defaultValue={camper.age ? camper.age : ""}>
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {
                     setIsAgeInvalid(false);
-                    setPersonalInfo({
+                    dispatchPersonalInfoAction({
                       type: PersonalInfoActions.UPDATE_CAMPER,
                       field: "age",
                       camperId,
@@ -282,7 +245,7 @@ const CamperCard = ({
                 backgroundColor="#FFFFFF"
                 value={camper.allergies ? camper.allergies : ""}
                 onChange={(event) =>
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "allergies",
                     camperId,
@@ -308,7 +271,7 @@ const CamperCard = ({
                 backgroundColor="#FFFFFF"
                 value={camper.specialNeeds ? camper.specialNeeds : ""}
                 onChange={(event) =>
-                  setPersonalInfo({
+                  dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "specialNeeds",
                     camperId,
