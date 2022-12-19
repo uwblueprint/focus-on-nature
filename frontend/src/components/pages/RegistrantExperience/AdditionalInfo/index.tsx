@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
@@ -21,11 +21,11 @@ const AdditionalInfo = ({
   setCampers,
   campName,
 }: AdditionalInfoProps): React.ReactElement => {
-  // campers --> reference
-  // setCampers to update the camper with the form answers 
-  // for each camper, update the form questions field with the key value paris 
-  // update the campers array with those updated campers
-
+  const updateCampers = (index: number, formResponses: Map<string, string>) => {
+    const newCampers = [...campers];
+    newCampers[index].formResponses = formResponses;
+    setCampers(newCampers);
+  };
 
   return (
     <Box pb={14}>
@@ -39,8 +39,14 @@ const AdditionalInfo = ({
             key={index}
             camper={camper}
             formQuestions={formQuestions}
+            updateCampers={updateCampers}
+            index={index}
           />
         ))}
+        <Divider borderColor="border.secondary.100" />
+        <Text textStyle="displayLarge" textColor="primary.green.100">
+          Camp-specific Additional Questions
+        </Text>
       </VStack>
     </Box>
   );

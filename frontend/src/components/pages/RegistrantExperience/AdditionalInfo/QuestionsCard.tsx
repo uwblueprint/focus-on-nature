@@ -1,34 +1,39 @@
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Text,
-  Textarea,
-  VStack,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
+import { Box, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import MultipleChoiceGroup from "./MultipleChoiceGroup";
 import MultiselectGroup from "./MultiselectGroup";
+import TextInputGroup from "./TextInputGroup";
 
 type QuestionsCardProps = {
   camper: RegistrantExperienceCamper;
   formQuestions: FormQuestion[];
+  updateCampers: (index: number, formResponses: Map<string, string>) => void;
+  index: number;
 };
 
 const QuestionsCard = ({
   camper,
   formQuestions,
+  updateCampers,
+  index,
 }: QuestionsCardProps): React.ReactElement => {
-  // camper.formQuestions --> map
-  // formQuestions[question] = answer
-  //
-
   const [formResponses, setFormResponses] = useState<Map<string, string>>(
     {} as Map<string, string>,
+  );
+
+  const updateFormResponse = (key: string, value: string) => {
+    setFormResponses((prev) => {
+      return { ...prev, [key]: value };
+    });
+    updateCampers(index, formResponses);
+  };
+
+  console.log(
+    `form responses for camper ${camper.firstName}: ${JSON.stringify(
+      formResponses,
+    )}`,
   );
 
   return (
@@ -52,32 +57,30 @@ const QuestionsCard = ({
       </Box>
       <VStack width="100%" py="24px">
         <Wrap>
-          {formQuestions.map((question, index) => (
+          {formQuestions.map((question, i) => (
             <WrapItem
-              key={index}
+              key={i}
               width={{ sm: "100%", md: "47%" }}
               px="40px"
               py="12px"
             >
               {question.type === "Text" && (
-                <FormControl isRequired>
-                  <FormLabel fontWeight="bold" fontSize="18px">
-                    {question.question}
-                  </FormLabel>
-                  <Text
-                    textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
-                    mb="3"
-                  >
-                    {question.description}
-                  </Text>
-                  <Textarea backgroundColor="background.white.100" />
-                </FormControl>
+                <TextInputGroup
+                  question={question}
+                  updateFormResponse={updateFormResponse}
+                />
               )}
               {question.type === "Multiselect" && (
-                <MultiselectGroup question={question} />
+                <MultiselectGroup
+                  question={question}
+                  updateFormResponse={updateFormResponse}
+                />
               )}
               {question.type === "MultipleChoice" && (
-                <MultipleChoiceGroup question={question} />
+                <MultipleChoiceGroup
+                  question={question}
+                  updateFormResponse={updateFormResponse}
+                />
               )}
             </WrapItem>
           ))}

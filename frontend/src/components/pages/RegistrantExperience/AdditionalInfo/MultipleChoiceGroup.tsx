@@ -10,22 +10,30 @@ import { FormQuestion } from "../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
   question: FormQuestion;
+  updateFormResponse: (key: string, value: string) => void;
 };
 
 const MultipleChoiceGroup = ({
   question,
+  updateFormResponse,
 }: MultipleChoiceGroupProps): React.ReactElement => {
-  const [multipleChoiceValue, setMultipleChoiceValue] = useState<string>("0");
+  const multipleChoiceState = useState<string>("");
+  const setMultipleChoice = multipleChoiceState[1];
+
+  const handleMultipleChoiceUpdate = (choice: string) => {
+    setMultipleChoice(choice);
+    updateFormResponse(question.question, choice);
+  };
 
   return (
-    <FormControl isRequired>
+    <FormControl isRequired={question.required}>
       <FormLabel fontWeight="bold" fontSize="18px">
         {question.question}
       </FormLabel>
-      <RadioGroup onChange={setMultipleChoiceValue} value={multipleChoiceValue}>
+      <RadioGroup onChange={(choice) => handleMultipleChoiceUpdate(choice)}>
         <VStack alignItems="flex-start">
           {question.options?.map((option, i) => (
-            <Radio key={i} value={`${i}`} colorScheme="green">
+            <Radio key={i} value={option} colorScheme="green">
               {option}
             </Radio>
           ))}

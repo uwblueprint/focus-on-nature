@@ -200,7 +200,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       alert("PLACEHOLDER - go to payment");
     }
   };
-  console.log(camp);
 
   return (
     <Flex w="100vw" pt="144px" pb="168px">
