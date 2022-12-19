@@ -47,6 +47,7 @@ const CamperCard = ({
   const [isAgeInvalid, setIsAgeInvalid] = useState<boolean>(false);
 
   useEffect(() => {
+    let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
       console.log(
         checkFirstName(camper.firstName),
@@ -61,41 +62,43 @@ const CamperCard = ({
     };
 
     if (nextBtnRef && nextBtnRef.current) {
-      // Passing the same reference
-      nextBtnRef.current.addEventListener("click", updateFormErrorMsgs);
+      nextBtnRefValue = nextBtnRef.current;
+      nextBtnRefValue.addEventListener("click", updateFormErrorMsgs);
     }
 
     return () => {
-      // Passing the same reference
-      if (nextBtnRef && nextBtnRef.current) {
-        nextBtnRef.current.removeEventListener("click", updateFormErrorMsgs);
+      if (nextBtnRefValue) {
+        nextBtnRefValue.removeEventListener("click", updateFormErrorMsgs);
       }
     };
-  }, [camper]);
+  }, [camper, nextBtnRef]);
 
-  function CamperDeleteButton() {
+  function DeleteRegistrantConfirmationModal() {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const deleteCamperModal = DeleteModal({title: "Remove Camper", 
-                 bodyText: "Are you sure you want to remove this camper from the registration form?", 
-                 bodyNote: "Note: this action is irreversible.", 
-                 buttonLabel: "Remove", 
-                 isOpen, 
-                 onClose, 
-                 onDelete: () => {
-                  dispatchPersonalInfoAction({
-                    type: PersonalInfoActions.DELETE_CAMPER,
-                    camperIndex,
-                  });
-                  toast({
-                    description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
-                    status: "success",
-                    duration: 6000,
-                    isClosable: true,
-                    variant: "subtle",
-                  });
-                  onClose();
-                }})
+    const deleteCamperModal = DeleteModal({
+      title: "Remove Camper",
+      bodyText:
+        "Are you sure you want to remove this camper from the registration form?",
+      bodyNote: "Note: this action is irreversible.",
+      buttonLabel: "Remove",
+      isOpen,
+      onClose,
+      onDelete: () => {
+        dispatchPersonalInfoAction({
+          type: PersonalInfoActions.DELETE_CAMPER,
+          camperIndex,
+        });
+        toast({
+          description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
+          status: "success",
+          duration: 6000,
+          isClosable: true,
+          variant: "subtle",
+        });
+        onClose();
+      },
+    });
 
     return (
       <>
@@ -124,7 +127,7 @@ const CamperCard = ({
               Camper #{camperIndex + 1}
             </Text>
             <Spacer />
-            {camperIndex > 0 ? CamperDeleteButton() : null}
+            {camperIndex > 0 ? DeleteRegistrantConfirmationModal() : null}
           </Flex>
         </Heading>
         <Divider borderColor="border.secondary.100" />
@@ -208,7 +211,10 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <NumberInput precision={0} defaultValue={camper.age ? camper.age : ""}>
+              <NumberInput
+                precision={0}
+                defaultValue={camper.age ? camper.age : ""}
+              >
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {

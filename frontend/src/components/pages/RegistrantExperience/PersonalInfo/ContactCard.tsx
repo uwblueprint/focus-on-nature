@@ -49,6 +49,7 @@ const ContactCard = ({
   const [isRelationInvalid, setIsRelationInvalid] = useState<boolean>(false);
 
   useEffect(() => {
+    let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
       console.log(
         "contact",
@@ -65,17 +66,16 @@ const ContactCard = ({
     };
 
     if (nextBtnRef && nextBtnRef.current) {
-      // Passing the same reference
-      nextBtnRef.current.addEventListener("click", updateFormErrorMsgs);
+      nextBtnRefValue = nextBtnRef.current;
+      nextBtnRefValue.addEventListener("click", updateFormErrorMsgs);
     }
 
     return () => {
-      // Passing the same reference
-      if (nextBtnRef && nextBtnRef.current) {
-        nextBtnRef.current.removeEventListener("click", updateFormErrorMsgs);
+      if (nextBtnRefValue) {
+        nextBtnRefValue.removeEventListener("click", updateFormErrorMsgs);
       }
     };
-  }, [contact]);
+  }, [contact, nextBtnRef]);
 
   return (
     <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%">

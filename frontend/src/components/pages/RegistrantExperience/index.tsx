@@ -116,7 +116,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       optionalClauses: [],
     },
   ]);
-  console.log(campers)
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;

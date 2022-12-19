@@ -23,7 +23,17 @@ const checkSpaceAvailable = (
   campers: RegistrantExperienceCamper[],
 ): boolean => {
   // validate whether there is enough space for a new camper
-  const spaceAvailable: number =  campSessions.reduce( (minSpaceAvailable, currentSession) =>{ return  Math.min(minSpaceAvailable,currentSession.capacity - currentSession.campers.length - campers.length) } ,  Number.MAX_SAFE_INTEGER)
+  const spaceAvailable: number = campSessions.reduce(
+    (minSpaceAvailable, currentSession) => {
+      return Math.min(
+        minSpaceAvailable,
+        currentSession.capacity -
+          currentSession.campers.length -
+          campers.length,
+      );
+    },
+    Number.MAX_SAFE_INTEGER,
+  );
   return spaceAvailable > 0;
 };
 
@@ -64,7 +74,7 @@ const PersonalInfo = ({
         color="#ffffff"
         onClick={() => {
           if (checkSpaceAvailable(campSessions, campers))
-          dispatchPersonalInfoAction({
+            dispatchPersonalInfoAction({
               type: PersonalInfoActions.ADD_CAMPER,
               campSessions,
             });

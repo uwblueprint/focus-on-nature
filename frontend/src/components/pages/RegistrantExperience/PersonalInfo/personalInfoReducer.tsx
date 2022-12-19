@@ -59,10 +59,12 @@ export const CamperReducer = (
       }
       case PersonalInfoActions.UPDATE_CAMPER: {
         const { camperIndex, field, data } = action as UpdateCamper;
-        if (field === "firstName") newCampers[camperIndex][field] = data as string;
+        if (field === "firstName")
+          newCampers[camperIndex][field] = data as string;
         else if (field === "lastName")
           newCampers[camperIndex][field] = data as string;
-        else if (field === "age") newCampers[camperIndex][field] = data as number;
+        else if (field === "age")
+          newCampers[camperIndex][field] = data as number;
         else if (field === "allergies")
           newCampers[camperIndex][field] = data as string;
         else if (field === "specialNeeds")

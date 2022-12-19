@@ -32,7 +32,7 @@ export interface DeleteCamper extends PersonalInfoDispatchBase {
 
 export interface UpdateCamper
   extends PersonalInfoDispatchWithData<string | number> {
-    camperIndex: number; // The index of the the Camper object in the array its stored.
+  camperIndex: number; // The index of the the Camper object in the array its stored.
 }
 
 export interface UpdateContact
