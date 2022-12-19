@@ -53,7 +53,7 @@ const PersonalInfo = ({
             key={index}
             camper={camper}
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
-            camperId={index}
+            camperIndex={index}
           />
         ))}
       </VStack>

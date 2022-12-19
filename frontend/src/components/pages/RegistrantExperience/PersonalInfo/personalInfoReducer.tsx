@@ -53,20 +53,20 @@ export const CamperReducer = (
         break;
       }
       case PersonalInfoActions.DELETE_CAMPER: {
-        const { camperId } = action as DeleteCamper;
-        newCampers.splice(camperId, 1);
+        const { camperIndex } = action as DeleteCamper;
+        newCampers.splice(camperIndex, 1);
         break;
       }
       case PersonalInfoActions.UPDATE_CAMPER: {
-        const { camperId, field, data } = action as UpdateCamper;
-        if (field === "firstName") newCampers[camperId][field] = data as string;
+        const { camperIndex, field, data } = action as UpdateCamper;
+        if (field === "firstName") newCampers[camperIndex][field] = data as string;
         else if (field === "lastName")
-          newCampers[camperId][field] = data as string;
-        else if (field === "age") newCampers[camperId][field] = data as number;
+          newCampers[camperIndex][field] = data as string;
+        else if (field === "age") newCampers[camperIndex][field] = data as number;
         else if (field === "allergies")
-          newCampers[camperId][field] = data as string;
+          newCampers[camperIndex][field] = data as string;
         else if (field === "specialNeeds")
-          newCampers[camperId][field] = data as string;
+          newCampers[camperIndex][field] = data as string;
         break;
       }
       case PersonalInfoActions.UPDATE_CONTACT: {

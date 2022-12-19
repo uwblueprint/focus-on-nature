@@ -32,14 +32,14 @@ import DeleteModal from "../../../common/DeleteModal";
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   camper: RegistrantExperienceCamper;
-  camperId: number;
+  camperIndex: number;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
 };
 
 const CamperCard = ({
   nextBtnRef,
   camper,
-  camperId,
+  camperIndex,
   dispatchPersonalInfoAction,
 }: CamperCardProps): React.ReactElement => {
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
@@ -85,7 +85,7 @@ const CamperCard = ({
                  onDelete: () => {
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.DELETE_CAMPER,
-                    camperId,
+                    camperIndex,
                   });
                   toast({
                     description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
@@ -121,10 +121,10 @@ const CamperCard = ({
         <Heading textStyle="displayLarge">
           <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
             <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
-              Camper #{camperId + 1}
+              Camper #{camperIndex + 1}
             </Text>
             <Spacer />
-            {camperId > 0 ? CamperDeleteButton() : null}
+            {camperIndex > 0 ? CamperDeleteButton() : null}
           </Flex>
         </Heading>
         <Divider borderColor="border.secondary.100" />
@@ -154,7 +154,7 @@ const CamperCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "firstName",
-                    camperId,
+                    camperIndex,
                     data: event.target.value,
                   });
                 }}
@@ -185,7 +185,7 @@ const CamperCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "lastName",
-                    camperId,
+                    camperIndex,
                     data: event.target.value,
                   });
                 }}
@@ -216,7 +216,7 @@ const CamperCard = ({
                     dispatchPersonalInfoAction({
                       type: PersonalInfoActions.UPDATE_CAMPER,
                       field: "age",
-                      camperId,
+                      camperIndex,
                       data: parseInt(event.target.value, 10),
                     });
                   }}
@@ -248,7 +248,7 @@ const CamperCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "allergies",
-                    camperId,
+                    camperIndex,
                     data: event.target.value,
                   })
                 }
@@ -274,7 +274,7 @@ const CamperCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CAMPER,
                     field: "specialNeeds",
-                    camperId,
+                    camperIndex,
                     data: event.target.value,
                   })
                 }
