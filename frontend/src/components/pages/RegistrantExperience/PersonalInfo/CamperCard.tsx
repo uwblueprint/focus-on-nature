@@ -92,8 +92,8 @@ const CamperCard = ({
         toast({
           description: `${camper.firstName} ${camper.lastName} has been successfully removed`,
           status: "success",
-          duration: 6000,
-          isClosable: true,
+          duration: 3000,
+          isClosable: false,
           variant: "subtle",
         });
         onClose();

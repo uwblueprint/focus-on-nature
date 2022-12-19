@@ -44,6 +44,7 @@ const PersonalInfo = ({
   campSessions,
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
+  console.log(campers);
   const toast = useToast();
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   return (
@@ -83,8 +84,8 @@ const PersonalInfo = ({
               title: "Max Capacity Reached",
               description: "Camp is currently full",
               status: "warning",
-              duration: 5000,
-              isClosable: true,
+              duration: 3000,
+              isClosable: false,
             });
         }}
       >

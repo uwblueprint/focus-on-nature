@@ -22,12 +22,11 @@ export const CamperReducer = (
     switch (action.type) {
       case PersonalInfoActions.ADD_CAMPER: {
         const { campSessions } = action as AddCamper;
-        // Add a unique camper entry for all registered camp sessions
-        /* eslint-disable-next-line */
-        const campSessionIds = Array.from(campSessions.map((campSession) => campSession.id));
         newCampers.push({
           id: "",
-          campSessions: campSessionIds,
+          campSessions: Array.from(
+            campSessions.map((campSession) => campSession.id),
+          ),
           firstName: "",
           lastName: "",
           age: NaN,
@@ -44,12 +43,11 @@ export const CamperReducer = (
         });
 
         // inject contact info
-        /* eslint-disable-next-line */
-            for (const contact of newCampers[0].contacts){
+        newCampers[0].contacts.forEach((contact) => {
           newCampers[newCampers.length - 1].contacts.push(
             JSON.parse(JSON.stringify(contact)),
           ); // Deep copy the contact
-        }
+        });
         break;
       }
       case PersonalInfoActions.DELETE_CAMPER: {
@@ -149,19 +147,38 @@ export const checkPersonalInfoFilled = (
     if (camper.contacts.length !== 2) {
       return false; // Need to have 2 contacts
     }
-    /* eslint-disable-next-line */
-    for (const contact of camper.contacts) {
-      if (
-        !(
-          checkFirstName(contact.firstName) &&
-          checkLastName(contact.lastName) &&
-          checkEmail(contact.email) &&
-          checkPhoneNumber(contact.phoneNumber) &&
-          checkRelationToCamper(contact.relationshipToCamper)
-        )
-      ) {
-        return false;
-      }
+
+    // Check primary contact card
+    const primaryContact = camper.contacts[0];
+    if (
+      !(
+        checkFirstName(primaryContact.firstName) &&
+        checkLastName(primaryContact.lastName) &&
+        checkEmail(primaryContact.email) &&
+        checkPhoneNumber(primaryContact.phoneNumber) &&
+        checkRelationToCamper(primaryContact.relationshipToCamper)
+      )
+    ) {
+      return false;
+    }
+
+    // Check secondary contact card
+    const secondaryContact = camper.contacts[1];
+    if (
+      (secondaryContact.firstName ||
+        secondaryContact.lastName ||
+        secondaryContact.email ||
+        secondaryContact.phoneNumber ||
+        secondaryContact.relationshipToCamper) &&
+      !(
+        checkFirstName(secondaryContact.firstName) &&
+        checkLastName(secondaryContact.lastName) &&
+        checkEmail(secondaryContact.email) &&
+        checkPhoneNumber(secondaryContact.phoneNumber) &&
+        checkRelationToCamper(secondaryContact.relationshipToCamper)
+      )
+    ) {
+      return false;
     }
   }
   return true;
