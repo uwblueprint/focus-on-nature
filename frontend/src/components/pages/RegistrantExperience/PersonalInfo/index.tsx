@@ -109,7 +109,7 @@ const PersonalInfo = ({
             key={index}
             contact={contact}
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
-            contactId={index}
+            contactIndex={index}
           />
         ))}
       </VStack>

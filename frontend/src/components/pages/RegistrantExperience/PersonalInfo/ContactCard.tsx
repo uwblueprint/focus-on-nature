@@ -30,14 +30,14 @@ import {
 type ContactCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   contact: EmergencyContact;
-  contactId: number;
+  contactIndex: number;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
 };
 
 const ContactCard = ({
   nextBtnRef,
   contact,
-  contactId,
+  contactIndex,
   dispatchPersonalInfoAction,
 }: ContactCardProps): React.ReactElement => {
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
@@ -86,7 +86,7 @@ const ContactCard = ({
             px={{ sm: "5", lg: "20" }}
             textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
           >
-            {contactId === 0 ? "Primary Contact" : "Secondary Contact"}{" "}
+            {contactIndex === 0 ? "Primary Contact" : "Secondary Contact"}{" "}
           </Text>
         </Heading>
         <Divider borderColor="border.secondary.100" />
@@ -109,7 +109,7 @@ const ContactCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "firstName",
-                    contactId,
+                    contactIndex,
                     data: event.target.value,
                   });
                 }}
@@ -133,7 +133,7 @@ const ContactCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "lastName",
-                    contactId,
+                    contactIndex,
                     data: event.target.value,
                   });
                 }}
@@ -157,7 +157,7 @@ const ContactCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "email",
-                    contactId,
+                    contactIndex,
                     data: event.target.value,
                   });
                 }}
@@ -181,7 +181,7 @@ const ContactCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "phoneNumber",
-                    contactId,
+                    contactIndex,
                     data: event.target.value,
                   });
                 }}
@@ -208,7 +208,7 @@ const ContactCard = ({
                   dispatchPersonalInfoAction({
                     type: PersonalInfoActions.UPDATE_CONTACT,
                     field: "relationshipToCamper",
-                    contactId,
+                    contactIndex,
                     data: event.target.value,
                   });
                 }}

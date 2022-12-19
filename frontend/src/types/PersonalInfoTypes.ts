@@ -37,5 +37,5 @@ export interface UpdateCamper
 
 export interface UpdateContact
   extends PersonalInfoDispatchWithData<string | number> {
-  contactId: number; // The index of the the Camper object in the array its stored.
+  contactIndex: number; // The index of the the Contact object in the array its stored.
 }

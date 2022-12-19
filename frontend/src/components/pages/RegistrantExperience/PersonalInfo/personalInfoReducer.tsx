@@ -72,19 +72,19 @@ export const CamperReducer = (
         break;
       }
       case PersonalInfoActions.UPDATE_CONTACT: {
-        const { contactId, field, data } = action as UpdateContact;
+        const { contactIndex, field, data } = action as UpdateContact;
         /* eslint-disable-next-line */
         for (const camper of newCampers) {
           if (field === "firstName")
-            camper.contacts[contactId][field] = data as string;
+            camper.contacts[contactIndex][field] = data as string;
           else if (field === "lastName")
-            camper.contacts[contactId][field] = data as string;
+            camper.contacts[contactIndex][field] = data as string;
           else if (field === "email")
-            camper.contacts[contactId][field] = data as string;
+            camper.contacts[contactIndex][field] = data as string;
           else if (field === "phoneNumber")
-            camper.contacts[contactId][field] = data as string;
+            camper.contacts[contactIndex][field] = data as string;
           else if (field === "relationshipToCamper")
-            camper.contacts[contactId][field] = data as string;
+            camper.contacts[contactIndex][field] = data as string;
         }
         break;
       }
