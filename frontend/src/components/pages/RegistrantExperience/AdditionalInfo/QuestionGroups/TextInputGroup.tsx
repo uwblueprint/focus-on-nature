@@ -1,6 +1,6 @@
 import { FormControl, FormLabel, Text, Textarea } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { FormQuestion } from "../../../../types/CampsTypes";
+import React from "react";
+import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type TextInputGroupProps = {
   question: FormQuestion;

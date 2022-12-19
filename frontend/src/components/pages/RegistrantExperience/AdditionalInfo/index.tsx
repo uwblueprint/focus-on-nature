@@ -2,7 +2,8 @@ import { Box, Divider, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
-import QuestionsCard from "./QuestionsCard";
+import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
+import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 
 type AdditionalInfoProps = {
   isChecked: boolean;
@@ -11,6 +12,10 @@ type AdditionalInfoProps = {
   campers: RegistrantExperienceCamper[];
   setCampers: (campers: RegistrantExperienceCamper[]) => void;
   campName: string;
+  hasEarlyDropOffLatePickup: boolean;
+  setRequireEarlyDropOffLatePickup: (
+    requireEarlyDropOffLatePickup: boolean,
+  ) => void;
 };
 
 const AdditionalInfo = ({
@@ -20,8 +25,13 @@ const AdditionalInfo = ({
   campers,
   setCampers,
   campName,
+  hasEarlyDropOffLatePickup,
+  setRequireEarlyDropOffLatePickup,
 }: AdditionalInfoProps): React.ReactElement => {
-  const updateCampers = (index: number, formResponses: Map<string, string>) => {
+  const updateCamperFormResponse = (
+    index: number,
+    formResponses: Map<string, string>,
+  ) => {
     const newCampers = [...campers];
     newCampers[index].formResponses = formResponses;
     setCampers(newCampers);
@@ -35,18 +45,27 @@ const AdditionalInfo = ({
           Camper-specific Additional Questions
         </Text>
         {campers.map((camper, index) => (
-          <QuestionsCard
+          <CamperQuestionsCard
             key={index}
             camper={camper}
             formQuestions={formQuestions}
-            updateCampers={updateCampers}
+            updateCamperFormResponse={updateCamperFormResponse}
             index={index}
           />
         ))}
-        <Divider borderColor="border.secondary.100" />
-        <Text textStyle="displayLarge" textColor="primary.green.100">
-          Camp-specific Additional Questions
-        </Text>
+        {hasEarlyDropOffLatePickup && (
+          <Box width="100%">
+            <Divider borderColor="border.secondary.100" mb={6} />
+            <Text textStyle="displayLarge" textColor="primary.green.100">
+              Camp-specific Additional Questions
+            </Text>
+            <EarlyDropOffLatePickupCard
+              setRequireEarlyDropOffLatePickup={
+                setRequireEarlyDropOffLatePickup
+              }
+            />
+          </Box>
+        )}
       </VStack>
     </Box>
   );

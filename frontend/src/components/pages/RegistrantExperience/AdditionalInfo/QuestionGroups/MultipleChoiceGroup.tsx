@@ -3,10 +3,11 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { FormQuestion } from "../../../../types/CampsTypes";
+import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
   question: FormQuestion;
@@ -30,6 +31,9 @@ const MultipleChoiceGroup = ({
       <FormLabel fontWeight="bold" fontSize="18px">
         {question.question}
       </FormLabel>
+      <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
+        {question.description}
+      </Text>
       <RadioGroup onChange={(choice) => handleMultipleChoiceUpdate(choice)}>
         <VStack alignItems="flex-start">
           {question.options?.map((option, i) => (

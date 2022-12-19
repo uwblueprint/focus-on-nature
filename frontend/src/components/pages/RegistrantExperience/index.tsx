@@ -130,6 +130,11 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
+  const [
+    requireEarlyDropOffLatePickup,
+    setRequireEarlyDropOffLatePickup,
+  ] = useState(false);
+
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
@@ -168,6 +173,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             campers={campers}
             setCampers={setCampers}
             campName={camp.name}
+            hasEarlyDropOffLatePickup={
+              camp.earlyDropoff !== undefined && camp.latePickup !== undefined
+            }
+            setRequireEarlyDropOffLatePickup={setRequireEarlyDropOffLatePickup}
           />
         ) : null;
 

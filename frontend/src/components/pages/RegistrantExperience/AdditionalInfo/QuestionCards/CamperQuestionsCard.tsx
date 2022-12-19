@@ -1,33 +1,37 @@
-import { Box, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { FormQuestion } from "../../../../types/CampsTypes";
-import MultipleChoiceGroup from "./MultipleChoiceGroup";
-import MultiselectGroup from "./MultiselectGroup";
-import TextInputGroup from "./TextInputGroup";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import { FormQuestion } from "../../../../../types/CampsTypes";
+import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../QuestionGroups/MultiselectGroup";
+import QuestionsCardWrapper from "./QuestionsCardWrapper";
+import TextInputGroup from "../QuestionGroups/TextInputGroup";
 
-type QuestionsCardProps = {
+type CamperQuestionsCardProps = {
   camper: RegistrantExperienceCamper;
   formQuestions: FormQuestion[];
-  updateCampers: (index: number, formResponses: Map<string, string>) => void;
+  updateCamperFormResponse: (
+    index: number,
+    formResponses: Map<string, string>,
+  ) => void;
   index: number;
 };
 
-const QuestionsCard = ({
+const CamperQuestionsCard = ({
   camper,
   formQuestions,
-  updateCampers,
+  updateCamperFormResponse,
   index,
-}: QuestionsCardProps): React.ReactElement => {
+}: CamperQuestionsCardProps): React.ReactElement => {
   const [formResponses, setFormResponses] = useState<Map<string, string>>(
-    {} as Map<string, string>,
+    new Map<string, string>(),
   );
 
   const updateFormResponse = (key: string, value: string) => {
     setFormResponses((prev) => {
       return { ...prev, [key]: value };
     });
-    updateCampers(index, formResponses);
+    updateCamperFormResponse(index, formResponses);
   };
 
   console.log(
@@ -37,24 +41,7 @@ const QuestionsCard = ({
   );
 
   return (
-    <Box
-      width="100%"
-      backgroundColor="background.grey.200"
-      marginY={10}
-      boxShadow="lg"
-      rounded="xl"
-      borderWidth={1}
-      paddingBottom={5}
-    >
-      <Box
-        backgroundColor="background.white.100"
-        borderTopRadius={10}
-        px="40px"
-        py="12px"
-        borderBottomWidth={1}
-      >
-        <Text textStyle="displaySmallSemiBold">{`${camper.firstName} ${camper.lastName}`}</Text>
-      </Box>
+    <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
       <VStack width="100%" py="24px">
         <Wrap>
           {formQuestions.map((question, i) => (
@@ -86,8 +73,8 @@ const QuestionsCard = ({
           ))}
         </Wrap>
       </VStack>
-    </Box>
+    </QuestionsCardWrapper>
   );
 };
 
-export default QuestionsCard;
+export default CamperQuestionsCard;
