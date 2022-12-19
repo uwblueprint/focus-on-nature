@@ -73,19 +73,11 @@ const PersonalInfo = ({
         w="100%"
         backgroundColor="primary.green.100"
         color="#ffffff"
+        isDisabled={!checkSpaceAvailable(campSessions, campers)}
         onClick={() => {
-          if (checkSpaceAvailable(campSessions, campers))
             dispatchPersonalInfoAction({
               type: PersonalInfoActions.ADD_CAMPER,
               campSessions,
-            });
-          else
-            toast({
-              title: "Max Capacity Reached",
-              description: "Camp is currently full",
-              status: "warning",
-              duration: 3000,
-              isClosable: false,
             });
         }}
       >
