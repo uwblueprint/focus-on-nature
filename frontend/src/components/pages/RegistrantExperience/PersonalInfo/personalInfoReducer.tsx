@@ -1,45 +1,55 @@
 import React from "react";
 import {
+  AddCamper,
   DeleteCamper,
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
   UpdateCamper,
   UpdateContact,
 } from "../../../../types/PersonalInfoTypes";
-import { Camper } from "../../../../types/CamperTypes";
+import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
-export const camperReducer = (
-  setCampers: React.Dispatch<React.SetStateAction<Camper[]>>,
+export const CamperReducer = (
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >,
   action: PersonalInfoReducerDispatch,
 ): void => {
-  setCampers((campers: Camper[]) => {
-    const newCampers: Camper[] = JSON.parse(JSON.stringify(campers)); // Deep Copy
+  setCampers((campers: RegistrantExperienceCamper[]) => {
+    const newCampers: RegistrantExperienceCamper[] = JSON.parse(
+      JSON.stringify(campers),
+    ); // Deep Copy
     switch (action.type) {
       case PersonalInfoActions.ADD_CAMPER: {
+        const { campSessions } = action as AddCamper;
+        // Add a unique camper entry for all registered camp sessions
+        /* eslint-disable-next-line */
+        const campSessionIds = Array.from(campSessions.map((campSession) => campSession.id));
         newCampers.push({
           id: "",
-          campSession: "",
+          campSessions: campSessionIds,
           firstName: "",
           lastName: "",
-          age: -1,
+          age: NaN,
           contacts: [],
           registrationDate: new Date(),
           hasPaid: false,
           chargeId: "",
           charges: {
-            camp: -1,
-            earlyDropoff: -1,
-            latePickup: -1,
+            camp: NaN,
+            earlyDropoff: NaN,
+            latePickup: NaN,
           },
           optionalClauses: [],
         });
 
         // inject contact info
         /* eslint-disable-next-line */
-        for (const contact of newCampers[0].contacts){
-          newCampers[newCampers.length - 1].contacts.push(contact);
+            for (const contact of newCampers[0].contacts){
+          newCampers[newCampers.length - 1].contacts.push(
+            JSON.parse(JSON.stringify(contact)),
+          ); // Deep copy the contact
         }
-
         break;
       }
       case PersonalInfoActions.DELETE_CAMPER: {
@@ -83,20 +93,33 @@ export const camperReducer = (
 };
 
 export const usePersonalInfoHook = (
-  setCampers: React.Dispatch<React.SetStateAction<Camper[]>>,
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >,
 ): ((action: PersonalInfoReducerDispatch) => void) => {
   const dispatch = (action: PersonalInfoReducerDispatch) => {
-    camperReducer(setCampers, action);
+    CamperReducer(setCampers, action);
   };
   return dispatch;
 };
 
-export const checkPersonalInfoFilled = (campers: Camper[]): boolean => {
+export const checkPersonalInfoFilled = (
+  campers: RegistrantExperienceCamper[],
+): boolean => {
   if (!(campers.length >= 1)) return false;
   /* eslint-disable-next-line */
   for (const camper of campers) {
     // Check camper card
-    if (!(camper.firstName && camper.lastName && camper.age > -1)) return false;
+    console.log("age", camper.age > -1);
+    if (
+      !(
+        camper.firstName &&
+        camper.lastName &&
+        camper.age >= 7 &&
+        camper.age <= 10
+      )
+    )
+      return false;
 
     // Check contact cards
     if (camper.contacts.length !== 2) {
