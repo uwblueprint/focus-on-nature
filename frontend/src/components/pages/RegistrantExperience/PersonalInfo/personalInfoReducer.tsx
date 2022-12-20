@@ -103,6 +103,30 @@ export const usePersonalInfoHook = (
   return dispatch;
 };
 
+export const checkFirstName = (firstName: string): boolean => {
+  return !!firstName;
+};
+
+export const checkLastName = (lastName: string): boolean => {
+  return !!lastName;
+};
+
+export const checkAge = (age: number): boolean => {
+  return !!age && age >= 7 && age <= 10;
+};
+
+export const checkEmail = (email: string): boolean => {
+  return !!email;
+};
+
+export const checkPhoneNumber = (phoneNumber: string): boolean => {
+  return !!phoneNumber;
+};
+
+export const checkRelationToCamper = (relation: string): boolean => {
+  return !!relation;
+};
+
 export const checkPersonalInfoFilled = (
   campers: RegistrantExperienceCamper[],
 ): boolean => {
@@ -110,13 +134,11 @@ export const checkPersonalInfoFilled = (
   /* eslint-disable-next-line */
   for (const camper of campers) {
     // Check camper card
-    console.log("age", camper.age > -1);
     if (
       !(
-        camper.firstName &&
-        camper.lastName &&
-        camper.age >= 7 &&
-        camper.age <= 10
+        checkFirstName(camper.firstName) &&
+        checkLastName(camper.lastName) &&
+        checkAge(camper.age)
       )
     )
       return false;
@@ -129,11 +151,11 @@ export const checkPersonalInfoFilled = (
     for (const contact of camper.contacts) {
       if (
         !(
-          contact.firstName &&
-          contact.lastName &&
-          contact.email &&
-          contact.phoneNumber &&
-          contact.relationshipToCamper
+          checkFirstName(contact.firstName) &&
+          checkLastName(contact.lastName) &&
+          checkEmail(contact.email) &&
+          checkPhoneNumber(contact.phoneNumber) &&
+          checkRelationToCamper(contact.relationshipToCamper)
         )
       ) {
         return false;

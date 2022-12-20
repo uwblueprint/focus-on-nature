@@ -9,6 +9,7 @@ import ContactCard from "./ContactCard";
 import { CampSession } from "../../../../types/CampsTypes";
 
 type PersonalInfoProps = {
+  nextBtnRef: React.RefObject<HTMLButtonElement>;
   campers: RegistrantExperienceCamper[];
   campName: string;
   campSessions: CampSession[];
@@ -29,6 +30,7 @@ const checkSpaceAvailable = (
 };
 
 const PersonalInfo = ({
+  nextBtnRef,
   campers,
   campName,
   campSessions,
@@ -49,6 +51,7 @@ const PersonalInfo = ({
       <VStack spacing={6} pb={6}>
         {campers.map((camper, index) => (
           <CamperCard
+            nextBtnRef={nextBtnRef}
             key={index}
             camper={camper}
             setPersonalInfo={setPersonalInfo}
@@ -94,6 +97,7 @@ const PersonalInfo = ({
       <VStack spacing={6} pb={6}>
         {campers[0].contacts.map((contact, index) => (
           <ContactCard
+            nextBtnRef={nextBtnRef}
             key={index}
             contact={contact}
             setPersonalInfo={setPersonalInfo}
