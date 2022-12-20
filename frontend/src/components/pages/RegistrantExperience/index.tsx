@@ -16,8 +16,13 @@ import {
   WaiverReducerDispatch,
 } from "../../../types/waiverTypes";
 import waiverReducer from "./Waiver/WaiverReducer";
+<<<<<<< HEAD
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
+=======
+import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
+import { Camper } from "../../../types/CamperTypes";
+>>>>>>> 6c2c009 (add personal info types + add personal info hook + add personal info components (ROUGH DRAFT))
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
@@ -58,11 +63,41 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, [campId]);
 
-  const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
-
-  const isPersonalInfoFilled = samplePersonalInfo;
+  const [campers, setCampers] = useState<Camper[]>([{
+    id: "",
+    campSession: "",
+    firstName: "",
+    lastName: "",
+    age: -1,
+    registrationDate: new Date(),
+    hasPaid: false,
+    contacts: [
+      {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        relationshipToCamper: "",
+      },
+      {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        relationshipToCamper: "",
+      }
+    ],
+    chargeId: "",
+    charges: {
+      camp: -1,
+      earlyDropoff: -1,
+      latePickup: -1,
+    },
+    optionalClauses: [],
+  }])
+  const isPersonalInfoFilled = checkPersonalInfoFilled(campers);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
@@ -89,8 +124,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.PersonalInfoPage:
         return (
           <PersonalInfo
-            isChecked={samplePersonalInfo}
-            toggleChecked={() => setSamplePersonalInfo(!samplePersonalInfo)}
+          campers={campers} setCampers={setCampers}
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
