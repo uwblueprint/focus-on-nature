@@ -1,6 +1,6 @@
 import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { usePersonalInfoDispatcher } from "./personalInfoReducer";
 import CamperCard from "./CamperCard";
@@ -44,8 +44,6 @@ const PersonalInfo = ({
   campSessions,
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
-  console.log(campers);
-  const toast = useToast();
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   return (
     <Box pb={14}>
@@ -75,10 +73,10 @@ const PersonalInfo = ({
         color="#ffffff"
         isDisabled={!checkSpaceAvailable(campSessions, campers)}
         onClick={() => {
-            dispatchPersonalInfoAction({
-              type: PersonalInfoActions.ADD_CAMPER,
-              campSessions,
-            });
+          dispatchPersonalInfoAction({
+            type: PersonalInfoActions.ADD_CAMPER,
+            campSessions,
+          });
         }}
       >
         <SmallAddIcon boxSize={6} />

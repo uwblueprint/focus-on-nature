@@ -49,13 +49,6 @@ const CamperCard = ({
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
-      console.log(
-        checkFirstName(camper.firstName),
-        checkLastName(camper.lastName),
-        checkAge(camper.age),
-        camper.firstName,
-        !!camper.firstName,
-      );
       if (!checkFirstName(camper.firstName)) setIsFirstNameInvalid(true);
       if (!checkLastName(camper.lastName)) setIsLastNameInvalid(true);
       if (!checkAge(camper.age)) setIsAgeInvalid(true);

@@ -17,10 +17,9 @@ import {
 } from "../../../types/waiverTypes";
 import waiverReducer from "./Waiver/WaiverReducer";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { CampResponse } from "../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
-import { CampSession } from "../../../types/CampsTypes";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
@@ -67,7 +66,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const campSessions: CampSession[] = [
     {
       id: "123456",
-      camp: "Guelph Summer Camp 2022",
+      camp: camp ? camp.name : "",
       capacity: 3,
       campers: [],
       waitlist: [],
@@ -75,7 +74,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     },
     {
       id: "654321",
-      camp: "Guelph Summer Camp 2022",
+      camp: camp ? camp.name : "",
       capacity: 2,
       campers: [],
       waitlist: [],
@@ -148,7 +147,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             campers={campers}
             setCampers={setCampers}
             campSessions={campSessions}
-            campName="Guelph Summer Camp 2022"
+            campName={camp ? camp.name : ""}
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:

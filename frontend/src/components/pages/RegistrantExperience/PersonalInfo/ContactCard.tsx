@@ -51,12 +51,19 @@ const ContactCard = ({
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
-      console.log(
-        "contact",
-        checkFirstName(contact.firstName),
-        checkLastName(contact.lastName),
-        checkEmail(contact.email),
-      );
+      // Check if we're on secondary contact. If so, then we display error messages only if user has started filling secondary contact.
+      if (
+        contactIndex === 1 &&
+        !(
+          contact.firstName ||
+          contact.lastName ||
+          contact.email ||
+          contact.phoneNumber ||
+          contact.relationshipToCamper
+        )
+      )
+        return;
+
       if (!checkFirstName(contact.firstName)) setIsFirstNameInvalid(true);
       if (!checkLastName(contact.lastName)) setIsLastNameInvalid(true);
       if (!checkEmail(contact.email)) setIsEmailInvalid(true);
@@ -75,7 +82,7 @@ const ContactCard = ({
         nextBtnRefValue.removeEventListener("click", updateFormErrorMsgs);
       }
     };
-  }, [contact, nextBtnRef]);
+  }, [contact, nextBtnRef, contactIndex]);
 
   return (
     <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%">
