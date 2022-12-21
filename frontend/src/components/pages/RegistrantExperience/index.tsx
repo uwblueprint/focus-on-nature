@@ -105,6 +105,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           <Waiver
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
+            campName={camp?.name || ""}
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
@@ -112,6 +113,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           <ReviewRegistration
             isChecked={sampleRegisterField}
             toggleChecked={() => setSampleRegisterField(!sampleRegisterField)}
+            campName={camp?.name || ""}
           />
         );
       default:
@@ -131,7 +133,13 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   return (
-    <Flex w="100vw" pt="144px" pb="168px">
+    <Flex
+      direction="column"
+      w="100vw"
+      pt={{ sm: "120px", md: "120px", lg: "144px" }}
+      pb={{ sm: "170px", md: "108px", lg: "144px" }}
+      justifyContent="flex-start"
+    >
       <RegistrationNavStepper
         currentStep={currentStep}
         isPersonalInfoFilled={isPersonalInfoFilled}
