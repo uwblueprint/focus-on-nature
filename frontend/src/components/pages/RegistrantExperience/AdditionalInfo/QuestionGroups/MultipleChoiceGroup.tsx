@@ -7,7 +7,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
@@ -29,8 +29,6 @@ const MultipleChoiceGroup = ({
     setChoice(e);
     updateFormResponse(question.question, e);
   };
-
-  console.log(`mc: ${choice === ""}`);
 
   return (
     <FormControl isRequired={question.required} isInvalid={invalid}>

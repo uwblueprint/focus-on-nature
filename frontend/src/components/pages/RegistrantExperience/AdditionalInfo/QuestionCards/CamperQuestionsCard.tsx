@@ -15,7 +15,6 @@ type CamperQuestionsCardProps = {
     formResponses: Map<string, string>,
   ) => void;
   index: number;
-  nextBtnRef: React.RefObject<HTMLButtonElement>;
   submitClicked: boolean;
 };
 
@@ -24,7 +23,6 @@ const CamperQuestionsCard = ({
   formQuestions,
   updateCamperFormResponse,
   index,
-  nextBtnRef,
   submitClicked,
 }: CamperQuestionsCardProps): React.ReactElement => {
   const [formResponses, setFormResponses] = useState<Map<string, string>>(
@@ -40,18 +38,7 @@ const CamperQuestionsCard = ({
     setFormResponses((prev) => {
       return { ...prev, [key]: value };
     });
-
-    // this isn't updated in time
-    console.log(`form response: ${JSON.stringify(formResponses)}`);
-
-    // updateCamperFormResponse(index, formResponses);
   };
-
-  console.log(
-    `form responses for camper ${camper.firstName}: ${JSON.stringify(
-      formResponses,
-    )}`,
-  );
 
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>

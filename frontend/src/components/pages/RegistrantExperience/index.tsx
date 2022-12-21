@@ -158,7 +158,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return camp ? (
           <AdditionalInfo
-            isChecked={sampleAdditionalInfo}
             toggleChecked={setSampleAdditionalInfo}
             formQuestions={camp.formQuestions}
             campers={campers}

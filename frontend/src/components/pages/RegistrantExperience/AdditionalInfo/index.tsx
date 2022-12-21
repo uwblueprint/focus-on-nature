@@ -6,7 +6,6 @@ import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 
 type AdditionalInfoProps = {
-  isChecked: boolean;
   toggleChecked: (checked: boolean) => void;
   formQuestions: FormQuestion[];
   campers: RegistrantExperienceCamper[];
@@ -21,7 +20,6 @@ type AdditionalInfoProps = {
 };
 
 const AdditionalInfo = ({
-  isChecked,
   toggleChecked,
   formQuestions,
   campers,
@@ -51,14 +49,11 @@ const AdditionalInfo = ({
   });
 
   const allQuestionsAnswered = () => {
-    let error = false;
-
-    console.log(`req: ${requireEarlyDropOffLatePickup}`);
-
     if (requireEarlyDropOffLatePickup === null) {
       return false;
     }
 
+    let error = false;
     campers.forEach((camper) => {
       if (
         camper.formResponses &&
@@ -72,13 +67,11 @@ const AdditionalInfo = ({
 
   useEffect(() => {
     const handleFormSubmit = () => {
-      console.log("hihi");
       setSubmitClicked(true);
       toggleChecked(allQuestionsAnswered());
     };
 
     if (nextBtnRef && nextBtnRef.current) {
-      // Passing the same reference
       nextBtnRef.current.addEventListener("click", handleFormSubmit);
     }
 
@@ -104,7 +97,6 @@ const AdditionalInfo = ({
             formQuestions={formQuestions}
             updateCamperFormResponse={updateCamperFormResponse}
             index={index}
-            nextBtnRef={nextBtnRef}
             submitClicked={submitClicked}
           />
         ))}
