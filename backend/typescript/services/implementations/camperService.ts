@@ -18,6 +18,7 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
+import mongoose from "mongoose";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -26,104 +27,150 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 });
 
 class CamperService implements ICamperService {
-  /* eslint-disable class-methods-use-this */
+
   async createCampers(
     campers: CreateCampersDTO,
+    campSessions: string[], 
     waitlistedCamperId?: string,
-  ): Promise<Array<CamperDTO>> {
-    if (waitlistedCamperId && campers.length !== 1) {
-      throw new Error(
-        "either no camper, or too many campers provided with wId",
-      );
-    }
+  ) : Promise<CamperDTO[]> {
+    
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    let newCamperDTOs: Array<CamperDTO> = [];
-    let newCampers: Array<Camper> = [];
-    let existingCampSession: CampSession | null;
-    let newCamperIds: Array<string>;
+    let camp: Camp;
+    let registeredCampers: Camper[];
+    let sessionsToRegister: CampSession[];
+    let createCamperResponse : CamperDTO[] = [];
+
     try {
-      newCampers = await MgCamper.insertMany(campers);
-      if (campers.length > 0) {
-        try {
-          newCamperIds = newCampers.map((newCamper) => newCamper.id);
-          existingCampSession = await MgCampSession.findById(
-            campers[0].campSession,
-          );
-
-          if (!existingCampSession) {
-            throw new Error(
-              `Camp session ${campers[0].campSession} not found.`,
-            );
-          }
-
-          existingCampSession.campers = existingCampSession.campers
-            .map((id) => id.toString())
-            .concat(newCamperIds);
-          await existingCampSession.save();
-
-          const camp = await MgCamp.findById(existingCampSession.camp);
-          if (!camp) {
-            throw new Error(`Camp ${existingCampSession.camp} not found.`);
-          }
-
-          await emailService.sendParentConfirmationEmail(
-            camp,
-            newCampers,
-            existingCampSession,
-          );
-
-          const specialNeedsCampers = newCampers.filter(
-            (camper) => camper.specialNeeds,
-          );
-
-          /* eslint-disable no-await-in-loop */
-          for (let i = 0; i < specialNeedsCampers.length; i += 1) {
-            await emailService.sendAdminSpecialNeedsNoticeEmail(
-              camp,
-              specialNeedsCampers[i],
-              existingCampSession,
-            );
-          }
-
-          if (
-            existingCampSession.campers.length >= existingCampSession.capacity
-          ) {
-            await emailService.sendAdminFullCampNoticeEmail(
-              camp,
-              existingCampSession,
-            );
-          }
-        } catch (mongoDbError: unknown) {
-          // rollback camper creation
-          /* eslint-disable no-await-in-loop */
-          for (let i = 0; i < newCampers.length; i += 1) {
-            try {
-              const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-                newCampers[i].id,
-              );
-              if (!deletedCamper) {
-                throw new Error(`Camper ${newCampers[i].id} not found.`);
-              }
-            } catch (rollbackDbError) {
-              const errorMessage = [
-                "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
-                getErrorMessage(rollbackDbError),
-                "MongoDB camper id that could not be deleted =",
-                newCampers[i].id,
-              ];
-              Logger.error(errorMessage.join(" "));
-            }
-          }
-          throw mongoDbError;
-        }
-      }
-    } catch (error: unknown) {
-      Logger.error(
-        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+      // Perform session checks: 
+      sessionsToRegister = await MgCampSession.find(
+        { _id: { $in: campSessions } },
+        {},
+        {session}
       );
-      throw error;
+      // Ensure all session ids passed in are found in the db
+      if(sessionsToRegister.length !== campSessions.length){
+        throw new Error("Not all session ids passed in were found");
+      }
+      // Ensure we have enough space to register all campers in all the sessions
+      if(!sessionsToRegister.every(session => session.capacity >= session.campers.length + campers.length)){
+        throw new Error("Not enough space in all the selected sessions to register the given campers");
+      }
+      
+      const findCamp = await MgCamp.findById(sessionsToRegister[0].camp, {}, {session});
+      if(!findCamp){
+        throw new Error("Could not find the camp associated with this session id");
+      } 
+      camp = findCamp;
+      // Ensure all sessions passed in belong to the same camp
+      if(!sessionsToRegister.every(session => session.camp.toString() === camp.id)){
+        throw new Error("All sessions must belong to the same camp");
+      }
+
+      // Create a camper entity for each session
+      const campersToRegister : Map<string, Array<Omit<CamperDTO, "id">>> = new Map();
+      sessionsToRegister.forEach(cs => {
+        campers.forEach(camper => {
+          const camperToRegister : Omit<CamperDTO, "id">  = {
+            campSession: cs.id,
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            allergies: camper.allergies,
+            earlyDropoff: camper.earlyDropoff,
+            latePickup: camper.latePickup,
+            specialNeeds: camper.specialNeeds,
+            contacts: camper.contacts,
+            registrationDate: camper.registrationDate,
+            hasPaid: camper.hasPaid,
+            formResponses: camper.formResponses,
+            chargeId: camper.chargeId,
+            charges: camper.charges,
+            optionalClauses: camper.optionalClauses,
+          };
+
+          if(campersToRegister.has(cs.id)){
+            campersToRegister.get(cs.id)?.push(camperToRegister);
+          } else {
+            campersToRegister.set(cs.id, [camperToRegister]);
+          }
+        });
+      });
+    
+      // Insert the campers
+      const allCampers = Array.from(campersToRegister.values()).flat()
+      registeredCampers = await MgCamper.insertMany(
+        allCampers,
+        {session}
+      );
+     
+      // Add the campers to each session's campers field
+      await Promise.all(sessionsToRegister.map(cs => {
+        cs.campers.push(...registeredCampers.filter(camper => camper.campSession.toString() === cs.id));
+        return cs.save({session});
+      }))
+      
+      /**
+       * FINISHED CREATING REGISTERED CAMPERS. 
+       * UPDATE WAITLISTED CAMPER STATUS IF SHIFTING A WAITLIST CAMPER TO REGISTERED CAMPER
+       */
+      if (waitlistedCamperId) {
+        // If there is a waitlisted camper, we can only register that camper
+        if (campers.length !== 1) {
+          throw new Error(
+            "either no camper, or too many campers provided with wId",
+          );
+        }
+        // Ensure we only have 1 session
+        if(campSessions.length !== 1){
+          throw new Error("Can only register waitlisted camper for 1 camp session at a time. Please only pass in 1 session");
+        }
+
+        // Update the status of the waitlisted camper
+        await MgWaitlistedCamper.findByIdAndUpdate(
+          waitlistedCamperId,
+          {
+            status: "Registered",
+          },
+          { 
+            runValidators: true,
+            session
+          },
+        );
+      }
+
+    // Find all the campers who need special assistance
+    const specialNeedsCampers = registeredCampers.filter(
+      (camper) => camper.specialNeeds,
+    );
+    // Send emails in parallel to the admin about the special needs campers 
+    await Promise.all(specialNeedsCampers.map(camper => {
+      return emailService.sendAdminSpecialNeedsNoticeEmail(
+        camp,
+        camper,
+        sessionsToRegister,
+      );
+    }));
+
+    // Email the parent about all the campers and sessions they have signed up for
+    await emailService.sendParentConfirmationEmail(
+      camp,
+      registeredCampers,
+      sessionsToRegister,
+    );
+    
+    // Send admin an email for all the sessions that are now full
+    const fullSessions = sessionsToRegister.filter(session => session.capacity === session.campers.length + campers.length);
+    if(fullSessions.length){
+      await emailService.sendAdminFullCampNoticeEmail(
+        camp,
+        fullSessions,
+      );
     }
-    newCamperDTOs = newCampers.map((newCamper) => {
+
+    // Create the DTO return objects
+    createCamperResponse = registeredCampers.map(newCamper => {
       return {
         id: newCamper.id,
         campSession: newCamper.campSession.toString(),
@@ -144,27 +191,21 @@ class CamperService implements ICamperService {
       };
     });
 
-    if (waitlistedCamperId) {
-      try {
-        await MgWaitlistedCamper.findByIdAndUpdate(
-          waitlistedCamperId,
-          {
-            status: "Registered",
-          },
-          { runValidators: true },
-        );
-      } catch (error) {
-        Logger.error(
-          `Registered campers but was unable to update waitlisted camper status with id: ${waitlistedCamperId}. Error: ${getErrorMessage(
-            error,
-          )}`,
-        );
-        throw error;
-      }
+    // Commit the transaction if everything was successful
+    await session.commitTransaction();
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+      );
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      await session.endSession();
     }
 
-    return newCamperDTOs;
+    return createCamperResponse;
   }
+
 
   async getAllCampers(): Promise<Array<CamperDTO>> {
     let camperDtos: Array<CamperDTO> = [];

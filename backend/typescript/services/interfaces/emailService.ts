@@ -11,7 +11,7 @@ interface IEmailService {
   sendParentConfirmationEmail(
     camp: Camp,
     campers: Camper[],
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void>;
 
   /**
@@ -58,7 +58,7 @@ interface IEmailService {
   sendAdminSpecialNeedsNoticeEmail(
     camp: Camp,
     camper: Camper,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void>;
 
   /**
@@ -67,7 +67,7 @@ interface IEmailService {
    */
   sendAdminFullCampNoticeEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void>;
 
   /**
