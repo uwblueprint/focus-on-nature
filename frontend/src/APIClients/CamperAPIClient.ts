@@ -114,16 +114,12 @@ const getCampersByChargeIdAndSessionId = async (
 const registerCampers = async (
   campers: CreateCamperRequest[],
 ): Promise<CheckoutUrl> => {
-  try {
-    const { data } = await baseAPIClient.post(`/campers/register`, campers, {
-      withCredentials: false,
-      headers: { Autorization: getBearerToken() },
-    });
+  const { data } = await baseAPIClient.post(`/campers/register`, campers, {
+    withCredentials: false,
+    headers: { Autorization: getBearerToken() },
+  });
 
-    return data;
-  } catch (error) {
-    return error as CheckoutUrl;
-  }
+  return data;
 };
 
 export default {

@@ -23,100 +23,22 @@ import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
 import { CreateCamperRequest } from "../../../types/CamperTypes";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "./RegistrationResult/RegistrationErrorModal";
+import {
+  CAMP_ID_SESSION_STORAGE_KEY,
+  dummyCampers,
+} from "../../../constants/RegistrationConstants";
+import {
+  getCheckoutSessionStorageKey,
+  getFailedSessionStorageKey,
+  mapToCampItems,
+} from "../../../utils/RegistrationUtils";
+import { CheckoutData } from "../../../types/RegistrationTypes";
+import { Waiver as WaiverType } from "../../../types/AdminTypes";
 
-export const CAMP_ID_SESSION_STORAGE_KEY = "checkoutSessionCampId";
-
-const dummyCampers: CreateCamperRequest[] = [
-  {
-    campSession: "63139cdec3d7b55b44a01541",
-    firstName: "test",
-    lastName: "test",
-    age: 12,
-    allergies: "",
-    earlyDropoff: [new Date("2022-04-06T00:00:00.000+00:00")],
-    latePickup: [new Date("2022-04-06T00:00:00.000+00:00")],
-    specialNeeds: "",
-    contacts: [
-      {
-        firstName: "Mommy",
-        lastName: "?",
-        email: "mommyyy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "mommy",
-      },
-      {
-        firstName: "Daddy",
-        lastName: "?",
-        email: "daddy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "daddy",
-      },
-    ],
-    registrationDate: new Date("2022-04-06T00:00:00.000+00:00"),
-    hasPaid: false,
-    // formResponses: "622cfedaaf70bf090031d064","five",
-    chargeId: "hi",
-    charges: {
-      camp: 20,
-      earlyDropoff: 0,
-      latePickup: 0,
-    },
-    optionalClauses: [
-      {
-        clause: "",
-        agreed: true,
-      },
-    ],
-  },
-  {
-    campSession: "63139cdec3d7b55b44a01541",
-    firstName: "test2",
-    lastName: "test2",
-    age: 12,
-    allergies: "",
-    // earlyDropoff: [new Date("2022-04-06T00:00:00.000+00:00")],
-    earlyDropoff: [],
-    latePickup: [new Date("2022-04-06T00:00:00.000+00:00")],
-    // latePickup: [],
-    specialNeeds: "",
-    contacts: [
-      {
-        firstName: "Mommy",
-        lastName: "?",
-        email: "mommyyy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "mommy",
-      },
-      {
-        firstName: "Daddy",
-        lastName: "?",
-        email: "daddy@gmail.com",
-        phoneNumber: "1234",
-        relationshipToCamper: "daddy",
-      },
-    ],
-    registrationDate: new Date("2022-04-06T00:00:00.000+00:00"),
-    hasPaid: false,
-    // formResponses: "622cfedaaf70bf090031d064","five",
-    chargeId: "hi",
-    charges: {
-      camp: 20,
-      earlyDropoff: 0,
-      latePickup: 0,
-    },
-    optionalClauses: [
-      {
-        clause: "",
-        agreed: true,
-      },
-    ],
-  },
-];
-
-export const getCheckoutSessionStorageKey = (campId: string): string =>
-  `checkout-${campId}`;
-export const getFailedSessionStorageKey = (campId: string): string =>
-  `failedCheckout-${campId}`;
+type ErrorModalMessage = {
+  title: string;
+  body: string;
+};
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
@@ -137,7 +59,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
-    // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
     campName: camp?.name,
     waiver: undefined,
     optionalClauses: [],
@@ -200,43 +121,69 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = sampleRegisterField;
+  const isReviewRegistrationFilled = true;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
   const [registeringCampers, setRegisteringCampers] = useState<
     CreateCamperRequest[]
   >(dummyCampers);
 
-  const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
-    switch (step) {
-      case RegistrantExperienceSteps.PersonalInfoPage:
-        return isPersonalInfoFilled;
-      case RegistrantExperienceSteps.AdditionalInfoPage:
-        return isAdditionalInfoFilled;
-      case RegistrantExperienceSteps.WaiverPage:
-        return isWaiverFilled;
-      case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return isReviewRegistrationFilled;
-      default:
-        return false;
-    }
+  const [errorModalMessage, setErrorModalMessage] = useState<ErrorModalMessage>(
+    {
+      title: "",
+      body: "",
+    },
+  );
+
+  const saveSessionToSessionStorage = (
+    sessionCampId: string, // better named `campId`, but linter doesn't like
+    checkoutData: CheckoutData,
+  ) => {
+    sessionStorage.setItem(CAMP_ID_SESSION_STORAGE_KEY, sessionCampId);
+    sessionStorage.setItem(
+      getCheckoutSessionStorageKey(sessionCampId),
+      JSON.stringify(checkoutData),
+    );
   };
 
-  const registerCampers = async (campers: CreateCamperRequest[]) => {
-    const { checkoutSessionUrl } = await CamperAPIClient.registerCampers(
-      campers,
-    );
+  const goToCheckout = (
+    checkoutSessionUrl: string,
+    currentCamp: CampResponse,
+  ) => {
+    saveSessionToSessionStorage(campId, {
+      campers: registeringCampers,
+      camp,
+      items: mapToCampItems(registeringCampers, currentCamp),
+      waiver: waiverInterface.waiver as WaiverType,
+      checkoutUrl: checkoutSessionUrl,
+    });
 
-    if (checkoutSessionUrl) {
-      setCheckoutUrl(checkoutSessionUrl);
-    } else {
+    // `assign()` pushes external link to history
+    window.location.assign(checkoutSessionUrl);
+  };
+
+  const registerCampers = async (
+    campers: CreateCamperRequest[],
+    currentCamp: CampResponse,
+  ) => {
+    try {
+      const { checkoutSessionUrl } = await CamperAPIClient.registerCampers(
+        campers,
+      );
+
+      goToCheckout(checkoutSessionUrl, currentCamp);
+    } catch (error: unknown) {
+      setErrorModalMessage({
+        title: "Checkout failed",
+        body: "Unable to create a checkout session. Please try again.",
+      });
       errorModalOnOpen();
     }
   };
 
   const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
-  ) => {
+  ): React.ReactElement => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
         return camp ? (
@@ -266,15 +213,29 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return (
-          <ReviewRegistration
-            isChecked={sampleRegisterField}
-            toggleChecked={() => setSampleRegisterField(!sampleRegisterField)}
-            campName={camp?.name || ""}
-          />
-        );
+        if (camp) {
+          return (
+            <ReviewRegistration campers={registeringCampers} camp={camp} />
+          );
+        }
+        return <></>;
       default:
         throw new Error("unexpected page");
+    }
+  };
+
+  const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
+    switch (step) {
+      case RegistrantExperienceSteps.PersonalInfoPage:
+        return isPersonalInfoFilled;
+      case RegistrantExperienceSteps.AdditionalInfoPage:
+        return isAdditionalInfoFilled;
+      case RegistrantExperienceSteps.WaiverPage:
+        return isWaiverFilled;
+      case RegistrantExperienceSteps.ReviewRegistrationPage:
+        return isReviewRegistrationFilled;
+      default:
+        return false;
     }
   };
 
@@ -284,51 +245,63 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       setCurrentStep(currentStep + stepsToMove);
     } else if (desiredStep < 0) {
       alert("PLACEHOLDER - go to initial registration");
+    } else if (camp) {
+      registerCampers(registeringCampers, camp);
     } else {
-      registerCampers(registeringCampers);
+      alert("Unexpected camp state. Please restart registration.");
     }
   };
 
   useEffect(() => {
-    // check if restore session key, if so restore session and reset key to inprogress
     const failedSession = sessionStorage.getItem(
       getFailedSessionStorageKey(campId),
     );
 
     if (failedSession) {
-      // restore state -- need the isFilled booleans to point to fields
-      // TODO need to navigate to page 4
-      setRegisteringCampers(JSON.parse(failedSession));
-    }
-    sessionStorage.clear();
+      const restoredSession = JSON.parse(failedSession) as CheckoutData;
+      sessionStorage.clear();
 
-    CampsAPIClient.getCampById(campId).then((campResponse) => {
-      if (campResponse.id) {
-        setCamp(campResponse);
-      }
+      setRegisteringCampers(restoredSession.campers);
+      setCamp(restoredSession.camp);
+      waiverDispatch({
+        type: WaiverActions.LOADED_WAIVER,
+        waiver: restoredSession.waiver,
+      });
+      setCheckoutUrl(restoredSession.checkoutUrl);
+
+      // TODO need the isFilled booleans to point to fields on campers
+      // to fill out status bar properly
+      setSamplePersonalInfo(true);
+      setSampleAdditionalInfo(true);
       setIsLoading(false);
-    });
+      setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
 
-    AdminAPIClient.getWaiver().then((waiver) => {
-      if (waiver.clauses) {
-        waiverDispatch({
-          type: WaiverActions.LOADED_WAIVER,
-          waiver,
-        });
-      }
+      setErrorModalMessage({
+        title: "Payment cancelled",
+        body:
+          "No payment was processed. If this was not intentional, please try again.",
+      });
+      errorModalOnOpen();
+    } else {
+      CampsAPIClient.getCampById(campId).then((campResponse) => {
+        if (campResponse.id) {
+          setCamp(campResponse);
+        }
+        setIsLoading(false);
+      });
 
-      // TODO error handling
-    });
-  }, [campId]);
+      AdminAPIClient.getWaiver().then((waiver) => {
+        if (waiver.clauses) {
+          waiverDispatch({
+            type: WaiverActions.LOADED_WAIVER,
+            waiver,
+          });
+        }
 
-  if (checkoutUrl) {
-    const camperCache = JSON.stringify(registeringCampers);
-    sessionStorage.setItem(CAMP_ID_SESSION_STORAGE_KEY, campId);
-    sessionStorage.setItem(getCheckoutSessionStorageKey(campId), camperCache);
-
-    // `assign()` pushes external link to history
-    window.location.assign(checkoutUrl);
-  }
+        // TODO error handling
+      });
+    }
+  }, [campId, errorModalOnOpen]);
 
   return (
     <Flex
@@ -363,11 +336,15 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         handleStepNavigation={handleStepNavigation}
       />
       <RegistrationErrorModal
-        title="Payment Failed"
-        message="Your payment has not gone through. Please try again!"
+        title={errorModalMessage.title}
+        message={errorModalMessage.body}
+        onConfirm={() => {
+          if (checkoutUrl && camp) {
+            goToCheckout(checkoutUrl, camp);
+          }
+        }}
         isOpen={errorModalIsOpen}
         onClose={errorModalOnClose}
-        onConfirm={() => alert("implement")}
       />
     </Flex>
   );
