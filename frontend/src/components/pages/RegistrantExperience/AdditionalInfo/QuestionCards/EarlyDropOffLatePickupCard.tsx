@@ -17,13 +17,11 @@ type EarlyDropOffLatePickupCardProps = {
     requireEarlyDropOffLatePickup: boolean,
   ) => void;
   submitClicked: boolean;
-  setFormHasError: (formHasError: boolean) => void;
 };
 
 const EarlyDropOffLatePickupCard = ({
   setRequireEarlyDropOffLatePickup,
   submitClicked,
-  setFormHasError,
 }: EarlyDropOffLatePickupCardProps): React.ReactElement => {
   const [multipleChoice, setMultipleChoice] = useState("");
 
@@ -32,7 +30,6 @@ const EarlyDropOffLatePickupCard = ({
   const handleMultipleChoiceUpdate = (choice: string) => {
     setMultipleChoice(choice);
     setRequireEarlyDropOffLatePickup(choice === "yes");
-    setFormHasError(invalid);
   };
 
   return (

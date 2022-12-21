@@ -41,7 +41,6 @@ const AdditionalInfo = ({
     setCampers(newCampers);
   };
 
-  const [formHasError, setFormHasError] = useState(true);
   const [submitClicked, setSubmitClicked] = useState(false);
 
   let numRequiredQuestions = 0;
@@ -107,7 +106,6 @@ const AdditionalInfo = ({
             index={index}
             nextBtnRef={nextBtnRef}
             submitClicked={submitClicked}
-            setFormHasError={setFormHasError}
           />
         ))}
         {hasEarlyDropOffLatePickup && (
@@ -121,7 +119,6 @@ const AdditionalInfo = ({
                 setRequireEarlyDropOffLatePickup
               }
               submitClicked={submitClicked}
-              setFormHasError={setFormHasError}
             />
           </Box>
         )}

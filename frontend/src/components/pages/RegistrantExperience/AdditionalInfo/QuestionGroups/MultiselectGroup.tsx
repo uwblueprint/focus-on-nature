@@ -14,14 +14,12 @@ type MultiselectGroupProps = {
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
-  setFormHasError: (formHasError: boolean) => void;
 };
 
 const MultiselectGroup = ({
   question,
   updateFormResponse,
   submitClicked,
-  setFormHasError,
 }: MultiselectGroupProps): React.ReactElement => {
   const [selections, setSelections] = useState<Set<string>>(new Set());
 
@@ -35,8 +33,6 @@ const MultiselectGroup = ({
       newSelections.delete(e.target.value);
     }
     setSelections(newSelections);
-
-    setFormHasError(invalid);
 
     const selectionsResponse = Array.from(newSelections).join(", ");
     updateFormResponse(question.question, selectionsResponse);
@@ -52,7 +48,7 @@ const MultiselectGroup = ({
           {question.description}
         </Text>
         {invalid && (
-          <FormErrorMessage>Please select at least one.</FormErrorMessage>
+          <FormErrorMessage>Please fill out this question.</FormErrorMessage>
         )}
       </FormControl>
       <CheckboxGroup colorScheme="green">

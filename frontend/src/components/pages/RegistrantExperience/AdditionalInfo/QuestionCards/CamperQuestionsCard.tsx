@@ -17,7 +17,6 @@ type CamperQuestionsCardProps = {
   index: number;
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   submitClicked: boolean;
-  setFormHasError: (formHasError: boolean) => void;
 };
 
 const CamperQuestionsCard = ({
@@ -27,7 +26,6 @@ const CamperQuestionsCard = ({
   index,
   nextBtnRef,
   submitClicked,
-  setFormHasError,
 }: CamperQuestionsCardProps): React.ReactElement => {
   const [formResponses, setFormResponses] = useState<Map<string, string>>(
     new Map<string, string>(),
@@ -71,7 +69,6 @@ const CamperQuestionsCard = ({
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}
-                  setFormHasError={setFormHasError}
                 />
               )}
               {question.type === "Multiselect" && (
@@ -79,7 +76,6 @@ const CamperQuestionsCard = ({
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}
-                  setFormHasError={setFormHasError}
                 />
               )}
               {question.type === "MultipleChoice" && (
@@ -87,7 +83,6 @@ const CamperQuestionsCard = ({
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}
-                  setFormHasError={setFormHasError}
                 />
               )}
             </WrapItem>

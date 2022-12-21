@@ -14,14 +14,12 @@ type MultipleChoiceGroupProps = {
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
-  setFormHasError: (formHasError: boolean) => void;
 };
 
 const MultipleChoiceGroup = ({
   question,
   updateFormResponse,
   submitClicked,
-  setFormHasError,
 }: MultipleChoiceGroupProps): React.ReactElement => {
   const [choice, setChoice] = useState("");
 
@@ -29,9 +27,6 @@ const MultipleChoiceGroup = ({
 
   const handleMultipleChoiceUpdate = (e: string) => {
     setChoice(e);
-
-    setFormHasError(invalid);
-
     updateFormResponse(question.question, e);
   };
 

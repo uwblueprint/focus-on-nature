@@ -12,14 +12,12 @@ type TextInputGroupProps = {
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
-  setFormHasError: (formHasError: boolean) => void;
 };
 
 const TextInputGroup = ({
   question,
   updateFormResponse,
   submitClicked,
-  setFormHasError,
 }: TextInputGroupProps): React.ReactElement => {
   const [inputText, setInputText] = useState("");
 
@@ -27,8 +25,6 @@ const TextInputGroup = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
-
-    setFormHasError(invalid);
 
     updateFormResponse(question.question, e.target.value);
   };
