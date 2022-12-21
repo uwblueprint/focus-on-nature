@@ -2,6 +2,7 @@ import {
   Checkbox,
   CheckboxGroup,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Text,
   VStack,
@@ -12,13 +13,19 @@ import { FormQuestion } from "../../../../../types/CampsTypes";
 type MultiselectGroupProps = {
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
+  submitClicked: boolean;
+  setFormHasError: (formHasError: boolean) => void;
 };
 
 const MultiselectGroup = ({
   question,
   updateFormResponse,
+  submitClicked,
+  setFormHasError,
 }: MultiselectGroupProps): React.ReactElement => {
   const [selections, setSelections] = useState<Set<string>>(new Set());
+
+  const invalid = submitClicked && selections.size <= 0 && question.required;
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
@@ -28,18 +35,26 @@ const MultiselectGroup = ({
       newSelections.delete(e.target.value);
     }
     setSelections(newSelections);
+
+    setFormHasError(invalid);
+
     const selectionsResponse = Array.from(newSelections).join(", ");
     updateFormResponse(question.question, selectionsResponse);
   };
 
   return (
-    <FormControl isRequired={question.required}>
-      <FormLabel fontWeight="bold" fontSize="18px">
-        {question.question}
-      </FormLabel>
-      <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
-        {question.description}
-      </Text>
+    <VStack alignItems="flex-start">
+      <FormControl isRequired={question.required} isInvalid={invalid}>
+        <FormLabel fontWeight="bold" fontSize="18px">
+          {question.question}
+        </FormLabel>
+        <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
+          {question.description}
+        </Text>
+        {invalid && (
+          <FormErrorMessage>Please select at least one.</FormErrorMessage>
+        )}
+      </FormControl>
       <CheckboxGroup colorScheme="green">
         <VStack alignItems="flex-start">
           {question.options?.map((option, i) => (
@@ -54,7 +69,7 @@ const MultiselectGroup = ({
           ))}
         </VStack>
       </CheckboxGroup>
-    </FormControl>
+    </VStack>
   );
 };
 

@@ -1,5 +1,5 @@
 import { Box, Divider, Text, VStack } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
@@ -7,15 +7,17 @@ import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCa
 
 type AdditionalInfoProps = {
   isChecked: boolean;
-  toggleChecked: () => void;
+  toggleChecked: (checked: boolean) => void;
   formQuestions: FormQuestion[];
   campers: RegistrantExperienceCamper[];
   setCampers: (campers: RegistrantExperienceCamper[]) => void;
   campName: string;
   hasEarlyDropOffLatePickup: boolean;
+  requireEarlyDropOffLatePickup: boolean | null;
   setRequireEarlyDropOffLatePickup: (
     requireEarlyDropOffLatePickup: boolean,
   ) => void;
+  nextBtnRef: React.RefObject<HTMLButtonElement>;
 };
 
 const AdditionalInfo = ({
@@ -26,7 +28,9 @@ const AdditionalInfo = ({
   setCampers,
   campName,
   hasEarlyDropOffLatePickup,
+  requireEarlyDropOffLatePickup,
   setRequireEarlyDropOffLatePickup,
+  nextBtnRef,
 }: AdditionalInfoProps): React.ReactElement => {
   const updateCamperFormResponse = (
     index: number,
@@ -36,6 +40,56 @@ const AdditionalInfo = ({
     newCampers[index].formResponses = formResponses;
     setCampers(newCampers);
   };
+
+  const [formHasError, setFormHasError] = useState(true);
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  let numRequiredQuestions = 0;
+  formQuestions.forEach((question) => {
+    if (question.required) {
+      numRequiredQuestions += 1;
+    }
+  });
+
+  const allQuestionsAnswered = () => {
+    let error = false;
+
+    console.log(`req: ${requireEarlyDropOffLatePickup}`);
+
+    if (requireEarlyDropOffLatePickup === null) {
+      return false;
+    }
+
+    campers.forEach((camper) => {
+      if (
+        camper.formResponses &&
+        Object.keys(camper.formResponses).length === numRequiredQuestions
+      ) {
+        error = true;
+      }
+    });
+    return error;
+  };
+
+  useEffect(() => {
+    const handleFormSubmit = () => {
+      console.log("hihi");
+      setSubmitClicked(true);
+      toggleChecked(allQuestionsAnswered());
+    };
+
+    if (nextBtnRef && nextBtnRef.current) {
+      // Passing the same reference
+      nextBtnRef.current.addEventListener("click", handleFormSubmit);
+    }
+
+    return () => {
+      // Passing the same reference
+      if (nextBtnRef && nextBtnRef.current) {
+        nextBtnRef.current.removeEventListener("click", handleFormSubmit);
+      }
+    };
+  }, [campers, requireEarlyDropOffLatePickup]);
 
   return (
     <Box pb={14}>
@@ -51,6 +105,9 @@ const AdditionalInfo = ({
             formQuestions={formQuestions}
             updateCamperFormResponse={updateCamperFormResponse}
             index={index}
+            nextBtnRef={nextBtnRef}
+            submitClicked={submitClicked}
+            setFormHasError={setFormHasError}
           />
         ))}
         {hasEarlyDropOffLatePickup && (
@@ -63,6 +120,8 @@ const AdditionalInfo = ({
               setRequireEarlyDropOffLatePickup={
                 setRequireEarlyDropOffLatePickup
               }
+              submitClicked={submitClicked}
+              setFormHasError={setFormHasError}
             />
           </Box>
         )}

@@ -124,7 +124,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [
     requireEarlyDropOffLatePickup,
     setRequireEarlyDropOffLatePickup,
-  ] = useState(false);
+  ] = useState<boolean | null>(null);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -159,7 +159,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         return camp ? (
           <AdditionalInfo
             isChecked={sampleAdditionalInfo}
-            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            toggleChecked={setSampleAdditionalInfo}
             formQuestions={camp.formQuestions}
             campers={campers}
             setCampers={setCampers}
@@ -167,7 +167,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             hasEarlyDropOffLatePickup={
               camp.earlyDropoff !== undefined && camp.latePickup !== undefined
             }
+            requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
             setRequireEarlyDropOffLatePickup={setRequireEarlyDropOffLatePickup}
+            nextBtnRef={nextBtnRef}
           />
         ) : null;
 
