@@ -113,7 +113,7 @@ class CampService implements ICampService {
                 (camper) => {
                   return {
                     id: camper.id,
-                    campSession: campSession.id,
+                    campSession: camper.campSessions,
                     firstName: camper.firstName,
                     lastName: camper.lastName,
                     age: camper.age,

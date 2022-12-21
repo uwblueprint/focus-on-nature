@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface Camper extends Document {
   id: string;
-  campSession: Schema.Types.ObjectId;
+  campSessions: Schema.Types.ObjectId[];
   firstName: string;
   lastName: string;
   age: number;
@@ -35,10 +35,15 @@ export interface Camper extends Document {
 }
 
 const CamperSchema: Schema = new Schema({
-  campSession: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "CampSession",
+  campSessions: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "CampSession",
+      },
+    ],
+    default: [],
   },
   firstName: {
     type: String,

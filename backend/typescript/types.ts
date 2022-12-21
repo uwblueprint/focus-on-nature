@@ -39,7 +39,7 @@ export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
 export type CamperDTO = {
   id: string;
-  campSession: string;
+  campSessions: string[];
   firstName: string;
   lastName: string;
   age: number;
@@ -222,7 +222,11 @@ export type UpdateCamperDTO = Omit<
   | "latePickup"
   | "contacts"
   | "optionalClauses"
->;
+  | "campSessions"
+> & {
+  newCampSession?: string;
+  oldCampSession?: string;
+};
 
 export type AuthDTO = Token & UserDTO;
 

@@ -4,6 +4,7 @@ import {
   validatePrimitive,
   validateDate,
   validateMap,
+  validateArray,
 } from "./util";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -20,17 +21,17 @@ export const createCampersDtoValidator = async (
         "No campers sent - there must be at least one camper in the request array.",
       );
   }
-  const { campSession, chargeId } = req.body[0];
+  const { campSessions: registeringCampSessions, chargeId } = req.body[0];
 
   for (let i = 0; i < req.body.length; i += 1) {
     const camper = req.body[i];
-    if (!validatePrimitive(camper.campSession, "string")) {
+    if (!validateArray(camper.campSessions, "string")) {
       return res
         .status(400)
-        .send(getApiValidationError("campSession", "string"));
+        .send(getApiValidationError("campSessions", "string", true));
     }
-    if (camper.campSession !== campSession) {
-      return res.status(400).send("Campers must have the same camp.");
+    if (camper.campSessions !== registeringCampSessions) {
+      return res.status(400).send("All campers must be registering for the same camp sessions.");
     }
     if (!validatePrimitive(camper.firstName, "string")) {
       return res.status(400).send(getApiValidationError("firstName", "string"));
@@ -80,10 +81,10 @@ export const createCampersDtoValidator = async (
         .status(400)
         .send(getApiValidationError("specialNeeds", "string"));
     }
-    if (!Array.isArray(camper.contacts) || camper.contacts.length !== 2) {
+    if (!Array.isArray(camper.contacts) || camper.contacts.length < 1) {
       return res
         .status(400)
-        .send("There must be 2 emergency contacts specified.");
+        .send("There must be at least 1 emergency contact specified.");
     }
     for (let j = 0; j < camper.contacts.length; j += 1) {
       const contact = camper.contacts[j];

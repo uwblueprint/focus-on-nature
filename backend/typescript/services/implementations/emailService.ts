@@ -37,10 +37,14 @@ class EmailService implements IEmailService {
   async sendParentConfirmationEmail(
     camp: Camp,
     campers: Camper[],
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
     const link = "DUMMY LINK"; // TODO: Update link
+    const sessionDatesListItems : string[] = campSessions.map(campSession => {
+      return `<li>${sessionDatesToString(campSession.dates)}</li>`
+    })
+
     let totalPayment = 0;
     let campFees = 0;
     let dropoffAndPickupFees = 0;
@@ -67,9 +71,10 @@ class EmailService implements IEmailService {
       <ul>
         <li><b>Camp name:</b> ${camp.name} </li>
         <li><b>Camp location:</b> ${camp.location} </li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )} </li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems}
+        </ol>
         <li><b>Your phone number:</b> ${contact.phoneNumber}</li>
         <li><b>Campers:</b></li>
         ${campers
@@ -212,9 +217,12 @@ class EmailService implements IEmailService {
   async sendAdminSpecialNeedsNoticeEmail(
     camp: Camp,
     camper: Camper,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
     const contact = camper.contacts[0];
+    const sessionDatesListItems : string[] = campSessions.map(campSession => {
+      return `<li>${sessionDatesToString(campSession.dates)}</li>`
+    });
     await this.sendEmail(
       ADMIN_EMAIL,
       "Special Needs Camper Registration Notice",
@@ -224,9 +232,10 @@ class EmailService implements IEmailService {
       <ul>
         <li><b>Name of camper:</b> ${camper.firstName} ${camper.lastName}</li>
         <li><b>Camp name:</b> ${camp.name} </li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )} </li>
+        <li><b>Session dates:</b></li> 
+        <ol>
+          ${sessionDatesListItems}
+        </ol>
         <li><b>Parent's name:</b> ${contact.firstName} ${contact.lastName}</li>
         <li><b>Parent's email:</b> ${contact.email}</li>
         <li><b>Parent's phone number:</b> ${contact.phoneNumber}</li>
@@ -238,13 +247,20 @@ class EmailService implements IEmailService {
 
   async sendAdminFullCampNoticeEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
+    const sessionDatesListItems : string[] = campSessions.map((campSession, index) => {
+      return `<li> Session ${index + 1}: ${sessionDatesToString(campSession.dates)}</li>`
+    });
     await this.sendEmail(
       ADMIN_EMAIL,
       "Camp Registration Notice - FULL CAPACITY",
       `This following email is to notify you that ${camp.name} is full for the 
-      following session dates: ${sessionDatesToString(campSession.dates)}.`,
+      following sessions. <br/>
+      <ol>
+        ${sessionDatesListItems}
+      </ol>
+      `,
     );
   }
 

@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import mongoose from "mongoose";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -26,107 +27,134 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
 });
 
 class CamperService implements ICamperService {
-  /* eslint-disable class-methods-use-this */
+
   async createCampers(
     campers: CreateCampersDTO,
     waitlistedCamperId?: string,
-  ): Promise<Array<CamperDTO>> {
-    if (waitlistedCamperId && campers.length !== 1) {
-      throw new Error(
-        "either no camper, or too many campers provided with wId",
-      );
-    }
+  ) : Promise<CamperDTO[]> {
 
-    let newCamperDTOs: Array<CamperDTO> = [];
-    let newCampers: Array<Camper> = [];
-    let existingCampSession: CampSession | null;
-    let newCamperIds: Array<string>;
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    let camp: Camp;
+    let newCampers: Camper[];
+    let sessionsToRegister: CampSession[];
+
     try {
-      newCampers = await MgCamper.insertMany(campers);
-      if (campers.length > 0) {
-        try {
-          newCamperIds = newCampers.map((newCamper) => newCamper.id);
-          existingCampSession = await MgCampSession.findById(
-            campers[0].campSession,
-          );
-
-          if (!existingCampSession) {
-            throw new Error(
-              `Camp session ${campers[0].campSession} not found.`,
-            );
-          }
-
-          existingCampSession.campers = existingCampSession.campers
-            .map((id) => id.toString())
-            .concat(newCamperIds);
-          await existingCampSession.save();
-
-          const camp = await MgCamp.findById(existingCampSession.camp);
-          if (!camp) {
-            throw new Error(`Camp ${existingCampSession.camp} not found.`);
-          }
-
-          await emailService.sendParentConfirmationEmail(
-            camp,
-            newCampers,
-            existingCampSession,
-          );
-
-          const specialNeedsCampers = newCampers.filter(
-            (camper) => camper.specialNeeds,
-          );
-
-          /* eslint-disable no-await-in-loop */
-          for (let i = 0; i < specialNeedsCampers.length; i += 1) {
-            await emailService.sendAdminSpecialNeedsNoticeEmail(
-              camp,
-              specialNeedsCampers[i],
-              existingCampSession,
-            );
-          }
-
-          if (
-            existingCampSession.campers.length >= existingCampSession.capacity
-          ) {
-            await emailService.sendAdminFullCampNoticeEmail(
-              camp,
-              existingCampSession,
-            );
-          }
-        } catch (mongoDbError: unknown) {
-          // rollback camper creation
-          /* eslint-disable no-await-in-loop */
-          for (let i = 0; i < newCampers.length; i += 1) {
-            try {
-              const deletedCamper: Camper | null = await MgCamper.findByIdAndDelete(
-                newCampers[i].id,
-              );
-              if (!deletedCamper) {
-                throw new Error(`Camper ${newCampers[i].id} not found.`);
-              }
-            } catch (rollbackDbError) {
-              const errorMessage = [
-                "Failed to rollback MongoDB camper creation after update camp failure. Reason =",
-                getErrorMessage(rollbackDbError),
-                "MongoDB camper id that could not be deleted =",
-                newCampers[i].id,
-              ];
-              Logger.error(errorMessage.join(" "));
-            }
-          }
-          throw mongoDbError;
-        }
+      // Ensure we have enough space to register all campers in all the sessions
+      sessionsToRegister = await MgCampSession.find(
+        { _id: { $in: campers[0].campSessions } },
+        {},
+        {session}
+      );
+      if(!sessionsToRegister.every(session => session.capacity >= session.campers.length + campers.length)){
+        throw new Error("Not enough space in all the selected sessions to register the given campers");
       }
-    } catch (error: unknown) {
+
+      // Ensure all sessionIds provided in array are valid sessions
+      if (sessionsToRegister.length !== campers[0].campSessions.length){
+        throw new Error("Some of the camp sessions were not found");
+      }
+
+      // Insert new campers
+      newCampers = await MgCamper.insertMany(
+        campers,
+        {session}
+      );
+
+      // Add the new registered campers to the CampSessions' campers field
+      await MgCampSession.updateMany(
+        { _id: { $in: campers[0].campSessions } },
+        {
+          $push: {
+            campers: newCampers
+          }
+        },
+        {session}
+      );
+
+      // Retrieve the camp for email sending
+      const findCamp = await MgCamp.findById(
+        sessionsToRegister[0].camp,
+        {},
+        {session}
+      );
+      if (!findCamp) {
+        throw new Error(`Camp ${sessionsToRegister[0].camp} not found.`);
+      } 
+      camp = findCamp;
+
+
+      /**
+       * FINISHED CREATING REGISTERED CAMPERS. 
+       * UPDATE WAITLISTED CAMPER STATUS IF SHIFTING A WAITLIST CAMPER TO REGISTERED CAMPER
+       */
+      if (waitlistedCamperId) {
+        // If there is a waitlisted camper, we can only register that camper
+        if (campers.length !== 1) {
+          throw new Error(
+            "either no camper, or too many campers provided with wId",
+          );
+        }
+        // Update the status of the waitlisted camper
+        await MgWaitlistedCamper.findByIdAndUpdate(
+          waitlistedCamperId,
+          {
+            status: "Registered",
+          },
+          { 
+            runValidators: true,
+            session
+          },
+        );
+      }
+
+      await session.commitTransaction();
+    } catch (error: unknown){
       Logger.error(
         `Failed to create camper. Reason: ${getErrorMessage(error)}`,
       );
+      await session.abortTransaction();
       throw error;
+    } finally {
+      await session.endSession();
+    }    
+
+    // Find all the campers who need special assistance
+    const specialNeedsCampers = newCampers.filter(
+      (camper) => camper.specialNeeds,
+    );
+    // Send emails in parallel to the admin about the special needs campers 
+    await Promise.all(specialNeedsCampers.map(camper => {
+      return emailService.sendAdminSpecialNeedsNoticeEmail(
+        camp,
+        camper,
+        sessionsToRegister,
+      );
+    }));
+
+    // Email the parent about all the campers and sessions they have signed up for
+    emailService.sendParentConfirmationEmail(
+      camp,
+      newCampers,
+      sessionsToRegister,
+    );
+    
+    // Send admin an email for all the sessions that are now full
+    const fullSessions = sessionsToRegister.filter(session => session.capacity === session.campers.length + campers.length);
+    if(fullSessions.length){
+      await Promise.all(fullSessions.map(session => {
+        return emailService.sendAdminFullCampNoticeEmail(
+          camp,
+          fullSessions,
+        );
+      }));
     }
-    newCamperDTOs = newCampers.map((newCamper) => {
+
+    return newCampers.map((newCamper) => {
       return {
         id: newCamper.id,
-        campSession: newCamper.campSession.toString(),
+        campSessions: newCamper.campSessions.map(cs => cs.toString()),
         firstName: newCamper.firstName,
         lastName: newCamper.lastName,
         age: newCamper.age,
@@ -143,27 +171,6 @@ class CamperService implements ICamperService {
         optionalClauses: newCamper.optionalClauses,
       };
     });
-
-    if (waitlistedCamperId) {
-      try {
-        await MgWaitlistedCamper.findByIdAndUpdate(
-          waitlistedCamperId,
-          {
-            status: "Registered",
-          },
-          { runValidators: true },
-        );
-      } catch (error) {
-        Logger.error(
-          `Registered campers but was unable to update waitlisted camper status with id: ${waitlistedCamperId}. Error: ${getErrorMessage(
-            error,
-          )}`,
-        );
-        throw error;
-      }
-    }
-
-    return newCamperDTOs;
   }
 
   async getAllCampers(): Promise<Array<CamperDTO>> {
@@ -174,7 +181,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          campSession: camper.campSession ? camper.campSession.toString() : "",
+          campSessions: camper.campSessions.map(cs => cs.toString()),
           firstName: camper.firstName,
           lastName: camper.lastName,
           age: camper.age,
@@ -230,7 +237,7 @@ class CamperService implements ICamperService {
       camperDtos = campers.map((camper) => {
         return {
           id: camper.id,
-          campSession: camper.campSession ? camper.campSession.toString() : "",
+          campSessions: camper.campSessions.map(cs => cs.toString()),
           firstName: camper.firstName,
           lastName: camper.lastName,
           age: camper.age,
@@ -283,7 +290,7 @@ class CamperService implements ICamperService {
       const camperDTO: CamperDTO[] = campers.map((camper) => {
         return {
           id: camper.id,
-          campSession: camper.campSession ? camper.campSession.toString() : "",
+          campSessions: camper.campSessions.map(cs => cs.toString()),
           firstName: camper.firstName,
           lastName: camper.lastName,
           age: camper.age,
@@ -325,7 +332,7 @@ class CamperService implements ICamperService {
       const camperDTO: CamperDTO[] = campers.map((camper) => {
         return {
           id: camper.id,
-          campSession: camper.campSession ? camper.campSession.toString() : "",
+          campSessions: camper.campSessions.map(cs => cs.toString()),
           firstName: camper.firstName,
           lastName: camper.lastName,
           age: camper.age,
@@ -466,10 +473,11 @@ class CamperService implements ICamperService {
         }
       }
 
-      const oldCampSessionId = oldCampers[0].campSession;
-      for (let i = 0; i < oldCampers.length; i += 1) {
+      // Ensure that all campers are registered for the same camp sessions
+      const oldCampSessionIds = oldCampers[0].campSessions;
+      for(let i = 0; i < oldCampers.length; i += 1) {
         if (
-          oldCampers[i].campSession.toString() !== oldCampSessionId.toString()
+          !oldCampers[i].campSessions.every(cs => oldCampSessionIds.map(id => id.toString()).find(id => id === cs.toString()))
         ) {
           throw new Error(
             `Not all campers are registered for the same camp session`,
@@ -477,24 +485,23 @@ class CamperService implements ICamperService {
         }
       }
 
-      if (updatedFields.campSession) {
+      // Handle moving campers
+      if (updatedFields.newCampSession && updatedFields.oldCampSession) {
         movedCampSession = true;
         newCampSession = await MgCampSession.findById(
-          updatedFields.campSession,
+          updatedFields.newCampSession,
         );
 
         if (!newCampSession) {
-          throw new Error(`Camp ${updatedFields.campSession} not found.`);
+          throw new Error(`Camp ${updatedFields.newCampSession} not found.`);
         }
 
         const newCampSessionOriginalCampers = newCampSession.campers; // for roll back
 
-        oldCampSession = await MgCampSession.findById(
-          oldCampers[0].campSession,
-        );
+        oldCampSession = await MgCampSession.findById(updatedFields.oldCampSession);
 
         if (!oldCampSession) {
-          throw new Error(`Camp ${oldCampers[0].campSession} not found.`);
+          throw new Error(`Camp ${updatedFields.oldCampSession} not found.`);
         }
 
         if (newCampSession.camp.toString() !== oldCampSession.camp.toString()) {
@@ -514,7 +521,6 @@ class CamperService implements ICamperService {
             (camperId) => !camperIds.includes(camperId.toString()),
           );
         }
-
         try {
           await newCampSession.save();
           await oldCampSession.save();
@@ -538,6 +544,15 @@ class CamperService implements ICamperService {
       }
 
       try {
+        // don't update the 
+        const updateFieldsNoSessions = updatedFields;
+        delete updateFieldsNoSessions.newCampSession;
+        delete updateFieldsNoSessions.oldCampSession;
+        const newCampSessions = oldCampers[0].campSessions.filter(cs => cs.toString() !== oldCampSession?.id);
+        if(newCampSession?.id){
+          newCampSessions.push(newCampSession._id);
+        }
+
         const updatedResult = await MgCamper.updateMany(
           {
             _id: {
@@ -545,7 +560,10 @@ class CamperService implements ICamperService {
             },
           },
           {
-            $set: updatedFields,
+            $set: {
+              ...updateFieldsNoSessions,
+              campSessions: newCampSessions,
+            },
           },
           { runValidators: true },
         );
@@ -621,9 +639,7 @@ class CamperService implements ICamperService {
     updatedCamperDTOs = updatedCampers.map((updatedCamper) => {
       return {
         id: updatedCamper.id,
-        campSession: updatedCamper.campSession
-          ? updatedCamper.campSession.toString()
-          : "",
+        campSessions: updatedCamper.campSessions.map(cs => cs.toString()),
         firstName: updatedCamper.firstName,
         lastName: updatedCamper.lastName,
         age: updatedCamper.age,
