@@ -236,6 +236,10 @@ export type NodemailerConfig = {
   };
 };
 
+export type EmailDTO = {
+  pdf: string;
+};
+
 export type WaiverDTO = {
   clauses: {
     text: string;

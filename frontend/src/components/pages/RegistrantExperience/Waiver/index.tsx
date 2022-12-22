@@ -15,6 +15,7 @@ import {
   HStack,
   Wrap,
 } from "@chakra-ui/react";
+import JsPDF from "jspdf";
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import {
   OptionalClauseResponse,
@@ -23,6 +24,7 @@ import {
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../../types/waiverTypes";
+import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 
 const bodyTextStyles = {
   sm: "xSmallRegular",
@@ -82,9 +84,8 @@ const WaiverPage = ({
         <Text textStyle={boldButtonTextStyles} mt={6}>
           In consideration of the participation of my child/children, (the
           “child or children“), in the Focus on Nature photography camp/workshop
-          and all activities associated therewith, I, the undersigned
-          parent/guardian of the child/children, agree to the following terms
-          and conditions:
+          and all activities associated therewith, I, the parent/guardian of the
+          child/children, agree to the following terms and conditions:
         </Text>
       </VStack>
 
@@ -228,6 +229,9 @@ const WaiverPage = ({
           />
         </FormControl>
       </Wrap>
+      <button onClick={sendEmail} type="button">
+        Send Email PDF
+      </button>
     </Box>
   );
 };

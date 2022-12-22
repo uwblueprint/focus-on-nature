@@ -1,6 +1,7 @@
 import nodemailer, { Transporter } from "nodemailer";
+import { Attachment } from "nodemailer/lib/mailer";
 import IEmailService from "../interfaces/emailService";
-import { CampLocation, NodemailerConfig } from "../../types";
+import { EmailDTO, CampLocation, NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import { Camper } from "../../models/camper.model";
@@ -45,6 +46,22 @@ class EmailService implements IEmailService {
     } else {
       this.sender = nodemailerConfig.auth.user;
     }
+  }
+
+  async sendWaiverEmail(waiverContent: EmailDTO): Promise<void> {
+    const pdfAttachment: Attachment = {
+      filename: "waiver.pdf",
+      content: Buffer.from(waiverContent.pdf),
+      contentType: "application/pdf",
+      encoding: "base64",
+    };
+
+    await this.sendEmail(
+      "bowenzhu@uwblueprint.org",
+      "Focus on Nature Camp Registration - Waiver",
+      "A copy of your Focus on Nature Camp Registration is attached.",
+      [pdfAttachment],
+    );
   }
 
   async sendParentConfirmationEmail(
@@ -316,12 +333,14 @@ class EmailService implements IEmailService {
     to: string,
     subject: string,
     htmlBody: string,
+    attachments?: Attachment[],
   ): Promise<void> {
     const mailOptions = {
       from: this.sender,
       to,
       subject,
       html: htmlBody,
+      attachments,
     };
 
     try {

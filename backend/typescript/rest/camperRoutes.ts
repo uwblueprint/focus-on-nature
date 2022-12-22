@@ -14,10 +14,15 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 import { CamperDTO, CreateCampersDTO, WaitlistedCamperDTO } from "../types";
 import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
+import IEmailService from "../services/interfaces/emailService";
+import EmailService from "../services/implementations/emailService";
+import nodemailerConfig from "../nodemailer.config";
 
 const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
+
+const emailService: IEmailService = new EmailService(nodemailerConfig);
 
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
@@ -31,6 +36,16 @@ camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
       req.query?.wId as string,
     );
     res.status(201).json(newCampers);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+camperRouter.post("/email", async (req, res) => {
+  try {
+    const waiverContent = req.body;
+    emailService.sendWaiverEmail(waiverContent);
+    res.status(201);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }

@@ -1,3 +1,4 @@
+import JsPDF from "jspdf";
 import { getBearerToken } from "../constants/AuthConstants";
 import {
   WaitlistedCamper,
@@ -92,6 +93,29 @@ const deleteMultipleCampersById = async (ids: string[]): Promise<boolean> => {
   }
 };
 
+const sendWaiverEmail = async (
+  waiverContent: HTMLElement,
+): Promise<boolean> => {
+  try {
+    const waiverPdf = new JsPDF("portrait", "pt", "a4");
+    await waiverPdf.html(waiverContent, {
+      margin: 20,
+      html2canvas: { scale: 0.7 },
+    });
+    const waiverBuffer = waiverPdf.output();
+
+    await baseAPIClient.post(
+      `/campers/email`,
+      { pdf: waiverBuffer },
+      {
+        headers: { Authorization: getBearerToken() },
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 const getCampersByChargeIdAndSessionId = async (
   chargeId: string,
   sessionId: string,
@@ -114,6 +138,7 @@ export default {
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
   updateCampersById,
+  sendWaiverEmail,
   getCampersByChargeIdAndSessionId,
   deleteMultipleCampersById,
 };
