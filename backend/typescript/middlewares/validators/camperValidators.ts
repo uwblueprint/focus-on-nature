@@ -99,10 +99,14 @@ export const createCampersDtoValidator = async (
         .status(400)
         .send(getApiValidationError("specialNeeds", "string"));
     }
-    if (!Array.isArray(camper.contacts) || camper.contacts.length !== 2) {
+    if (
+      !Array.isArray(camper.contacts) ||
+      camper.contacts.length < 1 ||
+      camper.contacts.length > 2
+    ) {
       return res
         .status(400)
-        .send("There must be 2 emergency contacts specified.");
+        .send("There must be either 1 or 2 emergency contacts only");
     }
     for (let j = 0; j < camper.contacts.length; j += 1) {
       const contact = camper.contacts[j];

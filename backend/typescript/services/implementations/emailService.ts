@@ -190,6 +190,7 @@ class EmailService implements IEmailService {
     campSession: CampSession,
     waitlistedCampers: WaitlistedCamper[],
   ): Promise<void> {
+    const campLocationString: string = getLocationString(camp.location);
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
@@ -200,7 +201,7 @@ class EmailService implements IEmailService {
       of the fields, reach out to camps@focusonnature.ca. <br>
       <ul>
         <li><b>Camp name:</b> ${camp.name}</li>
-        <li><b>Camp location:</b> ${camp.location}</li>
+        <li><b>Camp location:</b> ${campLocationString}</li>
         <li><b>Session dates:</b> ${sessionDatesToString(
           campSession.dates,
         )}</li>
