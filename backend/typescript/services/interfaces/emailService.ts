@@ -37,7 +37,7 @@ interface IEmailService {
    */
   sendParentWaitlistConfirmationEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
     waitlistedCampers: WaitlistedCamper[],
   ): Promise<void>;
 

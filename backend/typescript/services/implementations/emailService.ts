@@ -1,6 +1,6 @@
 import nodemailer, { Transporter } from "nodemailer";
 import IEmailService from "../interfaces/emailService";
-import { NodemailerConfig } from "../../types";
+import { CampLocation, NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import { Camper } from "../../models/camper.model";
@@ -18,6 +18,19 @@ function sessionDatesToString(dates: Date[] | undefined) {
     return "";
   }
   return dates.map((date) => date.toDateString()).join(" ");
+}
+
+// Returns a list item for each camp session with the dates of the camp session
+function getSessionDatesListItems(campSessions: CampSession[]) {
+  return campSessions.map((campSession) => {
+    return `<li>${sessionDatesToString(campSession.dates)}</li>`;
+  });
+}
+
+function getLocationString(location: CampLocation): string {
+  return `${location.streetAddress1} ${
+    location.streetAddress2 && `, ${location.streetAddress2}`
+  }, ${location.city}, ${location.province}, ${location.postalCode}`;
 }
 
 class EmailService implements IEmailService {
@@ -153,9 +166,24 @@ class EmailService implements IEmailService {
 
   async sendParentWaitlistConfirmationEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
     waitlistedCampers: WaitlistedCamper[],
   ): Promise<void> {
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
+    const campLocationString: string = getLocationString(camp.location);
+
+    // Remove duplicated campers (each camper has entity per camp session)
+    const uniqueCampers = waitlistedCampers.filter(
+      (value, index, self) =>
+        index ===
+        self.findIndex(
+          (c) =>
+            c.firstName === value.firstName && c.lastName === value.lastName,
+        ),
+    );
+
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
@@ -166,12 +194,13 @@ class EmailService implements IEmailService {
       of the fields, reach out to camps@focusonnature.ca. <br>
       <ul>
         <li><b>Camp name:</b> ${camp.name}</li>
-        <li><b>Camp location:</b> ${camp.location}</li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )}</li>
+        <li><b>Camp location:</b> ${campLocationString}</li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
         <li><b>Campers:</b></li>
-        ${waitlistedCampers
+        ${uniqueCampers
           .map((camper) => {
             return `<ul>
               <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>

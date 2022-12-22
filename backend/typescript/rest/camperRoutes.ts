@@ -12,8 +12,13 @@ import CamperService from "../services/implementations/camperService";
 import ICamperService from "../services/interfaces/camperService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
-import { CamperDTO, CreateCampersDTO, WaitlistedCamperDTO } from "../types";
-import { createWaitlistedCamperDtoValidator } from "../middlewares/validators/waitlistedCamperValidators";
+import {
+  CamperDTO,
+  CreateCampersDTO,
+  CreateWaitlistedCamperDTO,
+  WaitlistedCamperDTO,
+} from "../types";
+import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/waitlistedCampersValidators";
 
 const camperRouter: Router = Router();
 
@@ -112,21 +117,18 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to waitlist @dhruv
 camperRouter.post(
   "/waitlist",
-  createWaitlistedCamperDtoValidator,
+  createWaitlistedCampersDtoValidator,
   async (req, res) => {
     try {
-      const newWaitlistedCamper = await camperService.createWaitlistedCamper({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        age: req.body.age,
-        contactName: req.body.contactName,
-        contactEmail: req.body.contactEmail,
-        contactNumber: req.body.contactNumber,
-        campSession: req.body.campSession,
-        status: "NotRegistered",
-      });
+      const waitlistCampers = req.body
+        .waitlistedCampers as CreateWaitlistedCamperDTO[];
+      const sessionIds = req.body.campSessions as string[];
+      const newWaitlistedCampers = await camperService.createWaitlistedCampers(
+        waitlistCampers,
+        sessionIds,
+      );
 
-      res.status(201).json(newWaitlistedCamper);
+      res.status(201).json(newWaitlistedCampers);
     } catch (error: unknown) {
       res.status(500).json({ error: getErrorMessage(error) });
     }

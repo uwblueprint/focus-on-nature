@@ -90,6 +90,11 @@ export type CamperCSVInfoDTO = {
   "Additional Waiver Clauses": string;
 };
 
+export type WaitlistedCamperStatus =
+  | "NotRegistered"
+  | "RegistrationFormSent"
+  | "Registered";
+
 export type WaitlistedCamperDTO = {
   id: string;
   firstName: string;
@@ -99,7 +104,7 @@ export type WaitlistedCamperDTO = {
   contactEmail: string;
   contactNumber: string;
   campSession: string;
-  status: string;
+  status: WaitlistedCamperStatus;
   linkExpiry?: Date;
 };
 
@@ -119,6 +124,14 @@ export type CampSessionDTO = {
   waitlist: WaitlistedCamperDTO[] | string[];
 };
 
+export type CampLocation = {
+  streetAddress1: string;
+  streetAddress2?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+};
+
 export type CampDTO = {
   id: string;
   active: boolean;
@@ -136,13 +149,7 @@ export type CampDTO = {
   earlyDropoff: string;
   endTime: string;
   latePickup: string;
-  location: {
-    streetAddress1: string;
-    streetAddress2?: string;
-    city: string;
-    province: string;
-    postalCode: string;
-  };
+  location: CampLocation;
   pickupPriceId: string;
   pickupProductId: string;
   startTime: string;
@@ -210,7 +217,10 @@ export type UpdateFormQuestionDTO = Omit<FormQuestionDTO, "id">[];
 
 export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
 
-export type CreateWaitlistedCamperDTO = Omit<WaitlistedCamperDTO, "id">;
+export type CreateWaitlistedCamperDTO = Omit<
+  WaitlistedCamperDTO,
+  "id" | "campSession"
+>;
 
 export type UpdateCamperDTO = Omit<
   CamperDTO,
@@ -249,8 +259,3 @@ export type WaiverDTO = {
 export type FormTemplateDTO = {
   formQuestions: FormQuestionDTO[];
 };
-
-export type WaitlistedCamperStatus =
-  | "NotRegistered"
-  | "RegistrationFormSent"
-  | "Registered";
