@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import mongoose from "mongoose";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -12,13 +13,13 @@ import {
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
   UpdateCamperDTO,
+  CamperCharges,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
-import mongoose from "mongoose";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -26,53 +27,105 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
-class CamperService implements ICamperService {
+// Calculates total cost of early dropoff from the given timings
+function getEDCost(edDates: string[], camp: Camp) {
+  const dates: Date[] = edDates.map((dateString) => new Date(dateString));
+  const startTime = new Date(camp.startTime);
+  return dates
+    .map((date) => {
+      // get the number of seconds between the ED time and start time
+      let timeDiff: number = (startTime.getTime() - date.getTime()) / 1000;
+      // convert to number of minutes
+      timeDiff /= 60;
+      // Get the number of 30 minute timeslots.
+      // This should always be in 30 min intervals from frontend, but we round up in case
+      const edSlots = Math.ceil(timeDiff / 30);
+      return edSlots * camp.dropoffFee;
+    })
+    .reduce((sumCost, cost) => sumCost + cost, 0);
+}
 
+// Calculates total cost of late pickup from the given timings
+function getLPCost(lpDates: string[], camp: Camp) {
+  const dates: Date[] = lpDates.map((dateString) => new Date(dateString));
+  const endTime = new Date(camp.endTime);
+  return dates
+    .map((lpDate) => {
+      // get the number of seconds between the ED time and start time
+      let timeDiff: number = (lpDate.getTime() - endTime.getTime()) / 1000;
+      // convert to number of minutes
+      timeDiff /= 60;
+      // Get the number of 30 minute timeslots.
+      // This should always be in 30 min intervals from frontend, but we round up in case
+      const lpSlots = Math.ceil(timeDiff / 30);
+      return lpSlots * camp.pickupFee;
+    })
+    .reduce((sumCost, cost) => sumCost + cost, 0);
+}
+class CamperService implements ICamperService {
+  /* eslint-disable class-methods-use-this */
   async createCampers(
     campers: CreateCampersDTO,
-    campSessions: string[], 
+    campSessions: string[],
     waitlistedCamperId?: string,
-  ) : Promise<CamperDTO[]> {
-    
+  ): Promise<CamperDTO[]> {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     let camp: Camp;
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
-    let createCamperResponse : CamperDTO[] = [];
+    let createCamperResponse: CamperDTO[] = [];
 
     try {
-      // Perform session checks: 
+      // Perform session checks:
       sessionsToRegister = await MgCampSession.find(
         { _id: { $in: campSessions } },
         {},
-        {session}
+        { session },
       );
       // Ensure all session ids passed in are found in the db
-      if(sessionsToRegister.length !== campSessions.length){
+      if (sessionsToRegister.length !== campSessions.length) {
         throw new Error("Not all session ids passed in were found");
       }
       // Ensure we have enough space to register all campers in all the sessions
-      if(!sessionsToRegister.every(session => session.capacity >= session.campers.length + campers.length)){
-        throw new Error("Not enough space in all the selected sessions to register the given campers");
+      if (
+        !sessionsToRegister.every(
+          (cs) => cs.capacity >= cs.campers.length + campers.length,
+        )
+      ) {
+        throw new Error(
+          "Not enough space in all the selected sessions to register the given campers",
+        );
       }
-      
-      const findCamp = await MgCamp.findById(sessionsToRegister[0].camp, {}, {session});
-      if(!findCamp){
-        throw new Error("Could not find the camp associated with this session id");
-      } 
+
+      const findCamp = await MgCamp.findById(
+        sessionsToRegister[0].camp,
+        {},
+        { session },
+      );
+      if (!findCamp) {
+        throw new Error(
+          "Could not find the camp associated with this session id",
+        );
+      }
       camp = findCamp;
       // Ensure all sessions passed in belong to the same camp
-      if(!sessionsToRegister.every(session => session.camp.toString() === camp.id)){
+      if (!sessionsToRegister.every((cs) => cs.camp.toString() === camp.id)) {
         throw new Error("All sessions must belong to the same camp");
       }
 
       // Create a camper entity for each session
-      const campersToRegister : Map<string, Array<Omit<CamperDTO, "id">>> = new Map();
-      sessionsToRegister.forEach(cs => {
-        campers.forEach(camper => {
-          const camperToRegister : Omit<CamperDTO, "id">  = {
+      const campersToRegister: Array<Omit<CamperDTO, "id">> = [];
+      sessionsToRegister.forEach((cs) => {
+        campers.forEach((camper) => {
+          // Add the charges field for each camper
+          const charges: CamperCharges = {
+            camp: cs.dates.length * camp.fee,
+            earlyDropoff: getEDCost(camper.earlyDropoff, camp),
+            latePickup: getLPCost(camper.latePickup, camp),
+          };
+          const camperToRegister: Omit<CamperDTO, "id"> = {
             campSession: cs.id,
             firstName: camper.firstName,
             lastName: camper.lastName,
@@ -86,33 +139,42 @@ class CamperService implements ICamperService {
             hasPaid: camper.hasPaid,
             formResponses: camper.formResponses,
             chargeId: camper.chargeId,
-            charges: camper.charges,
+            charges,
             optionalClauses: camper.optionalClauses,
           };
-
-          if(campersToRegister.has(cs.id)){
-            campersToRegister.get(cs.id)?.push(camperToRegister);
-          } else {
-            campersToRegister.set(cs.id, [camperToRegister]);
-          }
+          campersToRegister.push(camperToRegister);
         });
       });
-    
+
+      // Ensure all campers meet the age requirements
+      if (
+        !campersToRegister.every(
+          (camper) =>
+            camper.age >= camp.ageLower && camper.age <= camp.ageUpper,
+        )
+      ) {
+        throw new Error("Not all campers meet the age requirements");
+      }
+
       // Insert the campers
-      const allCampers = Array.from(campersToRegister.values()).flat()
-      registeredCampers = await MgCamper.insertMany(
-        allCampers,
-        {session}
-      );
-     
+      registeredCampers = await MgCamper.insertMany(campersToRegister, {
+        session,
+      });
+
       // Add the campers to each session's campers field
-      await Promise.all(sessionsToRegister.map(cs => {
-        cs.campers.push(...registeredCampers.filter(camper => camper.campSession.toString() === cs.id));
-        return cs.save({session});
-      }))
-      
+      await Promise.all(
+        sessionsToRegister.map((cs) => {
+          cs.campers.push(
+            ...registeredCampers.filter(
+              (camper) => camper.campSession.toString() === cs.id,
+            ),
+          );
+          return cs.save({ session });
+        }),
+      );
+
       /**
-       * FINISHED CREATING REGISTERED CAMPERS. 
+       * FINISHED CREATING REGISTERED CAMPERS.
        * UPDATE WAITLISTED CAMPER STATUS IF SHIFTING A WAITLIST CAMPER TO REGISTERED CAMPER
        */
       if (waitlistedCamperId) {
@@ -123,8 +185,10 @@ class CamperService implements ICamperService {
           );
         }
         // Ensure we only have 1 session
-        if(campSessions.length !== 1){
-          throw new Error("Can only register waitlisted camper for 1 camp session at a time. Please only pass in 1 session");
+        if (campSessions.length !== 1) {
+          throw new Error(
+            "Can only register waitlisted camper for 1 camp session at a time. Please only pass in 1 session",
+          );
         }
 
         // Update the status of the waitlisted camper
@@ -133,66 +197,68 @@ class CamperService implements ICamperService {
           {
             status: "Registered",
           },
-          { 
+          {
             runValidators: true,
-            session
+            session,
           },
         );
       }
 
-    // Find all the campers who need special assistance
-    const specialNeedsCampers = registeredCampers.filter(
-      (camper) => camper.specialNeeds,
-    );
-    // Send emails in parallel to the admin about the special needs campers 
-    await Promise.all(specialNeedsCampers.map(camper => {
-      return emailService.sendAdminSpecialNeedsNoticeEmail(
+      // Find all the campers who need special assistance
+      const specialNeedsCampers = registeredCampers.filter(
+        (camper) => camper.specialNeeds,
+      );
+      // Send emails in parallel to the admin about the special needs campers
+      await Promise.all(
+        specialNeedsCampers.map((camper) => {
+          return emailService.sendAdminSpecialNeedsNoticeEmail(
+            camp,
+            camper,
+            sessionsToRegister,
+          );
+        }),
+      );
+
+      // Email the parent about all the campers and sessions they have signed up for
+      await emailService.sendParentConfirmationEmail(
         camp,
-        camper,
+        registeredCampers,
         sessionsToRegister,
       );
-    }));
 
-    // Email the parent about all the campers and sessions they have signed up for
-    await emailService.sendParentConfirmationEmail(
-      camp,
-      registeredCampers,
-      sessionsToRegister,
-    );
-    
-    // Send admin an email for all the sessions that are now full
-    const fullSessions = sessionsToRegister.filter(session => session.capacity === session.campers.length + campers.length);
-    if(fullSessions.length){
-      await emailService.sendAdminFullCampNoticeEmail(
-        camp,
-        fullSessions,
+      // Send admin an email for all the sessions that are now full
+      // Note: At this point, the sessionsToRegister's campers field has been updated with the registered campers
+      const fullSessions = sessionsToRegister.filter(
+        (cs) => cs.capacity === cs.campers.length,
       );
-    }
+      if (fullSessions.length) {
+        await emailService.sendAdminFullCampNoticeEmail(camp, fullSessions);
+      }
 
-    // Create the DTO return objects
-    createCamperResponse = registeredCampers.map(newCamper => {
-      return {
-        id: newCamper.id,
-        campSession: newCamper.campSession.toString(),
-        firstName: newCamper.firstName,
-        lastName: newCamper.lastName,
-        age: newCamper.age,
-        allergies: newCamper.allergies,
-        earlyDropoff: newCamper.earlyDropoff.map((date) => date.toString()),
-        latePickup: newCamper.latePickup.map((date) => date.toString()),
-        specialNeeds: newCamper.specialNeeds,
-        contacts: newCamper.contacts,
-        registrationDate: newCamper.registrationDate.toString(),
-        hasPaid: newCamper.hasPaid,
-        chargeId: newCamper.chargeId,
-        formResponses: newCamper.formResponses,
-        charges: newCamper.charges,
-        optionalClauses: newCamper.optionalClauses,
-      };
-    });
+      // Create the DTO return objects
+      createCamperResponse = registeredCampers.map((newCamper) => {
+        return {
+          id: newCamper.id,
+          campSession: newCamper.campSession.toString(),
+          firstName: newCamper.firstName,
+          lastName: newCamper.lastName,
+          age: newCamper.age,
+          allergies: newCamper.allergies,
+          earlyDropoff: newCamper.earlyDropoff.map((date) => date.toString()),
+          latePickup: newCamper.latePickup.map((date) => date.toString()),
+          specialNeeds: newCamper.specialNeeds,
+          contacts: newCamper.contacts,
+          registrationDate: newCamper.registrationDate.toString(),
+          hasPaid: newCamper.hasPaid,
+          chargeId: newCamper.chargeId,
+          formResponses: newCamper.formResponses,
+          charges: newCamper.charges,
+          optionalClauses: newCamper.optionalClauses,
+        };
+      });
 
-    // Commit the transaction if everything was successful
-    await session.commitTransaction();
+      // Commit the transaction if everything was successful
+      await session.commitTransaction();
     } catch (error: unknown) {
       Logger.error(
         `Failed to create camper. Reason: ${getErrorMessage(error)}`,
@@ -206,7 +272,7 @@ class CamperService implements ICamperService {
     return createCamperResponse;
   }
 
-
+  /* eslint-disable class-methods-use-this */
   async getAllCampers(): Promise<Array<CamperDTO>> {
     let camperDtos: Array<CamperDTO> = [];
 
@@ -240,6 +306,7 @@ class CamperService implements ICamperService {
     return camperDtos;
   }
 
+  /* eslint-disable class-methods-use-this */
   async getCampersByCampId(
     campId: string,
   ): Promise<{
@@ -312,6 +379,7 @@ class CamperService implements ICamperService {
     return { campers: camperDtos, waitlist: waitlistedCamperDtos };
   }
 
+  /* eslint-disable class-methods-use-this */
   async getCampersByChargeId(chargeId: string): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
@@ -349,6 +417,7 @@ class CamperService implements ICamperService {
     }
   }
 
+  /* eslint-disable class-methods-use-this */
   async getCampersByChargeIdAndSessionId(
     chargeId: string,
     sessionId: string,
@@ -391,6 +460,7 @@ class CamperService implements ICamperService {
     }
   }
 
+  /* eslint-disable class-methods-use-this */
   async createWaitlistedCamper(
     waitlistedCamper: CreateWaitlistedCamperDTO,
   ): Promise<WaitlistedCamperDTO> {
@@ -685,6 +755,7 @@ class CamperService implements ICamperService {
     return updatedCamperDTOs;
   }
 
+  /* eslint-disable class-methods-use-this */
   async cancelRegistration(
     chargeId: string,
     camperIds: string[],
@@ -796,6 +867,7 @@ class CamperService implements ICamperService {
     }
   }
 
+  /* eslint-disable class-methods-use-this */
   async deleteCampersById(camperIds: Array<string>): Promise<void> {
     try {
       const campers: Array<Camper> | null = await MgCamper.find({
@@ -958,6 +1030,7 @@ class CamperService implements ICamperService {
     }
   }
 
+  /* eslint-disable class-methods-use-this */
   async deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void> {
     try {
       const waitlistedCamperToDelete: WaitlistedCamper | null = await MgWaitlistedCamper.findById(

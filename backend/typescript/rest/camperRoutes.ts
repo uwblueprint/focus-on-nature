@@ -21,7 +21,7 @@ const camperService: ICamperService = new CamperService();
 
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
-camperRouter.post("/register", async (req, res) => {
+camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
     const campers = req.body.campers as CreateCampersDTO;
     const campSessions = req.body.campSessions as string[];

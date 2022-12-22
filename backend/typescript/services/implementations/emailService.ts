@@ -22,13 +22,15 @@ function sessionDatesToString(dates: Date[] | undefined) {
 
 // Returns a list item for each camp session with the dates of the camp session
 function getSessionDatesListItems(campSessions: CampSession[]) {
-  return campSessions.map(campSession => {
-    return `<li>${sessionDatesToString(campSession.dates)}</li>`
-  })
+  return campSessions.map((campSession) => {
+    return `<li>${sessionDatesToString(campSession.dates)}</li>`;
+  });
 }
 
 function getLocationString(location: CampLocation): string {
-  return `${location.streetAddress1} ${location.streetAddress2 && `, ${location.streetAddress2}`}, ${location.city}, ${location.province}, ${location.postalCode}`
+  return `${location.streetAddress1} ${
+    location.streetAddress2 && `, ${location.streetAddress2}`
+  }, ${location.city}, ${location.province}, ${location.postalCode}`;
 }
 
 class EmailService implements IEmailService {
@@ -52,19 +54,29 @@ class EmailService implements IEmailService {
   ): Promise<void> {
     const contact = campers[0].contacts[0];
     const link = "DUMMY LINK"; // TODO: Update link
-    const sessionDatesListItems : string[] = getSessionDatesListItems(campSessions);
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
     const campLocationString: string = getLocationString(camp.location);
 
     // Remove duplicated campers (each camper has entity per camp session)
-    const uniqueCampers = campers.filter((value, index, self) => 
-      index === self.findIndex(c => c.firstName === value.firstName && c.lastName === value.lastName)
-    )
+    const uniqueCampers = campers.filter(
+      (value, index, self) =>
+        index ===
+        self.findIndex(
+          (c) =>
+            c.firstName === value.firstName && c.lastName === value.lastName,
+        ),
+    );
 
     // Fees calculations
     let totalPayment = 0;
     let campFees = 0;
     let dropoffAndPickupFees = 0;
-    campers.forEach((camper) => {
+    const totalCampDays = campSessions
+      .map((cs) => cs.dates.length)
+      .reduce((sumDays, days) => sumDays + days);
+    uniqueCampers.forEach((camper) => {
       campFees += camper.charges.camp;
       dropoffAndPickupFees +=
         camper.charges.earlyDropoff + camper.charges.latePickup;
@@ -104,7 +116,9 @@ class EmailService implements IEmailService {
       <br> This is the total amount we have received from you.
       <ul>
         <li><b>Camp fees:</b> 
-        $${campFees} (${uniqueCampers.length} campers x ${uniqueCampers.length} weeks of camp x $${camp.fee} fee per week) </li> 
+        $${campFees} (${
+        uniqueCampers.length
+      } campers x ${totalCampDays} total days of camp) </li> 
         <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
@@ -235,7 +249,9 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = camper.contacts[0];
-    const sessionDatesListItems : string[] = getSessionDatesListItems(campSessions);
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
 
     await this.sendEmail(
       ADMIN_EMAIL,
@@ -263,8 +279,10 @@ class EmailService implements IEmailService {
     camp: Camp,
     campSessions: CampSession[],
   ): Promise<void> {
-    const sessionDatesListItems : string[] = campSessions.map(campSession => {
-      return `<li> Session with dates: ${sessionDatesToString(campSession.dates)}</li>`
+    const sessionDatesListItems: string[] = campSessions.map((campSession) => {
+      return `<li> Session with dates: ${sessionDatesToString(
+        campSession.dates,
+      )}</li>`;
     });
     await this.sendEmail(
       ADMIN_EMAIL,
