@@ -249,7 +249,7 @@ const AddQuestionModal = ({
               height="48px"
               onClick={onSaveQuestion}
             >
-              {editing ? "Edit Question" : "Save question"}
+              Save question
             </Button>
           </HStack>
         </ModalFooter>
