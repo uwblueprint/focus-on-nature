@@ -12,7 +12,7 @@ import { useHistory } from "react-router-dom";
 import {
   CampResponse,
   CreateCampSessionRequest,
-  CreateFormQuestion,
+  CreateFormQuestionRequest,
   CreateUpdateCampRequest,
 } from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
@@ -36,9 +36,9 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
     }
 
     // change formQuestions to CreateFormQuestions
-    const newFormQuestions: CreateFormQuestion[] = [];
+    const newFormQuestions: CreateFormQuestionRequest[] = [];
     camp.formQuestions.forEach((fq) => {
-      const newFormQuestion: CreateFormQuestion = {
+      const newFormQuestion: CreateFormQuestionRequest = {
         type: fq.type,
         required: fq.required,
         question: fq.question,

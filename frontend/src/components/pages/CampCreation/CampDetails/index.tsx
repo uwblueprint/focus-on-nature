@@ -175,7 +175,7 @@ const CampCreationDetails = ({
       {errorText(campName, "You must add a name.")}
 
       <Text textStyle="buttonSemiBold" marginTop="24px">
-        Short Description (max ${MAX_CAMP_DESC_LENGTH.toString()} characters){" "}
+        Short Description (max {MAX_CAMP_DESC_LENGTH} characters){" "}
         <Text as="span" textStyle="buttonSemiBold" color="red">
           *
         </Text>

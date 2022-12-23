@@ -441,7 +441,7 @@ class CampService implements ICampService {
         );
       }
 
-      // Update base camp level info. Note: If ED and LP must be both be present or neither
+      // Update base camp level info. Note: ED and LP must be both be present or neither
       if (
         camp.earlyDropoff &&
         camp.latePickup &&

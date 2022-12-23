@@ -1,7 +1,7 @@
 import { getBearerToken } from "../constants/AuthConstants";
 import baseAPIClient from "./BaseAPIClient";
 import { FormTemplate, UpdateWaiverRequest, Waiver } from "../types/AdminTypes";
-import { CreateFormQuestion, FormQuestion } from "../types/CampsTypes";
+import { CreateFormQuestionRequest, FormQuestion } from "../types/CampsTypes";
 
 const updateWaiver = async (
   updateWaiverData: UpdateWaiverRequest,
@@ -32,7 +32,7 @@ const getWaiver = async (): Promise<Waiver> => {
 };
 
 const addQuestionToTemplate = async (
-  newFormQuestion: CreateFormQuestion,
+  newFormQuestion: CreateFormQuestionRequest,
 ): Promise<FormQuestion> => {
   try {
     const { data } = await baseAPIClient.patch(
@@ -77,7 +77,7 @@ const removeFormQuestionFromTemplate = async (
 
 const editFormQuestion = async (
   oldQuestionId: string,
-  question: CreateFormQuestion,
+  question: CreateFormQuestionRequest,
 ): Promise<FormQuestion> => {
   try {
     const { data } = await baseAPIClient.patch(

@@ -11,7 +11,7 @@ import CampCreationFooter from "./CampCreationFooter";
 import { FormTemplate } from "../../../types/AdminTypes";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import {
-  CreateFormQuestion,
+  CreateFormQuestionRequest,
   CreateCampSession,
   CreateUpdateCampRequest,
   CreateUpdateCampResponse,
@@ -113,11 +113,11 @@ const CampCreationPage = (): React.ReactElement => {
     getFormTemplate();
   }, []);
 
-  const [customQuestions, setCustomQuestions] = useState<CreateFormQuestion[]>(
-    [],
-  );
-  const onAddCustomQuestion = (newQuestion: CreateFormQuestion) => {
-    setCustomQuestions((oldArr: CreateFormQuestion[]) => [
+  const [customQuestions, setCustomQuestions] = useState<
+    CreateFormQuestionRequest[]
+  >([]);
+  const onAddCustomQuestion = (newQuestion: CreateFormQuestionRequest) => {
+    setCustomQuestions((oldArr: CreateFormQuestionRequest[]) => [
       ...oldArr,
       newQuestion,
     ]);
@@ -129,10 +129,13 @@ const CampCreationPage = (): React.ReactElement => {
       variant: "subtle",
     });
   };
-  const onDeleteCustomQuestion = (questionToBeDeleted: CreateFormQuestion) => {
-    setCustomQuestions((oldArr: CreateFormQuestion[]) =>
+  const onDeleteCustomQuestion = (
+    questionToBeDeleted: CreateFormQuestionRequest,
+  ) => {
+    setCustomQuestions((oldArr: CreateFormQuestionRequest[]) =>
       oldArr.filter(
-        (question: CreateFormQuestion) => question !== questionToBeDeleted,
+        (question: CreateFormQuestionRequest) =>
+          question !== questionToBeDeleted,
       ),
     );
     toast({
@@ -145,10 +148,10 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   const onEditCustomQuestion = (
-    oldQuestion: CreateFormQuestion,
-    newQuestion: CreateFormQuestion,
+    oldQuestion: CreateFormQuestionRequest,
+    newQuestion: CreateFormQuestionRequest,
   ) => {
-    setCustomQuestions((oldArr: CreateFormQuestion[]) => {
+    setCustomQuestions((oldArr: CreateFormQuestionRequest[]) => {
       const newArr = [...oldArr];
       for (let i = 0; i < newArr.length; i += 1) {
         if (newArr[i] === oldQuestion) {
@@ -178,7 +181,7 @@ const CampCreationPage = (): React.ReactElement => {
       // retrieve the current state of the camp to edit
       const editCamp = await CampsAPIClient.getCampById(editCampId);
 
-      if (!(editCamp instanceof Error)) {
+      if (editCamp.id) {
         // Schedule Sessions need the data in a certain format. We convert the array of dates stored in the backend
         // to this array of CreateCampSessions so that the sessions can be viewed/edited/deleted
         const currentCampSessions: CreateCampSession[] = editCamp.campSessions.map(
@@ -199,7 +202,7 @@ const CampCreationPage = (): React.ReactElement => {
 
         // We set the customQuestions to be the current questions stored on the backend so the admin
         // can view and edit the questions in the ui smoothly
-        const currentFormQuestions: CreateFormQuestion[] = editCamp.formQuestions.map(
+        const currentFormQuestions: CreateFormQuestionRequest[] = editCamp.formQuestions.map(
           (fq) => {
             return {
               question: fq.question,
@@ -329,6 +332,10 @@ const CampCreationPage = (): React.ReactElement => {
     switch (page) {
       case CampCreationPages.CampCreationDetailsPage:
         return (
+          // Many text fields in this component use default values. When the component first loads,
+          // the default value is set to the initial value of the states. To update the default values
+          // after the useEffect renders the current state of the variables from the backend, we must update
+          // the key of the component to refresh the default values of the fields
           <React.Fragment
             key={!editCampId || isLoadedCampData ? "loaded" : "loading"}
           >

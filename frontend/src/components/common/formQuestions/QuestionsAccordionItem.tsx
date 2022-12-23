@@ -9,7 +9,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
+import {
+  CreateFormQuestionRequest,
+  FormQuestion,
+} from "../../../types/CampsTypes";
 import QuestionCard from "./QuestionCard";
 import RegistrationQuestionCard from "../../pages/CampCreation/RegistrationForm/RegistrationQuestionCard";
 import NoRegistrationQuestionsCard from "../../pages/CampCreation/RegistrationForm/NoRegistrationQuestionsCard";
@@ -21,7 +24,7 @@ type QuestionsAccordionItemProps = {
   onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
     oldQuestion: FormQuestion,
-    newQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestionRequest,
   ) => void;
   isTemplatePage?: boolean;
 };

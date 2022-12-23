@@ -64,10 +64,8 @@ const editCampById = async (
     );
   }
 
-  const fieldsToUpdate: CreateUpdateCampRequest = { ...camp };
-
   const formData = new FormData();
-  formData.append("data", JSON.stringify(fieldsToUpdate));
+  formData.append("data", JSON.stringify({ ...camp }));
   const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
     headers: {
       Authorization: getBearerToken(),

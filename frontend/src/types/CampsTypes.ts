@@ -42,7 +42,7 @@ export type CreateUpdateCampRequest = Omit<
   "id" | "formQuestions" | "campSessions" | "campPhotoUrl"
 > & {
   campSessions: CreateCampSessionRequest[];
-  formQuestions: CreateFormQuestion[];
+  formQuestions: CreateFormQuestionRequest[];
 };
 
 export type CreateUpdateCampResponse = Omit<
@@ -104,4 +104,4 @@ export type FormQuestion = {
   category: QuestionCategory;
 };
 
-export type CreateFormQuestion = Omit<FormQuestion, "id">;
+export type CreateFormQuestionRequest = Omit<FormQuestion, "id">;

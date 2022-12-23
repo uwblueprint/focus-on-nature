@@ -22,36 +22,17 @@ const CampCreationFooter = ({
 }: CampCreationFooterProps): React.ReactElement => {
   const onNextStep = async () => {
     handleStepNavigation(1);
-    let isPublishedCamp: boolean;
-    let isNewCamp: boolean;
 
     if (currentStep === CampCreationPages.RegistrationFormPage) {
-      // Publishing a new camp
-      if (!isEditingCamp) {
-        isPublishedCamp = true;
-        isNewCamp = true;
-      } else {
-        // Publishing a draft camp (should update the camp, not create a new camp)
-        isPublishedCamp = true;
-        isNewCamp = false;
-      }
+      const isPublishedCamp = true;
+      const isNewCamp = !isEditingCamp;
       createUpdateCamp(isPublishedCamp, isNewCamp);
     }
   };
 
   const onSaveAsDraft = () => {
-    let isPublishedCamp: boolean;
-    let isNewCamp: boolean;
-
-    // Saving a new camp as draft
-    if (!isEditingCamp) {
-      isPublishedCamp = false;
-      isNewCamp = true;
-    } else {
-      // Saving a draft camp (should update the camp, not create a new camp)
-      isPublishedCamp = false;
-      isNewCamp = false;
-    }
+    const isNewCamp = !isEditingCamp;
+    const isPublishedCamp = false;
     createUpdateCamp(isPublishedCamp, isNewCamp);
   };
 
