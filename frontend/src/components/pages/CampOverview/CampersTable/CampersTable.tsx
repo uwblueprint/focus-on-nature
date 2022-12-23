@@ -232,15 +232,17 @@ const CampersTable = ({
                     </VStack>
                   </Td>
                   <Td maxWidth="320px">
-                    <VStack align="start">
-                      <Text
-                        style={textStyles.buttonSemiBold}
-                      >{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
-                      <Text>
-                        {camper.contacts[1].phoneNumber} |{" "}
-                        {camper.contacts[1].email}
-                      </Text>
-                    </VStack>
+                    {camper.contacts.length > 1 && (
+                      <VStack align="start">
+                        <Text
+                          style={textStyles.buttonSemiBold}
+                        >{`${camper.contacts[1].firstName} ${camper.contacts[1].lastName}`}</Text>
+                        <Text>
+                          {camper.contacts[1].phoneNumber} |{" "}
+                          {camper.contacts[1].email}
+                        </Text>
+                      </VStack>
+                    )}
                   </Td>
                   <Td pl="7px" maxWidth="760px">
                     <CamperDetailsBadgeGroup camper={camper} />
