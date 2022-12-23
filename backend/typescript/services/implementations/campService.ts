@@ -3,13 +3,12 @@ import mongoose, { Schema, ClientSession } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
-  CreateCampDTO,
   CamperCSVInfoDTO,
   CampDTO,
   CampSessionDTO,
   UpdateCampSessionDTO,
   GetCampDTO,
-  UpdateCampDTO,
+  CreateUpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
   UpdateCampSessionsDTO,
@@ -399,7 +398,10 @@ class CampService implements ICampService {
     };
   }
 
-  async updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO> {
+  async updateCampById(
+    campId: string,
+    camp: CreateUpdateCampDTO,
+  ): Promise<CampDTO> {
     let oldCamp: Camp | null;
     let newCamp: Camp | null;
     let newCampSessions: CampSessionDTO[] = [];
@@ -439,38 +441,73 @@ class CampService implements ICampService {
         );
       }
 
-      // Update base camp level info
-      newCamp = await MgCamp.findByIdAndUpdate(
-        campId,
-        {
-          $set: {
-            name: camp.name,
-            active: camp.active,
-            ageLower: camp.ageLower,
-            ageUpper: camp.ageUpper,
-            campCoordinators: camp.campCoordinators,
-            campCounsellors: camp.campCounsellors,
-            description: camp.description,
-            earlyDropoff: camp.earlyDropoff,
-            latePickup: camp.latePickup,
-            dropoffFee: camp.dropoffFee,
-            pickupFee: camp.pickupFee,
-            location: camp.location,
-            startTime: camp.startTime,
-            endTime: camp.endTime,
-            volunteers: camp.volunteers,
-            fee: camp.fee,
-            fileName: camp.filePath || oldCamp.fileName ? fileName : null,
+      // Update base camp level info. Note: ED and LP must be both be present or neither
+      if (
+        camp.earlyDropoff &&
+        camp.latePickup &&
+        camp.pickupFee &&
+        camp.dropoffFee
+      ) {
+        newCamp = await MgCamp.findByIdAndUpdate(
+          campId,
+          {
+            $set: {
+              name: camp.name,
+              active: camp.active,
+              ageLower: camp.ageLower,
+              ageUpper: camp.ageUpper,
+              campCoordinators: camp.campCoordinators,
+              campCounsellors: camp.campCounsellors,
+              description: camp.description,
+              earlyDropoff: camp.earlyDropoff,
+              latePickup: camp.latePickup,
+              dropoffFee: camp.dropoffFee,
+              pickupFee: camp.pickupFee,
+              location: camp.location,
+              startTime: camp.startTime,
+              endTime: camp.endTime,
+              volunteers: camp.volunteers,
+              fee: camp.fee,
+              fileName: camp.filePath || oldCamp.fileName ? fileName : null,
+            },
           },
-        },
-        {
-          new: true,
-          session,
-        },
-      ).populate({
-        path: "campSessions",
-        model: MgCampSession,
-      });
+          {
+            new: true,
+            session,
+          },
+        ).populate({
+          path: "campSessions",
+          model: MgCampSession,
+        });
+      } else {
+        newCamp = await MgCamp.findByIdAndUpdate(
+          campId,
+          {
+            $set: {
+              name: camp.name,
+              active: camp.active,
+              ageLower: camp.ageLower,
+              ageUpper: camp.ageUpper,
+              campCoordinators: camp.campCoordinators,
+              campCounsellors: camp.campCounsellors,
+              description: camp.description,
+              location: camp.location,
+              startTime: camp.startTime,
+              endTime: camp.endTime,
+              volunteers: camp.volunteers,
+              fee: camp.fee,
+              fileName: camp.filePath || oldCamp.fileName ? fileName : null,
+            },
+          },
+          {
+            new: true,
+            session,
+          },
+        ).populate({
+          path: "campSessions",
+          model: MgCampSession,
+        });
+      }
 
       if (!newCamp) {
         throw new Error(`Camp' with campId ${campId} not found.`);
@@ -537,27 +574,29 @@ class CampService implements ICampService {
 
         const campFee = newCamp.fee;
 
-        const dropoffPriceObject = await createStripePrice(
-          dropoffProductId,
-          dropoffFee * 100,
-        );
+        if (pickupFee && dropoffFee) {
+          const dropoffPriceObject = await createStripePrice(
+            dropoffProductId,
+            dropoffFee * 100,
+          );
 
-        const pickupPriceObject = await createStripePrice(
-          pickupProductId,
-          pickupFee * 100,
-        );
+          const pickupPriceObject = await createStripePrice(
+            pickupProductId,
+            pickupFee * 100,
+          );
 
-        await MgCamp.findByIdAndUpdate(
-          campId,
-          {
-            dropoffPriceId: dropoffPriceObject.id,
-            pickupPriceId: pickupPriceObject.id,
-          },
-          { session },
-        );
+          await MgCamp.findByIdAndUpdate(
+            campId,
+            {
+              dropoffPriceId: dropoffPriceObject.id,
+              pickupPriceId: pickupPriceObject.id,
+            },
+            { session },
+          );
+        }
 
         await Promise.all(
-          (newCamp.campSessions as CampSession[]).map(async (campSession) => {
+          newCampSessions.map(async (campSession) => {
             const campSessionFeeInCents =
               campFee * campSession.dates.length * 100;
             const priceObject = await createStripePrice(
@@ -1266,7 +1305,7 @@ class CampService implements ICampService {
     }
   }
 
-  async createCamp(camp: CreateCampDTO): Promise<CampDTO> {
+  async createCamp(camp: CreateUpdateCampDTO): Promise<CampDTO> {
     let newCamp: Camp;
     let newSessions: CampSessionDTO[];
     let newFormQuestions: string[];
@@ -1291,8 +1330,9 @@ class CampService implements ICampService {
       const stripeDropoffProduct = await createStripeDropoffProduct(camp.name);
       const stripePickupProduct = await createStripePickupProduct(camp.name);
 
+      // Create the dropoff
       let priceIds = { dropoffPriceId: "", pickupPriceId: "" };
-      if (camp.active) {
+      if (camp.active && camp.dropoffFee && camp.pickupFee) {
         const dropoffPriceObject = await createStripePrice(
           stripeDropoffProduct.id,
           camp.dropoffFee * 100,

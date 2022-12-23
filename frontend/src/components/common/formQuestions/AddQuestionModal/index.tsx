@@ -19,7 +19,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import {
-  CreateFormQuestion,
+  CreateFormQuestionRequest,
   FormQuestion,
   QuestionCategory,
   QuestionType,
@@ -29,8 +29,11 @@ import QuestionOptionSection from "./QuestionOptionSection";
 type AddQuestionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (formQuestion: CreateFormQuestion) => void;
-  onEdit?: (oldQuestion: FormQuestion, newQuestion: CreateFormQuestion) => void;
+  onSave?: (formQuestion: CreateFormQuestionRequest) => void;
+  onEdit?: (
+    oldQuestion: FormQuestion,
+    newQuestion: CreateFormQuestionRequest,
+  ) => void;
   questionToBeEdited?: FormQuestion;
   editing?: boolean;
   isFormTemplatePage?: boolean;
@@ -99,7 +102,7 @@ const AddQuestionModal = ({
       return;
     }
 
-    const formQuestion: CreateFormQuestion = {
+    const formQuestion: CreateFormQuestionRequest = {
       type: questionType as QuestionType,
       question,
       required: isRequiredQuestion,

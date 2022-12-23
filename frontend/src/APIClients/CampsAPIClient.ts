@@ -2,8 +2,11 @@ import { getBearerToken } from "../constants/AuthConstants";
 import {
   CampResponse,
   CampSessionResponse,
+  CreateUpdateCampRequest,
+  CreateUpdateCampResponse,
   UpdateCampSessionsRequest,
 } from "../types/CampsTypes";
+import { isMinCampDetailsFilled } from "../utils/CampUtils";
 import baseAPIClient from "./BaseAPIClient";
 
 const getAllCamps = async (year?: number): Promise<Array<CampResponse>> => {
@@ -31,27 +34,45 @@ const getCampById = async (id: string): Promise<CampResponse> => {
   }
 };
 
+const createNewCamp = async (
+  camp: CreateUpdateCampRequest,
+): Promise<CreateUpdateCampResponse> => {
+  // Check if atleast the first step and 1 session is scheduled
+  if (!isMinCampDetailsFilled(camp)) {
+    throw new Error(
+      `You must fill out all the required fields in step 1 and schedule at least 1 session before creating a camp`,
+    );
+  }
+
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(camp));
+
+  const { data } = await baseAPIClient.post("/camp", formData, {
+    headers: { Authorization: getBearerToken() },
+  });
+  return data;
+};
+
 const editCampById = async (
   id: string,
-  camp: CampResponse,
-): Promise<CampResponse> => {
-  try {
-    // formquestions and campsessions are edited separately
-    const fieldsToUpdate: Partial<CampResponse> = { ...camp };
-    delete fieldsToUpdate.formQuestions;
-    delete fieldsToUpdate.campSessions;
-
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(fieldsToUpdate));
-    const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
-      headers: {
-        Authorization: getBearerToken(),
-      },
-    });
-    return data;
-  } catch (error) {
-    return error as CampResponse;
+  camp: CreateUpdateCampRequest,
+): Promise<CreateUpdateCampResponse> => {
+  // Check if atleast the first step and 1 session is scheduled
+  if (!isMinCampDetailsFilled(camp)) {
+    throw new Error(
+      `You must fill out all the required fields in step 1 and schedule at least 1 session before updating a camp`,
+    );
   }
+
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({ ...camp }));
+  const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
+    headers: {
+      Authorization: getBearerToken(),
+    },
+  });
+
+  return data;
 };
 
 const deleteCamp = async (id: string): Promise<boolean> => {
@@ -118,6 +139,7 @@ const getCampSessionCsv = async (id: string): Promise<string> => {
 export default {
   getAllCamps,
   getCampById,
+  createNewCamp,
   editCampById,
   deleteCamp,
   updateCampSessions,

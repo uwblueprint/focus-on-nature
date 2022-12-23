@@ -16,7 +16,10 @@ import {
   Waiver,
   WaiverClause,
 } from "../../../types/AdminTypes";
-import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
+import {
+  CreateFormQuestionRequest,
+  FormQuestion,
+} from "../../../types/CampsTypes";
 import Footer from "./Footer/Footer";
 import RegistrationFormTemplateTab from "./FormTemplateTab";
 import WaiverTab from "./WaiverTab";
@@ -169,7 +172,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   };
 
   const onAddFormQuestionToTemplate = async (
-    formQuestion: CreateFormQuestion,
+    formQuestion: CreateFormQuestionRequest,
   ) => {
     const newFormQuestion = await AdminAPIClient.addQuestionToTemplate(
       formQuestion,
@@ -222,7 +225,7 @@ const GlobalFormsPage = (): React.ReactElement => {
 
   const editFormQuestion = async (
     oldQuestion: FormQuestion,
-    newQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestionRequest,
   ) => {
     const res = await AdminAPIClient.editFormQuestion(
       oldQuestion.id,
