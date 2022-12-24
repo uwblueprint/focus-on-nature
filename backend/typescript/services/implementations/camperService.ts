@@ -216,6 +216,7 @@ class CamperService implements ICamperService {
 
         const createStripeCheckoutSessionResponse = await createStripeCheckoutSession(
           lineItems,
+          camp.id,
         );
 
         if (!createStripeCheckoutSessionResponse) {

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import React, { useEffect, useState, useReducer, Reducer, useRef } from "react";
 
 import { Box, Text, Spinner, Flex, useDisclosure } from "@chakra-ui/react";
@@ -25,15 +25,17 @@ import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "./RegistrationResult/RegistrationErrorModal";
 import {
   CAMP_ID_SESSION_STORAGE_KEY,
+  CANCEL_RESULT_CODE,
+  SUCCESS_RESULT_CODE,
   dummyCampers,
 } from "../../../constants/RegistrationConstants";
 import {
   getCheckoutSessionStorageKey,
-  getFailedSessionStorageKey,
   mapToCampItems,
 } from "../../../utils/RegistrationUtils";
 import { CheckoutData } from "../../../types/RegistrationTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
+import RegistrationResultPage from "./RegistrationResult";
 
 type ErrorModalMessage = {
   title: string;
@@ -42,6 +44,10 @@ type ErrorModalMessage = {
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const registrationResult = params.get("result");
 
   const {
     isOpen: errorModalIsOpen,
@@ -153,7 +159,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     saveSessionToSessionStorage(campId, {
       campers: registeringCampers,
       camp,
-      items: mapToCampItems(registeringCampers, currentCamp),
+      items: mapToCampItems(currentCamp, registeringCampers),
       waiver: waiverInterface.waiver as WaiverType,
       checkoutUrl: checkoutSessionUrl,
     });
@@ -253,36 +259,53 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   useEffect(() => {
-    const failedSession = sessionStorage.getItem(
-      getFailedSessionStorageKey(campId),
-    );
+    const checkoutCampId = sessionStorage.getItem(CAMP_ID_SESSION_STORAGE_KEY);
 
-    if (failedSession) {
-      const restoredSession = JSON.parse(failedSession) as CheckoutData;
+    let sessionWasRestored = false;
+
+    if (checkoutCampId && registrationResult) {
+      const checkoutKey = getCheckoutSessionStorageKey(checkoutCampId);
+      const sessionData = sessionStorage.getItem(checkoutKey);
       sessionStorage.clear();
 
-      setRegisteringCampers(restoredSession.campers);
-      setCamp(restoredSession.camp);
-      waiverDispatch({
-        type: WaiverActions.LOADED_WAIVER,
-        waiver: restoredSession.waiver,
-      });
-      setCheckoutUrl(restoredSession.checkoutUrl);
+      if (sessionData) {
+        try {
+          const restoredSession = JSON.parse(sessionData) as CheckoutData;
 
-      // TODO need the isFilled booleans to point to fields on campers
-      // to fill out status bar properly
-      setSamplePersonalInfo(true);
-      setSampleAdditionalInfo(true);
-      setIsLoading(false);
-      setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
+          setRegisteringCampers(restoredSession.campers);
+          setCamp(restoredSession.camp);
+          waiverDispatch({
+            type: WaiverActions.LOADED_WAIVER,
+            waiver: restoredSession.waiver,
+          });
+          setCheckoutUrl(restoredSession.checkoutUrl);
 
-      setErrorModalMessage({
-        title: "Payment cancelled",
-        body:
-          "No payment was processed. If this was not intentional, please try again.",
-      });
-      errorModalOnOpen();
-    } else {
+          if (registrationResult === CANCEL_RESULT_CODE) {
+            // TODO need the isFilled booleans to point to fields on campers
+            // to fill out status bar properly
+            setSampleAdditionalInfo(true);
+            setIsLoading(false);
+            setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
+
+            setErrorModalMessage({
+              title: "Payment cancelled",
+              body:
+                "No payment was processed. If this was not intentional, please try again.",
+            });
+            errorModalOnOpen();
+          }
+
+          sessionWasRestored = true;
+        } catch (err: unknown) {
+          // eslint-disable-line no-empty
+        }
+      }
+    }
+
+    // If we expect session cache to exist, and it doesn't exist, do not repopulate
+    // via network call -- instead show generic message in RegistrationResult in case
+    // the user entered `?result=success` manually into the URL (so no actually success)
+    if (!sessionWasRestored && registrationResult !== SUCCESS_RESULT_CODE) {
       CampsAPIClient.getCampById(campId).then((campResponse) => {
         if (campResponse.id) {
           setCamp(campResponse);
@@ -301,52 +324,64 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         // TODO error handling
       });
     }
-  }, [campId, errorModalOnOpen]);
+  }, [campId, errorModalOnOpen, registrationResult]);
 
   return (
-    <Flex
-      direction="column"
-      w="100vw"
-      pt={{ sm: "120px", md: "120px", lg: "144px" }}
-      pb={{ sm: "170px", md: "108px", lg: "144px" }}
-    >
-      <RegistrationNavStepper
-        currentStep={currentStep}
-        isPersonalInfoFilled={isPersonalInfoFilled}
-        isAdditionalInfoFilled={isAdditionalInfoFilled}
-        isWaiverFilled={isWaiverFilled}
-        isReviewRegistrationFilled={isReviewRegistrationFilled}
-        setCurrentStep={setCurrentStep}
-      />
-      {!isLoading && (
-        <Box mx="10vw">
-          {camp ? (
-            getCurrentRegistrantStepComponent(currentStep)
-          ) : (
-            <Text>Error: Camp not found. Please go back and try again.</Text>
+    <>
+      {registrationResult === SUCCESS_RESULT_CODE ? (
+        <RegistrationResultPage
+          camp={camp}
+          campers={registeringCampers}
+          items={camp ? mapToCampItems(camp, registeringCampers) : undefined}
+        />
+      ) : (
+        <Flex
+          direction="column"
+          w="100vw"
+          pt={{ sm: "120px", md: "120px", lg: "144px" }}
+          pb={{ sm: "170px", md: "108px", lg: "144px" }}
+        >
+          <RegistrationNavStepper
+            currentStep={currentStep}
+            isPersonalInfoFilled={isPersonalInfoFilled}
+            isAdditionalInfoFilled={isAdditionalInfoFilled}
+            isWaiverFilled={isWaiverFilled}
+            isReviewRegistrationFilled={isReviewRegistrationFilled}
+            setCurrentStep={setCurrentStep}
+          />
+          {!isLoading && (
+            <Box mx="10vw">
+              {camp ? (
+                getCurrentRegistrantStepComponent(currentStep)
+              ) : (
+                <Text>
+                  Error: Camp not found. Please go back and try again.
+                </Text>
+              )}
+            </Box>
           )}
-        </Box>
-      )}
 
-      {isLoading && <Spinner justifySelf="center" />}
-      <RegistrationFooter
-        nextBtnRef={nextBtnRef}
-        currentStep={currentStep}
-        isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
-        handleStepNavigation={handleStepNavigation}
-      />
-      <RegistrationErrorModal
-        title={errorModalMessage.title}
-        message={errorModalMessage.body}
-        onConfirm={() => {
-          if (checkoutUrl && camp) {
-            goToCheckout(checkoutUrl, camp);
-          }
-        }}
-        isOpen={errorModalIsOpen}
-        onClose={errorModalOnClose}
-      />
-    </Flex>
+          {isLoading && <Spinner justifySelf="center" />}
+          <RegistrationFooter
+            nextBtnRef={nextBtnRef}
+            currentStep={currentStep}
+            isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
+            handleStepNavigation={handleStepNavigation}
+          />
+          <RegistrationErrorModal
+            title={errorModalMessage.title}
+            message={errorModalMessage.body}
+            onConfirm={() => {
+              if (checkoutUrl && camp) {
+                goToCheckout(checkoutUrl, camp);
+              }
+            }}
+            isOpen={errorModalIsOpen}
+            onClose={errorModalOnClose}
+          />
+        </Flex>
+      )}
+    </>
   );
 };
 

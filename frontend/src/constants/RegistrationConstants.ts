@@ -2,6 +2,10 @@ import { CreateCamperRequest } from "../types/CamperTypes";
 
 export const CAMP_ID_SESSION_STORAGE_KEY = "checkoutSessionCampId";
 
+export const SUCCESS_RESULT_CODE = "success";
+
+export const CANCEL_RESULT_CODE = "cancel";
+
 export const dummyCampers: CreateCamperRequest[] = [
   {
     campSession: "63139cdec3d7b55b44a01541",

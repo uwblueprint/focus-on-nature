@@ -1,18 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Text, Flex, VStack, HStack } from "@chakra-ui/react";
-import { useHistory, useLocation } from "react-router-dom";
-import {
-  CAMP_REGISTER_PAGE,
-  REGISTRATION_CANCEL_PAGE,
-} from "../../../../constants/Routes";
-import { CartItem, CheckoutData } from "../../../../types/RegistrationTypes";
+import { CartItem } from "../../../../types/RegistrationTypes";
 
-import { CAMP_ID_SESSION_STORAGE_KEY } from "../../../../constants/RegistrationConstants";
-import {
-  calculateTotalPrice,
-  getCheckoutSessionStorageKey,
-  getFailedSessionStorageKey,
-} from "../../../../utils/RegistrationUtils";
+import { calculateTotalPrice } from "../../../../utils/RegistrationUtils";
 import RegistrationInfoCard from "./RegistrationInfoCard";
 import {
   cardBoldStyles,
@@ -21,6 +11,8 @@ import {
   resultTitleStyles,
   subheadingStyles,
 } from "./textStyles";
+import { CampResponse } from "../../../../types/CampsTypes";
+import { CreateCamperRequest } from "../../../../types/CamperTypes";
 
 const NoSessionDataFound = (): React.ReactElement => {
   return (
@@ -62,43 +54,17 @@ const PaymentSummaryList = ({
   );
 };
 
-const RegistrationSuccessPage = (): React.ReactElement => {
-  const [checkoutData, setCheckoutData] = useState<CheckoutData | undefined>(
-    undefined,
-  );
+type RegistrationResultProps = {
+  camp?: CampResponse;
+  campers?: CreateCamperRequest[];
+  items?: CartItem[];
+};
 
-  const location = useLocation();
-  const history = useHistory();
-
-  useEffect(() => {
-    const checkoutCampId = sessionStorage.getItem(CAMP_ID_SESSION_STORAGE_KEY);
-
-    if (checkoutCampId) {
-      const checkoutKey = getCheckoutSessionStorageKey(checkoutCampId);
-      const sessionData = sessionStorage.getItem(checkoutKey);
-
-      if (sessionData) {
-        setCheckoutData(JSON.parse(sessionData) as CheckoutData);
-        sessionStorage.removeItem(checkoutKey);
-
-        if (location.pathname === REGISTRATION_CANCEL_PAGE) {
-          // Tells registration page explicitly that there is an existing failed checkout
-          // as checkout data in session storage is generic for failure/success
-          sessionStorage.setItem(
-            getFailedSessionStorageKey(checkoutCampId),
-            sessionData,
-          );
-        }
-      }
-
-      if (location.pathname === REGISTRATION_CANCEL_PAGE) {
-        history.replace(CAMP_REGISTER_PAGE.replace(":id", checkoutCampId));
-      } else {
-        sessionStorage.clear();
-      }
-    }
-  }, [checkoutData, location, history]);
-
+const RegistrationResult = ({
+  camp,
+  campers,
+  items,
+}: RegistrationResultProps): React.ReactElement => {
   return (
     <Flex
       direction="column"
@@ -106,7 +72,7 @@ const RegistrationSuccessPage = (): React.ReactElement => {
       mx={{ sm: "20px", md: "40px", lg: "10vw" }}
       my={{ base: "64px", lg: "10vh" }}
     >
-      {checkoutData ? (
+      {camp && campers && items ? (
         <>
           <Text textStyle={resultTitleStyles}>Thank you for registering!</Text>
           <Text
@@ -134,9 +100,9 @@ const RegistrationSuccessPage = (): React.ReactElement => {
               </Text>
               <RegistrationInfoCard
                 imageSrc="src"
-                campName={checkoutData.camp?.name ?? ""}
+                campName={camp?.name ?? ""}
                 sessions="Session 1 - Aug 5 to Aug 8\nSession 2 - Aug 12 to Aug 15"
-                registeredCampers={checkoutData?.campers ?? []}
+                registeredCampers={campers ?? []}
               />
             </VStack>
             <VStack
@@ -151,7 +117,7 @@ const RegistrationSuccessPage = (): React.ReactElement => {
               >
                 Payment Summary
               </Text>
-              <PaymentSummaryList items={checkoutData.items} />
+              <PaymentSummaryList items={items} />
             </VStack>
           </Flex>
         </>
@@ -162,4 +128,4 @@ const RegistrationSuccessPage = (): React.ReactElement => {
   );
 };
 
-export default RegistrationSuccessPage;
+export default RegistrationResult;

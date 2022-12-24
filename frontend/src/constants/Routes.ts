@@ -23,7 +23,3 @@ export const CAMP_OVERVIEW_PAGE = "/admin/camp/:id";
 export const CAMP_REGISTER_PAGE = "/register/camp/:id";
 
 export const CAMP_WAITLIST_PAGE = "/waitlist/camp/:id";
-
-export const REGISTRATION_SUCCESS_PAGE = "/register/success";
-
-export const REGISTRATION_CANCEL_PAGE = "/register/cancel";

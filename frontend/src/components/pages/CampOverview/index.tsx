@@ -58,8 +58,6 @@ const CampOverviewPage = (): JSX.Element => {
     campSessions: [],
     volunteers: "",
     campPhotoUrl: "",
-    dropoffFee: 0,
-    pickupFee: 0,
   });
   const numSessions = camp.campSessions?.length;
 

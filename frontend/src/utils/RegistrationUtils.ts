@@ -9,8 +9,8 @@ export const getFailedSessionStorageKey = (campId: string): string =>
   `failedCheckout-${campId}`;
 
 export const mapToCampItems = (
-  campers: CreateCamperRequest[],
   camp: CampResponse,
+  campers: CreateCamperRequest[],
 ): CartItem[] => {
   const items: CartItem[] = [
     {

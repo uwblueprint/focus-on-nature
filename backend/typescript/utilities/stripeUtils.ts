@@ -92,12 +92,13 @@ export async function createStripePrice(
 
 export async function createStripeCheckoutSession(
   lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
+  campId: string,
 ): Promise<string | null> {
   const checkoutSession = await stripe.checkout.sessions.create({
     line_items: lineItems,
     mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/register/success`,
-    cancel_url: `${process.env.CLIENT_URL}/register/cancel`,
+    success_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=success`,
+    cancel_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=cancel`,
   });
 
   return checkoutSession.url;

@@ -19,7 +19,7 @@ const ReviewRegistration = ({
     <Box>
       <PaymentSummary
         campName={camp.name}
-        items={mapToCampItems(campers, camp)}
+        items={mapToCampItems(camp, campers)}
       />
 
       {/* <ReviewInformation /> */}
