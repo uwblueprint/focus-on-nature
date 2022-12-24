@@ -8,8 +8,8 @@ import {
   ClickOptionalClause,
   FillDate,
   FillName,
-} from "../../../../types/waiverTypes";
-import { WaiverClause } from "../../../../types/AdminTypes";
+} from "../../../../../types/waiverTypes";
+import { WaiverClause } from "../../../../../types/AdminTypes";
 
 const waiverReducer = (
   waiverInterface: WaiverInterface,

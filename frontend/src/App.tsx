@@ -23,7 +23,6 @@ import CampCreationPage from "./components/pages/CampCreation";
 import CampsList from "./components/pages/CampsList/index";
 import RegistrantExperiencePage from "./components/pages/RegistrantExperience";
 import WaitlistExperiencePage from "./components/pages/WaitlistExperience";
-import SessionSelection from "./components/pages/RegistrantExperience/SessionSelection";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -82,11 +81,6 @@ const App = (): React.ReactElement => {
               exact
               path={Routes.CAMP_REGISTER_PAGE}
               component={RegistrantExperiencePage}
-            />
-            <Route
-              exact
-              path={Routes.CAMP_SESSION_PAGE}
-              component={SessionSelection}
             />
             <Route
               exact

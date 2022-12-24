@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
-import { CartItem } from "../../../../types/RegistrationTypes";
+import { CartItem } from "../../../../../types/RegistrationTypes";
 import ReviewInformation from "./ReviewInformation";
 
 type ReviewRegistrationProps = {
