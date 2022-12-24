@@ -9,6 +9,8 @@ import {
   VStack,
   useToast,
   useDisclosure,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 import ScheduledSessionsCard from "./ScheduledSessionsCard";
@@ -70,12 +72,16 @@ const CurrentSessionsView = ({
         onClose={onClose}
         onDelete={confirmDeleteSession}
       />
-      <HStack justifyContent="space-between" flexWrap="wrap">
-        <Text textStyle="displayLarge">Current Sessions</Text>
-        <Button variant="secondary" onClick={() => setShowAddSessions(true)}>
-          Add more session(s)
-        </Button>
-      </HStack>
+      <Wrap justifyContent="space-between">
+        <WrapItem>
+          <Text textStyle="displayLarge">Current Sessions</Text>
+        </WrapItem>
+        <WrapItem>
+          <Button variant="secondary" onClick={() => setShowAddSessions(true)}>
+            Add more session(s)
+          </Button>
+        </WrapItem>
+      </Wrap>
       <Divider marginY={5} />
       <Box overflowY="auto" flex="1 1 0">
         <VStack alignItems="flex-start" spacing={5}>
