@@ -152,7 +152,9 @@ const CampsTable = ({
           <Tr>
             <Th color="text.default.100">Camp Name</Th>
             <Th color="text.default.100">Camp Dates</Th>
-            <Th color="text.default.100">Camp Status</Th>
+            <Th color="text.default.100" justifyContent="center" display="flex">
+              Camp Status
+            </Th>
             <Th color="text.default.100"> </Th>
           </Tr>
         </Thead>
