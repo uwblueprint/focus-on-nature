@@ -57,6 +57,30 @@ export const getFormattedDateString = (dates: Array<string>): string => {
   return `${startDate} - ${endDate}`;
 };
 
+// Takes a 24 hour time string and converts it to AM/PM time
+export const formatAMPM = (time: string): string=> {
+  const date = new Date(`1/1/2022 ${time}`);
+
+  return date.toLocaleString("en-US", { 
+      hour: "numeric",
+      minute: "2-digit", 
+      hour12: true 
+  })
+}
+
+export const getFormattedSingleDateString = (date: string): string => {
+  const dateString = new Date(date).toLocaleDateString(
+    "en-us",
+    {
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+    },
+  );
+
+  return dateString;
+};
+
 // returns in the form "Jan 1 - Feb 2, 2022"
 export const getFormattedDateStringFromDateArray = (dates: Date[]): string => {
   if (dates.length === 0) return "No dates selected";

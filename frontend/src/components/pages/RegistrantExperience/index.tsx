@@ -4,6 +4,7 @@ import Params, { useParams} from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
 import AdditionalInfo from "./AdditionalInfo";
+import {EdlpChoice} from "./AdditionalInfo/edlpSessionRegistration";
 import Waiver from "./Waiver";
 import ReviewRegistration from "./ReviewRegistration";
 import RegistrationNavStepper from "./RegistrationNavStepper";
@@ -48,7 +49,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   }, []);
 
   const [camp, setCamp] = React.useState<CampResponse>();
-  console.log(camp)
+  // console.log(camp)
 
   const { id } = useParams<{ id: string }>()
 
@@ -64,9 +65,30 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   }, []);
 
   const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
-  const [edlpChoices, setEdlpChoices] = useState<Record<string, unknown>>({});
+  const DUMMY_CAMPERS = ["The Wok","Zhong Xina"]
+
+  const createFiller = (i:number, j:number) => {
+    const filler: EdlpChoice = {
+      date: camp?.campSessions[i].dates[j] ?? String(i*100+j),
+      edlp: ['-','-']
+    }
+    return filler
+  }
+  
+  const matrix: EdlpChoice[][] = new Array((camp?.campSessions)?.length).fill(0).map((_,i) => new Array(camp?.campSessions[i].dates.length).fill(0).map((__, j) => createFiller(i,j)));
+  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(matrix);
+  
+  useEffect(() => {
+    setEdlpChoices(() => [...matrix])  
+  }, [camp]) 
+
+  
+
+  
   console.log(edlpChoices)
-  const [edlpFees, setEdlpFees] = useState(0);
+  
+  const [totalEdlpFees, setTotalEdlpFees] = useState(0);
+
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
 
   const isPersonalInfoFilled = samplePersonalInfo;
@@ -104,12 +126,11 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         return (
           <AdditionalInfo
             camp={camp}
+            campers={DUMMY_CAMPERS}
             edlpChoices={edlpChoices}
-            edlpFees={edlpFees}
+            totalEdlpFees={totalEdlpFees}
             setEdlpChoices={setEdlpChoices}
-            setEdlpFees={setEdlpFees}
-
-            // toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            setTotalEdlpFees={setTotalEdlpFees}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
