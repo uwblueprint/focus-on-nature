@@ -249,3 +249,10 @@ export const isMinCampDetailsFilled = (
   }
   return false;
 };
+
+export const adjustTimeToAmPm = (time: string): string => {
+  const [hourString, minutesString] = time.split(":");
+  const hour = parseInt(hourString, 10);
+  const adjustedHour = hour > 12 ? hour - 12 : hour;
+  return `${adjustedHour}:${minutesString}${hour < 12 ? "AM" : "PM"}`;
+};

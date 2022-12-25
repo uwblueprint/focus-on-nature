@@ -6,6 +6,8 @@ import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import { Waiver } from "../../../types/AdminTypes";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
@@ -13,32 +15,47 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [campResponse, setCampResponse] = useState<CampResponse | undefined>(
     undefined,
   );
-  const [selectedSessionsIds, setSelectedSessionsIds] = useState<string[]>([]);
+  const [waiverResponse, setWaiverResponse] = useState<Waiver | undefined>(
+    undefined,
+  );
+
   const [isLoading, setIsLoading] = useState(true);
 
-  const completedSessionSelection = selectedSessionsIds.length !== 0;
-
-  const resetToSesssionSelection = () => setSelectedSessionsIds([]);
+  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
+    new Set(),
+  );
+  const [sessionSelectionIsComplete, setSessionSelectionIsComplete] = useState(
+    false,
+  );
 
   useEffect(() => {
-    CampsAPIClient.getCampById(campId).then((camp) => {
-      if (camp.id) {
-        setCampResponse(camp);
-      }
-      setIsLoading(false);
-    });
+    CampsAPIClient.getCampById(campId).then((camp) =>
+      camp.id ? setCampResponse(camp) : null,
+    );
+
+    AdminAPIClient.getWaiver().then((waiver) =>
+      waiver.clauses ? setWaiverResponse(waiver) : null,
+    );
+
+    setIsLoading(false);
   }, [campId]);
 
-  if (campResponse) {
-    return completedSessionSelection ? (
+  if (campResponse && waiverResponse) {
+    return sessionSelectionIsComplete ? (
       <RegistrationSteps
         camp={campResponse}
-        onClickBack={resetToSesssionSelection}
+        selectedSessions={campResponse.campSessions.filter((session) =>
+          selectedSessions.has(session.id),
+        )}
+        waiver={waiverResponse}
+        onClickBack={() => setSessionSelectionIsComplete(false)}
       />
     ) : (
       <SessionSelection
         camp={campResponse}
-        setSelectedSessionsIds={setSelectedSessionsIds}
+        selectedSessions={selectedSessions}
+        setSelectedSessions={setSelectedSessions}
+        onFormSubmission={() => setSessionSelectionIsComplete(true)}
       />
     );
   }

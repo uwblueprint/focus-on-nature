@@ -1,17 +1,20 @@
 import React from "react";
-import { Text, HStack, VStack } from "@chakra-ui/react";
+import { Text, HStack, VStack, Flex } from "@chakra-ui/react";
 import { ReactComponent as SunriseIcon } from "../../../../assets/icon_sunrise.svg";
 import { ReactComponent as SunsetIcon } from "../../../../assets/icon_sunset.svg";
 import { ReactComponent as PersonIcon } from "../../../../assets/person.svg";
 import { ReactComponent as LocationIcon } from "../../../../assets/icon_location.svg";
 import { CampResponse, Location } from "../../../../types/CampsTypes";
 import { campDetailsStyles, campTitleStyles } from "./SessionSelectionStyles";
+import { adjustTimeToAmPm } from "../../../../utils/CampUtils";
 
-type CampDetailsProps = {
+type CampDetailsSummaryProps = {
   camp: CampResponse;
 };
 
-const CampDetails = ({ camp }: CampDetailsProps): React.ReactElement => {
+const CampDetailsSummary = ({
+  camp,
+}: CampDetailsSummaryProps): React.ReactElement => {
   const formatLocationString = (location: Location) =>
     `${location.streetAddress1}, ${location.city}, ${location.province} ${location.postalCode}`;
 
@@ -30,20 +33,22 @@ const CampDetails = ({ camp }: CampDetailsProps): React.ReactElement => {
           {camp.ageLower} to {camp.ageUpper} years
         </Text>
       </HStack>
-      <HStack>
-        <SunriseIcon fill="black" width={25} />
-        <Text textStyle={campDetailsStyles}>
-          Earliest drop off time: {camp.earlyDropoff} AM
-        </Text>
-      </HStack>
-      <HStack>
-        <SunsetIcon fill="black" width={25} />
-        <Text textStyle={campDetailsStyles}>
-          Latest pick up time: {camp.latePickup} PM
-        </Text>
-      </HStack>
+      <Flex direction={{ base: "column", lg: "row" }}>
+        <HStack mr={{ base: "0px", lg: 8 }} mb={{ base: 2, lg: "0px" }}>
+          <SunriseIcon fill="black" width={25} />
+          <Text textStyle={campDetailsStyles}>
+            Earliest drop off time: {adjustTimeToAmPm(camp.earlyDropoff)}
+          </Text>
+        </HStack>
+        <HStack>
+          <SunsetIcon fill="black" width={25} />
+          <Text textStyle={campDetailsStyles}>
+            Latest pick up time: {adjustTimeToAmPm(camp.latePickup)}
+          </Text>
+        </HStack>
+      </Flex>
     </VStack>
   );
 };
 
-export default CampDetails;
+export default CampDetailsSummary;

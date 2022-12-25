@@ -1,46 +1,48 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Box,
   Image,
-  Grid,
   Text,
-  GridItem,
   Show,
   Flex,
   AspectRatio,
 } from "@chakra-ui/react";
 import { CampResponse } from "../../../../types/CampsTypes";
-import CampDetails from "./CampDetails";
+import CampDetailsSummary from "./CampDetailsSummary";
 import CampSessionBoard from "./CampSessionBoard";
 import { SessionSelectionState } from "./SessionSelectionTypes";
 
 type SesssionSelectionProps = {
   camp: CampResponse;
-  setSelectedSessionsIds: (newSelections: string[]) => void;
+  selectedSessions: Set<string>;
+  setSelectedSessions: (newSelections: Set<string>) => void;
+  onFormSubmission: () => void;
 };
 
 const SessionSelection = ({
   camp,
-  setSelectedSessionsIds,
+  selectedSessions,
+  setSelectedSessions,
+  onFormSubmission,
 }: SesssionSelectionProps): React.ReactElement => {
-  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
-    new Set(),
-  );
+  // Set the selection mode - all selections should be waitlisted sessions
+  // or all selections should be available sessions
+  let selectionState = SessionSelectionState.None;
 
-  const [selectionState, setSelectionState] = useState(
-    SessionSelectionState.None,
-  );
+  const sessionIter = selectedSessions[Symbol.iterator]();
+  const sessionId = sessionIter.next().value;
+  const session = camp.campSessions.find((cs) => cs.id === sessionId);
 
-  const addSelectedSession = (
-    sessionID: string,
-    sessionType: SessionSelectionState,
-  ) => {
+  if (session) {
+    selectionState =
+      session.campers.length === session.capacity
+        ? SessionSelectionState.SelectingWaitlistSessions
+        : SessionSelectionState.SelectingAvailableSessions;
+  }
+
+  const addSelectedSession = (sessionID: string) => {
     setSelectedSessions(new Set(selectedSessions.add(sessionID)));
-
-    if (selectionState === SessionSelectionState.None) {
-      setSelectionState(sessionType);
-    }
   };
 
   const removeSelectedSession = (sessionID: string) => {
@@ -48,27 +50,14 @@ const SessionSelection = ({
     newSessions.delete(sessionID);
 
     setSelectedSessions(newSessions);
-
-    if (newSessions.size === 0) {
-      setSelectionState(SessionSelectionState.None);
-    }
   };
 
-  const handleSessionClick = (
-    sessionID: string,
-    sessionType: SessionSelectionState,
-  ) => {
+  const handleSessionClick = (sessionID: string) => {
     if (selectedSessions.has(sessionID)) {
       removeSelectedSession(sessionID);
     } else {
-      addSelectedSession(sessionID, sessionType);
+      addSelectedSession(sessionID);
     }
-  };
-
-  const handleFormSubmission = () => {
-    // Acts as a "save" aciton, propagating these values up to parent which will then
-    // render the registration steps
-    setSelectedSessionsIds(Array.from(selectedSessions));
   };
 
   const getFooterButton = (
@@ -81,14 +70,14 @@ const SessionSelection = ({
             colorScheme="green"
             variant="outline"
             px={8}
-            onClick={handleFormSubmission}
+            onClick={onFormSubmission}
           >
             Register for waitlist
           </Button>
         );
       case SessionSelectionState.SelectingAvailableSessions:
         return (
-          <Button colorScheme="green" px={8} onClick={handleFormSubmission}>
+          <Button colorScheme="green" px={8} onClick={onFormSubmission}>
             Sign up now
           </Button>
         );
@@ -102,41 +91,64 @@ const SessionSelection = ({
   };
 
   return (
-    <Flex h="100vh" w="100vw">
-      <Grid templateColumns="repeat(2, 1fr)" flex="1" mb="72px">
-        <GridItem colSpan={{ sm: 2, md: 2, lg: 1 }}>
-          <Box>
-            <Grid templateColumns="repeat(2, 1fr)" gap={2} m={5}>
-              <GridItem colSpan={{ sm: 2, md: 1, lg: 2 }}>
-                <Box width="40%">
-                  <AspectRatio marginLeft="24px" ratio={16 / 9}>
-                    <Image
-                      objectFit="scale-down"
-                      src={camp.campPhotoUrl}
-                      fallbackSrc="https://bit.ly/2jYM25F"
-                      alt="Camp Image"
-                    />
-                  </AspectRatio>
-                </Box>
-              </GridItem>
-              <GridItem colSpan={{ sm: 2, md: 1, lg: 2 }}>
-                <CampDetails camp={camp} />
-              </GridItem>
-              <GridItem colSpan={2}>
-                <Show above="md">
-                  <Text as="b">Camp Details</Text>
-                  <Text>{camp.description}</Text>
-                </Show>
-              </GridItem>
-            </Grid>
-          </Box>
-        </GridItem>
-        <GridItem
-          colSpan={{ sm: 2, md: 2, lg: 1 }}
-          px={{ sm: 4, md: 4, lg: 12 }}
-          pt={{ lg: 14 }}
-          pb="148px"
-          bg={{ base: "", lg: "RGBA(0, 0, 0, 0.04)" }}
+    <Flex h="100vh" w="100vw" direction="row">
+      <Flex
+        flex={{ lg: "1" }}
+        mb="72px"
+        w="100%"
+        overflowY={{ base: "auto", lg: "visible" }}
+        direction={{ base: "column", lg: "row" }}
+      >
+        <Box
+          h={{ lg: "100%" }}
+          w={{ base: "100%", lg: "50%" }}
+          overflowY={{ lg: "auto" }}
+          px="5vw"
+          pt="6vh"
+          pb={{ lg: "6vh" }}
+        >
+          <Flex
+            direction={{ sm: "column", md: "row", lg: "column" }}
+            align={{ sm: "flex-start", md: "center", lg: "flex-start" }}
+            w="100%"
+          >
+            <AspectRatio
+              w={{ sm: "100%", md: "50%", lg: "100%" }}
+              ratio={16 / 9}
+            >
+              <Image
+                objectFit="scale-down"
+                src={camp.campPhotoUrl}
+                fallbackSrc="https://bit.ly/2jYM25F"
+                alt="Camp Image"
+              />
+            </AspectRatio>
+            <Box
+              mt={{ sm: "8px", md: "0px", lg: "24px" }}
+              ml={{ sm: "0px", md: "20px", lg: "0px" }}
+            >
+              <CampDetailsSummary camp={camp} />
+            </Box>
+          </Flex>
+          <Show above="md">
+            <Text
+              mt="24px"
+              mb="16px"
+              textStyle={{ base: "bodyBold", sm: "xSmallBold" }}
+            >
+              Camp Details
+            </Text>
+            <Text wordBreak="break-word">{camp.description}</Text>
+          </Show>
+        </Box>
+        <Box
+          h={{ lg: "100%" }}
+          w={{ base: "100%", lg: "50%" }}
+          overflowY={{ lg: "auto" }}
+          background={{ base: "", lg: "background.grey.200" }}
+          px="5vw"
+          pt={{ sm: 5, md: 8, lg: "10vh" }}
+          pb="80px"
         >
           <CampSessionBoard
             camp={camp}
@@ -144,8 +156,8 @@ const SessionSelection = ({
             selectionState={selectionState}
             handleSessionClick={handleSessionClick}
           />
-        </GridItem>
-      </Grid>
+        </Box>
+      </Flex>
       <Flex
         direction="row"
         justify="flex-end"

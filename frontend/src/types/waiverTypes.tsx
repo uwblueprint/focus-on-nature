@@ -1,7 +1,6 @@
 import { Waiver, WaiverClause } from "./AdminTypes";
 
 export type WaiverReducerDispatch =
-  | LoadedWaiver
   | ClickOptionalClause
   | ClickRequiredClauses
   | FillName
@@ -11,10 +10,6 @@ export interface WaiverReducerDispatchBase {
   type: WaiverActions;
 }
 
-export interface LoadedWaiver extends WaiverReducerDispatchBase {
-  type: WaiverActions;
-  waiver: Waiver;
-}
 export interface ClickOptionalClause extends WaiverReducerDispatchBase {
   type: WaiverActions;
   optionalClauseId: number; // Currently, the id is set to be index of the the optional clause in the array its stored.
@@ -48,8 +43,8 @@ export interface OptionalClauseResponse extends WaiverClause {
 export interface RequiredClauseResponse extends WaiverClause {}
 
 export type WaiverInterface = {
-  campName: string | undefined;
-  waiver: Waiver | undefined;
+  campName: string;
+  waiver: Waiver;
   optionalClauses: OptionalClauseResponse[];
   requiredClauses: RequiredClauseResponse[];
   agreedRequiredClauses: boolean;

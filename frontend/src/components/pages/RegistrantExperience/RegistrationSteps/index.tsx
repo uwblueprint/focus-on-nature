@@ -1,9 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react";
-import React, { useState, useEffect, useReducer, Reducer, useRef } from "react";
-import AdminAPIClient from "../../../../APIClients/AdminAPIClient";
+import React, { useState, useReducer, Reducer, useRef } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
-  WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../../types/waiverTypes";
@@ -16,14 +14,20 @@ import ReviewRegistration from "./ReviewRegistration";
 import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
+import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
+  selectedSessions: CampSession[];
+  waiver: WaiverType;
   onClickBack: () => void;
 };
 
 const RegistrationSteps = ({
   camp,
+  selectedSessions,
+  waiver,
   onClickBack,
 }: RegistrationStepsProps): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
@@ -34,7 +38,7 @@ const RegistrationSteps = ({
   >(waiverReducer, {
     // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
     campName: camp.name,
-    waiver: undefined,
+    waiver,
     optionalClauses: [],
     requiredClauses: [],
     agreedRequiredClauses: false,
@@ -43,36 +47,9 @@ const RegistrationSteps = ({
     name: "",
     waiverCompleted: false,
   });
-  useEffect(() => {
-    AdminAPIClient.getWaiver().then((waiver) => {
-      waiverDispatch({
-        type: WaiverActions.LOADED_WAIVER,
-        waiver,
-      });
-    });
-  }, []);
 
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
-  // TODO: Get campSessions from previous registration step (Currently using dummy value)
-  const campSessions: CampSession[] = [
-    {
-      id: "123456",
-      camp: camp ? camp.name : "",
-      capacity: 3,
-      campers: [],
-      waitlist: [],
-      dates: [],
-    },
-    {
-      id: "654321",
-      camp: camp ? camp.name : "",
-      capacity: 2,
-      campers: [],
-      waitlist: [],
-      dates: [],
-    },
-  ];
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
       firstName: "",
@@ -131,7 +108,7 @@ const RegistrationSteps = ({
             nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
-            campSessions={campSessions}
+            campSessions={selectedSessions}
             camp={camp}
           />
         );
@@ -168,7 +145,7 @@ const RegistrationSteps = ({
     if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
     } else if (desiredStep < 0) {
-      alert("PLACEHOLDER - go to initial registration");
+      onClickBack();
     } else {
       alert("PLACEHOLDER - go to payment");
     }

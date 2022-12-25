@@ -5,9 +5,9 @@ import {
   PersonalInfoReducerDispatch,
   UpdateCamper,
   UpdateContact,
-} from "../../../../types/PersonalInfoTypes";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { CampResponse } from "../../../../types/CampsTypes";
+} from "../../../../../types/PersonalInfoTypes";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import { CampResponse } from "../../../../../types/CampsTypes";
 
 export const CamperReducer = (
   setCampers: React.Dispatch<

@@ -15,10 +15,7 @@ type CampSessionBoardProps = {
   camp: CampResponse;
   selectedSessions: Set<string>;
   selectionState: SessionSelectionState;
-  handleSessionClick: (
-    sessionID: string,
-    sessionType: SessionSelectionState,
-  ) => void;
+  handleSessionClick: (sessionID: string) => void;
 };
 
 const CampSessionBoard = ({
@@ -45,7 +42,7 @@ const CampSessionBoard = ({
   return (
     <VStack spacing={{ sm: 5, md: 8, lg: 8 }} w="100%" align="flex-start">
       <Box w="100%">
-        <Text textStyle={sessionSectionTitleStyles} my={4}>
+        <Text textStyle={sessionSectionTitleStyles} mb={4}>
           Available Camps
         </Text>
         <Grid
@@ -54,6 +51,7 @@ const CampSessionBoard = ({
             md: "repeat(3, 1fr)",
             lg: "repeat(3, 1fr)",
           }}
+          gridAutoRows="1fr"
           gap={{ sm: 2, md: 5, lg: 4 }}
         >
           {camp.campSessions.reduce(
@@ -84,7 +82,7 @@ const CampSessionBoard = ({
         </Grid>
       </Box>
       <Box w="100%">
-        <Text textStyle={sessionSectionTitleStyles} as="b" mt={4} mb={4}>
+        <Text textStyle={sessionSectionTitleStyles} my={4}>
           Waitlist Only Camps
         </Text>
         <Grid
@@ -93,6 +91,7 @@ const CampSessionBoard = ({
             md: "repeat(3, 1fr)",
             lg: "repeat(3, 1fr)",
           }}
+          gridAutoRows="1fr"
           gap={4}
         >
           {camp.campSessions.reduce(

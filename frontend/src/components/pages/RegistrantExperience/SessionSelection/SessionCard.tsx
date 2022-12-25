@@ -1,15 +1,13 @@
 import React from "react";
 import { Box, Text, VStack, Flex, useMediaQuery } from "@chakra-ui/react";
 import { CampSessionResponse } from "../../../../types/CampsTypes";
-import {
-  SessionCardState,
-  SessionSelectionState,
-} from "./SessionSelectionTypes";
+import { SessionCardState } from "./SessionSelectionTypes";
 import {
   sessionCardBoldTextStyles,
   sessionCardDatesTextStyles,
   sessionCardDetailsTextStyles,
 } from "./SessionSelectionStyles";
+import { adjustTimeToAmPm } from "../../../../utils/CampUtils";
 
 const WAITLISTED_COLOR = "red.100";
 const AVAILABLE_COLOR = "green.100";
@@ -37,7 +35,9 @@ const SessionCardDetails = ({
     })} ${endDate.getDay()}, ${endDate.getFullYear()}`;
   };
 
-  const formattedTimeString = `${startTime}AM - ${endTime}PM`;
+  const formattedTimeString = (start: string, end: string): string => {
+    return `${adjustTimeToAmPm(start)} - ${adjustTimeToAmPm(end)}`;
+  };
 
   const [isMobile] = useMediaQuery("(max-width: 767px)");
   return (
@@ -48,13 +48,13 @@ const SessionCardDetails = ({
       {isMobile ? (
         <>
           <Text textStyle={sessionCardDetailsTextStyles}>
-            {formattedTimeString}
+            {formattedTimeString(startTime, endTime)}
           </Text>
           <Text textStyle={sessionCardDetailsTextStyles}>${fee}</Text>
         </>
       ) : (
         <Text textStyle={sessionCardDetailsTextStyles}>
-          {formattedTimeString} · ${fee}
+          {formattedTimeString(startTime, endTime)} · ${fee}
         </Text>
       )}
     </>
@@ -66,7 +66,7 @@ export type SessionCardProps = {
   startTime: string;
   endTime: string;
   campSession: CampSessionResponse;
-  handleClick: (sessionID: string, sessionType: SessionSelectionState) => void;
+  handleClick: (sessionID: string) => void;
   state: SessionCardState;
   sessionIsWaitlisted: boolean;
 };
@@ -82,12 +82,7 @@ const SessionCard = ({
 }: SessionCardProps): React.ReactElement => {
   const handleCardClick = () => {
     if (state !== SessionCardState.Disabled) {
-      handleClick(
-        campSession.id,
-        sessionIsWaitlisted
-          ? SessionSelectionState.SelectingWaitlistSessions
-          : SessionSelectionState.SelectingAvailableSessions,
-      );
+      handleClick(campSession.id);
     }
   };
 
