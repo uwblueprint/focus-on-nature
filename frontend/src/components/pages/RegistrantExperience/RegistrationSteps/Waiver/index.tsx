@@ -90,7 +90,6 @@ const WaiverPage = ({
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
-      console.log(waiverInterface);
       if (!checkName(waiverInterface.name)) setIsNameInvalid(true);
       if (!checkDate(waiverInterface.date)) setIsDateInvalid(true);
       if (!checkRequiredClauses(waiverInterface.agreedRequiredClauses))
@@ -172,7 +171,7 @@ const WaiverPage = ({
               waiverDispatch({ type: WaiverActions.ClICK_REQUIRED_CLAUSE });
             }}
           >
-            <Text textStyle="bodyRegular">
+            <Text textStyle={bodyTextStyles}>
               I agree to the above identity and liability waiver conditions{" "}
               <RequiredAsterisk />
             </Text>
@@ -190,7 +189,7 @@ const WaiverPage = ({
         {waiverInterface.optionalClauses.map(
           (clause: OptionalClauseResponse, index: number) => (
             <VStack spacing={6} pt={2} align="stretch" key={index}>
-              <Text textStyle="bodyRegular">
+              <Text textStyle={bodyTextStyles}>
                 {clause.text}
                 <RequiredAsterisk />
               </Text>
@@ -214,12 +213,12 @@ const WaiverPage = ({
                   <HStack spacing={5}>
                     <Radio value="true" mb={0}>
                       {/* NOTE!?: I use mb='0' because there's a margin misalignment issue with Radio component */}
-                      <Text textStyle="bodyRegular">I agree</Text>
+                      <Text textStyle={bodyTextStyles}>I agree</Text>
                     </Radio>
                     <Radio value="false">
-                      <Text textStyle="bodyRegular">
+                      <Text textStyle={bodyTextStyles}>
                         I{" "}
-                        <Text as="span" textStyle="bodyBold">
+                        <Text as="span" textStyle={boldBodyTextStyles}>
                           do not
                         </Text>{" "}
                         agree
