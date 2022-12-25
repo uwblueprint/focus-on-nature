@@ -14,7 +14,7 @@ import {
   Divider,
   HStack,
   Wrap,
-  FormErrorMessage
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import {
@@ -70,7 +70,6 @@ const WaiverPage = ({
   waiverDispatch,
   campName,
 }: WaiverPageProps): React.ReactElement => {
-
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isDateInvalid, setIsDateInvalid] = useState<boolean>(false);
   const [
@@ -91,6 +90,7 @@ const WaiverPage = ({
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
+      console.log(waiverInterface);
       if (!checkName(waiverInterface.name)) setIsNameInvalid(true);
       if (!checkDate(waiverInterface.date)) setIsDateInvalid(true);
       if (!checkRequiredClauses(waiverInterface.agreedRequiredClauses))
@@ -268,14 +268,18 @@ const WaiverPage = ({
               waiverDispatch({
                 type: WaiverActions.WRITE_NAME,
                 name: event.target.value,
-              })
-            }
-            }
+              });
+            }}
           />
           <FormErrorMessage>Please type your name above.</FormErrorMessage>
         </FormControl>
 
-        <FormControl minWidth="250px" width="30vw" pb={3} isInvalid={isDateInvalid}>
+        <FormControl
+          minWidth="250px"
+          width="30vw"
+          pb={3}
+          isInvalid={isDateInvalid}
+        >
           <FormLabel textStyle={boldButtonTextStyles}>
             <Text textStyle={boldButtonTextStyles}>
               Date{" "}
@@ -293,13 +297,15 @@ const WaiverPage = ({
             textStyle={bodyTextStyles}
             type="date"
             value={waiverInterface.date}
-            onChange={(event) =>
+            onChange={(event) => {
+              setIsDateInvalid(false);
               waiverDispatch({
                 type: WaiverActions.WRITE_DATE,
                 date: event.target.value,
-              })
-            }
+              });
+            }}
           />
+          <FormErrorMessage>Please select a valid date.</FormErrorMessage>
         </FormControl>
       </Wrap>
     </Box>
