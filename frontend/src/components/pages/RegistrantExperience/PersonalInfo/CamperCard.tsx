@@ -28,11 +28,13 @@ import RequiredAsterisk from "../../../common/RequiredAsterisk";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
 import DeleteModal from "../../../common/DeleteModal";
+import { CampResponse } from "../../../../types/CampsTypes";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   camper: RegistrantExperienceCamper;
   camperIndex: number;
+  camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
 };
 
@@ -41,6 +43,7 @@ const CamperCard = ({
   camper,
   camperIndex,
   dispatchPersonalInfoAction,
+  camp,
 }: CamperCardProps): React.ReactElement => {
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
@@ -51,7 +54,8 @@ const CamperCard = ({
     const updateFormErrorMsgs = () => {
       if (!checkFirstName(camper.firstName)) setIsFirstNameInvalid(true);
       if (!checkLastName(camper.lastName)) setIsLastNameInvalid(true);
-      if (!checkAge(camper.age)) setIsAgeInvalid(true);
+      if (!checkAge(camper.age, camp.ageUpper, camp.ageLower))
+        setIsAgeInvalid(true);
     };
 
     if (nextBtnRef && nextBtnRef.current) {
@@ -64,7 +68,7 @@ const CamperCard = ({
         nextBtnRefValue.removeEventListener("click", updateFormErrorMsgs);
       }
     };
-  }, [camper, nextBtnRef]);
+  }, [camper, nextBtnRef, camp.ageLower, camp.ageUpper]);
 
   function DeleteRegistrantConfirmationModal() {
     const toast = useToast();
@@ -221,7 +225,8 @@ const CamperCard = ({
                   }}
                 />
                 <FormErrorMessage>
-                  Camper age must be between 7 - 10 years old
+                  Camper age must be between {camp.ageLower} - {camp.ageUpper}{" "}
+                  years old
                 </FormErrorMessage>
               </NumberInput>
             </FormControl>

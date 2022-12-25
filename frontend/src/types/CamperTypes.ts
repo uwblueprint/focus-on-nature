@@ -45,9 +45,10 @@ export type EditCamperInfoFields = Omit<
   | "campSession"
 >;
 
-export type RegistrantExperienceCamper = Omit<Camper, "campSession"> & {
-  campSessions: string[];
-};
+export type RegistrantExperienceCamper = Omit<
+  Camper,
+  "campSession" | "id" | "charges"
+>;
 
 export type EditModalSetterFunctions = {
   setFirstName: (firstName: string) => void;

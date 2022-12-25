@@ -61,8 +61,14 @@ const ContactCard = ({
           contact.phoneNumber ||
           contact.relationshipToCamper
         )
-      )
+      ) {
+        setIsFirstNameInvalid(false);
+        setIsLastNameInvalid(false);
+        setIsEmailInvalid(false);
+        setIsPhoneNumberInvalid(false);
+        setIsRelationInvalid(false);
         return;
+      }
 
       if (!checkFirstName(contact.firstName)) setIsFirstNameInvalid(true);
       if (!checkLastName(contact.lastName)) setIsLastNameInvalid(true);
@@ -105,7 +111,7 @@ const ContactCard = ({
             <FormControl isInvalid={isFirstNameInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-                  First Name <RequiredAsterisk />
+                  First Name {contactIndex === 0 && <RequiredAsterisk />}
                 </Text>
               </FormLabel>
               <Input
@@ -129,7 +135,7 @@ const ContactCard = ({
             <FormControl isInvalid={isLastNameInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-                  Last Name <RequiredAsterisk />
+                  Last Name {contactIndex === 0 && <RequiredAsterisk />}
                 </Text>
               </FormLabel>
               <Input
@@ -153,7 +159,7 @@ const ContactCard = ({
             <FormControl isInvalid={isEmailInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-                  Email <RequiredAsterisk />
+                  Email {contactIndex === 0 && <RequiredAsterisk />}
                 </Text>
               </FormLabel>
               <Input
@@ -177,7 +183,7 @@ const ContactCard = ({
             <FormControl isInvalid={isPhoneNumberInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-                  Phone Number <RequiredAsterisk />
+                  Phone Number {contactIndex === 0 && <RequiredAsterisk />}
                 </Text>
               </FormLabel>
               <Input
@@ -204,7 +210,8 @@ const ContactCard = ({
             <FormControl isInvalid={isRelationInvalid}>
               <FormLabel>
                 <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-                  Relation To Camper <RequiredAsterisk />
+                  Relation To Camper{" "}
+                  {contactIndex === 0 && <RequiredAsterisk />}
                 </Text>
               </FormLabel>
               <Textarea

@@ -18,9 +18,6 @@ const RegistrationFooter = ({
   const onNextStep = () => {
     if (isCurrentStepCompleted) {
       handleStepNavigation(1);
-    } else {
-      // placeholder for field error
-      alert("Please fill out required fields");
     }
   };
 

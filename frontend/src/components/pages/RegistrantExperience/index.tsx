@@ -83,8 +83,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   ];
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
-      id: "",
-      campSessions: [campSessions[0].id, campSessions[1].id], // TODO: Edit this field when we get camp session data from previous step
       firstName: "",
       lastName: "",
       age: NaN,
@@ -107,15 +105,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         },
       ],
       chargeId: "",
-      charges: {
-        camp: NaN,
-        earlyDropoff: NaN,
-        latePickup: NaN,
-      },
       optionalClauses: [],
     },
   ]);
-  const isPersonalInfoFilled = checkPersonalInfoFilled(campers);
+  const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
@@ -141,14 +134,16 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   ) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
-        return (
+        return camp ? (
           <PersonalInfo
             nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
             campSessions={campSessions}
-            campName={camp ? camp.name : ""}
+            camp={camp}
           />
+        ) : (
+          <Spinner />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (

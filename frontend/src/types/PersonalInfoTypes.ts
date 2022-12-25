@@ -1,5 +1,3 @@
-import { CampSession } from "./CampsTypes";
-
 export enum PersonalInfoActions {
   ADD_CAMPER,
   DELETE_CAMPER,
@@ -21,8 +19,9 @@ interface PersonalInfoDispatchWithData<T> extends PersonalInfoDispatchBase {
   data: T;
   field: string;
 }
+
+/* eslint-disable-next-line */
 export interface AddCamper extends PersonalInfoDispatchBase {
-  campSessions: CampSession[];
 }
 
 /* eslint-disable-next-line */

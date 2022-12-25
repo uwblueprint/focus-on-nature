@@ -6,13 +6,13 @@ import { usePersonalInfoDispatcher } from "./personalInfoReducer";
 import CamperCard from "./CamperCard";
 import { PersonalInfoActions } from "../../../../types/PersonalInfoTypes";
 import ContactCard from "./ContactCard";
-import { CampSession } from "../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 
 type PersonalInfoProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   campers: RegistrantExperienceCamper[];
-  campName: string;
   campSessions: CampSession[];
+  camp: CampResponse;
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
@@ -40,14 +40,14 @@ const checkSpaceAvailable = (
 const PersonalInfo = ({
   nextBtnRef,
   campers,
-  campName,
   campSessions,
+  camp,
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   return (
     <Box pb={14}>
-      <Text textStyle="displayXLarge">{campName} Registration</Text>
+      <Text textStyle="displayXLarge">{camp.name} Registration</Text>
       <Text
         color="#10741A"
         py={7}
@@ -63,6 +63,7 @@ const PersonalInfo = ({
             camper={camper}
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             camperIndex={index}
+            camp={camp}
           />
         ))}
       </VStack>
@@ -75,7 +76,6 @@ const PersonalInfo = ({
         onClick={() => {
           dispatchPersonalInfoAction({
             type: PersonalInfoActions.ADD_CAMPER,
-            campSessions,
           });
         }}
       >

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  AddCamper,
   DeleteCamper,
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
@@ -8,6 +7,7 @@ import {
   UpdateContact,
 } from "../../../../types/PersonalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { CampResponse } from "../../../../types/CampsTypes";
 
 export const CamperReducer = (
   setCampers: React.Dispatch<
@@ -21,12 +21,7 @@ export const CamperReducer = (
     ); // Deep Copy
     switch (action.type) {
       case PersonalInfoActions.ADD_CAMPER: {
-        const { campSessions } = action as AddCamper;
         newCampers.push({
-          id: "",
-          campSessions: Array.from(
-            campSessions.map((campSession) => campSession.id),
-          ),
           firstName: "",
           lastName: "",
           age: NaN,
@@ -34,11 +29,6 @@ export const CamperReducer = (
           registrationDate: new Date(),
           hasPaid: false,
           chargeId: "",
-          charges: {
-            camp: NaN,
-            earlyDropoff: NaN,
-            latePickup: NaN,
-          },
           optionalClauses: [],
         });
 
@@ -111,8 +101,12 @@ export const checkLastName = (lastName: string): boolean => {
   return !!lastName;
 };
 
-export const checkAge = (age: number): boolean => {
-  return !!age && age >= 7 && age <= 10;
+export const checkAge = (
+  age: number,
+  campUpper: number,
+  campLower: number,
+): boolean => {
+  return !!age && age >= campLower && age <= campUpper;
 };
 
 export const checkEmail = (email: string): boolean => {
@@ -129,8 +123,13 @@ export const checkRelationToCamper = (relation: string): boolean => {
 
 export const checkPersonalInfoFilled = (
   campers: RegistrantExperienceCamper[],
+  camp: CampResponse | undefined,
 ): boolean => {
+  // Wait for the camp info as we need it to determine personalInfo age field validity
+  if (!camp) return false;
+
   if (!(campers.length >= 1)) return false;
+
   /* eslint-disable-next-line */
   for (const camper of campers) {
     // Check camper card
@@ -138,14 +137,14 @@ export const checkPersonalInfoFilled = (
       !(
         checkFirstName(camper.firstName) &&
         checkLastName(camper.lastName) &&
-        checkAge(camper.age)
+        checkAge(camper.age, camp.ageUpper, camp.ageUpper)
       )
     )
       return false;
 
     // Check contact cards
-    if (camper.contacts.length !== 2) {
-      return false; // Need to have 2 contacts
+    if (camper.contacts.length > 2 || camper.contacts.length < 1) {
+      return false; // Need to have either 1 or 2 contacts only
     }
 
     // Check primary contact card
@@ -163,22 +162,24 @@ export const checkPersonalInfoFilled = (
     }
 
     // Check secondary contact card
-    const secondaryContact = camper.contacts[1];
-    if (
-      (secondaryContact.firstName ||
-        secondaryContact.lastName ||
-        secondaryContact.email ||
-        secondaryContact.phoneNumber ||
-        secondaryContact.relationshipToCamper) &&
-      !(
-        checkFirstName(secondaryContact.firstName) &&
-        checkLastName(secondaryContact.lastName) &&
-        checkEmail(secondaryContact.email) &&
-        checkPhoneNumber(secondaryContact.phoneNumber) &&
-        checkRelationToCamper(secondaryContact.relationshipToCamper)
-      )
-    ) {
-      return false;
+    if (camper.contacts.length > 1) {
+      const secondaryContact = camper.contacts[1];
+      if (
+        (secondaryContact.firstName ||
+          secondaryContact.lastName ||
+          secondaryContact.email ||
+          secondaryContact.phoneNumber ||
+          secondaryContact.relationshipToCamper) &&
+        !(
+          checkFirstName(secondaryContact.firstName) &&
+          checkLastName(secondaryContact.lastName) &&
+          checkEmail(secondaryContact.email) &&
+          checkPhoneNumber(secondaryContact.phoneNumber) &&
+          checkRelationToCamper(secondaryContact.relationshipToCamper)
+        )
+      ) {
+        return false;
+      }
     }
   }
   return true;
