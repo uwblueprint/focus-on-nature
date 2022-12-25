@@ -215,12 +215,22 @@ const CamperCard = ({
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {
-                    setIsAgeInvalid(false);
+                    const age = parseInt(event.target.value, 10);
+                    // Only show invalid status if there is some value entered.
+                    // This is not a binding source of truth; the actual validation
+                    // occurs in `checkAge` in the `personalInfoReducer`.
+                    setIsAgeInvalid(
+                      !(
+                        event.target.value === "" ||
+                        (age >= camp.ageLower && age <= camp.ageUpper)
+                      ),
+                    );
+
                     dispatchPersonalInfoAction({
                       type: PersonalInfoActions.UPDATE_CAMPER,
                       field: "age",
                       camperIndex,
-                      data: parseInt(event.target.value, 10),
+                      data: age,
                     });
                   }}
                 />

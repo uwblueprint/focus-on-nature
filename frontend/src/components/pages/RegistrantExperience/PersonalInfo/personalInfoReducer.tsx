@@ -137,7 +137,7 @@ export const checkPersonalInfoFilled = (
       !(
         checkFirstName(camper.firstName) &&
         checkLastName(camper.lastName) &&
-        checkAge(camper.age, camp.ageUpper, camp.ageUpper)
+        checkAge(camper.age, camp.ageUpper, camp.ageLower)
       )
     )
       return false;

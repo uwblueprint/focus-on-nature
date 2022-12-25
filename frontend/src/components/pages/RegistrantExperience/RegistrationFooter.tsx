@@ -18,6 +18,10 @@ const RegistrationFooter = ({
   const onNextStep = () => {
     if (isCurrentStepCompleted) {
       handleStepNavigation(1);
+    } else {
+      alert(
+        "Form does not pass validaiton. Please complete all form fields according to requirements.",
+      );
     }
   };
 
