@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useReducer, Reducer } from "react";
 import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useReducer, Reducer, useRef } from "react";
 
 import { Box, Text, Spinner, Flex } from "@chakra-ui/react";
 import PersonalInfo from "./PersonalInfo";
@@ -17,7 +17,9 @@ import {
 } from "../../../types/waiverTypes";
 import waiverReducer from "./Waiver/WaiverReducer";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { CampResponse } from "../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../types/CampsTypes";
+import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
+import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
@@ -58,14 +60,59 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     });
   }, [campId]);
 
-  const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
-
-  const isPersonalInfoFilled = samplePersonalInfo;
+  // TODO: Get campSessions from previous registration step (Currently using dummy value)
+  const campSessions: CampSession[] = [
+    {
+      id: "123456",
+      camp: camp ? camp.name : "",
+      capacity: 3,
+      campers: [],
+      waitlist: [],
+      dates: [],
+    },
+    {
+      id: "654321",
+      camp: camp ? camp.name : "",
+      capacity: 2,
+      campers: [],
+      waitlist: [],
+      dates: [],
+    },
+  ];
+  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
+    {
+      firstName: "",
+      lastName: "",
+      age: NaN,
+      registrationDate: new Date(),
+      hasPaid: false,
+      contacts: [
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+      ],
+      chargeId: "",
+      optionalClauses: [],
+    },
+  ]);
+  const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -87,11 +134,16 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   ) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
-        return (
+        return camp ? (
           <PersonalInfo
-            isChecked={samplePersonalInfo}
-            toggleChecked={() => setSamplePersonalInfo(!samplePersonalInfo)}
+            nextBtnRef={nextBtnRef}
+            campers={campers}
+            setCampers={setCampers}
+            campSessions={campSessions}
+            camp={camp}
           />
+        ) : (
+          <Spinner />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
@@ -160,6 +212,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
 
       {isLoading && <Spinner justifySelf="center" />}
       <RegistrationFooter
+        nextBtnRef={nextBtnRef}
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}
