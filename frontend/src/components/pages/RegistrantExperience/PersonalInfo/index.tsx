@@ -1,7 +1,7 @@
 import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { CreateCamperRequest } from "../../../../types/CamperTypes";
 import { usePersonalInfoDispatcher } from "./personalInfoReducer";
 import CamperCard from "./CamperCard";
 import { PersonalInfoActions } from "../../../../types/PersonalInfoTypes";
@@ -10,17 +10,15 @@ import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 
 type PersonalInfoProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
-  campers: RegistrantExperienceCamper[];
+  campers: CreateCamperRequest[];
   campSessions: CampSession[];
   camp: CampResponse;
-  setCampers: React.Dispatch<
-    React.SetStateAction<RegistrantExperienceCamper[]>
-  >;
+  setCampers: React.Dispatch<React.SetStateAction<CreateCamperRequest[]>>;
 };
 
 const checkSpaceAvailable = (
   campSessions: CampSession[],
-  campers: RegistrantExperienceCamper[],
+  campers: CreateCamperRequest[],
 ): boolean => {
   // validate whether there is enough space for a new camper
   const spaceAvailable: number = campSessions.reduce(

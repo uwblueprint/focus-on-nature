@@ -19,17 +19,13 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import {
-  RegistrantExperienceCamper,
-  CreateCamperRequest,
-} from "../../../types/CamperTypes";
+import { CreateCamperRequest } from "../../../types/CamperTypes";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "./RegistrationResult/RegistrationErrorModal";
 import {
   CAMP_ID_SESSION_STORAGE_KEY,
   CANCEL_RESULT_CODE,
   SUCCESS_RESULT_CODE,
-  dummyCampers,
 } from "../../../constants/RegistrationConstants";
 import {
   getCheckoutSessionStorageKey,
@@ -99,7 +95,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       dates: [],
     },
   ];
-  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
+  const [campers, setCampers] = useState<CreateCamperRequest[]>([
     {
       firstName: "",
       lastName: "",
@@ -129,12 +125,19 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = sampleAdditionalInfo;
   const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = true;
-  const nextBtnRef = useRef<HTMLButtonElement>(null);
 
-  // const [registeringCampers, setRegisteringCampers] = useState<
-  //   CreateCamperRequest[]
-  // >(dummyCampers);
+  const [reviewRegistrationVisited, setReviewRegistrationVisited] = useState(
+    false,
+  );
+
+  if (
+    !reviewRegistrationVisited &&
+    currentStep === RegistrantExperienceSteps.ReviewRegistrationPage
+  ) {
+    setReviewRegistrationVisited(true);
+  }
+  const isReviewRegistrationFilled = reviewRegistrationVisited;
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
 
   const [errorModalMessage, setErrorModalMessage] = useState<ErrorModalMessage>(
     {
@@ -171,12 +174,12 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   const registerCampers = async (
-    campers: CreateCamperRequest[],
+    newCampers: CreateCamperRequest[],
     currentCamp: CampResponse,
   ) => {
     try {
       const { checkoutSessionUrl } = await CamperAPIClient.registerCampers(
-        campers,
+        newCampers,
       );
 
       goToCheckout(checkoutSessionUrl, currentCamp);
@@ -222,9 +225,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
         if (camp) {
-          return (
-            <ReviewRegistration campers={registeringCampers} camp={camp} />
-          );
+          return <ReviewRegistration campers={campers} camp={camp} />;
         }
         return <></>;
       default:
@@ -254,7 +255,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     } else if (desiredStep < 0) {
       alert("PLACEHOLDER - go to initial registration");
     } else if (camp) {
-      registerCampers(registeringCampers, camp);
+      registerCampers(campers, camp);
     } else {
       alert("Unexpected camp state. Please restart registration.");
     }
@@ -274,7 +275,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         try {
           const restoredSession = JSON.parse(sessionData) as CheckoutData;
 
-          setRegisteringCampers(restoredSession.campers);
+          setCampers(restoredSession.campers);
           setCamp(restoredSession.camp);
           waiverDispatch({
             type: WaiverActions.LOADED_WAIVER,
@@ -333,8 +334,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       {registrationResult === SUCCESS_RESULT_CODE ? (
         <RegistrationResultPage
           camp={camp}
-          campers={registeringCampers}
-          items={camp ? mapToCampItems(camp, registeringCampers) : undefined}
+          campers={campers}
+          items={camp ? mapToCampItems(camp, campers) : undefined}
         />
       ) : (
         <Flex

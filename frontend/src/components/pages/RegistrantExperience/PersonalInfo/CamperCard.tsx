@@ -25,14 +25,14 @@ import {
   PersonalInfoReducerDispatch,
 } from "../../../../types/PersonalInfoTypes";
 import RequiredAsterisk from "../../../common/RequiredAsterisk";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { CreateCamperRequest } from "../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
 import DeleteModal from "../../../common/DeleteModal";
 import { CampResponse } from "../../../../types/CampsTypes";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
-  camper: RegistrantExperienceCamper;
+  camper: CreateCamperRequest;
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;

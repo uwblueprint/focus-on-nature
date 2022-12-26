@@ -6,17 +6,15 @@ import {
   UpdateCamper,
   UpdateContact,
 } from "../../../../types/PersonalInfoTypes";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import { CreateCamperRequest } from "../../../../types/CamperTypes";
 import { CampResponse } from "../../../../types/CampsTypes";
 
 export const CamperReducer = (
-  setCampers: React.Dispatch<
-    React.SetStateAction<RegistrantExperienceCamper[]>
-  >,
+  setCampers: React.Dispatch<React.SetStateAction<CreateCamperRequest[]>>,
   action: PersonalInfoReducerDispatch,
 ): void => {
-  setCampers((campers: RegistrantExperienceCamper[]) => {
-    const newCampers: RegistrantExperienceCamper[] = JSON.parse(
+  setCampers((campers: CreateCamperRequest[]) => {
+    const newCampers: CreateCamperRequest[] = JSON.parse(
       JSON.stringify(campers),
     ); // Deep Copy
     switch (action.type) {
@@ -83,9 +81,7 @@ export const CamperReducer = (
 };
 
 export const usePersonalInfoDispatcher = (
-  setCampers: React.Dispatch<
-    React.SetStateAction<RegistrantExperienceCamper[]>
-  >,
+  setCampers: React.Dispatch<React.SetStateAction<CreateCamperRequest[]>>,
 ): ((action: PersonalInfoReducerDispatch) => void) => {
   const dispatch = (action: PersonalInfoReducerDispatch) => {
     CamperReducer(setCampers, action);
@@ -122,7 +118,7 @@ export const checkRelationToCamper = (relation: string): boolean => {
 };
 
 export const checkPersonalInfoFilled = (
-  campers: RegistrantExperienceCamper[],
+  campers: CreateCamperRequest[],
   camp: CampResponse | undefined,
 ): boolean => {
   // Wait for the camp info as we need it to determine personalInfo age field validity

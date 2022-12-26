@@ -32,7 +32,10 @@ export type Camper = {
   }[];
 };
 
-export type CreateCamperRequest = Omit<Camper, "id">;
+export type CreateCamperRequest = Omit<
+  Camper,
+  "campSession" | "id" | "charges"
+>;
 
 export type EditCamperInfoFields = Omit<
   Camper,
@@ -45,11 +48,6 @@ export type EditCamperInfoFields = Omit<
   | "optionalClauses"
   | "id"
   | "campSession"
->;
-
-export type RegistrantExperienceCamper = Omit<
-  Camper,
-  "campSession" | "id" | "charges"
 >;
 
 export type EditModalSetterFunctions = {
