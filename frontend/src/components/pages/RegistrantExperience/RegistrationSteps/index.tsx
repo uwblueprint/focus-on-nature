@@ -36,7 +36,6 @@ const RegistrationSteps = ({
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
-    // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
     campName: camp.name,
     waiver,
     optionalClauses: [],

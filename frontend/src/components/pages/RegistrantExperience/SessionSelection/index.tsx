@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Box,
@@ -13,6 +13,8 @@ import CampDetailsSummary from "./CampDetailsSummary";
 import CampSessionBoard from "./CampSessionBoard";
 import { SessionSelectionState } from "./SessionSelectionTypes";
 
+import defaultCampImage from "../../../../assets/default_camp_image.png";
+
 type SesssionSelectionProps = {
   camp: CampResponse;
   selectedSessions: Set<string>;
@@ -26,23 +28,40 @@ const SessionSelection = ({
   setSelectedSessions,
   onFormSubmission,
 }: SesssionSelectionProps): React.ReactElement => {
-  // Set the selection mode - all selections should be waitlisted sessions
-  // or all selections should be available sessions
-  let selectionState = SessionSelectionState.None;
+  const getSessionSelectionStateForSessions = (
+    sessionID: string,
+  ): SessionSelectionState => {
+    const session = camp.campSessions.find((cs) => cs.id === sessionID);
 
-  const sessionIter = selectedSessions[Symbol.iterator]();
-  const sessionId = sessionIter.next().value;
-  const session = camp.campSessions.find((cs) => cs.id === sessionId);
+    if (!session) {
+      throw new Error("Selected session ID must belong to camp sessions.");
+    }
 
-  if (session) {
-    selectionState =
-      session.campers.length === session.capacity
-        ? SessionSelectionState.SelectingWaitlistSessions
-        : SessionSelectionState.SelectingAvailableSessions;
-  }
+    return session.campers.length === session.capacity
+      ? SessionSelectionState.SelectingWaitlistSessions
+      : SessionSelectionState.SelectingAvailableSessions;
+  };
+
+  // Selections must be all waitlist or all available - track in state if existing sessions
+  // are waitlist or available, which means that future selections are restricted.
+  const [selectionState, setSelectionState] = useState<
+    SessionSelectionState | undefined
+  >(
+    selectedSessions.size > 0
+      ? getSessionSelectionStateForSessions(
+          selectedSessions.values().next().value,
+        )
+      : undefined,
+  );
 
   const addSelectedSession = (sessionID: string) => {
     setSelectedSessions(new Set(selectedSessions.add(sessionID)));
+
+    // If selection state undefined when a session is selected, set selection state
+    // to restrict further selections
+    if (!selectionState) {
+      setSelectionState(getSessionSelectionStateForSessions(sessionID));
+    }
   };
 
   const removeSelectedSession = (sessionID: string) => {
@@ -50,6 +69,11 @@ const SessionSelection = ({
     newSessions.delete(sessionID);
 
     setSelectedSessions(newSessions);
+
+    // If no sessions are selected, user may choose either waitlist or available sessions
+    if (newSessions.size === 0) {
+      setSelectionState(undefined);
+    }
   };
 
   const handleSessionClick = (sessionID: string) => {
@@ -61,7 +85,7 @@ const SessionSelection = ({
   };
 
   const getFooterButton = (
-    selectingState: SessionSelectionState,
+    selectingState: SessionSelectionState | undefined,
   ): React.ReactElement => {
     switch (selectingState) {
       case SessionSelectionState.SelectingWaitlistSessions:
@@ -77,13 +101,13 @@ const SessionSelection = ({
         );
       case SessionSelectionState.SelectingAvailableSessions:
         return (
-          <Button colorScheme="green" px={8} onClick={onFormSubmission}>
+          <Button variant="primary" px={8} onClick={onFormSubmission}>
             Sign up now
           </Button>
         );
       default:
         return (
-          <Button colorScheme="green" px={8} disabled>
+          <Button variant="primary" px={8} disabled>
             Sign up now
           </Button>
         );
@@ -119,7 +143,7 @@ const SessionSelection = ({
               <Image
                 objectFit="scale-down"
                 src={camp.campPhotoUrl}
-                fallbackSrc="https://bit.ly/2jYM25F"
+                fallbackSrc={defaultCampImage}
                 alt="Camp Image"
               />
             </AspectRatio>

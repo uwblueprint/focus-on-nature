@@ -9,6 +9,11 @@ import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { Waiver } from "../../../types/AdminTypes";
 
+type InitialLoadingState = {
+  waiver: boolean;
+  camp: boolean;
+};
+
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
 
@@ -19,7 +24,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     undefined,
   );
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<InitialLoadingState>({
+    waiver: true,
+    camp: true,
+  });
 
   const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
     new Set(),
@@ -29,15 +37,24 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    CampsAPIClient.getCampById(campId).then((camp) =>
-      camp.id ? setCampResponse(camp) : null,
-    );
+    CampsAPIClient.getCampById(campId)
+      .then((camp) => (camp.id ? setCampResponse(camp) : null))
+      .finally(() =>
+        setIsLoading((i) => {
+          return { ...i, camp: false };
+        }),
+      );
 
-    AdminAPIClient.getWaiver().then((waiver) =>
-      waiver.clauses ? setWaiverResponse(waiver) : null,
-    );
-
-    setIsLoading(false);
+    AdminAPIClient.getWaiver()
+      .then((waiver) => (waiver.clauses ? setWaiverResponse(waiver) : null))
+      .finally(() =>
+        setIsLoading((i) => {
+          return {
+            ...i,
+            waiver: false,
+          };
+        }),
+      );
   }, [campId]);
 
   if (campResponse && waiverResponse) {
@@ -60,7 +77,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     );
   }
 
-  return isLoading ? (
+  return isLoading.camp || isLoading.waiver ? (
     <Flex h="100vh" w="100vw" align="center" justify="center">
       <Spinner />
     </Flex>

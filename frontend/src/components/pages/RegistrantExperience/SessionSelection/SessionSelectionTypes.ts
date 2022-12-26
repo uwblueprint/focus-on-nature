@@ -1,7 +1,6 @@
 export enum SessionSelectionState {
   SelectingAvailableSessions,
   SelectingWaitlistSessions,
-  None,
 }
 
 export enum SessionCardState {

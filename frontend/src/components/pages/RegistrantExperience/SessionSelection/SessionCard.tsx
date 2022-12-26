@@ -7,10 +7,11 @@ import {
   sessionCardDatesTextStyles,
   sessionCardDetailsTextStyles,
 } from "./SessionSelectionStyles";
-import { adjustTimeToAmPm } from "../../../../utils/CampUtils";
+import { getMeridianTime } from "../../../../utils/CampUtils";
 
 const WAITLISTED_COLOR = "red.100";
 const AVAILABLE_COLOR = "green.100";
+const HOVERED_COLOR = "RGBA(0, 0, 0, 0.16)";
 
 type SessionCardDetailsProps = {
   fee: number;
@@ -36,7 +37,7 @@ const SessionCardDetails = ({
   };
 
   const formattedTimeString = (start: string, end: string): string => {
-    return `${adjustTimeToAmPm(start)} - ${adjustTimeToAmPm(end)}`;
+    return `${getMeridianTime(start)} - ${getMeridianTime(end)}`;
   };
 
   const [isMobile] = useMediaQuery("(max-width: 767px)");
@@ -61,7 +62,7 @@ const SessionCardDetails = ({
   );
 };
 
-export type SessionCardProps = {
+type SessionCardProps = {
   fee: number;
   startTime: string;
   endTime: string;
@@ -95,7 +96,7 @@ const SessionCard = ({
   return (
     <Box
       bg={backgroundColour}
-      my={2}
+      h="100%"
       p={4}
       borderColor={
         sessionIsWaitlisted ? "text.critical.100" : "primary.green.100"
@@ -107,7 +108,7 @@ const SessionCard = ({
         background:
           backgroundColour !== "white" || state === SessionCardState.Disabled
             ? backgroundColour
-            : "RGBA(0, 0, 0, 0.16)",
+            : HOVERED_COLOR,
       }}
       cursor={state === SessionCardState.Disabled ? "not-allowed" : "pointer"}
       opacity={state === SessionCardState.Disabled ? "0.5" : "1"}
@@ -127,6 +128,7 @@ const SessionCard = ({
               textStyle={sessionCardDetailsTextStyles}
               color="text.success.100"
               mt={2}
+              mr={2}
             >
               AVAILABLE
             </Text>

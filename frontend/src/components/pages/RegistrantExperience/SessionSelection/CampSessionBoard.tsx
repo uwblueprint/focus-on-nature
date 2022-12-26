@@ -14,7 +14,7 @@ import { sessionSectionTitleStyles } from "./SessionSelectionStyles";
 type CampSessionBoardProps = {
   camp: CampResponse;
   selectedSessions: Set<string>;
-  selectionState: SessionSelectionState;
+  selectionState: SessionSelectionState | undefined;
   handleSessionClick: (sessionID: string) => void;
 };
 
@@ -26,9 +26,10 @@ const CampSessionBoard = ({
 }: CampSessionBoardProps): React.ReactElement => {
   const getCardState = (
     id: string,
+    selections: Set<string>,
     isSelectable: boolean,
   ): SessionCardState => {
-    if (selectedSessions.has(id)) {
+    if (selections.has(id)) {
       return SessionCardState.Selected;
     }
 
@@ -39,88 +40,91 @@ const CampSessionBoard = ({
     return SessionCardState.Available;
   };
 
+  const waitlistSessionGridItems: React.ReactElement[] = [];
+  const availableSessionGridItems: React.ReactElement[] = [];
+
+  camp.campSessions.forEach((campSession) => {
+    if (campSession.campers.length === campSession.capacity) {
+      const cardSelectionAllowed =
+        selectionState !== SessionSelectionState.SelectingAvailableSessions;
+      waitlistSessionGridItems.push(
+        <GridItem key={campSession.id}>
+          <SessionCard
+            fee={camp.fee}
+            startTime={camp.startTime}
+            endTime={camp.endTime}
+            campSession={campSession as CampSessionResponse}
+            handleClick={handleSessionClick}
+            state={getCardState(
+              campSession.id,
+              selectedSessions,
+              cardSelectionAllowed,
+            )}
+            sessionIsWaitlisted
+          />
+        </GridItem>,
+      );
+    } else {
+      const cardSelectionAllowed =
+        selectionState !== SessionSelectionState.SelectingWaitlistSessions;
+      availableSessionGridItems.push(
+        <GridItem key={campSession.id} className="bo">
+          <SessionCard
+            fee={camp.fee}
+            startTime={camp.startTime}
+            endTime={camp.endTime}
+            campSession={campSession as CampSessionResponse}
+            handleClick={handleSessionClick}
+            state={getCardState(
+              campSession.id,
+              selectedSessions,
+              cardSelectionAllowed,
+            )}
+            sessionIsWaitlisted={false}
+          />
+        </GridItem>,
+      );
+    }
+  });
+
   return (
     <VStack spacing={{ sm: 5, md: 8, lg: 8 }} w="100%" align="flex-start">
-      <Box w="100%">
-        <Text textStyle={sessionSectionTitleStyles} mb={4}>
-          Available Camps
-        </Text>
-        <Grid
-          templateColumns={{
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(3, 1fr)",
-          }}
-          gridAutoRows="1fr"
-          gap={{ sm: 2, md: 5, lg: 4 }}
-        >
-          {camp.campSessions.reduce(
-            (array: React.ReactElement[], campSession) => {
-              if (campSession.campers.length !== campSession.capacity) {
-                array.push(
-                  <GridItem key={campSession.id}>
-                    <SessionCard
-                      fee={camp.fee}
-                      startTime={camp.startTime}
-                      endTime={camp.endTime}
-                      campSession={campSession as CampSessionResponse}
-                      handleClick={handleSessionClick}
-                      state={getCardState(
-                        campSession.id,
-                        selectionState !==
-                          SessionSelectionState.SelectingWaitlistSessions,
-                      )}
-                      sessionIsWaitlisted={false}
-                    />
-                  </GridItem>,
-                );
-              }
-              return array;
-            },
-            [],
-          )}
-        </Grid>
-      </Box>
-      <Box w="100%">
-        <Text textStyle={sessionSectionTitleStyles} my={4}>
-          Waitlist Only Camps
-        </Text>
-        <Grid
-          templateColumns={{
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(3, 1fr)",
-          }}
-          gridAutoRows="1fr"
-          gap={4}
-        >
-          {camp.campSessions.reduce(
-            (array: React.ReactElement[], campSession) => {
-              if (campSession.campers.length === campSession.capacity) {
-                array.push(
-                  <GridItem key={campSession.id}>
-                    <SessionCard
-                      fee={camp.fee}
-                      startTime={camp.startTime}
-                      endTime={camp.endTime}
-                      campSession={campSession as CampSessionResponse}
-                      handleClick={handleSessionClick}
-                      state={getCardState(
-                        campSession.id,
-                        selectionState !==
-                          SessionSelectionState.SelectingAvailableSessions,
-                      )}
-                      sessionIsWaitlisted
-                    />
-                  </GridItem>,
-                );
-              }
-              return array;
-            },
-            [],
-          )}
-        </Grid>
-      </Box>
+      {availableSessionGridItems.length > 0 && (
+        <Box w="100%">
+          <Text textStyle={sessionSectionTitleStyles} mb={4}>
+            Available Camps
+          </Text>
+          <Grid
+            templateColumns={{
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(3, 1fr)",
+            }}
+            gridAutoRows="1fr"
+            gap={{ sm: 2, md: 5, lg: 4 }}
+          >
+            {availableSessionGridItems}
+          </Grid>
+        </Box>
+      )}
+      {waitlistSessionGridItems.length > 0 && (
+        <Box w="100%">
+          <Text textStyle={sessionSectionTitleStyles} my={4}>
+            Waitlist Only Camps
+          </Text>
+          <Grid
+            templateColumns={{
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(3, 1fr)",
+            }}
+            gridAutoRows="1fr"
+            gap={4}
+          >
+            {waitlistSessionGridItems}
+          </Grid>
+        </Box>
+      )}
     </VStack>
   );
 };
