@@ -19,8 +19,10 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import { RegistrantExperienceCamper } from "../../../types/CamperTypes";
-import { CreateCamperRequest } from "../../../types/CamperTypes";
+import {
+  RegistrantExperienceCamper,
+  CreateCamperRequest,
+} from "../../../types/CamperTypes";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "./RegistrationResult/RegistrationErrorModal";
 import {
@@ -77,7 +79,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   });
 
   const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
-  const [sampleRegisterField, setSampleRegisterField] = useState(false);
+
   // TODO: Get campSessions from previous registration step (Currently using dummy value)
   const campSessions: CampSession[] = [
     {
@@ -130,9 +132,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const isReviewRegistrationFilled = true;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
-  const [registeringCampers, setRegisteringCampers] = useState<
-    CreateCamperRequest[]
-  >(dummyCampers);
+  // const [registeringCampers, setRegisteringCampers] = useState<
+  //   CreateCamperRequest[]
+  // >(dummyCampers);
 
   const [errorModalMessage, setErrorModalMessage] = useState<ErrorModalMessage>(
     {
@@ -157,9 +159,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     currentCamp: CampResponse,
   ) => {
     saveSessionToSessionStorage(campId, {
-      campers: registeringCampers,
+      campers,
       camp,
-      items: mapToCampItems(currentCamp, registeringCampers),
+      items: mapToCampItems(currentCamp, campers),
       waiver: waiverInterface.waiver as WaiverType,
       checkoutUrl: checkoutSessionUrl,
     });
