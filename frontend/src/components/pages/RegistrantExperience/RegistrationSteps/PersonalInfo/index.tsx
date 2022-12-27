@@ -1,12 +1,12 @@
 import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { usePersonalInfoDispatcher } from "./personalInfoReducer";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import CamperCard from "./CamperCard";
-import { PersonalInfoActions } from "../../../../types/PersonalInfoTypes";
 import ContactCard from "./ContactCard";
-import { CampResponse, CampSession } from "../../../../types/CampsTypes";
+import { usePersonalInfoDispatcher } from "./personalInfoReducer";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
+import { PersonalInfoActions } from "../../../../../types/PersonalInfoTypes";
 
 type PersonalInfoProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;

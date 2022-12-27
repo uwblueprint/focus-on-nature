@@ -249,3 +249,15 @@ export const isMinCampDetailsFilled = (
   }
   return false;
 };
+
+export const getMeridianTime = (time: string): string => {
+  const trimmedString = time.trim();
+  if (!trimmedString) {
+    return "Unknown";
+  }
+
+  const [hourString, minutesString] = trimmedString.split(":");
+  const hour = parseInt(hourString, 10);
+  const adjustedHour = hour > 12 ? hour - 12 : hour;
+  return `${adjustedHour}:${minutesString}${hour < 12 ? "AM" : "PM"}`;
+};

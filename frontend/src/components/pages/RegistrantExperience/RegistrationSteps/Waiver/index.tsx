@@ -15,14 +15,14 @@ import {
   HStack,
   Wrap,
 } from "@chakra-ui/react";
-import RequiredAsterisk from "../../../common/RequiredAsterisk";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import {
   OptionalClauseResponse,
   RequiredClauseResponse,
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "../../../../types/waiverTypes";
+} from "../../../../../types/waiverTypes";
 
 const bodyTextStyles = {
   sm: "xSmallRegular",
