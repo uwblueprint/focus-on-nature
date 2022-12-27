@@ -10,7 +10,7 @@ interface ICamperService {
   /**
    * Create a camper
    * @param campers the campers to be created
-   * @param campSessions the sessions to register the campers for
+   * @param campSessions the ids of the sessions to register the campers for
    * @param waitlistedCamperId the waitlistedCamperIds to be set to registered
    * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails

@@ -27,12 +27,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+// The start and end time of a camp is stored as a string in format hh::mm
+// convertCampTimingToDate returns the start and end time attached to a particular date
+function convertCampTimingToDate(date: Date, time: string): Date {
+  const dateTime = date.toISOString();
+  const onlyDate = dateTime.split("T")[0];
+  return new Date(`${onlyDate}T${time}`);
+}
+
 // Calculates total cost of early dropoff from the given timings
 function getEDCost(edDates: string[], camp: Camp) {
+  if (edDates.length === 0) return 0;
+
   const dates: Date[] = edDates.map((dateString) => new Date(dateString));
-  const startTime = new Date(camp.startTime);
   return dates
     .map((date) => {
+      const startTime = convertCampTimingToDate(date, camp.startTime);
       // get the number of seconds between the ED time and start time
       let timeDiff: number = (startTime.getTime() - date.getTime()) / 1000;
       // convert to number of minutes
@@ -47,10 +57,13 @@ function getEDCost(edDates: string[], camp: Camp) {
 
 // Calculates total cost of late pickup from the given timings
 function getLPCost(lpDates: string[], camp: Camp) {
+  if (lpDates.length === 0) return 0;
+
   const dates: Date[] = lpDates.map((dateString) => new Date(dateString));
-  const endTime = new Date(camp.endTime);
+
   return dates
     .map((lpDate) => {
+      const endTime = convertCampTimingToDate(lpDate, camp.endTime);
       // get the number of seconds between the ED time and start time
       let timeDiff: number = (lpDate.getTime() - endTime.getTime()) / 1000;
       // convert to number of minutes
@@ -72,7 +85,6 @@ class CamperService implements ICamperService {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    let camp: Camp;
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
@@ -99,17 +111,17 @@ class CamperService implements ICamperService {
         );
       }
 
-      const findCamp = await MgCamp.findById(
+      const camp = await MgCamp.findById(
         sessionsToRegister[0].camp,
         {},
         { session },
       );
-      if (!findCamp) {
+      if (!camp) {
         throw new Error(
           "Could not find the camp associated with this session id",
         );
       }
-      camp = findCamp;
+
       // Ensure all sessions passed in belong to the same camp
       if (!sessionsToRegister.every((cs) => cs.camp.toString() === camp.id)) {
         throw new Error("All sessions must belong to the same camp");
@@ -119,12 +131,6 @@ class CamperService implements ICamperService {
       const campersToRegister: Array<Omit<CamperDTO, "id">> = [];
       sessionsToRegister.forEach((cs) => {
         campers.forEach((camper) => {
-          // Add the charges field for each camper
-          const charges: CamperCharges = {
-            camp: cs.dates.length * camp.fee,
-            earlyDropoff: getEDCost(camper.earlyDropoff, camp),
-            latePickup: getLPCost(camper.latePickup, camp),
-          };
           const camperToRegister: Omit<CamperDTO, "id"> = {
             campSession: cs.id,
             firstName: camper.firstName,
@@ -139,11 +145,29 @@ class CamperService implements ICamperService {
             hasPaid: camper.hasPaid,
             formResponses: camper.formResponses,
             chargeId: camper.chargeId,
-            charges,
+            charges: {
+              camp: 0,
+              earlyDropoff: 0,
+              latePickup: 0,
+            },
             optionalClauses: camper.optionalClauses,
           };
           campersToRegister.push(camperToRegister);
         });
+      });
+
+      // Add the total charges for the campers:
+      campersToRegister.forEach((camper) => {
+        const daysOfCamp = sessionsToRegister
+          .map((cs) => cs.dates.length)
+          .reduce((totalDays, daysInSession) => totalDays + daysInSession);
+        const totalCharges: CamperCharges = {
+          camp: daysOfCamp * camp.fee, // Total amount paid for this camper to attend all session(s)
+          earlyDropoff: getEDCost(camper.earlyDropoff, camp),
+          latePickup: getLPCost(camper.latePickup, camp),
+        };
+        /* eslint-disable no-param-reassign */
+        camper.charges = totalCharges;
       });
 
       // Ensure all campers meet the age requirements
@@ -256,7 +280,6 @@ class CamperService implements ICamperService {
           optionalClauses: newCamper.optionalClauses,
         };
       });
-
       // Commit the transaction if everything was successful
       await session.commitTransaction();
     } catch (error: unknown) {

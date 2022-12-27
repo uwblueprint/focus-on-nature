@@ -33,10 +33,14 @@ export const createCampersDtoValidator = async (
       .send("The campSessions field should be an array of strings");
   }
   if (waitlistId && campers.length > 1) {
-    return res.status(400).send("Can only waitlist 1 camper at a time");
+    return res
+      .status(400)
+      .send("Can only register 1 waitlisted camper at a time");
   }
   if (waitlistId && campSessions.length > 1) {
-    return res.status(400).send("Can only waitlist for 1 session at a time");
+    return res
+      .status(400)
+      .send("Can only register 1 waitlisted camper for 1 session at a time");
   }
   // Validate each camper data
   const commonChargeId = campers[0].chargeId;
@@ -184,7 +188,24 @@ export const createCampersDtoValidator = async (
       }
     }
   }
-
+  if (
+    !campers.every(
+      (camper) => camper.earlyDropoff.length === campers[0].earlyDropoff.length,
+    )
+  ) {
+    return res
+      .status(400)
+      .send("All campers must have the same early dropoff data");
+  }
+  if (
+    !campers.every(
+      (camper) => camper.latePickup.length === campers[0].latePickup.length,
+    )
+  ) {
+    return res
+      .status(400)
+      .send("All campers must have the same late pickup data");
+  }
   return next();
 };
 
