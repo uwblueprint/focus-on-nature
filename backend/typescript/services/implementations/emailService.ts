@@ -10,7 +10,7 @@ import { CampSession } from "../../models/campSession.model";
 import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
 
 // TODO: swap out this email for the focus on nature admin email
-const ADMIN_EMAIL = "focusonnature@uwblueprint.org";
+const ADMIN_EMAIL = "camps@focusonnature.ca";
 
 const Logger = logger(__filename);
 
@@ -48,7 +48,12 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendWaiverEmail(waiverContent: EmailDTO): Promise<void> {
+  async sendConfirmationEmails(
+    camp: Camp,
+    campers: Camper[],
+    campSessions: CampSession[],
+    waiverContent: EmailDTO,
+  ): Promise<void> {
     const pdfAttachment: Attachment = {
       filename: "waiver.pdf",
       content: Buffer.from(waiverContent.pdf),
@@ -56,11 +61,50 @@ class EmailService implements IEmailService {
       encoding: "base64",
     };
 
+    await this.sendAdminConfirmationEmail(camp, campers, campSessions, [
+      pdfAttachment,
+    ]);
+
+    await this.sendParentConfirmationEmail(camp, campers, campSessions, [
+      pdfAttachment,
+    ]);
+  }
+
+  async sendAdminConfirmationEmail(
+    camp: Camp,
+    campers: Camper[],
+    campSessions: CampSession[],
+    attachments: Attachment[],
+  ): Promise<void> {
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
+
     await this.sendEmail(
-      "bowenzhu@uwblueprint.org",
-      "Focus on Nature Camp Registration - Waiver",
-      "A copy of your Focus on Nature Camp Registration is attached.",
-      [pdfAttachment],
+      ADMIN_EMAIL,
+      `Waiver Responses for 
+      ${campers.map((camper) => {
+        return `${camper.firstName} ${camper.lastName},`;
+      })}
+      for ${camp.name}`,
+      `<ul>
+        <li><b>Campers:</b></li>
+        ${campers
+          .map((camper) => {
+            return `<ul>
+              <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
+              <ul><li><b>Age:</b> ${camper.age}</li></ul>
+            </ul>`;
+          })
+          .join("")}
+        <li><b>Camp name:</b> ${camp.name}</li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
+        <li><b>Responses Received on:</b>  </li>
+      </ul>`,
+      attachments,
     );
   }
 
@@ -68,6 +112,7 @@ class EmailService implements IEmailService {
     camp: Camp,
     campers: Camper[],
     campSessions: CampSession[],
+    attachments: Attachment[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
     const link = "DUMMY LINK"; // TODO: Update link
@@ -147,6 +192,7 @@ class EmailService implements IEmailService {
       if we have another camper on our waitlist.
       <br><br>Thanks, <br><br>
       Focus on Nature`,
+      attachments,
     );
   }
 

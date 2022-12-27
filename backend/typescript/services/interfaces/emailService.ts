@@ -1,39 +1,43 @@
+import { Attachment } from "nodemailer/lib/mailer";
 import { Camp } from "../../models/camp.model";
 import { Camper } from "../../models/camper.model";
 import { CampSession } from "../../models/campSession.model";
 import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
+import { EmailDTO } from "../../types";
 
 interface IEmailService {
   /**
-   * Send camp registration confirmation email.
+   * Wrapper to send camp registration confirmation emails
+   * to admin and parents with waiver pdf attached.
    * @throws Error if email was not sent successfully
    */
   sendConfirmationEmails(
     camp: Camp,
     campers: Camper[],
     campSessions: CampSession[],
-    waiverContent: string,
+    waiverContent: EmailDTO,
   ): Promise<void>;
 
   /**
-   * Send camp registration confirmation email.
+   * Send camp registration confirmation email to admin.
    * @throws Error if email was not sent successfully
    */
   sendAdminConfirmationEmail(
     camp: Camp,
     campers: Camper[],
     campSessions: CampSession[],
-    waiverContent: string,
+    attachments: Attachment[],
   ): Promise<void>;
 
   /**
-   * Send camp registration confirmation email.
+   * Send camp registration confirmation email to parent.
    * @throws Error if email was not sent successfully
    */
   sendParentConfirmationEmail(
     camp: Camp,
     campers: Camper[],
     campSessions: CampSession[],
+    attachments: Attachment[],
   ): Promise<void>;
 
   /**

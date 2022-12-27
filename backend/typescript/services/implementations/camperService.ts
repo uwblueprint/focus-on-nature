@@ -14,6 +14,7 @@ import {
   WaitlistedCamperDTO,
   UpdateCamperDTO,
   CamperCharges,
+  EmailDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -80,7 +81,7 @@ class CamperService implements ICamperService {
   async createCampers(
     campers: CreateCampersDTO,
     campSessions: string[],
-    waiverContent: string,
+    waiverContent: EmailDTO,
     waitlistedCamperId?: string,
   ): Promise<CamperDTO[]> {
     const session = await mongoose.startSession();
@@ -246,10 +247,11 @@ class CamperService implements ICamperService {
       );
 
       // Email the parent about all the campers and sessions they have signed up for
-      await emailService.sendRegistrationEmails(
+      await emailService.sendConfirmationEmails(
         camp,
         registeredCampers,
         sessionsToRegister,
+        waiverContent,
       );
 
       // Send admin an email for all the sessions that are now full
@@ -449,7 +451,10 @@ class CamperService implements ICamperService {
   ): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ chargeId, campSession: sessionId });
+      const campers: Camper[] = await MgCamper.find({
+        chargeId,
+        campSession: sessionId,
+      });
 
       if (!campers || campers.length === 0) {
         throw new Error(

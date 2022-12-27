@@ -4,6 +4,7 @@ import {
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
   UpdateCamperDTO,
+  EmailDTO,
 } from "../../types";
 
 interface ICamperService {
@@ -19,7 +20,7 @@ interface ICamperService {
   createCampers(
     campers: CreateCampersDTO,
     campSessions: string[],
-    waiverContent: string,
+    waiverContent: EmailDTO,
     waitlistedCamperId?: string,
   ): Promise<CamperDTO[]>;
 
