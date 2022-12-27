@@ -2,10 +2,30 @@ import { Camp } from "../../models/camp.model";
 import { Camper } from "../../models/camper.model";
 import { CampSession } from "../../models/campSession.model";
 import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
-import { EmailDTO } from "../../types";
 
 interface IEmailService {
-  sendWaiverEmail(waiverContent: EmailDTO): Promise<void>;
+  /**
+   * Send camp registration confirmation email.
+   * @throws Error if email was not sent successfully
+   */
+  sendConfirmationEmails(
+    camp: Camp,
+    campers: Camper[],
+    campSessions: CampSession[],
+    waiverContent: string,
+  ): Promise<void>;
+
+  /**
+   * Send camp registration confirmation email.
+   * @throws Error if email was not sent successfully
+   */
+  sendAdminConfirmationEmail(
+    camp: Camp,
+    campers: Camper[],
+    campSessions: CampSession[],
+    waiverContent: string,
+  ): Promise<void>;
+
   /**
    * Send camp registration confirmation email.
    * @throws Error if email was not sent successfully

@@ -11,6 +11,7 @@ interface ICamperService {
    * Create a camper
    * @param campers the campers to be created
    * @param campSessions the ids of the sessions to register the campers for
+   * @param waiverContent waiver pdfs to be attached to emails
    * @param waitlistedCamperId the waitlistedCamperIds to be set to registered
    * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails
@@ -18,6 +19,7 @@ interface ICamperService {
   createCampers(
     campers: CreateCampersDTO,
     campSessions: string[],
+    waiverContent: string,
     waitlistedCamperId?: string,
   ): Promise<CamperDTO[]>;
 

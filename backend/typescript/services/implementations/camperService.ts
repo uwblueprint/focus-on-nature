@@ -80,6 +80,7 @@ class CamperService implements ICamperService {
   async createCampers(
     campers: CreateCampersDTO,
     campSessions: string[],
+    waiverContent: string,
     waitlistedCamperId?: string,
   ): Promise<CamperDTO[]> {
     const session = await mongoose.startSession();
@@ -245,7 +246,7 @@ class CamperService implements ICamperService {
       );
 
       // Email the parent about all the campers and sessions they have signed up for
-      await emailService.sendParentConfirmationEmail(
+      await emailService.sendRegistrationEmails(
         camp,
         registeredCampers,
         sessionsToRegister,
