@@ -93,8 +93,9 @@ const deleteMultipleCampersById = async (ids: string[]): Promise<boolean> => {
   }
 };
 
-const sendWaiverEmail = async (
-  waiverContent: HTMLElement,
+/* TODO: take pdf logic and move to /campers/register call
+const sendConfirmationEmails = async (
+  waiverContent: string,
 ): Promise<boolean> => {
   try {
     const waiverPdf = new JsPDF("portrait", "pt", "a4");
@@ -115,6 +116,7 @@ const sendWaiverEmail = async (
     return false;
   }
 }
+*/
 
 const getCampersByChargeIdAndSessionId = async (
   chargeId: string,
@@ -138,7 +140,6 @@ export default {
   updateCamperRegistrationStatus,
   deleteWaitlistedCamperById,
   updateCampersById,
-  sendWaiverEmail,
   getCampersByChargeIdAndSessionId,
   deleteMultipleCampersById,
 };

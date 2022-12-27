@@ -63,6 +63,12 @@ const WaiverPage = ({
   waiverDispatch,
   campName,
 }: WaiverPageProps): React.ReactElement => {
+  /* TODO: store waiver content (html) string to be used in future steps
+  const sendEmail = async () => {
+    const waiver = document.getElementById("waiver")?.outerHTML;
+    await CamperAPIClient.sendConfirmationEmail(waiver);
+  }
+  */
   return (
     <Box>
       <VStack align="stretch">
@@ -229,9 +235,6 @@ const WaiverPage = ({
           />
         </FormControl>
       </Wrap>
-      <button onClick={sendEmail} type="button">
-        Send Email PDF
-      </button>
     </Box>
   );
 };

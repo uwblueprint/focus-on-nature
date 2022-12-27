@@ -102,7 +102,6 @@ class EmailService implements IEmailService {
         <ol>
           ${sessionDatesListItems.join("")}
         </ol>
-        <li><b>Responses Received on:</b>  </li>
       </ul>`,
       attachments,
     );
