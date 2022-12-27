@@ -128,10 +128,12 @@ class CamperService implements ICamperService {
       }
 
       // Create a camper entity for each session
-      const campersToRegister: Array<Omit<CamperDTO, "id">> = [];
-      sessionsToRegister.forEach((cs) => {
-        campers.forEach((camper) => {
-          const camperToRegister: Omit<CamperDTO, "id"> = {
+      // const campersToRegister: Array<Omit<CamperDTO, "id">> = [];
+      const campersToRegister: Array<
+        Omit<CamperDTO, "id">
+      > = sessionsToRegister.flatMap((cs) => {
+        return campers.map((camper) => {
+          return {
             campSession: cs.id,
             firstName: camper.firstName,
             lastName: camper.lastName,
@@ -152,7 +154,6 @@ class CamperService implements ICamperService {
             },
             optionalClauses: camper.optionalClauses,
           };
-          campersToRegister.push(camperToRegister);
         });
       });
 
