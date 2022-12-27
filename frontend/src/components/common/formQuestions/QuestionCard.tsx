@@ -9,7 +9,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
+import {
+  CreateFormQuestionRequest,
+  FormQuestion,
+} from "../../../types/CampsTypes";
 import { getTextFromQuestionType } from "../../../utils/CampUtils";
 import RequiredTag from "../camps/RequiredTag";
 import DeleteCustomQuestionModal from "../../pages/CampCreation/RegistrationForm/DeleteCustomQuestionModal";
@@ -21,7 +24,7 @@ type QuestionCardProps = {
   onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
     oldQuestion: FormQuestion,
-    newQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestionRequest,
   ) => void;
 };
 

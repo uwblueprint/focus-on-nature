@@ -115,6 +115,7 @@ const NavBar = (): JSX.Element => {
                   color: "primary.green.100",
                   fontWeight: FontWeights.SEMIBOLD,
                 }}
+                onClick={() => history.push(Routes.CAMPS_PAGE)}
               >
                 <FontAwesomeIcon icon={faCampground} />
                 &nbsp; Camps

@@ -163,7 +163,7 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   campPhotoUrl?: string;
 };
 
-export type CreateCampDTO = Omit<
+export type CreateUpdateCampDTO = Omit<
   CampDTO,
   | "id"
   | "formQuestions"
@@ -173,28 +173,19 @@ export type CreateCampDTO = Omit<
   | "dropoffProductId"
   | "pickupPriceId"
   | "pickupProductId"
+  | "earlyDropoff"
+  | "latePickup"
+  | "pickupFee"
+  | "dropoffFee"
 > & {
   filePath?: string;
   fileContentType?: string;
   formQuestions: CreateFormQuestionDTO[];
   campSessions: CreateCampSessionsDTO;
-};
-
-export type UpdateCampDTO = Omit<
-  CampDTO,
-  | "id"
-  | "formQuestions"
-  | "campSessions"
-  | "campProductId"
-  | "dropoffPriceId"
-  | "dropoffProductId"
-  | "pickupPriceId"
-  | "pickupProductId"
-> & {
-  filePath?: string;
-  fileContentType?: string;
-  campSessions: CreateCampSessionsDTO;
-  formQuestions: CreateFormQuestionDTO[];
+  earlyDropoff?: string;
+  latePickup?: string;
+  pickupFee?: number;
+  dropoffFee?: number;
 };
 
 export type CreateCampSessionsDTO = Array<

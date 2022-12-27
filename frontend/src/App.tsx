@@ -72,6 +72,11 @@ const App = (): React.ReactElement => {
               path={Routes.CAMP_CREATION_PAGE}
               component={CampCreationPage}
             />
+            <PrivateRoute
+              exact
+              path={Routes.CAMP_EDIT_PAGE}
+              component={CampCreationPage}
+            />
             <Route
               exact
               path={Routes.CAMP_REGISTER_PAGE}

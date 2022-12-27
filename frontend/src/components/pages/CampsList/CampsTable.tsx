@@ -1,3 +1,6 @@
+import React, { Dispatch, SetStateAction } from "react";
+
+import { useHistory } from "react-router-dom";
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
 import {
@@ -23,7 +26,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React, { Dispatch, SetStateAction } from "react";
+
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import {
   getCampStatus,
@@ -31,6 +34,7 @@ import {
   locationString,
 } from "../../../utils/CampUtils";
 import CampStatusLabel from "./CampStatusLabel";
+import { CAMP_EDIT_PAGE } from "../../../constants/Routes";
 
 type CampsTableProps = {
   camps: CampResponse[];
@@ -58,6 +62,12 @@ const CampsTable = ({
   const [selectedFilter, setSelectedFilter] = React.useState<CampStatus | "">(
     "",
   );
+
+  const history = useHistory();
+
+  const onEditCampClick = (campID: string): void => {
+    history.push(CAMP_EDIT_PAGE.replace(":id", campID));
+  };
 
   const tableData = React.useMemo(() => {
     let filteredCamps = camps;
@@ -142,7 +152,9 @@ const CampsTable = ({
           <Tr>
             <Th color="text.default.100">Camp Name</Th>
             <Th color="text.default.100">Camp Dates</Th>
-            <Th color="text.default.100">Camp Status</Th>
+            <Th color="text.default.100" justifyContent="center" display="flex">
+              Camp Status
+            </Th>
             <Th color="text.default.100"> </Th>
           </Tr>
         </Thead>
@@ -215,6 +227,16 @@ const CampsTable = ({
                         Delete camp
                       </Text>
                     </PopoverBody>
+                    {getCampStatus(camp) === CampStatus.DRAFT && (
+                      <PopoverBody
+                        as={Button}
+                        bg="background.white.100"
+                        onClick={() => onEditCampClick(camp.id)}
+                        padding="1.5em 2em"
+                      >
+                        <Text textStyle="buttonRegular">Edit camp</Text>
+                      </PopoverBody>
+                    )}
                   </PopoverContent>
                 </Popover>
               </Td>

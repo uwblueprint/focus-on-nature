@@ -6,6 +6,7 @@ import {
   CampSession,
   CampStatus,
   CreateCampSession,
+  CreateUpdateCampRequest,
   Location,
   QuestionType,
 } from "../types/CampsTypes";
@@ -138,6 +139,49 @@ export const getFormattedCampDateRange = (
   return "";
 };
 
+const getWeekDayKeyFromDateNum = (num: number): string => {
+  switch (num) {
+    case 0:
+      return "Su";
+    case 1:
+      return "Mo";
+    case 2:
+      return "Tu";
+    case 3:
+      return "We";
+    case 4:
+      return "Th";
+    case 5:
+      return "Fr";
+    default:
+      return "Sa";
+  }
+};
+
+// getSelectedWeekDaysFromDates takes an array of Dates and returns map of weekdays,
+// with value of true if camp session occurs on this weekday, otherwise false.
+// All camp sessions occur over a single week period.
+export const getSelectedWeekDaysFromDates = (
+  sessionDates: Date[],
+): Map<string, boolean> => {
+  const campDays = new Map<string, boolean>([
+    ["Su", false],
+    ["Mo", false],
+    ["Tu", false],
+    ["We", false],
+    ["Th", false],
+    ["Fr", false],
+    ["Sa", false],
+  ]);
+
+  sessionDates.forEach((date) => {
+    const key = getWeekDayKeyFromDateNum(date.getDay());
+    campDays.set(key, true);
+  });
+
+  return campDays;
+};
+
 export const getMonthIndex = (month: string): number => MONTHS[month];
 
 export const getMonthName = (date: Date): string =>
@@ -159,3 +203,49 @@ export const getSessionBorderColor = (sessionIndex: number): string =>
 
 export const getSessionFillColor = (sessionIndex: number): string =>
   FILL_COLORS[sessionIndex % 8];
+
+// isEDLPValid checks if the EDLP config in the request object is valid
+const isEDLPValid = (camp: CreateUpdateCampRequest): boolean => {
+  // Camp either doesn't have EDLP or has both
+  if (
+    (camp.earlyDropoff && !camp.latePickup) ||
+    (camp.latePickup && !camp.earlyDropoff)
+  ) {
+    return false;
+  }
+  // Camp must have both late pickup and early dropoff fee if it has EDLP
+  if (
+    camp.earlyDropoff &&
+    camp.latePickup &&
+    (!camp.dropoffFee || !camp.pickupFee)
+  ) {
+    return false;
+  }
+  return true;
+};
+
+// isMinCampDetailsFilled checks if the camp object has the minimum details required to create/update a camp
+export const isMinCampDetailsFilled = (
+  camp: CreateUpdateCampRequest,
+): boolean => {
+  if (
+    camp.name &&
+    camp.description &&
+    camp.fee &&
+    camp.startTime &&
+    camp.endTime &&
+    camp.ageLower &&
+    camp.ageUpper &&
+    isEDLPValid(camp) &&
+    camp.location.streetAddress1 &&
+    camp.location.city &&
+    camp.location.province &&
+    camp.location.province &&
+    camp.location.postalCode &&
+    camp.campSessions.length > 0 &&
+    camp.campSessions.every((cs) => cs.capacity > 0)
+  ) {
+    return true;
+  }
+  return false;
+};
