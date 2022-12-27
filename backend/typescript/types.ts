@@ -1,3 +1,5 @@
+export const FON_ADMIN_EMAIL = "camps@focusonnature.ca";
+
 export type Role = "Admin" | "CampCoordinator";
 
 export type DropOffType = "EarlyDropOff" | "LatePickUp";
