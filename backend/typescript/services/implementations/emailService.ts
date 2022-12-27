@@ -175,13 +175,8 @@ class EmailService implements IEmailService {
     const campLocationString: string = getLocationString(camp.location);
 
     // Remove duplicated campers (each camper has entity per camp session)
-    const uniqueCampers = waitlistedCampers.filter(
-      (value, index, self) =>
-        index ===
-        self.findIndex(
-          (c) =>
-            c.firstName === value.firstName && c.lastName === value.lastName,
-        ),
+    const uniqueCamperIds = new Set(
+      waitlistedCampers.map((camper) => camper.id),
     );
 
     await this.sendEmail(
@@ -200,7 +195,8 @@ class EmailService implements IEmailService {
           ${sessionDatesListItems.join("")}
         </ol>
         <li><b>Campers:</b></li>
-        ${uniqueCampers
+        ${waitlistedCampers
+          .filter((camper) => uniqueCamperIds.has(camper.id))
           .map((camper) => {
             return `<ul>
               <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>

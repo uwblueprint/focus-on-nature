@@ -360,7 +360,6 @@ class CamperService implements ICamperService {
     session.startTransaction();
 
     let sessionsToWaitlist: CampSession[] = [];
-    let camp: Camp;
     let newWaitlistedCampers: WaitlistedCamper[] = [];
 
     try {
@@ -372,22 +371,24 @@ class CamperService implements ICamperService {
 
       // Ensure all sessions were found
       if (sessionsToWaitlist.length !== campSessions.length) {
-        throw new Error(
-          "The session ids passed in did not match the sessions found",
-        );
+        throw new Error("Could not find camp sessions for all ids");
       }
 
-      const findCamp = await MgCamp.findById(
+      const camp = await MgCamp.findById(
         sessionsToWaitlist[0].camp,
         {},
         { session },
       );
-      if (!findCamp) {
+      if (!camp) {
         throw new Error(
           "Unable to find the camp associated with the camp sessions passed in",
         );
       }
-      camp = findCamp;
+
+      // Ensure all the campSessions are for the same camp
+      if (!sessionsToWaitlist.every((cs) => cs.camp.toString() === camp.id)) {
+        throw new Error("Not all camp sessions belong to the same camp");
+      }
 
       // Ensure all camper(s) meet the age requirements of the camp
       if (
@@ -401,10 +402,11 @@ class CamperService implements ICamperService {
       }
 
       // Create a waitlist camper entity for each session
-      const campersToWaitlist: Array<Omit<WaitlistedCamperDTO, "id">> = [];
-      campSessions.forEach((cs) => {
-        waitlistedCampers.forEach((waitlistedCamper) => {
-          const camperToWaitlist: Omit<WaitlistedCamperDTO, "id"> = {
+      const campersToWaitlist: Array<
+        Omit<WaitlistedCamperDTO, "id">
+      > = campSessions.flatMap((cs) => {
+        return waitlistedCampers.map((waitlistedCamper) => {
+          return {
             firstName: waitlistedCamper.firstName,
             lastName: waitlistedCamper.lastName,
             age: waitlistedCamper.age,
@@ -414,9 +416,9 @@ class CamperService implements ICamperService {
             campSession: cs,
             status: "NotRegistered",
           };
-          campersToWaitlist.push(camperToWaitlist);
         });
       });
+
       // Insert the waitlisted camper entities
       newWaitlistedCampers = await MgWaitlistedCamper.insertMany(
         campersToWaitlist,
