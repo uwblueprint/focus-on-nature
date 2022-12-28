@@ -215,18 +215,25 @@ class CamperService implements ICamperService {
             "Can only register waitlisted camper for 1 camp session at a time. Please only pass in 1 session",
           );
         }
-
-        // Update the status of the waitlisted camper
-        await MgWaitlistedCamper.findByIdAndUpdate(
+        const waitlistedCamper = await MgWaitlistedCamper.findById(
           waitlistedCamperId,
-          {
-            status: "Registered",
-          },
-          {
-            runValidators: true,
-            session,
-          },
+          {},
+          { session },
         );
+        if (!waitlistedCamper) {
+          throw new Error(
+            "No waitlisted camper could be found with the given id",
+          );
+        }
+        // Ensure that the waitlisted camper's session matches the session passed in
+        if (waitlistedCamper.campSession.toString() !== campSessions[0]) {
+          throw new Error(
+            "Can not register the waitlisted camper for the given session",
+          );
+        }
+        // Update the status of the waitlisted camper
+        waitlistedCamper.status = "Registered";
+        await waitlistedCamper.save({ session });
       }
 
       // Find all the campers who need special assistance
