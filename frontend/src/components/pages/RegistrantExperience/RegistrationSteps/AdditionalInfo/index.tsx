@@ -13,12 +13,10 @@ type AdditionalInfoProps = {
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
   campName: string;
-  formQuestions: FormQuestion[];
-  hasEarlyDropOffLatePickup: boolean;
-  requireEarlyDropOffLatePickup: boolean | null;
-  setRequireEarlyDropOffLatePickup: React.Dispatch<
-    React.SetStateAction<boolean | null>
-  >;
+  campSpecificFormQuestions: FormQuestion[];
+  hasEDLP: boolean;
+  requireEDLP: boolean | null;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
 };
 
 const AdditionalInfo = ({
@@ -26,27 +24,27 @@ const AdditionalInfo = ({
   campers,
   setCampers,
   campName,
-  formQuestions,
-  hasEarlyDropOffLatePickup,
-  requireEarlyDropOffLatePickup,
-  setRequireEarlyDropOffLatePickup,
+  campSpecificFormQuestions,
+  hasEDLP,
+  requireEDLP,
+  setRequireEDLP,
 }: AdditionalInfoProps): React.ReactElement => {
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
-  const [submitClicked, setSubmitClicked] = useState(false);
+  const [nextClicked, setNextClicked] = useState(false);
 
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
 
     if (nextBtnRef && nextBtnRef.current) {
       nextBtnRefValue = nextBtnRef.current;
-      nextBtnRefValue.addEventListener("click", () => setSubmitClicked(true));
+      nextBtnRefValue.addEventListener("click", () => setNextClicked(true));
     }
 
     return () => {
       if (nextBtnRefValue) {
         nextBtnRefValue.removeEventListener("click", () =>
-          setSubmitClicked(true),
+          setNextClicked(true),
         );
       }
     };
@@ -61,26 +59,24 @@ const AdditionalInfo = ({
         </Text>
         {campers.map((camper, camperIndex) => (
           <CamperQuestionsCard
-            key={camperIndex}
+            key={`additional_info_camper_${camperIndex}`}
             camper={camper}
             camperIndex={camperIndex}
-            formQuestions={formQuestions}
+            campSpecificFormQuestions={campSpecificFormQuestions}
             dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
-            submitClicked={submitClicked}
+            nextClicked={nextClicked}
           />
         ))}
-        {hasEarlyDropOffLatePickup && (
+        {hasEDLP && (
           <Box width="100%">
             <Divider borderColor="border.secondary.100" mb={6} />
             <Text textStyle="displayLarge" textColor="primary.green.100">
               Camp-specific Additional Questions
             </Text>
             <EarlyDropOffLatePickupCard
-              requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
-              setRequireEarlyDropOffLatePickup={
-                setRequireEarlyDropOffLatePickup
-              }
-              submitClicked={submitClicked}
+              requireEDLP={requireEDLP}
+              setRequireEDLP={setRequireEDLP}
+              nextClicked={nextClicked}
             />
           </Box>
         )}

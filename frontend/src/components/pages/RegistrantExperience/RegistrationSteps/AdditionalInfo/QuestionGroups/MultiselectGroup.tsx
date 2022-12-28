@@ -18,7 +18,7 @@ type MultiselectGroupProps = {
   camperIndex: number;
   question: FormQuestion;
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
-  submitClicked: boolean;
+  nextClicked: boolean;
 };
 
 const MultiselectGroup = ({
@@ -26,7 +26,7 @@ const MultiselectGroup = ({
   camperIndex,
   question,
   dispatchAdditionalInfoAction,
-  submitClicked,
+  nextClicked,
 }: MultiselectGroupProps): React.ReactElement => {
   const getInitialSelections = (): Set<string> => {
     const questionResponse = formResponses?.get(question.question);
@@ -41,7 +41,7 @@ const MultiselectGroup = ({
     getInitialSelections(),
   );
 
-  const invalid = submitClicked && selections.size <= 0 && question.required;
+  const invalid = nextClicked && selections.size <= 0 && question.required;
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
@@ -77,9 +77,9 @@ const MultiselectGroup = ({
         )}
       </FormControl>
       <VStack alignItems="flex-start">
-        {question.options?.map((option, i) => (
+        {question.options?.map((option) => (
           <Checkbox
-            key={i}
+            key={`multiselect_option_${option}`}
             size="lg"
             colorScheme="green"
             value={option}

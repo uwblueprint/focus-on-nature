@@ -41,27 +41,18 @@ export const useAdditionalInfoDispatcher = (
   return dispatch;
 };
 
-export const getRequiredQuestions = (
-  formQuestions: FormQuestion[],
-): string[] => {
-  const requiredQuestions: string[] = [];
-  formQuestions.forEach((question) => {
-    if (question.required) {
-      requiredQuestions.push(question.question);
-    }
-  });
-  return requiredQuestions;
-};
-
 export const checkAdditionalQuestionsAnswered = (
   campers: RegistrantExperienceCamper[],
-  formQuestions: FormQuestion[],
-  requireEarlyDropOffLatePickup: boolean | null,
+  campSpecificFormQuestions: FormQuestion[],
+  hasEDLP: boolean,
+  requireEDLP: boolean | null,
 ): boolean => {
-  if (requireEarlyDropOffLatePickup === null) {
+  if (hasEDLP && requireEDLP === null) {
     return false;
   }
-  const requiredQuestions = getRequiredQuestions(formQuestions);
+  const requiredQuestions = campSpecificFormQuestions
+    .filter((question) => question.required)
+    .map((question) => question.question);
   return campers.every((camper) =>
     requiredQuestions.every((question) => camper.formResponses?.get(question)),
   );

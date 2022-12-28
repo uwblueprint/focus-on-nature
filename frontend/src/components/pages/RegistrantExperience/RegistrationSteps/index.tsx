@@ -48,7 +48,6 @@ const RegistrationSteps = ({
     waiverCompleted: false,
   });
 
-  const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
@@ -77,6 +76,16 @@ const RegistrationSteps = ({
       optionalClauses: [],
     },
   ]);
+  const campSpecificFormQuestions = camp.formQuestions.filter(
+    (question) => question.category === "CampSpecific",
+  );
+
+  const hasEarlyDropOffLatePickup =
+    camp.earlyDropoff !== undefined &&
+    camp.earlyDropoff !== "" &&
+    camp.latePickup !== undefined &&
+    camp.latePickup !== "";
+
   const [
     requireEarlyDropOffLatePickup,
     setRequireEarlyDropOffLatePickup,
@@ -85,7 +94,8 @@ const RegistrationSteps = ({
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
     campers,
-    camp.formQuestions,
+    campSpecificFormQuestions,
+    hasEarlyDropOffLatePickup,
     requireEarlyDropOffLatePickup,
   );
   const isWaiverFilled = waiverInterface.waiverCompleted;
@@ -127,13 +137,11 @@ const RegistrationSteps = ({
             nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
-            campName={camp?.name || ""}
-            formQuestions={camp.formQuestions}
-            hasEarlyDropOffLatePickup={
-              camp.earlyDropoff !== undefined && camp.latePickup !== undefined
-            }
-            requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
-            setRequireEarlyDropOffLatePickup={setRequireEarlyDropOffLatePickup}
+            campName={camp.name}
+            campSpecificFormQuestions={campSpecificFormQuestions}
+            hasEDLP={hasEarlyDropOffLatePickup}
+            requireEDLP={requireEarlyDropOffLatePickup}
+            setRequireEDLP={setRequireEarlyDropOffLatePickup}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:

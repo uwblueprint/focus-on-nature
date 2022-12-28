@@ -11,25 +11,25 @@ import QuestionsCardWrapper from "./QuestionsCardWrapper";
 type CamperQuestionsCardProps = {
   camper: RegistrantExperienceCamper;
   camperIndex: number;
-  formQuestions: FormQuestion[];
+  campSpecificFormQuestions: FormQuestion[];
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
-  submitClicked: boolean;
+  nextClicked: boolean;
 };
 
 const CamperQuestionsCard = ({
   camper,
   camperIndex,
-  formQuestions,
+  campSpecificFormQuestions,
   dispatchAdditionalInfoAction,
-  submitClicked,
+  nextClicked,
 }: CamperQuestionsCardProps): React.ReactElement => {
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
       <VStack width="100%" py="24px">
         <Wrap>
-          {formQuestions.map((question, i) => (
+          {campSpecificFormQuestions.map((question) => (
             <WrapItem
-              key={i}
+              key={`additional_info_question_${question}`}
               width={{ sm: "100%", md: "47%" }}
               px="40px"
               py="12px"
@@ -40,7 +40,7 @@ const CamperQuestionsCard = ({
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
-                  submitClicked={submitClicked}
+                  nextClicked={nextClicked}
                 />
               )}
               {question.type === "Multiselect" && (
@@ -49,7 +49,7 @@ const CamperQuestionsCard = ({
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
-                  submitClicked={submitClicked}
+                  nextClicked={nextClicked}
                 />
               )}
               {question.type === "MultipleChoice" && (
@@ -58,7 +58,7 @@ const CamperQuestionsCard = ({
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
-                  submitClicked={submitClicked}
+                  nextClicked={nextClicked}
                 />
               )}
             </WrapItem>

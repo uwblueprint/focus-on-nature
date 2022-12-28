@@ -17,7 +17,7 @@ type TextInputGroupProps = {
   camperIndex: number;
   question: FormQuestion;
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
-  submitClicked: boolean;
+  nextClicked: boolean;
 };
 
 const TextInputGroup = ({
@@ -25,12 +25,10 @@ const TextInputGroup = ({
   camperIndex,
   question,
   dispatchAdditionalInfoAction,
-  submitClicked,
+  nextClicked,
 }: TextInputGroupProps): React.ReactElement => {
   const invalid =
-    submitClicked &&
-    !formResponses?.get(question.question) &&
-    question.required;
+    nextClicked && !formResponses?.get(question.question) && question.required;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatchAdditionalInfoAction({

@@ -13,22 +13,20 @@ import React from "react";
 import QuestionsCardWrapper from "./QuestionsCardWrapper";
 
 type EarlyDropOffLatePickupCardProps = {
-  requireEarlyDropOffLatePickup: boolean | null;
-  setRequireEarlyDropOffLatePickup: (
-    requireEarlyDropOffLatePickup: boolean,
-  ) => void;
-  submitClicked: boolean;
+  requireEDLP: boolean | null;
+  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  nextClicked: boolean;
 };
 
 const EarlyDropOffLatePickupCard = ({
-  requireEarlyDropOffLatePickup,
-  setRequireEarlyDropOffLatePickup,
-  submitClicked,
+  requireEDLP,
+  setRequireEDLP,
+  nextClicked,
 }: EarlyDropOffLatePickupCardProps): React.ReactElement => {
-  const invalid = submitClicked && requireEarlyDropOffLatePickup === null;
+  const invalid = nextClicked && requireEDLP === null;
 
   const handleMultipleChoiceUpdate = (choice: string) => {
-    setRequireEarlyDropOffLatePickup(choice === "true");
+    setRequireEDLP(choice === "true");
   };
 
   return (
@@ -52,7 +50,7 @@ const EarlyDropOffLatePickupCard = ({
               </FormErrorMessage>
             )}
             <RadioGroup
-              value={requireEarlyDropOffLatePickup?.toString()}
+              value={requireEDLP?.toString()}
               onChange={(choice) => handleMultipleChoiceUpdate(choice)}
             >
               <VStack alignItems="flex-start">
