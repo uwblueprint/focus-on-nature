@@ -16,9 +16,9 @@ type AdditionalInfoProps = {
   campName: string;
   hasEarlyDropOffLatePickup: boolean;
   requireEarlyDropOffLatePickup: boolean | null;
-  setRequireEarlyDropOffLatePickup: (
-    requireEarlyDropOffLatePickup: boolean,
-  ) => void;
+  setRequireEarlyDropOffLatePickup: React.Dispatch<
+    React.SetStateAction<boolean | null>
+  >;
   nextBtnRef: React.RefObject<HTMLButtonElement>;
 };
 
@@ -35,58 +35,49 @@ const AdditionalInfo = ({
 }: AdditionalInfoProps): React.ReactElement => {
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
-  const updateCamperFormResponse = (
-    index: number,
-    formResponses: Map<string, string>,
-  ) => {
-    const newCampers = [...campers];
-    newCampers[index].formResponses = formResponses;
-    setCampers(newCampers);
-  };
-
   const [submitClicked, setSubmitClicked] = useState(false);
 
-  let numRequiredQuestions = 0;
-  formQuestions.forEach((question) => {
-    if (question.required) {
-      numRequiredQuestions += 1;
-    }
-  });
+  const getRequiredQuestions = (): string[] => {
+    const requiredQuestions: string[] = [];
+    formQuestions.forEach((question) => {
+      if (question.required) {
+        requiredQuestions.push(question.question);
+      }
+    });
+    return requiredQuestions;
+  };
 
   const allQuestionsAnswered = () => {
     if (requireEarlyDropOffLatePickup === null) {
       return false;
     }
-
-    let error = false;
-    campers.forEach((camper) => {
-      if (
-        camper.formResponses &&
-        Object.keys(camper.formResponses).length === numRequiredQuestions
-      ) {
-        error = true;
-      }
-    });
-    return error;
+    const requiredQuestions = getRequiredQuestions();
+    return campers.every((camper) =>
+      requiredQuestions.every((question) =>
+        camper.formResponses?.get(question),
+      ),
+    );
   };
 
   useEffect(() => {
+    let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
+
     const handleFormSubmit = () => {
       setSubmitClicked(true);
       toggleChecked(allQuestionsAnswered());
     };
 
     if (nextBtnRef && nextBtnRef.current) {
-      nextBtnRef.current.addEventListener("click", handleFormSubmit);
+      nextBtnRefValue = nextBtnRef.current;
+      nextBtnRefValue.addEventListener("click", handleFormSubmit);
     }
 
     return () => {
-      // Passing the same reference
-      if (nextBtnRef && nextBtnRef.current) {
-        nextBtnRef.current.removeEventListener("click", handleFormSubmit);
+      if (nextBtnRefValue) {
+        nextBtnRefValue.removeEventListener("click", handleFormSubmit);
       }
     };
-  }, [campers, requireEarlyDropOffLatePickup]);
+  }, [campers, nextBtnRef, requireEarlyDropOffLatePickup]);
 
   return (
     <Box pb={14}>

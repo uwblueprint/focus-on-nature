@@ -29,13 +29,12 @@ const MultipleChoiceGroup = ({
   dispatchAdditionalInfoAction,
   submitClicked,
 }: MultipleChoiceGroupProps): React.ReactElement => {
-  const [multipleChoice, setMultipleChoice] = useState("");
-
-  const invalid = submitClicked && multipleChoice === "" && question.required;
+  const invalid =
+    submitClicked &&
+    !formResponses?.get(question.question) &&
+    question.required;
 
   const handleMultipleChoiceUpdate = (choice: string) => {
-    setMultipleChoice(choice);
-    // dispatchAdditionalInfoAction(question.question, choice);
     dispatchAdditionalInfoAction({
       type: AdditionalInfoActions.UPDATE_RESPONSE,
       camperIndex,

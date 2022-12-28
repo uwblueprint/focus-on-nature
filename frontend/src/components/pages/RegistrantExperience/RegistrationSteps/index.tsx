@@ -85,7 +85,7 @@ const RegistrationSteps = ({
   const [
     requireEarlyDropOffLatePickup,
     setRequireEarlyDropOffLatePickup,
-  ] = useState(false);
+  ] = useState<boolean | null>(null);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -119,7 +119,7 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            toggleChecked={setSampleAdditionalInfo}
             formQuestions={camp.formQuestions}
             campers={campers}
             setCampers={setCampers}

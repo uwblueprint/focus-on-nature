@@ -5,7 +5,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
 import {
   AdditionalInfoActions,
   AdditionalInfoReducerDispatch,
@@ -27,16 +27,12 @@ const TextInputGroup = ({
   dispatchAdditionalInfoAction,
   submitClicked,
 }: TextInputGroupProps): React.ReactElement => {
-  const [inputText, setInputText] = useState("");
-
-  const invalid = submitClicked && inputText === "" && question.required;
+  const invalid =
+    submitClicked &&
+    !formResponses?.get(question.question) &&
+    question.required;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputText(e.target.value);
-
-    console.log("hihi");
-
-    // updateFormResponse(question.question, e.target.value);
     dispatchAdditionalInfoAction({
       type: AdditionalInfoActions.UPDATE_RESPONSE,
       camperIndex,

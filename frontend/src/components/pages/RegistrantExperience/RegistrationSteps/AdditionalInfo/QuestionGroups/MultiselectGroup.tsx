@@ -1,6 +1,5 @@
 import {
   Checkbox,
-  CheckboxGroup,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -46,15 +45,16 @@ const MultiselectGroup = ({
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
+
     if (e.target.checked) {
       newSelections.add(e.target.value);
     } else {
       newSelections.delete(e.target.value);
     }
-    setSelections(newSelections);
 
+    setSelections(newSelections);
     const selectionsResponse = Array.from(newSelections).join(", ");
-    // updateFormResponse(question.question, selectionsResponse);
+
     dispatchAdditionalInfoAction({
       type: AdditionalInfoActions.UPDATE_RESPONSE,
       camperIndex,
@@ -62,8 +62,6 @@ const MultiselectGroup = ({
       data: selectionsResponse,
     });
   };
-
-  console.log("formResponses", formResponses);
 
   return (
     <VStack alignItems="flex-start">
