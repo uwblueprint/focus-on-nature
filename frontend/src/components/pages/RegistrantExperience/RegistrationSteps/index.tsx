@@ -83,11 +83,11 @@ const RegistrationSteps = ({
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
-useEffect(() => {
-  waiverDispatch({
-    type: WaiverActions.GET_CLAUSES
-  })
-}, [waiver])
+  useEffect(() => {
+    waiverDispatch({
+      type: WaiverActions.GET_CLAUSES,
+    });
+  }, [waiver]);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {

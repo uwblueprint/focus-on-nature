@@ -92,7 +92,9 @@ const WaiverPage = ({
     const updateFormErrorMsgs = () => {
       if (!checkName(waiverInterface.name)) setIsNameInvalid(true);
       if (!checkDate(waiverInterface.date)) setIsDateInvalid(true);
-      if (!checkRequiredClauses(waiverInterface.agreedRequiredClauses)) setIsRequriedClauseInvalid(true);
+      if (!checkRequiredClauses(waiverInterface.agreedRequiredClauses)) {
+        setIsRequriedClauseInvalid(true);
+      }
 
       const newIsOptionalClausesInvalid: boolean[] = Array.from(
         waiverInterface.optionalClauses,
