@@ -13,6 +13,7 @@ import {
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type TextInputGroupProps = {
+  formResponses: Map<string, string> | undefined;
   camperIndex: number;
   question: FormQuestion;
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
@@ -20,6 +21,7 @@ type TextInputGroupProps = {
 };
 
 const TextInputGroup = ({
+  formResponses,
   camperIndex,
   question,
   dispatchAdditionalInfoAction,
@@ -55,6 +57,7 @@ const TextInputGroup = ({
         <FormErrorMessage>Please fill out this question.</FormErrorMessage>
       )}
       <Textarea
+        value={formResponses?.get(question.question) ?? ""}
         placeholder="Type here..."
         backgroundColor="background.white.100"
         onChange={(e) => handleInputChange(e)}

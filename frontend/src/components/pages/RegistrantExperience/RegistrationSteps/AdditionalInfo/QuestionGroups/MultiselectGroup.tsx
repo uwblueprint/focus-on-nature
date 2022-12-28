@@ -15,6 +15,7 @@ import {
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type MultiselectGroupProps = {
+  formResponses: Map<string, string> | undefined;
   camperIndex: number;
   question: FormQuestion;
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
@@ -22,12 +23,24 @@ type MultiselectGroupProps = {
 };
 
 const MultiselectGroup = ({
+  formResponses,
   camperIndex,
   question,
   dispatchAdditionalInfoAction,
   submitClicked,
 }: MultiselectGroupProps): React.ReactElement => {
-  const [selections, setSelections] = useState<Set<string>>(new Set());
+  const getInitialSelections = (): Set<string> => {
+    const questionResponse = formResponses?.get(question.question);
+    if (questionResponse) {
+      const items = questionResponse.split(", ");
+      return new Set(items);
+    }
+    return new Set();
+  };
+
+  const [selections, setSelections] = useState<Set<string>>(
+    getInitialSelections(),
+  );
 
   const invalid = submitClicked && selections.size <= 0 && question.required;
 
@@ -50,6 +63,8 @@ const MultiselectGroup = ({
     });
   };
 
+  console.log("formResponses", formResponses);
+
   return (
     <VStack alignItems="flex-start">
       <FormControl isRequired={question.required} isInvalid={invalid}>
@@ -63,20 +78,22 @@ const MultiselectGroup = ({
           <FormErrorMessage>Please fill out this question.</FormErrorMessage>
         )}
       </FormControl>
-      <CheckboxGroup colorScheme="green">
-        <VStack alignItems="flex-start">
-          {question.options?.map((option, i) => (
-            <Checkbox
-              key={i}
-              size="lg"
-              value={option}
-              onChange={(e) => handleSelectionChange(e)}
-            >
-              {option}
-            </Checkbox>
-          ))}
-        </VStack>
-      </CheckboxGroup>
+      <VStack alignItems="flex-start">
+        {question.options?.map((option, i) => (
+          <Checkbox
+            key={i}
+            size="lg"
+            colorScheme="green"
+            value={option}
+            isChecked={
+              formResponses?.get(question.question)?.includes(option) ?? false
+            }
+            onChange={(e) => handleSelectionChange(e)}
+          >
+            {option}
+          </Checkbox>
+        ))}
+      </VStack>
     </VStack>
   );
 };

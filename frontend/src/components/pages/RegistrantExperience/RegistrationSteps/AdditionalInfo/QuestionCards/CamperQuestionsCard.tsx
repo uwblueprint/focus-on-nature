@@ -36,6 +36,7 @@ const CamperQuestionsCard = ({
             >
               {question.type === "Text" && (
                 <TextInputGroup
+                  formResponses={camper.formResponses}
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
@@ -44,6 +45,7 @@ const CamperQuestionsCard = ({
               )}
               {question.type === "Multiselect" && (
                 <MultiselectGroup
+                  formResponses={camper.formResponses}
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
@@ -52,6 +54,7 @@ const CamperQuestionsCard = ({
               )}
               {question.type === "MultipleChoice" && (
                 <MultipleChoiceGroup
+                  formResponses={camper.formResponses}
                   camperIndex={camperIndex}
                   question={question}
                   dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}

@@ -15,6 +15,7 @@ import {
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
+  formResponses: Map<string, string> | undefined;
   camperIndex: number;
   question: FormQuestion;
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
@@ -22,6 +23,7 @@ type MultipleChoiceGroupProps = {
 };
 
 const MultipleChoiceGroup = ({
+  formResponses,
   camperIndex,
   question,
   dispatchAdditionalInfoAction,
@@ -53,7 +55,10 @@ const MultipleChoiceGroup = ({
       {invalid && (
         <FormErrorMessage>Please fill out this question.</FormErrorMessage>
       )}
-      <RadioGroup onChange={(choice) => handleMultipleChoiceUpdate(choice)}>
+      <RadioGroup
+        value={formResponses?.get(question.question)}
+        onChange={(choice) => handleMultipleChoiceUpdate(choice)}
+      >
         <VStack alignItems="flex-start">
           {question.options?.map((option, i) => (
             <Radio key={i} value={option} colorScheme="green">
