@@ -14,7 +14,7 @@ type InitialLoadingState = {
   camp: boolean;
 };
 
-const RegistrantExperiencePage = ():C React.ReactElement => {
+const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
 
   const [campResponse, setCampResponse] = useState<CampResponse | undefined>(
@@ -55,7 +55,7 @@ const RegistrantExperiencePage = ():C React.ReactElement => {
           };
         }),
       );
-  }, [campId]);
+  }, []);
 
   if (campResponse && waiverResponse) {
     return sessionSelectionIsComplete ? (

@@ -6,6 +6,12 @@ export type WaiverReducerDispatch =
   | FillName
   | FillDate;
 
+/* eslint-disable-next-line */
+
+export interface GetClauses extends WaiverReducerDispatchBase {
+  type: WaiverActions;
+}
+
 export interface WaiverReducerDispatchBase {
   type: WaiverActions;
 }
@@ -31,7 +37,7 @@ export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
-  LOADED_WAIVER,
+  GET_CLAUSES,
   WRITE_NAME,
   WRITE_DATE,
 }

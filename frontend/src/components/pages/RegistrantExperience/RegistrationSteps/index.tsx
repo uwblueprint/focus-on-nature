@@ -1,7 +1,8 @@
 import { Box, Flex } from "@chakra-ui/react";
-import React, { useState, useReducer, Reducer, useRef } from "react";
+import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
+  WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../../types/waiverTypes";
@@ -82,6 +83,12 @@ const RegistrationSteps = ({
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
+useEffect(() => {
+  waiverDispatch({
+    type: WaiverActions.GET_CLAUSES
+  })
+}, [waiver])
+
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
@@ -121,6 +128,7 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.WaiverPage:
         return (
           <Waiver
+            nextBtnRef={nextBtnRef}
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
             campName={camp?.name || ""}
