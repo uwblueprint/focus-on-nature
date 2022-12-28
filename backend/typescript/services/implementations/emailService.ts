@@ -1,6 +1,6 @@
 import nodemailer, { Transporter } from "nodemailer";
 import IEmailService from "../interfaces/emailService";
-import { NodemailerConfig } from "../../types";
+import { CampLocation, NodemailerConfig } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import { Camper } from "../../models/camper.model";
@@ -17,7 +17,20 @@ function sessionDatesToString(dates: Date[] | undefined) {
   if (!dates) {
     return "";
   }
-  return dates.map((date) => date.toDateString()).join(" ");
+  return dates.map((date) => date.toDateString()).join(", ");
+}
+
+// Returns a list item for each camp session with the dates of the camp session
+function getSessionDatesListItems(campSessions: CampSession[]) {
+  return campSessions.map((campSession) => {
+    return `<li>${sessionDatesToString(campSession.dates)}</li>`;
+  });
+}
+
+function getLocationString(location: CampLocation): string {
+  return `${location.streetAddress1} ${
+    location.streetAddress2 && `, ${location.streetAddress2}`
+  }, ${location.city}, ${location.province}, ${location.postalCode}`;
 }
 
 class EmailService implements IEmailService {
@@ -37,15 +50,33 @@ class EmailService implements IEmailService {
   async sendParentConfirmationEmail(
     camp: Camp,
     campers: Camper[],
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
     const link = "DUMMY LINK"; // TODO: Update link
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
+    const campLocationString: string = getLocationString(camp.location);
+
+    // Remove duplicated campers (each camper has entity per camp session)
+    const uniqueCampers = campers.filter(
+      (value, index, self) =>
+        index ===
+        self.findIndex(
+          (c) =>
+            c.firstName === value.firstName && c.lastName === value.lastName,
+        ),
+    );
+
+    // Fees calculations
     let totalPayment = 0;
     let campFees = 0;
     let dropoffAndPickupFees = 0;
-
-    campers.forEach((camper) => {
+    const totalCampDays = campSessions
+      .map((cs) => cs.dates.length)
+      .reduce((sumDays, days) => sumDays + days);
+    uniqueCampers.forEach((camper) => {
       campFees += camper.charges.camp;
       dropoffAndPickupFees +=
         camper.charges.earlyDropoff + camper.charges.latePickup;
@@ -66,13 +97,14 @@ class EmailService implements IEmailService {
 
       <ul>
         <li><b>Camp name:</b> ${camp.name} </li>
-        <li><b>Camp location:</b> ${camp.location} </li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )} </li>
+        <li><b>Camp location:</b> ${campLocationString} </li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
         <li><b>Your phone number:</b> ${contact.phoneNumber}</li>
         <li><b>Campers:</b></li>
-        ${campers
+        ${uniqueCampers
           .map((camper) => {
             return `<ul>
               <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
@@ -84,7 +116,9 @@ class EmailService implements IEmailService {
       <br> This is the total amount we have received from you.
       <ul>
         <li><b>Camp fees:</b> 
-        $${campFees} (${campers.length} campers x $${camp.fee} fee) </li> 
+        $${campFees} (${
+        uniqueCampers.length
+      } campers x ${totalCampDays} total days of camp) </li> 
         <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
@@ -156,6 +190,7 @@ class EmailService implements IEmailService {
     campSession: CampSession,
     waitlistedCampers: WaitlistedCamper[],
   ): Promise<void> {
+    const campLocationString: string = getLocationString(camp.location);
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
@@ -166,7 +201,7 @@ class EmailService implements IEmailService {
       of the fields, reach out to camps@focusonnature.ca. <br>
       <ul>
         <li><b>Camp name:</b> ${camp.name}</li>
-        <li><b>Camp location:</b> ${camp.location}</li>
+        <li><b>Camp location:</b> ${campLocationString}</li>
         <li><b>Session dates:</b> ${sessionDatesToString(
           campSession.dates,
         )}</li>
@@ -212,9 +247,13 @@ class EmailService implements IEmailService {
   async sendAdminSpecialNeedsNoticeEmail(
     camp: Camp,
     camper: Camper,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
     const contact = camper.contacts[0];
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
+
     await this.sendEmail(
       ADMIN_EMAIL,
       "Special Needs Camper Registration Notice",
@@ -224,9 +263,10 @@ class EmailService implements IEmailService {
       <ul>
         <li><b>Name of camper:</b> ${camper.firstName} ${camper.lastName}</li>
         <li><b>Camp name:</b> ${camp.name} </li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )} </li>
+        <li><b>Session dates:</b></li> 
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
         <li><b>Parent's name:</b> ${contact.firstName} ${contact.lastName}</li>
         <li><b>Parent's email:</b> ${contact.email}</li>
         <li><b>Parent's phone number:</b> ${contact.phoneNumber}</li>
@@ -238,13 +278,22 @@ class EmailService implements IEmailService {
 
   async sendAdminFullCampNoticeEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
   ): Promise<void> {
+    const sessionDatesListItems: string[] = campSessions.map((campSession) => {
+      return `<li> Session with dates: ${sessionDatesToString(
+        campSession.dates,
+      )}</li>`;
+    });
     await this.sendEmail(
       ADMIN_EMAIL,
       "Camp Registration Notice - FULL CAPACITY",
       `This following email is to notify you that ${camp.name} is full for the 
-      following session dates: ${sessionDatesToString(campSession.dates)}.`,
+      following following sessions. <br/>
+      <ol>
+        ${sessionDatesListItems.join("")}
+      </ol>
+      `,
     );
   }
 

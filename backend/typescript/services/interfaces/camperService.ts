@@ -8,16 +8,18 @@ import {
 
 interface ICamperService {
   /**
-   * Create a camper
-   * @param campers the campers to be created
-   * @param waitlistedCamperId the waitlistedCamperIds to be set to registered
+   * Creates a Camper document for each camper and each session. Also handles registering a waitlisted camper for 1 particular session
+   * @param campers the campers to be created. The function uses this data to create 1 Camper document per camper per session
+   * @param campSessions the ids of the sessions to register the campers for
+   * @param waitlistedCamperId the id of the waitlisted camper who will be registered for 1 session
    * @returns an array of CamperDTO with the created campers' information
    * @throws Error if user creation fails
    */
   createCampers(
     campers: CreateCampersDTO,
+    campSessions: string[],
     waitlistedCamperId?: string,
-  ): Promise<Array<CamperDTO>>;
+  ): Promise<CamperDTO[]>;
 
   /**
    * Get all campers and their information
