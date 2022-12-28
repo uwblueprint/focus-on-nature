@@ -81,11 +81,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   useEffect(() => {
     setEdlpChoices(() => [...matrix])  
   }, [camp]) 
-
-  
-
-  
-  console.log(edlpChoices)
   
   const [totalEdlpFees, setTotalEdlpFees] = useState(0);
 
