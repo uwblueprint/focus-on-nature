@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, HStack, Text, Button } from "@chakra-ui/react";
+import { Box, HStack, Text, Button, Wrap, WrapItem } from "@chakra-ui/react";
 import SessionDayButton from "./SessionDayButton";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 import {
@@ -81,16 +81,17 @@ const ScheduledSessionsCard = ({
         <Text marginBottom={3} textStyle="bodyRegular">
           {sessionDatesRangeString}
         </Text>
-        <HStack justify="space-between" flexWrap="wrap">
+        <Wrap>
           {Array.from(selectedWeekDays.keys()).map((day) => (
-            <SessionDayButton
-              key={day}
-              day={day}
-              selected={selectedWeekDays.get(day)}
-              onSelect={updateSelectedSessionDays}
-            />
+            <WrapItem key={day}>
+              <SessionDayButton
+                day={day}
+                selected={selectedWeekDays.get(day)}
+                onSelect={updateSelectedSessionDays}
+              />
+            </WrapItem>
           ))}
-        </HStack>
+        </Wrap>
       </Box>
     </Box>
   );

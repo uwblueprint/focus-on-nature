@@ -37,16 +37,22 @@ export type CreateFormQuestionDTO = Omit<FormQuestionDTO, "id">;
 
 export type CampCoordinatorDTO = UserDTO & { campSessions: string[] };
 
+export type CamperCharges = {
+  camp: number; // Total fees of attending the session of camp (ie: daily camp fee * days in session)
+  earlyDropoff: number; // Total fees of ED in session (ie: EDLP fee * total hours of ED selected in session)
+  latePickup: number; // Total fees of LP in session (ie: EDLP fee * total hours of LP selected in session)
+};
+
 export type CamperDTO = {
   id: string;
   campSession: string;
   firstName: string;
   lastName: string;
   age: number;
-  allergies: string;
+  allergies?: string;
   earlyDropoff: string[];
   latePickup: string[];
-  specialNeeds: string;
+  specialNeeds?: string;
   contacts: {
     firstName: string;
     lastName: string;
@@ -58,11 +64,7 @@ export type CamperDTO = {
   hasPaid: boolean;
   formResponses: Map<string, string>;
   chargeId: string;
-  charges: {
-    camp: number;
-    earlyDropoff: number;
-    latePickup: number;
-  };
+  charges: CamperCharges;
   optionalClauses: [
     {
       clause: string;
@@ -166,7 +168,7 @@ export type GetCampDTO = Omit<CampDTO, "campSessions" | "formQuestions"> & {
   campPhotoUrl?: string;
 };
 
-export type CreateCampDTO = Omit<
+export type CreateUpdateCampDTO = Omit<
   CampDTO,
   | "id"
   | "formQuestions"
@@ -176,28 +178,19 @@ export type CreateCampDTO = Omit<
   | "dropoffProductId"
   | "pickupPriceId"
   | "pickupProductId"
+  | "earlyDropoff"
+  | "latePickup"
+  | "pickupFee"
+  | "dropoffFee"
 > & {
   filePath?: string;
   fileContentType?: string;
   formQuestions: CreateFormQuestionDTO[];
   campSessions: CreateCampSessionsDTO;
-};
-
-export type UpdateCampDTO = Omit<
-  CampDTO,
-  | "id"
-  | "formQuestions"
-  | "campSessions"
-  | "campProductId"
-  | "dropoffPriceId"
-  | "dropoffProductId"
-  | "pickupPriceId"
-  | "pickupProductId"
-> & {
-  filePath?: string;
-  fileContentType?: string;
-  campSessions: CreateCampSessionsDTO;
-  formQuestions: CreateFormQuestionDTO[];
+  earlyDropoff?: string;
+  latePickup?: string;
+  pickupFee?: number;
+  dropoffFee?: number;
 };
 
 export type CreateCampSessionsDTO = Array<
@@ -215,7 +208,9 @@ export type UpdateCampSessionsDTO = Partial<
 
 export type UpdateFormQuestionDTO = Omit<FormQuestionDTO, "id">[];
 
-export type CreateCampersDTO = Array<Omit<CamperDTO, "id">>;
+export type CreateCampersDTO = Array<
+  Omit<CamperDTO, "id" | "campSession" | "charges">
+>;
 
 export type CreateWaitlistedCamperDTO = Omit<
   WaitlistedCamperDTO,

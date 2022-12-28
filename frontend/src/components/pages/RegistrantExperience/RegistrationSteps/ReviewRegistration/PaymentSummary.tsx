@@ -12,7 +12,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import React from "react";
-import { CartItem } from "../../../../types/RegistrationTypes";
+import { CartItem } from "../../../../../types/RegistrationTypes";
 
 const tableHeadingTextStyles = {
   base: "xSmallBold",

@@ -3,12 +3,14 @@ import { Button, Flex } from "@chakra-ui/react";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
 
 export type RegistrationFooterProps = {
+  nextBtnRef: React.RefObject<HTMLButtonElement>;
   currentStep: RegistrantExperienceSteps;
   isCurrentStepCompleted: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
 };
 
 const RegistrationFooter = ({
+  nextBtnRef,
   currentStep,
   isCurrentStepCompleted,
   handleStepNavigation,
@@ -17,8 +19,9 @@ const RegistrationFooter = ({
     if (isCurrentStepCompleted) {
       handleStepNavigation(1);
     } else {
-      // placeholder for field error
-      alert("Please fill out required fields");
+      alert(
+        "Form does not pass validaiton. Please complete all form fields according to requirements.",
+      );
     }
   };
 
@@ -47,6 +50,7 @@ const RegistrationFooter = ({
         Back
       </Button>
       <Button
+        ref={nextBtnRef}
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}
         height="48px"
         variant="primary"

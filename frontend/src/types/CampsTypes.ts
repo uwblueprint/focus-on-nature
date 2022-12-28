@@ -29,10 +29,28 @@ export type CampResponse = {
   location: Location;
   startTime: string;
   fee: number;
+  pickupFee: number;
+  dropoffFee: number;
   formQuestions: FormQuestion[];
   campSessions: CampSession[];
   volunteers: string;
   campPhotoUrl: string;
+};
+
+export type CreateUpdateCampRequest = Omit<
+  CampResponse,
+  "id" | "formQuestions" | "campSessions" | "campPhotoUrl"
+> & {
+  campSessions: CreateCampSessionRequest[];
+  formQuestions: CreateFormQuestionRequest[];
+};
+
+export type CreateUpdateCampResponse = Omit<
+  CampResponse,
+  "formQuestions" | "campSessions"
+> & {
+  campSessions: string[];
+  formQuestions: string[];
 };
 
 export type CampSession = {
@@ -50,6 +68,11 @@ export type CreateCampSession = {
   dates: Date[];
   selectedWeekDays: Map<string, boolean>;
 };
+
+export type CreateCampSessionRequest = Omit<
+  CampSession,
+  "id" | "camp" | "campers" | "waitlist"
+>;
 
 export type CampSessionResponse = CampSession & { campPriceId: string };
 
@@ -81,4 +104,4 @@ export type FormQuestion = {
   category: QuestionCategory;
 };
 
-export type CreateFormQuestion = Omit<FormQuestion, "id">;
+export type CreateFormQuestionRequest = Omit<FormQuestion, "id">;

@@ -272,7 +272,9 @@ const AccessControlPage = (): JSX.Element => {
             <Th color="text.default.100">Name</Th>
             <Th color="text.default.100">Email</Th>
             <Th color="text.default.100">Role</Th>
-            <Th color="text.default.100">Status</Th>
+            <Th color="text.default.100" justifyContent="center" display="flex">
+              Status
+            </Th>
             <Th color="text.default.100"> </Th>
           </Tr>
         </Thead>

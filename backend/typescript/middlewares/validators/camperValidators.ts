@@ -13,24 +13,47 @@ export const createCampersDtoValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!Array.isArray(req.body) || req.body.length === 0) {
+  const { campers } = req.body;
+  const { campSessions } = req.body;
+  const waitlistId = req.query?.wId;
+
+  if (!Array.isArray(campers) || campers.length === 0) {
     return res
       .status(400)
       .send(
-        "No campers sent - there must be at least one camper in the request array.",
+        "No campers sent - there must be at least one camper in the campers array field.",
       );
   }
-  const { campSession, chargeId } = req.body[0];
+  if (!Array.isArray(campSessions) || campSessions.length <= 0) {
+    return res.status(400).send("At least 1 camp session Id must be provided");
+  }
+  if (!campSessions.every((cs) => validatePrimitive(cs, "string"))) {
+    return res
+      .status(400)
+      .send("The campSessions field should be an array of strings");
+  }
+  if (waitlistId && campers.length > 1) {
+    return res
+      .status(400)
+      .send("Can only register 1 waitlisted camper at a time");
+  }
+  if (waitlistId && campSessions.length > 1) {
+    return res
+      .status(400)
+      .send("Can only register 1 waitlisted camper for 1 session at a time");
+  }
+  // Validate each camper data
+  const commonChargeId = campers[0].chargeId;
 
-  for (let i = 0; i < req.body.length; i += 1) {
-    const camper = req.body[i];
-    if (!validatePrimitive(camper.campSession, "string")) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const camper of campers) {
+    // instead of sending the session id with the camper, we send it with the sessions array
+    if (camper.campSession) {
       return res
         .status(400)
-        .send(getApiValidationError("campSession", "string"));
-    }
-    if (camper.campSession !== campSession) {
-      return res.status(400).send("Campers must have the same camp.");
+        .send(
+          "Not allowed to send the camp session as part of the camper. Only specify it in the campSessions field",
+        );
     }
     if (!validatePrimitive(camper.firstName, "string")) {
       return res.status(400).send(getApiValidationError("firstName", "string"));
@@ -80,10 +103,14 @@ export const createCampersDtoValidator = async (
         .status(400)
         .send(getApiValidationError("specialNeeds", "string"));
     }
-    if (!Array.isArray(camper.contacts) || camper.contacts.length !== 2) {
+    if (
+      !Array.isArray(camper.contacts) ||
+      camper.contacts.length < 1 ||
+      camper.contacts.length > 2
+    ) {
       return res
         .status(400)
-        .send("There must be 2 emergency contacts specified.");
+        .send("There must be either 1 or 2 emergency contacts only");
     }
     for (let j = 0; j < camper.contacts.length; j += 1) {
       const contact = camper.contacts[j];
@@ -134,27 +161,15 @@ export const createCampersDtoValidator = async (
     if (!validatePrimitive(camper.chargeId, "string")) {
       return res.status(400).send(getApiValidationError("chargeId", "string"));
     }
-    if (camper.chargeId !== chargeId) {
+    if (camper.chargeId !== commonChargeId) {
       return res.status(400).send("Campers must have the same chargeId.");
     }
     if (camper.charges) {
-      if (!validatePrimitive(camper.charges.camp, "number")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("charges.camp", "number"));
-      }
-      if (!validatePrimitive(camper.charges.earlyDropoff, "number")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("charges.earlyDropoff", "number"));
-      }
-      if (!validatePrimitive(camper.charges.latePickup, "number")) {
-        return res
-          .status(400)
-          .send(getApiValidationError("charges.latePickup", "number"));
-      }
-    } else {
-      return res.status(400).send(getApiValidationError("charges", "mixed"));
+      return res
+        .status(400)
+        .send(
+          "Can't specify the charges for the camper whilst creating campers",
+        );
     }
     if (!Array.isArray(camper.optionalClauses)) {
       return res.status(400).send("optional clauses must be an array");
@@ -172,6 +187,24 @@ export const createCampersDtoValidator = async (
           .send(getApiValidationError("optionalClause.agreed", "boolean"));
       }
     }
+  }
+  if (
+    !campers.every(
+      (camper) => camper.earlyDropoff.length === campers[0].earlyDropoff.length,
+    )
+  ) {
+    return res
+      .status(400)
+      .send("All campers must have the same early dropoff data");
+  }
+  if (
+    !campers.every(
+      (camper) => camper.latePickup.length === campers[0].latePickup.length,
+    )
+  ) {
+    return res
+      .status(400)
+      .send("All campers must have the same late pickup data");
   }
   return next();
 };
