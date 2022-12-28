@@ -14,7 +14,7 @@ type InitialLoadingState = {
   camp: boolean;
 };
 
-const RegistrantExperiencePage = (): React.ReactElement => {
+const RegistrantExperiencePage = ():C React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
 
   const [campResponse, setCampResponse] = useState<CampResponse | undefined>(

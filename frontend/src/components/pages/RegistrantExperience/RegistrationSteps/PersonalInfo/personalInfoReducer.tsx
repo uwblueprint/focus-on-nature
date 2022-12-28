@@ -146,7 +146,6 @@ export const checkPersonalInfoFilled = (
     if (camper.contacts.length > 2 || camper.contacts.length < 1) {
       return false; // Need to have either 1 or 2 contacts only
     }
-
     // Check primary contact card
     const primaryContact = camper.contacts[0];
     if (
@@ -160,7 +159,6 @@ export const checkPersonalInfoFilled = (
     ) {
       return false;
     }
-
     // Check secondary contact card
     if (camper.contacts.length > 1) {
       const secondaryContact = camper.contacts[1];

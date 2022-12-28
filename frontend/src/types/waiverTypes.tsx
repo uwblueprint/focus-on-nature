@@ -12,6 +12,7 @@ export interface WaiverReducerDispatchBase {
 
 export interface ClickOptionalClause extends WaiverReducerDispatchBase {
   type: WaiverActions;
+  agreed: boolean;
   optionalClauseId: number; // Currently, the id is set to be index of the the optional clause in the array its stored.
 }
 
@@ -36,7 +37,7 @@ export enum WaiverActions {
 }
 
 export interface OptionalClauseResponse extends WaiverClause {
-  agreed: boolean;
+  agreed: boolean | null;
 }
 
 /* eslint-disable-next-line */
