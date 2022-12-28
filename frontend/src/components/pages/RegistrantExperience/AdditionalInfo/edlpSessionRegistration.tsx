@@ -1,5 +1,5 @@
 import React, { useState, Dispatch, SetStateAction } from "react";
-import { AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Text, Box, Table, Thead, Tr, Th, Td, Tbody, Select, useForceUpdate} from '@chakra-ui/react'
+import { AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Text, Box, Table, Thead, Tr, Th, Td, Tbody, Select, Show, Hide} from '@chakra-ui/react'
 import { formatAMPM, getFormattedDateString, getFormattedSingleDateString } from "../../../../utils/CampUtils";
 import { CampResponse, CampSession } from '../../../../types/CampsTypes';
 
@@ -10,7 +10,6 @@ type EDLPSessionRegistrationProps = {
     edlpCost: number
     session: CampSession
     edlpChoices: EdlpChoice[][];
-    totalEdlpFees: number;
     sessionEdlpFees: number[];
     setEdlpChoices:  Dispatch<SetStateAction<EdlpChoice[][]>>;
     setTotalEdlpFees: Dispatch<SetStateAction<number>>;
@@ -62,7 +61,6 @@ const EDLPSessionRegistration = ({
     edlpCost,
     session,
     edlpChoices,
-    totalEdlpFees,
     sessionEdlpFees,
     setEdlpChoices,
     setTotalEdlpFees,
@@ -86,7 +84,6 @@ const EDLPSessionRegistration = ({
         
         setTotalEdlpFees(sessionEdlpFees.reduce(function(a,b) { return a + b }) * numberOfCampers)
 
-        console.log(sessionNumber-1, day, date)
         const temp2 = edlpChoices
         temp2[sessionNumber-1][day].date = date
         temp2[sessionNumber-1][day].edlp[index] = event.target.options[Number(event.target.value)].text
@@ -101,91 +98,141 @@ const EDLPSessionRegistration = ({
             <h2>
                 <AccordionButton
                     bg="white" 
-                    padding="32px 80px" 
+                    padding={{ base: '12px 20px', sm: '16px 40px',md: '32px 80px' }} 
                     borderRadius="10px"
                     _expanded={{borderBottomRadius:"0", borderBottom:"1px solid #EEEFF1"}}
                 >
                     <Box as="span" flex='1' textAlign='left'>
-                    <Text as='span' textStyle="displayMediumBold">Session {sessionNumber}:{" "}</Text>
-                    <Text as='span' textStyle="displayMediumRegular">{getFormattedDateString(session.dates)}</Text>
-                    <Text textStyle="displayRegular">{formatAMPM(camp.startTime)} - {formatAMPM(camp.endTime)}</Text>
+                    <Text as='span' textStyle={{ base: 'xSmallBold', md: "displayMediumBold" }} >Session {sessionNumber}:{" "}</Text>
+                    <Text as='span' textStyle={{ base: 'xSmallBold', md: "displayMediumBold" }}>{getFormattedDateString(session.dates)}</Text>
+                    <Text textStyle={{ base: 'xSmallRegular', md: "buttonRegular" }}>{formatAMPM(camp.startTime)} - {formatAMPM(camp.endTime)}</Text>
                     </Box>
                     <AccordionIcon boxSize={10}/>
                 </AccordionButton>
             </h2>
 
             <AccordionPanel padding="0">
-                <Box padding="32px 80px">
-                    <Table
-                    variant="simple"
-                    colorScheme="blackAlpha"
-                    background="#FBFBFB"
-                    size='sm'
-                    >
-                        <Thead>
-                            <Tr textAlign="left">
-                                <Td color="text.default.100" border="none">Date</Td>
-                                <Td color="text.default.100" border="none">Early Dropoff</Td>
-                                <Td color="text.default.100" border="none">Late Pickup</Td>
-                                <Td color="text.default.100" border="none">Cost/Child</Td>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {session.dates.map((date: string) => {
-                                
-                                return (
-                                    <Tr key={100*session.dates.indexOf(date)}>
-                                        <Td border="none" textStyle="buttonRegular">
-                                            {getFormattedSingleDateString(date)}
-                                        </Td>
-                                        <Td border="none">
-                                            <Select 
-                                            width="120px" 
-                                            defaultValue={0}
-                                            onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),0);}}>
-                                                <option value={0}>-</option>
-                                                {computeIntervals(camp.startTime, camp.earlyDropoff, false).map((edInterval: string) => {
-                                                    const intervals = computeIntervals(camp.startTime, camp.earlyDropoff, false)
+                <Hide below='600px'>
+                    <Box padding={{ base: '12px 20px', sm: '16px 40px',md: '32px 80px' }} >
+                        <Table
+                        variant="simple"
+                        colorScheme="blackAlpha"
+                        background="#FBFBFB"
+                        size='sm'
+                        >
+                            <Thead>
+                                <Tr textAlign="left">
+                                    <Td color="text.default.100" border="none" padding='3px'>Date</Td>
+                                    <Td color="text.default.100" border="none" padding='3px'>Early Dropoff</Td>
+                                    <Td color="text.default.100" border="none" padding='3px'>Late Pickup</Td>
+                                    <Td color="text.default.100" border="none" padding='3px'>Cost/Child</Td>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                {session.dates.map((date: string) => {
+                                    
+                                    return (
+                                        <Tr key={100*session.dates.indexOf(date)} >
+                                            <Td border="none" textStyle="buttonRegular" padding='3px'>
+                                                {getFormattedSingleDateString(date)}
+                                            </Td>
+                                            <Td border="none" padding='3px'>
+                                                <Select
+                                                    width="120px" 
+                                                    defaultValue={0}
+                                                    value={edlpDayFees[session.dates.indexOf(date)][0]/edlpCost}
+                                                    onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),0);}}
+                                                >
+                                                    <option value={0}>-</option>
+                                                    {computeIntervals(camp.startTime, camp.earlyDropoff, false).map((edInterval: string) => {
+                                                        const intervals = computeIntervals(camp.startTime, camp.earlyDropoff, false)
 
-                                                    return (<option
-                                                        key={sessionNumber}
-                                                        value={intervals.indexOf(edInterval)+1}>
-                                                            {edInterval}
-                                                        </option>)
-                                                })}
-                                            </Select>
-                                        </Td>
-                                        <Td border="none">
-                                            <Select 
-                                            width="120px" 
-                                            defaultValue={0}
-                                            onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),1);}}>
-                                                <option value={0}>-</option>
-                                                {computeIntervals(camp.endTime, camp.latePickup, true).map((edInterval: string) => {
-                                                    return (<option
-                                                        key={sessionNumber} 
-                                                        value={1}>
-                                                            {edInterval}
-                                                        </option>)
-                                                })}
-                                            </Select>
-                                        </Td>
-                                        <Td border="none">
-                                            ${edlpDayFees[session.dates.indexOf(date)][0]+edlpDayFees[session.dates.indexOf(date)][1]}
-                                        </Td>
-                                    </Tr>
-                                )
-                            })}
-                        </Tbody>
-                    </Table>
-                </Box>
-                <Box
-                    bg="white" 
-                    padding="32px 80px" 
-                    borderBottomRadius="10px"
-                >
-                    <Text as='span' textStyle="displayMediumBold">Total Cost:{" "}</Text>
-                    <Text as='span' textStyle="displayMediumRegular">${
+                                                        return (<option
+                                                            key={sessionNumber}
+                                                            value={intervals.indexOf(edInterval)+1}>
+                                                                {edInterval}
+                                                            </option>)
+                                                    })}
+                                                </Select>
+                                            </Td>
+                                            <Td border="none" padding='3px'>
+                                                <Select 
+                                                    width="120px" 
+                                                    defaultValue={0}
+                                                    value={edlpDayFees[session.dates.indexOf(date)][1]/edlpCost}
+                                                    onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),1);}}
+                                                >
+                                                    <option value={0}>-</option>
+                                                    {computeIntervals(camp.endTime, camp.latePickup, true).map((lpInterval: string) => {
+                                                        const intervals = computeIntervals(camp.endTime, camp.latePickup, true)
+                                                        return (<option
+                                                            key={sessionNumber} 
+                                                            value={intervals.indexOf(lpInterval)+1}>
+                                                                {lpInterval}
+                                                            </option>)
+                                                    })}
+                                                </Select>
+                                            </Td>
+                                            <Td border="none" padding='3px'>
+                                                ${edlpDayFees[session.dates.indexOf(date)][0]+edlpDayFees[session.dates.indexOf(date)][1]}
+                                            </Td>
+                                        </Tr>
+                                    )
+                                })}
+                            </Tbody>
+                        </Table>
+                    </Box>
+                </Hide>
+                <Hide above='600px' >
+                    {session.dates.map((date: string) => {
+                        return (<Box padding={{ base: '12px 20px', sm: '16px 40px',md: '32px 80px' }} key={77*session.dates.indexOf(date)}>
+                            <Text as='span' textStyle='xSmallBold'>{getFormattedSingleDateString(date)}</Text>
+                            <Text as='i' textStyle='xSmallRegular'>- ${edlpDayFees[session.dates.indexOf(date)][0]+edlpDayFees[session.dates.indexOf(date)][1]}</Text>
+
+                            <Text textStyle='xSmallRegular' marginTop="8px">Early Dropoff</Text>
+                            <Select 
+                                minWidth="120px" 
+                                marginTop="8px"
+                                defaultValue={0}
+                                value={edlpDayFees[session.dates.indexOf(date)][0]/edlpCost}
+                                onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),0);}}
+                            >
+                                <option value={0}>-</option>
+                                {computeIntervals(camp.startTime, camp.earlyDropoff, false).map((edInterval: string) => {
+                                    const intervals = computeIntervals(camp.startTime, camp.earlyDropoff, false)
+
+                                    return (<option
+                                        key={sessionNumber}
+                                        value={intervals.indexOf(edInterval)+1}>
+                                            {edInterval}
+                                        </option>)
+                                })}
+                            </Select>
+
+                            <Text textStyle='xSmallRegular'marginTop="8px">Late Pickup</Text>
+                            <Select 
+                                minWidth="120px" 
+                                marginTop="8px"
+                                defaultValue={0}
+                                value={edlpDayFees[session.dates.indexOf(date)][1]/edlpCost}
+                                onChange={(event) => {handleSelect(event,date,session.dates.indexOf(date),1);}}
+                            >
+                                <option value={0}>-</option>
+                                {computeIntervals(camp.endTime, camp.latePickup, true).map((edInterval: string) => {
+                                    return (<option
+                                        key={sessionNumber} 
+                                        value={1}>
+                                            {edInterval}
+                                        </option>)
+                                })}
+                            </Select>
+
+                        </Box>)
+                    })}
+                </Hide>
+                <Box bg="white" padding={{ base: '12px 20px', sm: '16px 40px',md: '32px 80px' }}   borderBottomRadius="10px">
+                    <Text as='span' textStyle={{ base: 'xSmallBold', md: "displayMediumBold" }}>Total Cost:{" "}</Text>
+                    <Text as='span' textStyle={{ base: 'xSmallRegular', md: "displayMediumRegular" }}>${
                         sessionEdlpFees[sessionNumber-1] 
                     } per camper</Text>
                 </Box>

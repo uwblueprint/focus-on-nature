@@ -128,7 +128,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             camp={camp}
             campers={DUMMY_CAMPERS}
             edlpChoices={edlpChoices}
-            totalEdlpFees={totalEdlpFees}
             setEdlpChoices={setEdlpChoices}
             setTotalEdlpFees={setTotalEdlpFees}
           />
