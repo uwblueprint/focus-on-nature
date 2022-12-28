@@ -1,5 +1,5 @@
 import { VStack, Wrap, WrapItem } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { AdditionalInfoReducerDispatch } from "../../../../../../types/AdditionalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../../../types/CampsTypes";

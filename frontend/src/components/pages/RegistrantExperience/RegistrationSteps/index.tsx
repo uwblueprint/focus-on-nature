@@ -16,6 +16,7 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
+import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
@@ -76,16 +77,20 @@ const RegistrationSteps = ({
       optionalClauses: [],
     },
   ]);
-  const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
-  const isAdditionalInfoFilled = sampleAdditionalInfo;
-  const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = sampleRegisterField;
-  const nextBtnRef = useRef<HTMLButtonElement>(null);
-
   const [
     requireEarlyDropOffLatePickup,
     setRequireEarlyDropOffLatePickup,
   ] = useState<boolean | null>(null);
+
+  const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
+  const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
+    campers,
+    camp.formQuestions,
+    requireEarlyDropOffLatePickup,
+  );
+  const isWaiverFilled = waiverInterface.waiverCompleted;
+  const isReviewRegistrationFilled = sampleRegisterField;
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -119,17 +124,16 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            toggleChecked={setSampleAdditionalInfo}
-            formQuestions={camp.formQuestions}
+            nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
             campName={camp?.name || ""}
+            formQuestions={camp.formQuestions}
             hasEarlyDropOffLatePickup={
               camp.earlyDropoff !== undefined && camp.latePickup !== undefined
             }
             requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
             setRequireEarlyDropOffLatePickup={setRequireEarlyDropOffLatePickup}
-            nextBtnRef={nextBtnRef}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:

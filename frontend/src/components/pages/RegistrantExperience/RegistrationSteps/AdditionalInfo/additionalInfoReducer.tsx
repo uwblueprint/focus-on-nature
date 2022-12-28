@@ -5,9 +5,8 @@ import {
   UpdateResponse,
 } from "../../../../../types/AdditionalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import { CampResponse } from "../../../../../types/CampsTypes";
+import { FormQuestion } from "../../../../../types/CampsTypes";
 
-// eslint-disable-next-line import/prefer-default-export
 export const CamperReducer = (
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
@@ -18,7 +17,7 @@ export const CamperReducer = (
     const newCampers: RegistrantExperienceCamper[] = [...campers];
     switch (action.type) {
       case AdditionalInfoActions.UPDATE_RESPONSE: {
-        const { camperIndex, question, field, data } = action as UpdateResponse;
+        const { camperIndex, question, data } = action as UpdateResponse;
 
         const newResponses =
           newCampers[camperIndex].formResponses ?? new Map<string, string>();
@@ -42,4 +41,30 @@ export const useAdditionalInfoDispatcher = (
     CamperReducer(setCampers, action);
   };
   return dispatch;
+};
+
+export const getRequiredQuestions = (
+  formQuestions: FormQuestion[],
+): string[] => {
+  const requiredQuestions: string[] = [];
+  formQuestions.forEach((question) => {
+    if (question.required) {
+      requiredQuestions.push(question.question);
+    }
+  });
+  return requiredQuestions;
+};
+
+export const checkAdditionalQuestionsAnswered = (
+  campers: RegistrantExperienceCamper[],
+  formQuestions: FormQuestion[],
+  requireEarlyDropOffLatePickup: boolean | null,
+): boolean => {
+  if (requireEarlyDropOffLatePickup === null) {
+    return false;
+  }
+  const requiredQuestions = getRequiredQuestions(formQuestions);
+  return campers.every((camper) =>
+    requiredQuestions.every((question) => camper.formResponses?.get(question)),
+  );
 };

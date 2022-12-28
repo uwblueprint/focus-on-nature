@@ -7,77 +7,50 @@ import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 
 type AdditionalInfoProps = {
-  toggleChecked: (checked: boolean) => void;
-  formQuestions: FormQuestion[];
+  nextBtnRef: React.RefObject<HTMLButtonElement>;
   campers: RegistrantExperienceCamper[];
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
   campName: string;
+  formQuestions: FormQuestion[];
   hasEarlyDropOffLatePickup: boolean;
   requireEarlyDropOffLatePickup: boolean | null;
   setRequireEarlyDropOffLatePickup: React.Dispatch<
     React.SetStateAction<boolean | null>
   >;
-  nextBtnRef: React.RefObject<HTMLButtonElement>;
 };
 
 const AdditionalInfo = ({
-  toggleChecked,
-  formQuestions,
+  nextBtnRef,
   campers,
   setCampers,
   campName,
+  formQuestions,
   hasEarlyDropOffLatePickup,
   requireEarlyDropOffLatePickup,
   setRequireEarlyDropOffLatePickup,
-  nextBtnRef,
 }: AdditionalInfoProps): React.ReactElement => {
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
   const [submitClicked, setSubmitClicked] = useState(false);
 
-  const getRequiredQuestions = (): string[] => {
-    const requiredQuestions: string[] = [];
-    formQuestions.forEach((question) => {
-      if (question.required) {
-        requiredQuestions.push(question.question);
-      }
-    });
-    return requiredQuestions;
-  };
-
-  const allQuestionsAnswered = () => {
-    if (requireEarlyDropOffLatePickup === null) {
-      return false;
-    }
-    const requiredQuestions = getRequiredQuestions();
-    return campers.every((camper) =>
-      requiredQuestions.every((question) =>
-        camper.formResponses?.get(question),
-      ),
-    );
-  };
-
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
 
-    const handleFormSubmit = () => {
-      setSubmitClicked(true);
-      toggleChecked(allQuestionsAnswered());
-    };
-
     if (nextBtnRef && nextBtnRef.current) {
       nextBtnRefValue = nextBtnRef.current;
-      nextBtnRefValue.addEventListener("click", handleFormSubmit);
+      nextBtnRefValue.addEventListener("click", () => setSubmitClicked(true));
     }
 
     return () => {
       if (nextBtnRefValue) {
-        nextBtnRefValue.removeEventListener("click", handleFormSubmit);
+        nextBtnRefValue.removeEventListener("click", () =>
+          setSubmitClicked(true),
+        );
       }
     };
-  }, [campers, nextBtnRef, requireEarlyDropOffLatePickup]);
+  }, [campers, nextBtnRef]);
 
   return (
     <Box pb={14}>
@@ -103,6 +76,7 @@ const AdditionalInfo = ({
               Camp-specific Additional Questions
             </Text>
             <EarlyDropOffLatePickupCard
+              requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
               setRequireEarlyDropOffLatePickup={
                 setRequireEarlyDropOffLatePickup
               }

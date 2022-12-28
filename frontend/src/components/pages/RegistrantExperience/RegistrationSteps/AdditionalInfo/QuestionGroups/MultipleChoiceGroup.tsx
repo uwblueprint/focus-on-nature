@@ -7,7 +7,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
 import {
   AdditionalInfoActions,
   AdditionalInfoReducerDispatch,

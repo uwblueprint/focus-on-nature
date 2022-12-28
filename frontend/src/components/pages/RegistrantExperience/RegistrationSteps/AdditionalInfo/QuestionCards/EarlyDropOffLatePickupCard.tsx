@@ -9,10 +9,11 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
 import QuestionsCardWrapper from "./QuestionsCardWrapper";
 
 type EarlyDropOffLatePickupCardProps = {
+  requireEarlyDropOffLatePickup: boolean | null;
   setRequireEarlyDropOffLatePickup: (
     requireEarlyDropOffLatePickup: boolean,
   ) => void;
@@ -20,16 +21,14 @@ type EarlyDropOffLatePickupCardProps = {
 };
 
 const EarlyDropOffLatePickupCard = ({
+  requireEarlyDropOffLatePickup,
   setRequireEarlyDropOffLatePickup,
   submitClicked,
 }: EarlyDropOffLatePickupCardProps): React.ReactElement => {
-  const [multipleChoice, setMultipleChoice] = useState("");
-
-  const invalid = submitClicked && multipleChoice === "";
+  const invalid = submitClicked && requireEarlyDropOffLatePickup === null;
 
   const handleMultipleChoiceUpdate = (choice: string) => {
-    setMultipleChoice(choice);
-    setRequireEarlyDropOffLatePickup(choice === "yes");
+    setRequireEarlyDropOffLatePickup(choice === "true");
   };
 
   return (
@@ -53,13 +52,14 @@ const EarlyDropOffLatePickupCard = ({
               </FormErrorMessage>
             )}
             <RadioGroup
+              value={requireEarlyDropOffLatePickup?.toString()}
               onChange={(choice) => handleMultipleChoiceUpdate(choice)}
             >
               <VStack alignItems="flex-start">
-                <Radio value="yes" colorScheme="green">
+                <Radio value="true" colorScheme="green">
                   Yes
                 </Radio>
-                <Radio value="no" colorScheme="green">
+                <Radio value="false" colorScheme="green">
                   No
                 </Radio>
               </VStack>
