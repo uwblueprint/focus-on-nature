@@ -187,10 +187,19 @@ class EmailService implements IEmailService {
 
   async sendParentWaitlistConfirmationEmail(
     camp: Camp,
-    campSession: CampSession,
+    campSessions: CampSession[],
     waitlistedCampers: WaitlistedCamper[],
   ): Promise<void> {
+    const sessionDatesListItems: string[] = getSessionDatesListItems(
+      campSessions,
+    );
     const campLocationString: string = getLocationString(camp.location);
+
+    // Remove duplicated campers (each camper has entity per camp session)
+    const uniqueCamperIds = new Set(
+      waitlistedCampers.map((camper) => camper.id),
+    );
+
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
@@ -202,11 +211,13 @@ class EmailService implements IEmailService {
       <ul>
         <li><b>Camp name:</b> ${camp.name}</li>
         <li><b>Camp location:</b> ${campLocationString}</li>
-        <li><b>Session dates:</b> ${sessionDatesToString(
-          campSession.dates,
-        )}</li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
         <li><b>Campers:</b></li>
         ${waitlistedCampers
+          .filter((camper) => uniqueCamperIds.has(camper.id))
           .map((camper) => {
             return `<ul>
               <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>

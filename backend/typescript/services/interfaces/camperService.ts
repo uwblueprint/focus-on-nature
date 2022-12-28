@@ -62,14 +62,16 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
-   * Create a waitlisted camper
-   * @param waitlistedCamper the waitlisted camper to be created
+   * Creates a waitlisted camper entity for each camper in each campSession
+   * @param waitlistedCampers the waitlisted campers to be created
+   * @param campSessions the session ids for which the campers should be waitlisted
    * @returns a WaitlistedCamperDTO with the created waitlisted camper's information
    * @throws Error if waitlisted camper creation fails
    */
-  createWaitlistedCamper(
-    waitlistedCamper: CreateWaitlistedCamperDTO,
-  ): Promise<WaitlistedCamperDTO>;
+  createWaitlistedCampers(
+    waitlistedCampers: CreateWaitlistedCamperDTO[],
+    campSessions: string[],
+  ): Promise<WaitlistedCamperDTO[]>;
 
   /**
    * Update an array of campers

@@ -492,89 +492,121 @@ class CamperService implements ICamperService {
   }
 
   /* eslint-disable class-methods-use-this */
-  async createWaitlistedCamper(
-    waitlistedCamper: CreateWaitlistedCamperDTO,
-  ): Promise<WaitlistedCamperDTO> {
-    let newWaitlistedCamper: WaitlistedCamper;
-    let existingCampSession: CampSession | null;
+  async createWaitlistedCampers(
+    waitlistedCampers: CreateWaitlistedCamperDTO[],
+    campSessions: string[],
+  ): Promise<WaitlistedCamperDTO[]> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    let sessionsToWaitlist: CampSession[] = [];
+    let newWaitlistedCampers: WaitlistedCamper[] = [];
 
     try {
-      newWaitlistedCamper = await MgWaitlistedCamper.create({
-        firstName: waitlistedCamper.firstName,
-        lastName: waitlistedCamper.lastName,
-        age: waitlistedCamper.age,
-        contactName: waitlistedCamper.contactName,
-        contactEmail: waitlistedCamper.contactEmail,
-        contactNumber: waitlistedCamper.contactNumber,
-        campSession: waitlistedCamper.campSession,
+      sessionsToWaitlist = await MgCampSession.find(
+        { _id: { $in: campSessions } },
+        {},
+        { session },
+      );
+
+      // Ensure all sessions were found
+      if (sessionsToWaitlist.length !== campSessions.length) {
+        throw new Error("Could not find camp sessions for all ids");
+      }
+
+      const camp = await MgCamp.findById(
+        sessionsToWaitlist[0].camp,
+        {},
+        { session },
+      );
+      if (!camp) {
+        throw new Error(
+          "Unable to find the camp associated with the camp sessions passed in",
+        );
+      }
+
+      // Ensure all the campSessions are for the same camp
+      if (!sessionsToWaitlist.every((cs) => cs.camp.toString() === camp.id)) {
+        throw new Error("Not all camp sessions belong to the same camp");
+      }
+
+      // Ensure all camper(s) meet the age requirements of the camp
+      if (
+        !waitlistedCampers.every(
+          (c) => c.age >= camp.ageLower && c.age <= camp.ageUpper,
+        )
+      ) {
+        throw new Error(
+          "Some camper(s) didn't meet the age requirements of the camp",
+        );
+      }
+
+      // Create a waitlist camper entity for each session
+      const campersToWaitlist: Array<
+        Omit<WaitlistedCamperDTO, "id">
+      > = campSessions.flatMap((cs) => {
+        return waitlistedCampers.map((waitlistedCamper) => {
+          return {
+            firstName: waitlistedCamper.firstName,
+            lastName: waitlistedCamper.lastName,
+            age: waitlistedCamper.age,
+            contactName: waitlistedCamper.contactName,
+            contactEmail: waitlistedCamper.contactEmail,
+            contactNumber: waitlistedCamper.contactNumber,
+            campSession: cs,
+            status: "NotRegistered",
+          };
+        });
       });
 
-      try {
-        existingCampSession = await MgCampSession.findByIdAndUpdate(
-          waitlistedCamper.campSession,
-          {
-            $push: { waitlist: newWaitlistedCamper.id },
-          },
-          { runValidators: true },
-        );
+      // Insert the waitlisted camper entities
+      newWaitlistedCampers = await MgWaitlistedCamper.insertMany(
+        campersToWaitlist,
+        { session },
+      );
 
-        if (!existingCampSession) {
-          throw new Error(
-            `Camp session ${waitlistedCamper.campSession} not found.`,
+      // Add the campers to the waitlist field of each session
+      await Promise.all(
+        sessionsToWaitlist.map((cs) => {
+          cs.waitlist.push(
+            ...newWaitlistedCampers.filter(
+              (camper) => camper.campSession.toString() === cs.id,
+            ),
           );
-        }
+          return cs.save({ session });
+        }),
+      );
 
-        const camp = await MgCamp.findById(existingCampSession.camp);
-        if (!camp) {
-          throw new Error(`Camp ${existingCampSession.camp} not found.`);
-        }
-        await emailService.sendParentWaitlistConfirmationEmail(
-          camp,
-          existingCampSession,
-          [newWaitlistedCamper],
-        );
-      } catch (mongoDbError: unknown) {
-        // rollback user creation
-        try {
-          const deletedWaitlistedCamper: WaitlistedCamper | null = await MgWaitlistedCamper.findByIdAndDelete(
-            newWaitlistedCamper.id,
-          );
+      await emailService.sendParentWaitlistConfirmationEmail(
+        camp,
+        sessionsToWaitlist,
+        newWaitlistedCampers,
+      );
 
-          if (!deletedWaitlistedCamper) {
-            throw new Error(
-              `Waitlisted Camper ${newWaitlistedCamper.id} not found.`,
-            );
-          }
-        } catch (rollbackDbError) {
-          const errorMessage = [
-            "Failed to rollback MongoDB waitlisted camper creation after update camp failure. Reason =",
-            getErrorMessage(rollbackDbError),
-            "MongoDB camper id that could not be deleted =",
-            newWaitlistedCamper.id,
-          ];
-          Logger.error(errorMessage.join(" "));
-        }
-
-        throw mongoDbError;
-      }
+      await session.commitTransaction();
     } catch (error: unknown) {
       Logger.error(
         `Failed to create waitlisted camper. Reason: ${getErrorMessage(error)}`,
       );
+      await session.abortTransaction();
       throw error;
+    } finally {
+      await session.endSession();
     }
 
-    return {
-      id: newWaitlistedCamper.id,
-      firstName: waitlistedCamper.firstName,
-      lastName: waitlistedCamper.lastName,
-      age: waitlistedCamper.age,
-      contactName: waitlistedCamper.contactName,
-      contactEmail: waitlistedCamper.contactEmail,
-      contactNumber: waitlistedCamper.contactNumber,
-      campSession: waitlistedCamper.campSession,
-      status: waitlistedCamper.status,
-    };
+    return newWaitlistedCampers.map((c) => {
+      return {
+        id: c.id,
+        firstName: c.firstName,
+        lastName: c.lastName,
+        age: c.age,
+        contactName: c.contactName,
+        contactEmail: c.contactEmail,
+        contactNumber: c.contactName,
+        campSession: c.campSession.toString(),
+        status: c.status,
+      };
+    });
   }
 
   /* eslint-disable class-methods-use-this */
