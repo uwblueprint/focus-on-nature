@@ -61,7 +61,6 @@ const RegistrationSteps = ({
     waiverCompleted: false,
   });
 
-  const [sampleRegisterField, setSampleRegisterField] = useState(false);
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
       firstName: "",
@@ -111,8 +110,8 @@ const RegistrationSteps = ({
     requireEarlyDropOffLatePickup,
   );
   const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const [reviewSummary, setReviewSummary] = useState(false);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -123,7 +122,7 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.WaiverPage:
         return isWaiverFilled;
       case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return isReviewRegistrationFilled;
+        return true;
       default:
         return false;
     }
@@ -143,7 +142,7 @@ const RegistrationSteps = ({
     }),
   );
 
-  const getCurrentRegistrantStepComponent = (
+   const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
   ) => {
     switch (step) {
@@ -178,15 +177,16 @@ const RegistrationSteps = ({
             nextBtnRef={nextBtnRef}
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
-            campName={camp?.name || ""}
+            campName={camp.name}
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
         return (
           <ReviewRegistration
-            isChecked={sampleRegisterField}
-            toggleChecked={() => setSampleRegisterField(!sampleRegisterField)}
-            campName={camp?.name || ""}
+            camp={camp}
+            campers={campers}
+            setCampers={setCampers}
+            reviewSummary={reviewSummary}
           />
         );
       default:
@@ -196,7 +196,19 @@ const RegistrationSteps = ({
 
   const handleStepNavigation = (stepsToMove: number) => {
     const desiredStep = currentStep + stepsToMove;
-    if (RegistrantExperienceSteps[desiredStep]) {
+    if (
+      currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
+      !reviewSummary &&
+      stepsToMove === 1
+    ) {
+      setReviewSummary(true);
+    } else if (
+      currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
+      reviewSummary &&
+      stepsToMove === -1
+    ) {
+      setReviewSummary(false);
+    } else if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
     } else if (desiredStep < 0) {
       onClickBack();
@@ -218,7 +230,7 @@ const RegistrationSteps = ({
         isPersonalInfoFilled={isPersonalInfoFilled}
         isAdditionalInfoFilled={isAdditionalInfoFilled}
         isWaiverFilled={isWaiverFilled}
-        isReviewRegistrationFilled={isReviewRegistrationFilled}
+        isReviewRegistrationFilled={reviewSummary}
         setCurrentStep={setCurrentStep}
       />
       <Box mx="10vw">{getCurrentRegistrantStepComponent(currentStep)}</Box>
@@ -227,6 +239,7 @@ const RegistrationSteps = ({
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}
+        reviewSummary={reviewSummary}
       />
     </Flex>
   );
