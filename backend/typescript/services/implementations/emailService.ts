@@ -17,7 +17,7 @@ function sessionDatesToString(dates: Date[] | undefined) {
   if (!dates) {
     return "";
   }
-  return dates.map((date) => date.toDateString()).join(" ");
+  return dates.map((date) => date.toDateString()).join(", ");
 }
 
 // Returns a list item for each camp session with the dates of the camp session
