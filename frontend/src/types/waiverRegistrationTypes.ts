@@ -6,12 +6,19 @@ export type WaiverReducerDispatch =
   | FillName
   | FillDate;
 
+/* eslint-disable-next-line */
+
+export interface GetClauses extends WaiverReducerDispatchBase {
+  type: WaiverActions;
+}
+
 export interface WaiverReducerDispatchBase {
   type: WaiverActions;
 }
 
 export interface ClickOptionalClause extends WaiverReducerDispatchBase {
   type: WaiverActions;
+  agreed: boolean;
   optionalClauseId: number; // Currently, the id is set to be index of the the optional clause in the array its stored.
 }
 
@@ -30,13 +37,14 @@ export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
-  LOADED_WAIVER,
+  GET_CLAUSES,
   WRITE_NAME,
   WRITE_DATE,
 }
 
 export interface OptionalClauseResponse extends WaiverClause {
   agreed: boolean;
+  optionSelected: boolean; // Whether the registrant has seleted either "I agree" or "I disagree" for the clause
 }
 
 /* eslint-disable-next-line */

@@ -55,7 +55,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           };
         }),
       );
-  }, [campId]);
+  }, []);
 
   if (campResponse && waiverResponse) {
     return sessionSelectionIsComplete ? (
