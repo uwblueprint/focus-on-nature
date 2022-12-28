@@ -23,15 +23,17 @@ const CamperQuestionsCard = ({
   dispatchAdditionalInfoAction,
   nextClicked,
 }: CamperQuestionsCardProps): React.ReactElement => {
+  const mdWrapWidth = campSpecificFormQuestions.length > 1 ? "47%" : "100%";
+
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
-      <VStack width="100%" py="24px">
-        <Wrap>
+      <VStack py="24px">
+        <Wrap width="100%" px="20px" justify="space-between">
           {campSpecificFormQuestions.map((question) => (
             <WrapItem
               key={`additional_info_question_${question}`}
-              width={{ sm: "100%", md: "47%" }}
-              px="40px"
+              width={{ sm: "100%", md: mdWrapWidth }}
+              px="20px"
               py="12px"
             >
               {question.type === "Text" && (
