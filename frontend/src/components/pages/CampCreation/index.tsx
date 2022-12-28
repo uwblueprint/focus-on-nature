@@ -295,11 +295,15 @@ const CampCreationPage = (): React.ReactElement => {
       let campResponse: CreateUpdateCampResponse;
 
       if (isNewCamp) {
-        campResponse = await CampsAPIClient.createNewCamp(campFields);
+        campResponse = await CampsAPIClient.createNewCamp(
+          campFields,
+          campImageURL,
+        );
       } else {
         campResponse = await CampsAPIClient.editCampById(
           editCampId,
           campFields,
+          campImageURL,
         );
       }
 

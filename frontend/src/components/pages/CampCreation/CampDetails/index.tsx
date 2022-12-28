@@ -149,10 +149,8 @@ const CampCreationDetails = ({
   };
 
   return (
-    <Box paddingLeft="200px">
-      <Text textStyle="displayXLarge" marginTop="56px">
-        Camp Details
-      </Text>
+    <Box paddingLeft="200px" my="56px">
+      <Text textStyle="displayXLarge">Camp Details</Text>
       <Text textStyle="displayLarge" marginTop="32px">
         Overview
       </Text>
@@ -615,10 +613,6 @@ const CampCreationDetails = ({
       >
         Replace Image
       </Button>
-
-      <Box marginTop="20px">
-        <Button onClick={() => setShowErrors(true)}>Dummy Submit</Button>
-      </Box>
     </Box>
   );
 };
