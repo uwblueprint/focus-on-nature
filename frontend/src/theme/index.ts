@@ -3,6 +3,8 @@ import "@fontsource/noto-sans";
 
 import colors from "./colors";
 import Button from "./components/Button";
+import Checkbox from "./components/Checkbox";
+
 // import Button from "./components/Button";
 // import Container from "./components/Container";
 // import Input from "./components/Input";
@@ -31,6 +33,7 @@ const customTheme = extendTheme({
   },
   components: {
     Button,
+    Checkbox,
     // Steps,
     // Container,
     // Input,
