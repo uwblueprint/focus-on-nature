@@ -6,19 +6,23 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import {
+  AdditionalInfoActions,
+  AdditionalInfoReducerDispatch,
+} from "../../../../../../types/AdditionalInfoTypes";
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type TextInputGroupProps = {
-  camperFormResponses?: Map<string, string>;
+  camperIndex: number;
   question: FormQuestion;
-  updateFormResponse: (key: string, value: string) => void;
+  dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
   submitClicked: boolean;
 };
 
 const TextInputGroup = ({
-  camperFormResponses,
+  camperIndex,
   question,
-  updateFormResponse,
+  dispatchAdditionalInfoAction,
   submitClicked,
 }: TextInputGroupProps): React.ReactElement => {
   const [inputText, setInputText] = useState("");
@@ -28,10 +32,16 @@ const TextInputGroup = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
 
-    updateFormResponse(question.question, e.target.value);
-  };
+    console.log("hihi");
 
-  console.log(camperFormResponses);
+    // updateFormResponse(question.question, e.target.value);
+    dispatchAdditionalInfoAction({
+      type: AdditionalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: e.target.value,
+    });
+  };
 
   return (
     <FormControl isRequired={question.required} isInvalid={invalid}>

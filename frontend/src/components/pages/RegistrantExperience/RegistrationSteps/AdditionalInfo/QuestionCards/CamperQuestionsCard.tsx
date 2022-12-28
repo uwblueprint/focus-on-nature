@@ -1,5 +1,6 @@
 import { VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { AdditionalInfoReducerDispatch } from "../../../../../../types/AdditionalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
@@ -10,36 +11,18 @@ import QuestionsCardWrapper from "./QuestionsCardWrapper";
 type CamperQuestionsCardProps = {
   camper: RegistrantExperienceCamper;
   formQuestions: FormQuestion[];
-  updateCamperFormResponse: (
-    index: number,
-    formResponses: Map<string, string>,
-  ) => void;
-  index: number;
+  dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
+  camperIndex: number;
   submitClicked: boolean;
 };
 
 const CamperQuestionsCard = ({
   camper,
   formQuestions,
-  updateCamperFormResponse,
-  index,
+  dispatchAdditionalInfoAction,
+  camperIndex,
   submitClicked,
 }: CamperQuestionsCardProps): React.ReactElement => {
-  const [formResponses, setFormResponses] = useState<Map<string, string>>(
-    new Map<string, string>(),
-  );
-
-  // formResponses wasn't updated in time to get sent in so I shoved it in a useEffect
-  useEffect(() => {
-    updateCamperFormResponse(index, formResponses);
-  }, [formResponses]);
-
-  const updateFormResponse = (key: string, value: string) => {
-    setFormResponses((prev) => {
-      return { ...prev, [key]: value };
-    });
-  };
-
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
       <VStack width="100%" py="24px">
@@ -53,25 +36,25 @@ const CamperQuestionsCard = ({
             >
               {question.type === "Text" && (
                 <TextInputGroup
-                  camperFormResponses={camper.formResponses}
+                  camperIndex={camperIndex}
                   question={question}
-                  updateFormResponse={updateFormResponse}
+                  dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
                   submitClicked={submitClicked}
                 />
               )}
               {question.type === "Multiselect" && (
                 <MultiselectGroup
-                  camperFormResponses={camper.formResponses}
+                  camperIndex={camperIndex}
                   question={question}
-                  updateFormResponse={updateFormResponse}
+                  dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
                   submitClicked={submitClicked}
                 />
               )}
               {question.type === "MultipleChoice" && (
                 <MultipleChoiceGroup
-                  camperFormResponses={camper.formResponses}
+                  camperIndex={camperIndex}
                   question={question}
-                  updateFormResponse={updateFormResponse}
+                  dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
                   submitClicked={submitClicked}
                 />
               )}

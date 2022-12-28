@@ -8,19 +8,23 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import {
+  AdditionalInfoActions,
+  AdditionalInfoReducerDispatch,
+} from "../../../../../../types/AdditionalInfoTypes";
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
-  camperFormResponses?: Map<string, string>;
+  camperIndex: number;
   question: FormQuestion;
-  updateFormResponse: (key: string, value: string) => void;
+  dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
   submitClicked: boolean;
 };
 
 const MultipleChoiceGroup = ({
-  camperFormResponses,
+  camperIndex,
   question,
-  updateFormResponse,
+  dispatchAdditionalInfoAction,
   submitClicked,
 }: MultipleChoiceGroupProps): React.ReactElement => {
   const [multipleChoice, setMultipleChoice] = useState("");
@@ -29,7 +33,13 @@ const MultipleChoiceGroup = ({
 
   const handleMultipleChoiceUpdate = (choice: string) => {
     setMultipleChoice(choice);
-    updateFormResponse(question.question, choice);
+    // dispatchAdditionalInfoAction(question.question, choice);
+    dispatchAdditionalInfoAction({
+      type: AdditionalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
   };
 
   return (

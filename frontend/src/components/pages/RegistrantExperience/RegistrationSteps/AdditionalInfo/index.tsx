@@ -2,6 +2,7 @@ import { Box, Divider, Text, VStack } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../../types/CampsTypes";
+import { useAdditionalInfoDispatcher } from "./additionalInfoReducer";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 
@@ -9,7 +10,9 @@ type AdditionalInfoProps = {
   toggleChecked: (checked: boolean) => void;
   formQuestions: FormQuestion[];
   campers: RegistrantExperienceCamper[];
-  setCampers: (campers: RegistrantExperienceCamper[]) => void;
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >;
   campName: string;
   hasEarlyDropOffLatePickup: boolean;
   requireEarlyDropOffLatePickup: boolean | null;
@@ -30,6 +33,8 @@ const AdditionalInfo = ({
   setRequireEarlyDropOffLatePickup,
   nextBtnRef,
 }: AdditionalInfoProps): React.ReactElement => {
+  const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
+
   const updateCamperFormResponse = (
     index: number,
     formResponses: Map<string, string>,
@@ -90,13 +95,13 @@ const AdditionalInfo = ({
         <Text textStyle="displayLarge" textColor="primary.green.100">
           Camper-specific Additional Questions
         </Text>
-        {campers.map((camper, index) => (
+        {campers.map((camper, camperIndex) => (
           <CamperQuestionsCard
-            key={index}
+            key={camperIndex}
             camper={camper}
             formQuestions={formQuestions}
-            updateCamperFormResponse={updateCamperFormResponse}
-            index={index}
+            dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
+            camperIndex={camperIndex}
             submitClicked={submitClicked}
           />
         ))}
