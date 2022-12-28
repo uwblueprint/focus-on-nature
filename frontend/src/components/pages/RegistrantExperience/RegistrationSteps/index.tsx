@@ -5,7 +5,7 @@ import {
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "../../../../types/waiverTypes";
+} from "../../../../types/waiverRegistrationTypes";
 import RegistrationFooter from "./RegistrationFooter";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import AdditionalInfo from "./AdditionalInfo";

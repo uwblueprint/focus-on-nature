@@ -23,7 +23,7 @@ import {
   WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "../../../../../types/waiverTypes";
+} from "../../../../../types/waiverRegistrationTypes";
 import {
   checkDate,
   checkName,

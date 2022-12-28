@@ -8,7 +8,7 @@ import {
   FillDate,
   FillName,
   RequiredClauseResponse,
-} from "../../../../../types/waiverTypes";
+} from "../../../../../types/waiverRegistrationTypes";
 
 export const checkName = (name: string): boolean => {
   return !!name;
