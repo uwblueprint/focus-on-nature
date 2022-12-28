@@ -9,7 +9,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { CreateFormQuestion, FormQuestion } from "../../../types/CampsTypes";
+import {
+  CreateFormQuestionRequest,
+  FormQuestion,
+} from "../../../types/CampsTypes";
 import QuestionCard from "./QuestionCard";
 import RegistrationQuestionCard from "../../pages/CampCreation/RegistrationForm/RegistrationQuestionCard";
 import NoRegistrationQuestionsCard from "../../pages/CampCreation/RegistrationForm/NoRegistrationQuestionsCard";
@@ -21,7 +24,7 @@ type QuestionsAccordionItemProps = {
   onDeleteCustomQuestion?: (questionToBeDeleted: FormQuestion) => void;
   onEditCustomQuestion?: (
     oldQuestion: FormQuestion,
-    newQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestionRequest,
   ) => void;
   isTemplatePage?: boolean;
 };
@@ -45,11 +48,11 @@ const QuestionsAccordionItem = ({
         _hover={{ bg: "primary.green.600" }}
       >
         <Box flex="1" textAlign="left">
-          <Text color="text.white.100" textStyle="displayLarge" p={2}>
+          <Text color="text.white.100" textStyle="heading" p={2}>
             {accordionTitle}
           </Text>
         </Box>
-        <AccordionIcon color="white" />
+        <AccordionIcon color="white" fontSize="2.5em" />
       </AccordionButton>
 
       {isTemplatePage ? (

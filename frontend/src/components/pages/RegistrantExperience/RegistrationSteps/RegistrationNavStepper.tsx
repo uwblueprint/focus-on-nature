@@ -17,7 +17,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import StepperTab from "../../common/StepperNavigation/StepperTab";
+import StepperTab from "../../../common/StepperNavigation/StepperTab";
 import RegistrantExperienceSteps, {
   StepperPageDetails,
   REGISTRATION_NUM_STEPS,
@@ -83,7 +83,7 @@ const getPageDetails = (
     case RegistrantExperienceSteps.ReviewRegistrationPage:
       return {
         pageName: STEPPER_TITLES.Review,
-        nextPageName: "Pay",
+        nextPageName: "Checkout",
         pageNumber: 4,
         progress: 100,
         isFilled: isReviewRegistrationFilled,

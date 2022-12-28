@@ -1,15 +1,15 @@
-import React from "react";
 import { Box, Checkbox, Text } from "@chakra-ui/react";
+import React from "react";
 
-type ReviewRegistrationProps = {
+type ReviewInformationProps = {
   isChecked: boolean;
   toggleChecked: () => void;
 };
 
-const ReviewRegistration = ({
+const ReviewInformation = ({
   isChecked,
   toggleChecked,
-}: ReviewRegistrationProps): React.ReactElement => {
+}: ReviewInformationProps): React.ReactElement => {
   return (
     <Box>
       <Text textStyle="displayXLarge">Camp Registration</Text>
@@ -25,4 +25,4 @@ const ReviewRegistration = ({
   );
 };
 
-export default ReviewRegistration;
+export default ReviewInformation;

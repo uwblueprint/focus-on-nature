@@ -76,6 +76,11 @@ const textStyles = {
     fontSize: "16px",
     lineHeight: "150%",
   },
+  captionSemiBold: {
+    fontWeight: FontWeights.SEMIBOLD,
+    fontSize: "16px",
+    lineHeight: "150%",
+  },
   xSmallBold: {
     fontWeight: FontWeights.BOLD,
     fontSize: "14px",

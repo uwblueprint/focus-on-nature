@@ -19,8 +19,9 @@ const RegistrationFooter = ({
     if (isCurrentStepCompleted) {
       handleStepNavigation(1);
     } else {
-      // placeholder for field error
-      alert("Please fill out required fields");
+      alert(
+        "Form does not pass validaiton. Please complete all form fields according to requirements.",
+      );
     }
   };
 
@@ -36,6 +37,7 @@ const RegistrationFooter = ({
       padding="20px"
       position="fixed"
       bottom="0"
+      zIndex="5"
     >
       <Button
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}
@@ -55,7 +57,7 @@ const RegistrationFooter = ({
         onClick={onNextStep}
       >
         {currentStep === RegistrantExperienceSteps.ReviewRegistrationPage
-          ? "Pay"
+          ? "Go to checkout"
           : "Next"}
       </Button>
     </Flex>

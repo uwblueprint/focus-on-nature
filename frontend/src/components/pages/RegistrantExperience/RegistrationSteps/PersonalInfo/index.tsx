@@ -1,18 +1,18 @@
 import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Text, useToast, VStack } from "@chakra-ui/react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { usePersonalInfoHook } from "./personalInfoReducer";
+import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import CamperCard from "./CamperCard";
-import { PersonalInfoActions } from "../../../../types/PersonalInfoTypes";
 import ContactCard from "./ContactCard";
-import { CampSession } from "../../../../types/CampsTypes";
+import { usePersonalInfoDispatcher } from "./personalInfoReducer";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
+import { PersonalInfoActions } from "../../../../../types/PersonalInfoTypes";
 
 type PersonalInfoProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   campers: RegistrantExperienceCamper[];
-  campName: string;
   campSessions: CampSession[];
+  camp: CampResponse;
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
@@ -23,24 +23,31 @@ const checkSpaceAvailable = (
   campers: RegistrantExperienceCamper[],
 ): boolean => {
   // validate whether there is enough space for a new camper
-  let spaceAvailable = 100000000;
-  /* eslint-disable-next-line */
-  for (const campSession of campSessions) spaceAvailable = Math.min(spaceAvailable,campSession.capacity - campSession.campers.length - campers.length);
+  const spaceAvailable: number = campSessions.reduce(
+    (minSpaceAvailable, currentSession) => {
+      return Math.min(
+        minSpaceAvailable,
+        currentSession.capacity -
+          currentSession.campers.length -
+          campers.length,
+      );
+    },
+    Number.MAX_SAFE_INTEGER,
+  );
   return spaceAvailable > 0;
 };
 
 const PersonalInfo = ({
   nextBtnRef,
   campers,
-  campName,
   campSessions,
+  camp,
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
-  const toast = useToast();
-  const setPersonalInfo = usePersonalInfoHook(setCampers);
+  const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   return (
     <Box pb={14}>
-      <Text textStyle="displayXLarge">{campName} Registration</Text>
+      <Text textStyle="displayXLarge">{camp.name} Registration</Text>
       <Text
         color="#10741A"
         py={7}
@@ -54,8 +61,9 @@ const PersonalInfo = ({
             nextBtnRef={nextBtnRef}
             key={index}
             camper={camper}
-            setPersonalInfo={setPersonalInfo}
-            camperId={index}
+            dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+            camperIndex={index}
+            camp={camp}
           />
         ))}
       </VStack>
@@ -64,20 +72,11 @@ const PersonalInfo = ({
         w="100%"
         backgroundColor="primary.green.100"
         color="#ffffff"
+        isDisabled={!checkSpaceAvailable(campSessions, campers)}
         onClick={() => {
-          if (checkSpaceAvailable(campSessions, campers))
-            setPersonalInfo({
-              type: PersonalInfoActions.ADD_CAMPER,
-              campSessions,
-            });
-          else
-            toast({
-              title: "Max Capacity Reached",
-              description: "Camp is currently full",
-              status: "warning",
-              duration: 5000,
-              isClosable: true,
-            });
+          dispatchPersonalInfoAction({
+            type: PersonalInfoActions.ADD_CAMPER,
+          });
         }}
       >
         <SmallAddIcon boxSize={6} />
@@ -100,8 +99,8 @@ const PersonalInfo = ({
             nextBtnRef={nextBtnRef}
             key={index}
             contact={contact}
-            setPersonalInfo={setPersonalInfo}
-            contactId={index}
+            dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+            contactIndex={index}
           />
         ))}
       </VStack>

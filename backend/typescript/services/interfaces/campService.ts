@@ -3,14 +3,13 @@ import {
   CampDTO,
   CamperCSVInfoDTO,
   CampSessionDTO,
-  CreateCampDTO,
   UpdateCampSessionDTO,
   GetCampDTO,
-  UpdateCampDTO,
   CreateCampSessionsDTO,
   FormQuestionDTO,
   UpdateCampSessionsDTO,
   CreateFormQuestionDTO,
+  CreateUpdateCampDTO,
 } from "../../types";
 
 interface ICampService {
@@ -36,11 +35,11 @@ interface ICampService {
     waitlistedCamperId?: string,
   ): Promise<GetCampDTO>;
 
-  createCamp(camp: CreateCampDTO): Promise<CampDTO>;
+  createCamp(camp: CreateUpdateCampDTO): Promise<CampDTO>;
 
   deleteCamp(campId: string): Promise<void>;
 
-  updateCampById(campId: string, camp: UpdateCampDTO): Promise<CampDTO>;
+  updateCampById(campId: string, camp: CreateUpdateCampDTO): Promise<CampDTO>;
 
   deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
 

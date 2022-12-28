@@ -9,9 +9,14 @@ import {
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 
-import { CampResponse } from "../../../types/CampsTypes";
+import {
+  CampResponse,
+  CreateCampSessionRequest,
+  CreateFormQuestionRequest,
+  CreateUpdateCampRequest,
+} from "../../../types/CampsTypes";
 import FooterDeleteModal from "./FooterDeleteModal";
-
+import { CAMPS_PAGE, CAMP_EDIT_PAGE } from "../../../constants/Routes";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 
 type FooterProps = {
@@ -24,18 +29,72 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
   const history = useHistory();
 
   const handlePublish = async () => {
-    const updatedCamp = camp;
-    updatedCamp.active = true;
-    const res = await CampsAPIClient.editCampById(camp.id, updatedCamp);
-    if (res) {
-      toast({
-        description: `${camp.name} has been successfully published`,
-        status: "success",
-        variant: "subtle",
-        duration: 3000,
-      });
-      history.go(0);
-    } else {
+    // Ensure that we are not dealing with a published camp already
+    // (should not happen due to conditional rendering, but checking to be sure)
+    if (camp.active) {
+      return;
+    }
+
+    // change formQuestions to CreateFormQuestions
+    const newFormQuestions: CreateFormQuestionRequest[] = [];
+    camp.formQuestions.forEach((fq) => {
+      const newFormQuestion: CreateFormQuestionRequest = {
+        type: fq.type,
+        required: fq.required,
+        question: fq.question,
+        options: fq.options,
+        description: fq.description,
+        category: fq.category,
+      };
+      newFormQuestions.push({ ...newFormQuestion });
+    });
+
+    // change campSessions to CreateCampSessions
+    const newCampSessions: CreateCampSessionRequest[] = [];
+    camp.campSessions.forEach((cs) => {
+      const newCampSession: CreateCampSessionRequest = {
+        dates: cs.dates,
+        capacity: cs.capacity,
+      };
+      newCampSessions.push({ ...newCampSession });
+    });
+
+    const updateCampFields: CreateUpdateCampRequest = {
+      active: true,
+      ageLower: camp.ageLower,
+      ageUpper: camp.ageUpper,
+      campCoordinators: camp.campCoordinators,
+      campCounsellors: camp.campCounsellors,
+      name: camp.name,
+      description: camp.description,
+      earlyDropoff: camp.earlyDropoff,
+      endTime: camp.endTime,
+      latePickup: camp.latePickup,
+      location: camp.location,
+      startTime: camp.startTime,
+      fee: camp.fee,
+      pickupFee: camp.pickupFee,
+      dropoffFee: camp.dropoffFee,
+      formQuestions: newFormQuestions,
+      campSessions: newCampSessions,
+      volunteers: camp.volunteers,
+    };
+
+    try {
+      const res = await CampsAPIClient.editCampById(camp.id, updateCampFields);
+
+      if (res) {
+        history.push(CAMPS_PAGE);
+        toast({
+          description: `${camp.name} has been successfully published`,
+          status: "success",
+          variant: "subtle",
+          duration: 3000,
+        });
+      } else {
+        throw new Error("Could not publish camp");
+      }
+    } catch (error: unknown) {
       toast({
         description: `An error occurred with publishing ${camp.name}`,
         status: "error",
@@ -43,7 +102,12 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
         duration: 3000,
       });
     }
+
     onClose();
+  };
+
+  const onEditCampClick = (campID: string): void => {
+    history.push(CAMP_EDIT_PAGE.replace(":id", campID));
   };
 
   return (
@@ -77,6 +141,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
             borderColor="primary.green.100"
             variant="outline"
             p="16px"
+            onClick={() => onEditCampClick(camp.id)}
           >
             Edit draft
           </Button>
