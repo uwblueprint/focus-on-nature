@@ -1,8 +1,8 @@
 import { Box, Flex } from "@chakra-ui/react";
-import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
+import React, { useState, useReducer, Reducer, useRef } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
-  WaiverActions,
+  OptionalClauseResponse,
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../../types/waiverRegistrationTypes";
@@ -39,10 +39,24 @@ const RegistrationSteps = ({
   >(waiverReducer, {
     campName: camp.name,
     waiver,
-    optionalClauses: [],
-    requiredClauses: [],
+    optionalClauses: waiver.clauses.reduce(
+      (optionalClauses: OptionalClauseResponse[], clause) => {
+        if (!clause.required) {
+          optionalClauses.push({
+            ...clause,
+            // Assigned a value, but the clause is neither agreed to nor disagreed to
+            // by default, until user explicitly sets a value as tracked by `optionSelected`
+            agreed: false,
+            optionSelected: false,
+          });
+        }
+
+        return optionalClauses;
+      },
+      [],
+    ),
+    requiredClauses: waiver.clauses.filter((clause) => clause.required),
     agreedRequiredClauses: false,
-    loadingWaiver: true,
     date: "",
     name: "",
     waiverCompleted: false,
@@ -82,12 +96,6 @@ const RegistrationSteps = ({
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    waiverDispatch({
-      type: WaiverActions.GET_CLAUSES,
-    });
-  }, [waiver]);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {

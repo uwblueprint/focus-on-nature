@@ -37,7 +37,6 @@ export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
-  GET_CLAUSES,
   WRITE_NAME,
   WRITE_DATE,
 }
@@ -56,7 +55,6 @@ export type WaiverInterface = {
   optionalClauses: OptionalClauseResponse[];
   requiredClauses: RequiredClauseResponse[];
   agreedRequiredClauses: boolean;
-  loadingWaiver: boolean;
   name: string;
   date: string;
   waiverCompleted: boolean;
