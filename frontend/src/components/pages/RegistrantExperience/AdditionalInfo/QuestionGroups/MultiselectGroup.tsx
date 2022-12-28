@@ -11,12 +11,14 @@ import React, { useState } from "react";
 import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultiselectGroupProps = {
+  camperFormResponses?: Map<string, string>;
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
 };
 
 const MultiselectGroup = ({
+  camperFormResponses,
   question,
   updateFormResponse,
   submitClicked,

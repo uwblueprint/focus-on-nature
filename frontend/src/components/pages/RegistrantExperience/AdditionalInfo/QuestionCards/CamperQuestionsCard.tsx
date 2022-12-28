@@ -53,6 +53,7 @@ const CamperQuestionsCard = ({
             >
               {question.type === "Text" && (
                 <TextInputGroup
+                  camperFormResponses={camper.formResponses}
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}
@@ -60,6 +61,7 @@ const CamperQuestionsCard = ({
               )}
               {question.type === "Multiselect" && (
                 <MultiselectGroup
+                  camperFormResponses={camper.formResponses}
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}
@@ -67,6 +69,7 @@ const CamperQuestionsCard = ({
               )}
               {question.type === "MultipleChoice" && (
                 <MultipleChoiceGroup
+                  camperFormResponses={camper.formResponses}
                   question={question}
                   updateFormResponse={updateFormResponse}
                   submitClicked={submitClicked}

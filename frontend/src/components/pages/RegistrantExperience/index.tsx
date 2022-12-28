@@ -173,6 +173,16 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         ) : null;
 
       case RegistrantExperienceSteps.WaiverPage:
+        // eslint-disable-next-line no-case-declarations, @typescript-eslint/no-var-requires, global-require
+        const util = require("util");
+        console.log(
+          util.inspect(campers, {
+            showHidden: false,
+            depth: null,
+            colors: true,
+          }),
+        );
+
         return (
           <Waiver
             waiverInterface={waiverInterface}

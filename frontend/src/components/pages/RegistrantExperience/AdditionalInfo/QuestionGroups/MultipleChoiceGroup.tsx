@@ -11,23 +11,25 @@ import React, { useState } from "react";
 import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
+  camperFormResponses?: Map<string, string>;
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
 };
 
 const MultipleChoiceGroup = ({
+  camperFormResponses,
   question,
   updateFormResponse,
   submitClicked,
 }: MultipleChoiceGroupProps): React.ReactElement => {
-  const [choice, setChoice] = useState("");
+  const [multipleChoice, setMultipleChoice] = useState("");
 
-  const invalid = submitClicked && choice === "" && question.required;
+  const invalid = submitClicked && multipleChoice === "" && question.required;
 
-  const handleMultipleChoiceUpdate = (e: string) => {
-    setChoice(e);
-    updateFormResponse(question.question, e);
+  const handleMultipleChoiceUpdate = (choice: string) => {
+    setMultipleChoice(choice);
+    updateFormResponse(question.question, choice);
   };
 
   return (
@@ -41,7 +43,7 @@ const MultipleChoiceGroup = ({
       {invalid && (
         <FormErrorMessage>Please fill out this question.</FormErrorMessage>
       )}
-      <RadioGroup onChange={(e) => handleMultipleChoiceUpdate(e)}>
+      <RadioGroup onChange={(choice) => handleMultipleChoiceUpdate(choice)}>
         <VStack alignItems="flex-start">
           {question.options?.map((option, i) => (
             <Radio key={i} value={option} colorScheme="green">

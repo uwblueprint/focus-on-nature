@@ -9,12 +9,14 @@ import React, { useState } from "react";
 import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type TextInputGroupProps = {
+  camperFormResponses?: Map<string, string>;
   question: FormQuestion;
   updateFormResponse: (key: string, value: string) => void;
   submitClicked: boolean;
 };
 
 const TextInputGroup = ({
+  camperFormResponses,
   question,
   updateFormResponse,
   submitClicked,
@@ -28,6 +30,8 @@ const TextInputGroup = ({
 
     updateFormResponse(question.question, e.target.value);
   };
+
+  console.log(camperFormResponses);
 
   return (
     <FormControl isRequired={question.required} isInvalid={invalid}>
