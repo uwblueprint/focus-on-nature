@@ -37,7 +37,8 @@ export enum WaiverActions {
 }
 
 export interface OptionalClauseResponse extends WaiverClause {
-  agreed: boolean | null;
+  agreed: boolean;
+  optionSelected: boolean; // Whether the registrant has seleted either "I agree" or "I disagree" for the clause
 }
 
 /* eslint-disable-next-line */

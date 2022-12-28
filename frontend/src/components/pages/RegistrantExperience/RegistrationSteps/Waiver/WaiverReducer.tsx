@@ -25,7 +25,7 @@ export const checkRequiredClauses = (
 export const checkOptionalClause = (
   optionalClauseResponse: OptionalClauseResponse,
 ): boolean => {
-  return optionalClauseResponse.agreed !== null;
+  return optionalClauseResponse.optionSelected !== false;
 };
 
 const waiverReducer = (
@@ -41,7 +41,12 @@ const waiverReducer = (
 
       waiver.clauses.forEach((clause: WaiverClause) => {
         if (clause.required) requiredClauses.push(clause);
-        else optionalClauses.push({ ...clause, agreed: null });
+        else
+          optionalClauses.push({
+            ...clause,
+            agreed: false,
+            optionSelected: false,
+          }); // Note that we set agreed to false by default while in actuality, the clause is neither agreed to disagreed to by default
       });
       newWaiverInterface.optionalClauses = optionalClauses;
       newWaiverInterface.requiredClauses = requiredClauses;
@@ -65,7 +70,7 @@ const waiverReducer = (
           index: number,
         ): OptionalClauseResponse => {
           if (index === optionalClauseId) {
-            return { ...optionalClause, agreed };
+            return { ...optionalClause, agreed, optionSelected: true };
           }
           return optionalClause;
         },
