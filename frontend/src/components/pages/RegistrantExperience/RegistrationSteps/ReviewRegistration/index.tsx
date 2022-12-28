@@ -30,8 +30,23 @@ const ReviewRegistration = ({
         items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
       />
 
-      {/* <ReviewInformation /> */}
+        <AccordionItem border="none" mb={4}>
+          <GeneralAccordionButton title="Contact Information" />
+          <AccordionPanel pb={4}>
+            {campers[0].contacts.map((contact, index) => (
+              <EditContactCard
+                key={index}
+                contact={contact}
+                contactIndex={index}
+                dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+              />
+            ))}
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
     </Box>
+  ) : (
+    <PaymentSummary campName={camp.name} items={items} />
   );
 };
 

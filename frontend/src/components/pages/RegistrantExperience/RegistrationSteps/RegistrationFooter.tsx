@@ -8,6 +8,7 @@ export type RegistrationFooterProps = {
   isCurrentStepCompleted: boolean;
   registrationLoading: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
+  reviewSummary: boolean;
 };
 
 const RegistrationFooter = ({
@@ -16,6 +17,7 @@ const RegistrationFooter = ({
   isCurrentStepCompleted,
   registrationLoading,
   handleStepNavigation,
+  reviewSummary,
 }: RegistrationFooterProps): React.ReactElement => {
   const toast = useToast();
 
@@ -69,7 +71,7 @@ const RegistrationFooter = ({
         loadingText="Submitting"
         onClick={onNextStep}
       >
-        {currentStep === RegistrantExperienceSteps.ReviewRegistrationPage
+        {currentStep === RegistrantExperienceSteps.ReviewRegistrationPage && reviewSummary
           ? "Go to checkout"
           : "Next"}
       </Button>
