@@ -1,7 +1,7 @@
 import { Box, Divider, Text, VStack } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { FormQuestion } from "../../../../types/CampsTypes";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import { FormQuestion } from "../../../../../types/CampsTypes";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 

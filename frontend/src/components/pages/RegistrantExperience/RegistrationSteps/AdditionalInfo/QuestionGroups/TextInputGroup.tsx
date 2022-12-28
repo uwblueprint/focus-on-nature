@@ -6,7 +6,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { FormQuestion } from "../../../../../types/CampsTypes";
+import { FormQuestion } from "../../../../../../types/CampsTypes";
 
 type TextInputGroupProps = {
   camperFormResponses?: Map<string, string>;

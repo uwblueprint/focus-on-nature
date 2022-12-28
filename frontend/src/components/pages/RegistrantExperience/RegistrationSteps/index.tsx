@@ -82,6 +82,11 @@ const RegistrationSteps = ({
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
+  const [
+    requireEarlyDropOffLatePickup,
+    setRequireEarlyDropOffLatePickup,
+  ] = useState(false);
+
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
       case RegistrantExperienceSteps.PersonalInfoPage:
@@ -114,8 +119,17 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            isChecked={sampleAdditionalInfo}
             toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            formQuestions={camp.formQuestions}
+            campers={campers}
+            setCampers={setCampers}
+            campName={camp?.name || ""}
+            hasEarlyDropOffLatePickup={
+              camp.earlyDropoff !== undefined && camp.latePickup !== undefined
+            }
+            requireEarlyDropOffLatePickup={requireEarlyDropOffLatePickup}
+            setRequireEarlyDropOffLatePickup={setRequireEarlyDropOffLatePickup}
+            nextBtnRef={nextBtnRef}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:

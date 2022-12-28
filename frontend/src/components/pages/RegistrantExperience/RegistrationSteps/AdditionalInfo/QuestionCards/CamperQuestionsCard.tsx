@@ -1,7 +1,7 @@
 import { VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import { FormQuestion } from "../../../../../types/CampsTypes";
+import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
+import { FormQuestion } from "../../../../../../types/CampsTypes";
 import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
 import MultiselectGroup from "../QuestionGroups/MultiselectGroup";
 import TextInputGroup from "../QuestionGroups/TextInputGroup";
