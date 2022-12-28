@@ -1,20 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
 import ReviewInformation from "./ReviewInformation";
-import { CreateCamperRequest } from "../../../../types/CamperTypes";
-import { CampResponse } from "../../../../types/CampsTypes";
-import { mapToCampItems } from "../../../../utils/RegistrationUtils";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import { CampResponse } from "../../../../../types/CampsTypes";
+import { mapToCampItems } from "../../../../../utils/RegistrationUtils";
 
 type ReviewRegistrationProps = {
-  campers: CreateCamperRequest[];
+  campers: RegistrantExperienceCamper[];
   camp: CampResponse;
+  onPageVisited: () => void;
 };
 
 const ReviewRegistration = ({
   campers,
   camp,
+  onPageVisited,
 }: ReviewRegistrationProps): React.ReactElement => {
+  useEffect(() => onPageVisited());
   return (
     <Box>
       <PaymentSummary

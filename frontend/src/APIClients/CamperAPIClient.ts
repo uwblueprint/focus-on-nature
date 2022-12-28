@@ -4,7 +4,7 @@ import {
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
   EditCamperInfoFields,
-  CreateCamperRequest,
+  RegistrantExperienceCamper,
   CheckoutUrl,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
@@ -112,7 +112,7 @@ const getCampersByChargeIdAndSessionId = async (
 };
 
 const registerCampers = async (
-  campers: CreateCamperRequest[],
+  campers: RegistrantExperienceCamper[],
 ): Promise<CheckoutUrl> => {
   const { data } = await baseAPIClient.post(`/campers/register`, campers, {
     withCredentials: false,

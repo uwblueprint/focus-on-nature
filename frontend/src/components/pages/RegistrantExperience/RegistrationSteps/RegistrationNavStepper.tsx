@@ -17,7 +17,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import StepperTab from "../../common/StepperNavigation/StepperTab";
+import StepperTab from "../../../common/StepperNavigation/StepperTab";
 import RegistrantExperienceSteps, {
   StepperPageDetails,
   REGISTRATION_NUM_STEPS,

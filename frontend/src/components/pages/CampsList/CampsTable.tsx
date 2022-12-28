@@ -15,6 +15,7 @@ import {
   Popover,
   PopoverBody,
   PopoverContent,
+  PopoverFooter,
   PopoverTrigger,
   Table,
   Tag,
@@ -217,16 +218,6 @@ const CampsTable = ({
                     />
                   </PopoverTrigger>
                   <PopoverContent width="inherit">
-                    <PopoverBody
-                      as={Button}
-                      bg="background.white.100"
-                      onClick={() => onDeleteClick(camp)}
-                      padding="1.5em 2em"
-                    >
-                      <Text textStyle="buttonRegular" color="text.critical.100">
-                        Delete camp
-                      </Text>
-                    </PopoverBody>
                     {getCampStatus(camp) === CampStatus.DRAFT && (
                       <PopoverBody
                         as={Button}
@@ -237,6 +228,16 @@ const CampsTable = ({
                         <Text textStyle="buttonRegular">Edit camp</Text>
                       </PopoverBody>
                     )}
+                    <PopoverFooter
+                      as={Button}
+                      bg="background.white.100"
+                      onClick={() => onDeleteClick(camp)}
+                      padding="1.5em 2em"
+                    >
+                      <Text textStyle="buttonRegular" color="text.critical.100">
+                        Delete camp
+                      </Text>
+                    </PopoverFooter>
                   </PopoverContent>
                 </Popover>
               </Td>

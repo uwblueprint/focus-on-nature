@@ -12,8 +12,8 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import React from "react";
-import { CartItem } from "../../../../types/RegistrationTypes";
-import { calculateTotalPrice } from "../../../../utils/RegistrationUtils";
+import { CartItem } from "../../../../../types/RegistrationTypes";
+import { calculateTotalPrice } from "../../../../../utils/RegistrationUtils";
 
 const tableHeadingTextStyles = {
   base: "xSmallBold",

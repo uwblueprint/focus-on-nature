@@ -32,7 +32,7 @@ export type Camper = {
   }[];
 };
 
-export type CreateCamperRequest = Omit<
+export type RegistrantExperienceCamper = Omit<
   Camper,
   "campSession" | "id" | "charges"
 >;

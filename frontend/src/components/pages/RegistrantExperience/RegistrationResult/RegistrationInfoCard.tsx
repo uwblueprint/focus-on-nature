@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Image, VStack, Text } from "@chakra-ui/react";
-import { CreateCamperRequest } from "../../../../types/CamperTypes";
+import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
 import defaultCampImage from "../../../../assets/default_camp_image.png";
 import { cardBoldStyles, regularTextStyles } from "./textStyles";
@@ -9,7 +9,7 @@ export type RegistrationInfoCardProps = {
   imageSrc: string;
   campName: string;
   sessions: string;
-  registeredCampers: CreateCamperRequest[];
+  registeredCampers: RegistrantExperienceCamper[];
 };
 
 const RegistrationInfoCard = ({
@@ -18,11 +18,13 @@ const RegistrationInfoCard = ({
   sessions,
   registeredCampers,
 }: RegistrationInfoCardProps): React.ReactElement => {
-  const formatCamperData = (camper: CreateCamperRequest): string =>
+  const formatCamperData = (camper: RegistrantExperienceCamper): string =>
     `${camper.firstName} (Age ${camper.age})`;
 
   // Produces formatted list of campers; eg. "Campers registered: John (Age 8) and Jane (Age 4)"
-  const formatRegisteredCampers = (campers: CreateCamperRequest[]): string => {
+  const formatRegisteredCampers = (
+    campers: RegistrantExperienceCamper[],
+  ): string => {
     let campersString = "Campers registered: ";
     if (campers.length === 1) {
       campersString += formatCamperData(campers[0]);

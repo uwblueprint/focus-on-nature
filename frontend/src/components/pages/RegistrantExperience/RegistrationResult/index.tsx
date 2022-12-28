@@ -12,7 +12,7 @@ import {
   subheadingStyles,
 } from "./textStyles";
 import { CampResponse } from "../../../../types/CampsTypes";
-import { CreateCamperRequest } from "../../../../types/CamperTypes";
+import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
 const NoSessionDataFound = (): React.ReactElement => {
   return (
@@ -56,7 +56,7 @@ const PaymentSummaryList = ({
 
 type RegistrationResultProps = {
   camp?: CampResponse;
-  campers?: CreateCamperRequest[];
+  campers?: RegistrantExperienceCamper[];
   items?: CartItem[];
 };
 

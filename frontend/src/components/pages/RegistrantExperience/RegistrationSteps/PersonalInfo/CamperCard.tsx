@@ -23,16 +23,16 @@ import {
 import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
-} from "../../../../types/PersonalInfoTypes";
-import RequiredAsterisk from "../../../common/RequiredAsterisk";
-import { CreateCamperRequest } from "../../../../types/CamperTypes";
+} from "../../../../../types/PersonalInfoTypes";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
-import DeleteModal from "../../../common/DeleteModal";
-import { CampResponse } from "../../../../types/CampsTypes";
+import DeleteModal from "../../../../common/DeleteModal";
+import { CampResponse } from "../../../../../types/CampsTypes";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
-  camper: CreateCamperRequest;
+  camper: RegistrantExperienceCamper;
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;

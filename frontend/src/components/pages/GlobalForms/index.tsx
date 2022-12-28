@@ -52,7 +52,7 @@ const GlobalFormsPage = (): React.ReactElement => {
   React.useEffect(() => {
     const getWaiver = async (): Promise<Waiver> => {
       const waiverResponse = await AdminAPIClient.getWaiver();
-      if (waiverResponse) setWaiverClauses(waiverResponse.clauses);
+      if (waiverResponse.clauses) setWaiverClauses(waiverResponse.clauses);
       return waiverResponse;
     };
 

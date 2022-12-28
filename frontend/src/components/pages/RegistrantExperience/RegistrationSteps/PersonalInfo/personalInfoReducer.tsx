@@ -5,16 +5,21 @@ import {
   PersonalInfoReducerDispatch,
   UpdateCamper,
   UpdateContact,
-} from "../../../../types/PersonalInfoTypes";
-import { CreateCamperRequest } from "../../../../types/CamperTypes";
-import { CampResponse } from "../../../../types/CampsTypes";
+} from "../../../../../types/PersonalInfoTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../types/CamperTypes";
+import { CampResponse } from "../../../../../types/CampsTypes";
 
 export const CamperReducer = (
-  setCampers: React.Dispatch<React.SetStateAction<CreateCamperRequest[]>>,
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >,
   action: PersonalInfoReducerDispatch,
 ): void => {
-  setCampers((campers: CreateCamperRequest[]) => {
-    const newCampers: CreateCamperRequest[] = JSON.parse(
+  setCampers((campers: RegistrantExperienceCamper[]) => {
+    const newCampers: RegistrantExperienceCamper[] = JSON.parse(
       JSON.stringify(campers),
     ); // Deep Copy
     switch (action.type) {
@@ -31,7 +36,7 @@ export const CamperReducer = (
         });
 
         // inject contact info
-        newCampers[0].contacts.forEach((contact) => {
+        newCampers[0].contacts.forEach((contact: EmergencyContact) => {
           newCampers[newCampers.length - 1].contacts.push(
             JSON.parse(JSON.stringify(contact)),
           ); // Deep copy the contact
@@ -81,7 +86,9 @@ export const CamperReducer = (
 };
 
 export const usePersonalInfoDispatcher = (
-  setCampers: React.Dispatch<React.SetStateAction<CreateCamperRequest[]>>,
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >,
 ): ((action: PersonalInfoReducerDispatch) => void) => {
   const dispatch = (action: PersonalInfoReducerDispatch) => {
     CamperReducer(setCampers, action);
@@ -118,7 +125,7 @@ export const checkRelationToCamper = (relation: string): boolean => {
 };
 
 export const checkPersonalInfoFilled = (
-  campers: CreateCamperRequest[],
+  campers: RegistrantExperienceCamper[],
   camp: CampResponse | undefined,
 ): boolean => {
   // Wait for the camp info as we need it to determine personalInfo age field validity

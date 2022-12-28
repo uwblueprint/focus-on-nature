@@ -16,9 +16,9 @@ import {
 import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
-} from "../../../../types/PersonalInfoTypes";
-import { EmergencyContact } from "../../../../types/CamperTypes";
-import RequiredAsterisk from "../../../common/RequiredAsterisk";
+} from "../../../../../types/PersonalInfoTypes";
+import { EmergencyContact } from "../../../../../types/CamperTypes";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import {
   checkEmail,
   checkFirstName,

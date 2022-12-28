@@ -1,16 +1,14 @@
-import { CreateCamperRequest } from "../types/CamperTypes";
+import { CAMP_ID_SESSION_STORAGE_KEY } from "../constants/RegistrationConstants";
+import { RegistrantExperienceCamper } from "../types/CamperTypes";
 import { CampResponse } from "../types/CampsTypes";
-import { CartItem } from "../types/RegistrationTypes";
+import { CartItem, CheckoutData } from "../types/RegistrationTypes";
 
 export const getCheckoutSessionStorageKey = (campId: string): string =>
   `checkout-${campId}`;
 
-export const getFailedSessionStorageKey = (campId: string): string =>
-  `failedCheckout-${campId}`;
-
 export const mapToCampItems = (
   camp: CampResponse,
-  campers: CreateCamperRequest[],
+  campers: RegistrantExperienceCamper[],
 ): CartItem[] => {
   const items: CartItem[] = [
     {
@@ -56,3 +54,14 @@ export const mapToCampItems = (
 
 export const calculateTotalPrice = (cartItems: CartItem[]): number =>
   cartItems.reduce((prevTotal, curItem) => prevTotal + curItem.totalPrice, 0);
+
+export const saveCheckoutSessionToSessionStorage = (
+  sessionCampId: string, // better named `campId`, but linter doesn't like
+  checkoutData: CheckoutData,
+) => {
+  sessionStorage.setItem(CAMP_ID_SESSION_STORAGE_KEY, sessionCampId);
+  sessionStorage.setItem(
+    getCheckoutSessionStorageKey(sessionCampId),
+    JSON.stringify(checkoutData),
+  );
+};
