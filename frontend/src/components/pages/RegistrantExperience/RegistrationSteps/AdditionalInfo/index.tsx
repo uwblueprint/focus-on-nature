@@ -63,9 +63,9 @@ const AdditionalInfo = ({
           <CamperQuestionsCard
             key={camperIndex}
             camper={camper}
+            camperIndex={camperIndex}
             formQuestions={formQuestions}
             dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
-            camperIndex={camperIndex}
             submitClicked={submitClicked}
           />
         ))}

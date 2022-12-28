@@ -168,8 +168,6 @@ const RegistrationSteps = ({
     }
   };
 
-  console.log("campers", campers);
-
   return (
     <Flex
       direction="column"

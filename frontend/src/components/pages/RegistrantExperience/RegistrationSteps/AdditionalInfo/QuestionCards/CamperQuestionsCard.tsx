@@ -10,17 +10,17 @@ import QuestionsCardWrapper from "./QuestionsCardWrapper";
 
 type CamperQuestionsCardProps = {
   camper: RegistrantExperienceCamper;
+  camperIndex: number;
   formQuestions: FormQuestion[];
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
-  camperIndex: number;
   submitClicked: boolean;
 };
 
 const CamperQuestionsCard = ({
   camper,
+  camperIndex,
   formQuestions,
   dispatchAdditionalInfoAction,
-  camperIndex,
   submitClicked,
 }: CamperQuestionsCardProps): React.ReactElement => {
   return (

@@ -18,12 +18,10 @@ export const CamperReducer = (
     switch (action.type) {
       case AdditionalInfoActions.UPDATE_RESPONSE: {
         const { camperIndex, question, data } = action as UpdateResponse;
-
         const newResponses =
           newCampers[camperIndex].formResponses ?? new Map<string, string>();
         newResponses.set(question, data as string);
         newCampers[camperIndex].formResponses = newResponses;
-
         break;
       }
       default:
