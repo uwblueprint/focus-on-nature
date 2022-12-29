@@ -13,6 +13,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import IconImage from "../../../../assets/icon_image.svg";
+import { MAX_CAMP_DESC_LENGTH } from "../../../../constants/CampManagementConstants";
 
 type CampCreationDetailsProps = {
   campName: string;
@@ -174,7 +175,7 @@ const CampCreationDetails = ({
       {errorText(campName, "You must add a name.")}
 
       <Text textStyle="buttonSemiBold" marginTop="24px">
-        Short Description (max 200 characters){" "}
+        Short Description (max {MAX_CAMP_DESC_LENGTH} characters){" "}
         <Text as="span" textStyle="buttonSemiBold" color="red">
           *
         </Text>
@@ -182,7 +183,7 @@ const CampCreationDetails = ({
       <Textarea
         width="575px"
         marginTop="8px"
-        maxLength={200}
+        maxLength={MAX_CAMP_DESC_LENGTH}
         defaultValue={campDescription}
         borderColor={!campDescription && showErrors ? "red" : "gray.200"}
         borderWidth={!campDescription && showErrors ? "2px" : "1px"}
@@ -207,6 +208,7 @@ const CampCreationDetails = ({
           borderColor={!dailyCampFee && showErrors ? "red" : "gray.200"}
           borderWidth={!dailyCampFee && showErrors ? "2px" : "1px"}
           onChange={handleDailyCampFee}
+          onWheel={(event) => event.currentTarget.blur()}
         />
       </InputGroup>
       {errorText(dailyCampFee, "You must add a fee.")}
@@ -283,6 +285,7 @@ const CampCreationDetails = ({
                 borderColor={!ageLower && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageLower && showErrors ? "2px" : "1px"}
                 onChange={handleAgeLower}
+                onWheel={(event) => event.currentTarget.blur()}
               />
               {errorText(ageLower, "You must enter an age.")}
             </Box>
@@ -297,6 +300,7 @@ const CampCreationDetails = ({
                 borderColor={!ageUpper && showErrors ? "red" : "gray.200"}
                 borderWidth={!ageUpper && showErrors ? "2px" : "1px"}
                 onChange={handleAgeUpper}
+                onWheel={(event) => event.currentTarget.blur()}
               />
               {errorText(ageUpper, "You must enter an age.")}
             </Box>
@@ -320,13 +324,14 @@ const CampCreationDetails = ({
               borderColor={!campCapacity && showErrors ? "red" : "gray.200"}
               borderWidth={!campCapacity && showErrors ? "2px" : "1px"}
               onChange={handleCampCapacity}
+              onWheel={(event) => event.currentTarget.blur()}
             />
             {errorText(campCapacity, "You must enter a number.")}
           </Box>
         </Box>
       </HStack>
 
-      <Checkbox marginTop="8px" onChange={toggleEDLP}>
+      <Checkbox marginTop="8px" onChange={toggleEDLP} isChecked={offersEDLP}>
         <Text textStyle="buttonSemiBold">
           Camp offers early drop-off and late pick-up
         </Text>

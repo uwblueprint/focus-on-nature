@@ -1,7 +1,7 @@
 import React, { useState, Dispatch, SetStateAction } from "react";
-import { AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Text, Box, Table, Thead, Tr, Th, Td, Tbody, Select, Show, Hide} from '@chakra-ui/react'
-import { formatAMPM, getFormattedDateString, getFormattedSingleDateString } from "../../../../utils/CampUtils";
-import { CampResponse, CampSession } from '../../../../types/CampsTypes';
+import { AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Text, Box, Table, Thead, Tr, Th, Td, Tbody, Select, Show, Hide} from '@chakra-ui/react';
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
+import { getFormattedDateString, formatAMPM, getFormattedSingleDateString } from "../../../../../utils/CampUtils";
 
 type EDLPSessionRegistrationProps = {
     sessionNumber: number

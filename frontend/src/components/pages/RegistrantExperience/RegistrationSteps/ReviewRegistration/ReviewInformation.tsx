@@ -1,58 +1,19 @@
-import React, { useState, Dispatch, SetStateAction } from "react";
-import { Box, Text, Stack, RadioGroup, Radio, Accordion } from "@chakra-ui/react";
-import { CampResponse, CampSession } from "../../../../types/CampsTypes";
-import EdlpSessionRegistration, {EdlpChoice} from "./edlpSessionRegistration";
+import { Box, Checkbox, Text } from "@chakra-ui/react";
+import React from "react";
 
-
-type AdditionalInfoProps = {
-  camp: CampResponse | undefined
-  campers: string[]
-  edlpChoices: EdlpChoice[][];
-  setEdlpChoices:  Dispatch<SetStateAction<EdlpChoice[][]>>;
-  setTotalEdlpFees: Dispatch<SetStateAction<number>>;
+type ReviewInformationProps = {
+  isChecked: boolean;
+  toggleChecked: () => void;
 };
 
-const dummyEdlpChoices = {
-  "Session 1":{
-    "Thu Jun 30 2022 00:00:00 GMT+0000 (Coordinated Universal Time)":["7:00 AM","7:00 PM"],
-    "Fri Jul 01 2022 00:00:00 GMT+0000 (Coordinated Universal Time)":["7:00 AM","7:00 PM"],
-  },
-  "Session 2":{
-    "Thu Jun 30 2022 00:00:00 GMT+0000 (Coordinated Universal Time)":["7:00 AM","7:00 PM"],
-    "Fri Jul 01 2022 00:00:00 GMT+0000 (Coordinated Universal Time)":["7:00 AM","7:00 PM"],
-    "Fri Jul 02 2022 00:00:00 GMT+0000 (Coordinated Universal Time)":["7:00 AM","-"],
-  }
-}
-
-const dummyEdlpFees = 100
-
-
-const AdditionalInfo = ({
-  camp,
-  campers,
-  edlpChoices,
-  setEdlpChoices,
-  setTotalEdlpFees,
-}: AdditionalInfoProps): React.ReactElement => {
-
-  const [needsEDLP,setNeedsEDLP] = useState<boolean>(false);
-  const DUMMY_EDLP_COST = 5
-  const [sessionEdlpFees, setSessionEdlpFees] = useState<number[]>(Array((camp?.campSessions)?.length).fill(0))
-
+const ReviewInformation = ({
+  isChecked,
+  toggleChecked,
+}: ReviewInformationProps): React.ReactElement => {
   return (
     <Box>
-      <Text textStyle={{ base: 'xSmallBold', md: "displayXLarge" }}>{camp?.name} Registration</Text>
-      <Text textStyle={{ base: 'xSmallRegular', md: "displayLarge" }} marginTop="32px" color="#10741A">Camper-specific Additional Questions</Text>
-      
-      {campers.map((camper: string, key: number) => {
-          return (
-            <Box key={key}>
-              {camper}
-            </Box>
-          );
-        })}
-      
-      <Box bg="border.secondary.100" height="1px" margin="32px 0"/>
+      <Text textStyle="displayXLarge">Camp Registration</Text>
+      <Text>Review Registration</Text>
 
       <Text textStyle={{ base: 'xSmallBold', md: "displayLarge" }} marginTop={{ base: "12px", md: "32px" }} color="#10741A">Camp-specific Additional Questions</Text>
 
@@ -117,4 +78,4 @@ const AdditionalInfo = ({
   );
 };
 
-export default AdditionalInfo;
+export default ReviewInformation;

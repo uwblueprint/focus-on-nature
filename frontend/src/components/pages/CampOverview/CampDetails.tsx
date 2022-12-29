@@ -113,7 +113,9 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
         </HStack>
         <CampRegistrationLink
           linkUrl={
-            camp.active ? `https://camps.focusonnature.ca/camp/${camp.id}` : ``
+            camp.active
+              ? `https://camps.focusonnature.ca/register/camp/${camp.id}`
+              : ``
           }
           disabled={!camp.active}
         />

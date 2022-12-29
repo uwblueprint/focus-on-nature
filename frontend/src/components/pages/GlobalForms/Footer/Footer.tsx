@@ -8,13 +8,15 @@ import {
 } from "@chakra-ui/react";
 import { WaiverClause } from "../../../../types/AdminTypes";
 import WaiverAddSectionModal from "./WaiverAddSectionModal";
-import { CreateFormQuestion } from "../../../../types/CampsTypes";
+import { CreateFormQuestionRequest } from "../../../../types/CampsTypes";
 import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal";
 
 type FooterProps = {
   isWaiverFooter: boolean;
   onAddWaiverSectionClick: (newClause: WaiverClause) => void;
-  onAddFormQuestionToTemplateClick: (newQuestion: CreateFormQuestion) => void;
+  onAddFormQuestionToTemplateClick: (
+    newQuestion: CreateFormQuestionRequest,
+  ) => void;
 };
 
 const Footer = ({

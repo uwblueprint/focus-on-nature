@@ -1,0 +1,46 @@
+name: Deploy application to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: fon-prod
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy frontend to Firebase
+        uses: ./.github/actions/firebase-hosting
+        with:
+          channel-id: live
+          backend-url: "${{ secrets.PRODUCTION_BACKEND_URL }}"
+          oauth-client-id: "${{ secrets.PRODUCTION_OAUTH_CLIENT_ID }}"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          firebase-service-account: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT_FOCUS_ON_NATURE_PROD }}"
+          firebase-project-id: "${{ secrets.PRODUCTION_FIREBASE_PROJECT_ID }}"
+          target: "prod-alias"
+      - name: Deploy backend to Heroku
+        uses: ./.github/actions/heroku-deploy
+        with:
+          heroku-api-key: "${{ secrets.HEROKU_API_KEY }}"
+          heroku-email: "${{ secrets.HEROKU_EMAIL }}"
+          heroku-app-name: "${{ secrets.PRODUCTION_HEROKU_APP_NAME }}"
+          mg-database-url: "${{ secrets.PRODUCTION_MG_DATABASE_URL }}"
+          firebase-web-api-key: "${{ secrets.PRODUCTION_FIREBASE_WEB_API_KEY }}"
+          firebase-request-uri: "${{ secrets.PRODUCTION_FIREBASE_REQUEST_URI }}"
+          firebase-storage-default-bucket: "${{ secrets.PRODUCTION_FIREBASE_STORAGE_DEFAULT_BUCKET }}"
+          firebase-project-id: "${{ secrets.PRODUCTION_FIREBASE_PROJECT_ID }}"
+          firebase-svc-account-private-key: "${{ secrets.PRODUCTION_FIREBASE_PRIVATE_KEY }}"
+          firebase-svc-account-client-email: "${{ secrets.PRODUCTION_FIREBASE_CLIENT_EMAIL }}"
+          mailer-user: "${{ secrets.MAILER_USER }}"
+          mailer-client-id: "${{ secrets.PRODUCTION_MAILER_CLIENT_ID }}"
+          mailer-client-secret: "${{ secrets.PRODUCTION_MAILER_CLIENT_SECRET }}"
+          mailer-refresh-token: "${{ secrets.PRODUCTION_MAILER_REFRESH_TOKEN }}"
+          stripe-publishable-key: "${{ secrets.STRIPE_PUBLISHABLE_TEST_KEY }}"
+          stripe-secret-key: "${{ secrets.STRIPE_SECRET_TEST_KEY }}"
+          deploy-branch: "main"

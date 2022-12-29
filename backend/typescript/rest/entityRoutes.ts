@@ -28,6 +28,7 @@ const entityService: IEntityService = new EntityService(fileStorageService);
 /* Create entity */
 entityRouter.post(
   "/",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   entityRequestDtoValidator,
   async (req, res) => {
@@ -54,42 +55,51 @@ entityRouter.post(
 
 // ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get all entities */
-entityRouter.get("/", async (req, res) => {
-  const contentType = req.headers["content-type"];
-  try {
-    const entities = await entityService.getEntities();
-    await sendResponseByMimeType<EntityResponseDTO>(
-      res,
-      200,
-      contentType,
-      entities,
-    );
-  } catch (e: unknown) {
-    await sendResponseByMimeType(res, 500, contentType, [
-      {
-        error: getErrorMessage(e),
-      },
-    ]);
-  }
-});
+entityRouter.get(
+  "/",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
+    const contentType = req.headers["content-type"];
+    try {
+      const entities = await entityService.getEntities();
+      await sendResponseByMimeType<EntityResponseDTO>(
+        res,
+        200,
+        contentType,
+        entities,
+      );
+    } catch (e: unknown) {
+      await sendResponseByMimeType(res, 500, contentType, [
+        {
+          error: getErrorMessage(e),
+        },
+      ]);
+    }
+  },
+);
 
 // ROLES: Admin + CC (TODO: @dhruv do we need this for registration flow images)
 /* Get entity by id */
-entityRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+entityRouter.get(
+  "/:id",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const entity = await entityService.getEntity(id);
-    res.status(200).json(entity);
-  } catch (e: unknown) {
-    res.status(500).send(getErrorMessage(e));
-  }
-});
+    try {
+      const entity = await entityService.getEntity(id);
+      res.status(200).json(entity);
+    } catch (e: unknown) {
+      res.status(500).send(getErrorMessage(e));
+    }
+  },
+);
 
 // ROLES: Admin
 /* Update entity by id */
 entityRouter.put(
   "/:id",
+  isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
   entityRequestDtoValidator,
   async (req, res) => {
@@ -117,27 +127,35 @@ entityRouter.put(
 
 // ROLES: Admin
 /* Delete entity by id */
-entityRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+entityRouter.delete(
+  "/:id",
+  isAuthorizedByRole(new Set(["Admin"])),
+  async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const deletedId = await entityService.deleteEntity(id);
-    res.status(200).json({ id: deletedId });
-  } catch (e: unknown) {
-    res.status(500).send(getErrorMessage(e));
-  }
-});
+    try {
+      const deletedId = await entityService.deleteEntity(id);
+      res.status(200).json({ id: deletedId });
+    } catch (e: unknown) {
+      res.status(500).send(getErrorMessage(e));
+    }
+  },
+);
 
 // ROLES: Admin + CC
 /* Get file associated with entity by fileUUID */
-entityRouter.get("/files/:fileUUID", async (req, res) => {
-  const { fileUUID } = req.params;
-  try {
-    const fileURL = await fileStorageService.getFile(fileUUID);
-    res.status(200).json({ fileURL });
-  } catch (e: unknown) {
-    res.status(500).send(getErrorMessage(e));
-  }
-});
+entityRouter.get(
+  "/files/:fileUUID",
+  isAuthorizedByRole(new Set(["Admin", "CampCoordinator"])),
+  async (req, res) => {
+    const { fileUUID } = req.params;
+    try {
+      const fileURL = await fileStorageService.getFile(fileUUID);
+      res.status(200).json({ fileURL });
+    } catch (e: unknown) {
+      res.status(500).send(getErrorMessage(e));
+    }
+  },
+);
 
 export default entityRouter;

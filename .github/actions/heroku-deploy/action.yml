@@ -1,0 +1,105 @@
+name: Deploy backend to Heroku
+description: "Pushes all code in backend/typescript to main branch in Heroku deployment"
+
+inputs:
+  heroku-api-key:
+    description: "Heroku API key, applies for all projects under single account"
+    required: true
+  heroku-email:
+    description: "Heroku account email, applies for all projects under single account"
+    required: true
+  heroku-app-name:
+    description: "Heroku project name"
+    required: true
+  mg-database-url:
+    description: "Connection string for MongoDB"
+    required: true
+  firebase-web-api-key:
+    description: "Web client API key, created in cloud dev console"
+    required: true
+  firebase-request-uri:
+    description: "URI to which the IDP redirects the user back"
+    required: true
+  firebase-storage-default-bucket:
+    description: "Project-specific storage bucket"
+    required: true
+  firebase-project-id:
+    description: "Firebase project ID, specific to Firebase project so will differ between staging and prod. See .firebaserc for aliases."
+    required: true
+  firebase-svc-account-private-key:
+    description: "Service account private key, from credentials JSON"
+    required: true
+  firebase-svc-account-client-email:
+    description: "Service account email, from credentials JSON"
+    required: true
+  mailer-user:
+    description: "Sender for mail service, should be FON email"
+    required: true
+  mailer-client-id:
+    description: "Generated client ID for mail service, accessible in credentails in cloud dev console"
+    required: true
+  mailer-client-secret:
+    description: "Generated client secret for mail service, accessible in credentails in cloud dev console"
+    required: true
+  mailer-refresh-token:
+    description: "Generated refresh token for mail service"
+    required: true
+  stripe-publishable-key:
+    description: "Stripe publishable key for checkout flow"
+    required: true
+  stripe-secret-key:
+    description: "Stripe secret key for checkout flow"
+    required: true
+  deploy-branch:
+    description: "Source branch for deployment. Expected to be dev or main"
+    required: true
+  node-env: 
+    description: "Optional NODE_ENV variable to be set in deployment"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Heroku login credentials
+      run: |
+        cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+        EOF
+      env:
+        HEROKU_API_KEY: "${{ inputs.heroku-api-key }}"
+        HEROKU_EMAIL: "${{ inputs.heroku-email }}"
+      shell: bash
+    - name: Add Heroku git remote
+      run: heroku git:remote --app $HEROKU_APP_NAME
+      env:
+        HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
+      shell: bash
+    - name: Set Heroku config vars
+      run: |
+        heroku config:set MG_DATABASE_URL="${{ inputs.mg-database-url }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_WEB_API_KEY="${{ inputs.firebase-web-api-key }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_REQUEST_URI="${{ inputs.firebase-request-uri }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_STORAGE_DEFAULT_BUCKET="${{ inputs.firebase-storage-default-bucket }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_PROJECT_ID="${{ inputs.firebase-project-id }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_SVC_ACCOUNT_PRIVATE_KEY="${{ inputs.firebase-svc-account-private-key }}" -a $HEROKU_APP_NAME && \
+        heroku config:set FIREBASE_SVC_ACCOUNT_CLIENT_EMAIL="${{ inputs.firebase-svc-account-client-email }}" -a $HEROKU_APP_NAME && \
+        heroku config:set MAILER_USER="${{ inputs.mailer-user }}" -a $HEROKU_APP_NAME && \
+        heroku config:set MAILER_CLIENT_ID="${{ inputs.mailer-client-id }}" -a $HEROKU_APP_NAME && \
+        heroku config:set MAILER_CLIENT_SECRET="${{ inputs.mailer-client-secret }}" -a $HEROKU_APP_NAME && \
+        heroku config:set MAILER_REFRESH_TOKEN="${{ inputs.mailer-refresh-token }}" -a $HEROKU_APP_NAME && \
+        heroku config:set STRIPE_PUBLISHABLE_TEST_KEY="${{ inputs.stripe-publishable-key }}" -a $HEROKU_APP_NAME && \
+        heroku config:set STRIPE_SECRET_TEST_KEY="${{ inputs.stripe-secret-key }}" -a $HEROKU_APP_NAME && \
+        heroku config:set PREVIEW_DEPLOY=$([ "${{inputs.deploy-branch}}" = "main" ] && echo "false" || echo "true") -a $HEROKU_APP_NAME
+        heroku config:set NODE_ENV="${{ inputs.node-env }}"
+      env:
+        HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
+      shell: bash
+    - name: Push to Heroku
+      run: git push heroku `git subtree split --prefix backend/typescript $DEPLOY_BRANCH`:main --force
+      env:
+        DEPLOY_BRANCH: "${{ inputs.deploy-branch }}"
+      shell: bash

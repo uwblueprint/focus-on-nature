@@ -7,9 +7,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FormQuestion, CreateFormQuestion } from "../../../../types/CampsTypes";
+import {
+  FormQuestion,
+  CreateFormQuestionRequest,
+} from "../../../../types/CampsTypes";
 import AddQuestionModal from "../../../common/formQuestions/AddQuestionModal";
 import {
+  EDLP_CAMPER_INFO_QUESTION,
   fixedCamperInfoQuestions,
   fixedEmergencyContactQuestions,
 } from "../../../../constants/FixedQuestions";
@@ -17,14 +21,17 @@ import QuestionsAccordionItem from "../../../common/formQuestions/QuestionsAccor
 
 type RegistrationFormPageProps = {
   formTemplateQuestions: Array<FormQuestion>;
-  customQuestions: Array<CreateFormQuestion>;
-  onAddCustomQuestion: (newQuestion: CreateFormQuestion) => void;
-  onDeleteCustomQuestion: (questionToBeDeleted: CreateFormQuestion) => void;
+  customQuestions: Array<CreateFormQuestionRequest>;
+  onAddCustomQuestion: (newQuestion: CreateFormQuestionRequest) => void;
+  onDeleteCustomQuestion: (
+    questionToBeDeleted: CreateFormQuestionRequest,
+  ) => void;
   onEditCustomQuestion: (
-    oldQuestion: CreateFormQuestion,
-    newQuestion: CreateFormQuestion,
+    oldQuestion: CreateFormQuestionRequest,
+    newQuestion: CreateFormQuestionRequest,
   ) => void;
   setVisitedRegistrationPage: React.Dispatch<React.SetStateAction<boolean>>;
+  campOffersEDLP: boolean;
 };
 
 const RegistrationFormPage = ({
@@ -34,7 +41,8 @@ const RegistrationFormPage = ({
   onDeleteCustomQuestion,
   onEditCustomQuestion,
   setVisitedRegistrationPage,
-}: RegistrationFormPageProps): JSX.Element => {
+  campOffersEDLP,
+}: RegistrationFormPageProps): React.ReactElement => {
   useEffect(() => {
     setVisitedRegistrationPage(true);
   });
@@ -62,6 +70,10 @@ const RegistrationFormPage = ({
     onClose: onAddQuestionClose,
   } = useDisclosure();
 
+  const filteredFixedCamperInfoQuestions = campOffersEDLP
+    ? fixedCamperInfoQuestions.concat([EDLP_CAMPER_INFO_QUESTION])
+    : fixedCamperInfoQuestions;
+
   return (
     <Box mx="8vw" my="5vh">
       <AddQuestionModal
@@ -84,7 +96,7 @@ const RegistrationFormPage = ({
         <QuestionsAccordionItem
           accordionTitle="Camper Information"
           fixedQuestions={[
-            ...fixedCamperInfoQuestions,
+            ...filteredFixedCamperInfoQuestions,
             ...formTemplateCamperInfoQuestions,
           ]}
           dynamicQuestions={customCamperInfoQuestions as FormQuestion[]}

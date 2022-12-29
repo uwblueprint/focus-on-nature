@@ -1,181 +1,88 @@
-import React, { useEffect, useState, useReducer, Reducer } from "react";
-import Params, { useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Text, Spinner, Flex } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
 
-import { Box } from "@chakra-ui/react";
-import PersonalInfo from "./PersonalInfo";
-import AdditionalInfo from "./AdditionalInfo";
-import {EdlpChoice} from "./AdditionalInfo/edlpSessionRegistration";
-import Waiver from "./Waiver";
-import ReviewRegistration from "./ReviewRegistration";
-import RegistrationNavStepper from "./RegistrationNavStepper";
-import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
-import RegistrationFooter from "./RegistrationFooter";
-import { CampResponse } from "../../../types/CampsTypes";
-import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import {
-  WaiverActions,
-  WaiverInterface,
-  WaiverReducerDispatch,
-} from "../../../types/waiverTypes";
-import waiverReducer from "./Waiver/WaiverReducer";
+import { CampResponse } from "../../../types/CampsTypes";
+import RegistrationSteps from "./RegistrationSteps";
+import SessionSelection from "./SessionSelection";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import { Waiver } from "../../../types/AdminTypes";
+
+type InitialLoadingState = {
+  waiver: boolean;
+  camp: boolean;
+};
 
 const RegistrantExperiencePage = (): React.ReactElement => {
-  const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
-    RegistrantExperienceSteps.PersonalInfoPage,
+  const { id: campId } = useParams<{ id: string }>();
+
+  const [campResponse, setCampResponse] = useState<CampResponse | undefined>(
+    undefined,
   );
-  const [waiverInterface, waiverDispatch] = useReducer<
-    Reducer<WaiverInterface, WaiverReducerDispatch>
-  >(waiverReducer, {
-    // TODO: Add support to Waiver and WaiverReducer to get the actual name of the camp being accesses.
-    campName: "Guelph Summer Camp 2022",
-    waiver: undefined,
-    optionalClauses: [],
-    requiredClauses: [],
-    agreedRequiredClauses: false,
-    loadingWaiver: true,
-    wroteDate: false,
-    wroteName: false,
-    waiverCompleted: false,
+  const [waiverResponse, setWaiverResponse] = useState<Waiver | undefined>(
+    undefined,
+  );
+
+  const [isLoading, setIsLoading] = useState<InitialLoadingState>({
+    waiver: true,
+    camp: true,
   });
 
-  useEffect(() => {
-    AdminAPIClient.getWaiver().then((waiver) => {
-      waiverDispatch({
-        type: WaiverActions.LOADED_WAIVER,
-        waiver,
-      });
-    });
-  }, []);
-
-  const [camp, setCamp] = React.useState<CampResponse>();
-  // console.log(camp)
-
-  const { id } = useParams<{ id: string }>()
+  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
+    new Set(),
+  );
+  const [sessionSelectionIsComplete, setSessionSelectionIsComplete] = useState(
+    false,
+  );
 
   useEffect(() => {
-    const getCamps = async () => {
-      const res = await CampsAPIClient.getCampById(id);
-      if (res) {
-        setCamp(res);
-      }
-    };
+    CampsAPIClient.getCampById(campId)
+      .then((camp) => (camp.id ? setCampResponse(camp) : null))
+      .finally(() =>
+        setIsLoading((i) => {
+          return { ...i, camp: false };
+        }),
+      );
 
-    getCamps();
-  }, []);
+    AdminAPIClient.getWaiver()
+      .then((waiver) => (waiver.clauses ? setWaiverResponse(waiver) : null))
+      .finally(() =>
+        setIsLoading((i) => {
+          return {
+            ...i,
+            waiver: false,
+          };
+        }),
+      );
+  }, [campId]);
 
-  const [samplePersonalInfo, setSamplePersonalInfo] = useState(false);
-  const DUMMY_CAMPERS = ["The Wok","Zhong Xina"]
-
-  const createFiller = (i:number, j:number) => {
-    const filler: EdlpChoice = {
-      date: camp?.campSessions[i].dates[j] ?? String(i*100+j),
-      edlp: ['-','-']
-    }
-    return filler
+  if (campResponse && waiverResponse) {
+    return sessionSelectionIsComplete ? (
+      <RegistrationSteps
+        camp={campResponse}
+        selectedSessions={campResponse.campSessions.filter((session) =>
+          selectedSessions.has(session.id),
+        )}
+        waiver={waiverResponse}
+        onClickBack={() => setSessionSelectionIsComplete(false)}
+      />
+    ) : (
+      <SessionSelection
+        camp={campResponse}
+        selectedSessions={selectedSessions}
+        setSelectedSessions={setSelectedSessions}
+        onFormSubmission={() => setSessionSelectionIsComplete(true)}
+      />
+    );
   }
-  
-  const matrix: EdlpChoice[][] = new Array((camp?.campSessions)?.length).fill(0).map((_,i) => new Array(camp?.campSessions[i].dates.length).fill(0).map((__, j) => createFiller(i,j)));
-  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(matrix);
-  
-  useEffect(() => {
-    setEdlpChoices(() => [...matrix])  
-  }, [camp]) 
-  
-  const [totalEdlpFees, setTotalEdlpFees] = useState(0);
 
-  const [sampleRegisterField, setSampleRegisterField] = useState(false);
-
-  const isPersonalInfoFilled = samplePersonalInfo;
-  const isAdditionalInfoFilled = true;
-  const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = sampleRegisterField;
-
-  const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
-    switch (step) {
-      case RegistrantExperienceSteps.PersonalInfoPage:
-        return isPersonalInfoFilled;
-      case RegistrantExperienceSteps.AdditionalInfoPage:
-        return isAdditionalInfoFilled;
-      case RegistrantExperienceSteps.WaiverPage:
-        return isWaiverFilled;
-      case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return isReviewRegistrationFilled;
-      default:
-        return false;
-    }
-  };
-
-  const getCurrentRegistrantStepComponent = (
-    step: RegistrantExperienceSteps,
-  ) => {
-    switch (step) {
-      case RegistrantExperienceSteps.PersonalInfoPage:
-        return (
-          <PersonalInfo
-            isChecked={samplePersonalInfo}
-            toggleChecked={() => setSamplePersonalInfo(!samplePersonalInfo)}
-          />
-        );
-      case RegistrantExperienceSteps.AdditionalInfoPage:
-        return (
-          <AdditionalInfo
-            camp={camp}
-            campers={DUMMY_CAMPERS}
-            edlpChoices={edlpChoices}
-            setEdlpChoices={setEdlpChoices}
-            setTotalEdlpFees={setTotalEdlpFees}
-          />
-        );
-      case RegistrantExperienceSteps.WaiverPage:
-        return (
-          <Waiver
-            waiverInterface={waiverInterface}
-            waiverDispatch={waiverDispatch}
-          />
-        );
-      case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return (
-          <ReviewRegistration
-            isChecked={sampleRegisterField}
-            toggleChecked={() => setSampleRegisterField(!sampleRegisterField)}
-          />
-        );
-      default:
-        throw new Error("unexpected page");
-    }
-  };
-
-  const handleStepNavigation = (stepsToMove: number) => {
-    const desiredStep = currentStep + stepsToMove;
-    if (RegistrantExperienceSteps[desiredStep]) {
-      setCurrentStep(currentStep + stepsToMove);
-    } else if (desiredStep < 0) {
-      alert("PLACEHOLDER - go to initial registration");
-    } else {
-      alert("PLACEHOLDER - go to payment");
-    }
-  };
-
-  return (
-    <Box>
-      <RegistrationNavStepper
-        currentStep={currentStep}
-        isPersonalInfoFilled={isPersonalInfoFilled}
-        isAdditionalInfoFilled={isAdditionalInfoFilled}
-        isWaiverFilled={isWaiverFilled}
-        isReviewRegistrationFilled={isReviewRegistrationFilled}
-        setCurrentStep={setCurrentStep}
-      />
-      <Box my="50px" mx="10vw">
-        {getCurrentRegistrantStepComponent(currentStep)}
-      </Box>
-      <RegistrationFooter
-        currentStep={currentStep}
-        isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
-        handleStepNavigation={handleStepNavigation}
-      />
-    </Box>
+  return isLoading.camp || isLoading.waiver ? (
+    <Flex h="100vh" w="100vw" align="center" justify="center">
+      <Spinner />
+    </Flex>
+  ) : (
+    <Text mx="10vw">Error: Camp not found. Please go back and try again.</Text>
   );
 };
 

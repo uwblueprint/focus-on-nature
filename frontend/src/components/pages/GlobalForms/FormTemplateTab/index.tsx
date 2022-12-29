@@ -1,7 +1,10 @@
 import React from "react";
 
 import { Accordion } from "@chakra-ui/react";
-import { CreateFormQuestion, FormQuestion } from "../../../../types/CampsTypes";
+import {
+  CreateFormQuestionRequest,
+  FormQuestion,
+} from "../../../../types/CampsTypes";
 import {
   fixedCamperInfoQuestions,
   fixedEmergencyContactQuestions,
@@ -13,7 +16,7 @@ type RegistrationFormTemplateTabProps = {
   onRemoveFormQuestion: (questionToRemove: FormQuestion) => void;
   onEditFormQuestion: (
     oldQuestion: FormQuestion,
-    newQuestion: CreateFormQuestion,
+    newQuestion: CreateFormQuestionRequest,
   ) => void;
 };
 
