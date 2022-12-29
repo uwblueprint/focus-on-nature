@@ -17,6 +17,7 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
+import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
@@ -59,7 +60,6 @@ const RegistrationSteps = ({
     waiverCompleted: false,
   });
 
-  const [sampleAdditionalInfo, setSampleAdditionalInfo] = useState(false);
   const [sampleRegisterField, setSampleRegisterField] = useState(false);
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
@@ -88,8 +88,28 @@ const RegistrationSteps = ({
       optionalClauses: [],
     },
   ]);
+  const campSpecificFormQuestions = camp.formQuestions.filter(
+    (question) => question.category === "CampSpecific",
+  );
+
+  const hasEarlyDropOffLatePickup =
+    camp.earlyDropoff !== undefined &&
+    camp.earlyDropoff !== "" &&
+    camp.latePickup !== undefined &&
+    camp.latePickup !== "";
+
+  const [
+    requireEarlyDropOffLatePickup,
+    setRequireEarlyDropOffLatePickup,
+  ] = useState<boolean | null>(null);
+
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
-  const isAdditionalInfoFilled = sampleAdditionalInfo;
+  const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
+    campers,
+    campSpecificFormQuestions,
+    hasEarlyDropOffLatePickup,
+    requireEarlyDropOffLatePickup,
+  );
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = sampleRegisterField;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
@@ -126,8 +146,14 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            isChecked={sampleAdditionalInfo}
-            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            nextBtnRef={nextBtnRef}
+            campers={campers}
+            setCampers={setCampers}
+            campName={camp.name}
+            campSpecificFormQuestions={campSpecificFormQuestions}
+            hasEDLP={hasEarlyDropOffLatePickup}
+            requireEDLP={requireEarlyDropOffLatePickup}
+            setRequireEDLP={setRequireEarlyDropOffLatePickup}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
