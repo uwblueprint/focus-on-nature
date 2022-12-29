@@ -28,10 +28,10 @@ const cookieOptions: CookieOptions = {
 /* Returns access token and user info in response body and sets refreshToken as an httpOnly cookie */
 authRouter.post("/login", loginRequestValidator, async (req, res) => {
   try {
-    const authDTO = req.body.idToken
-      ? // OAuth
-        await authService.generateTokenOAuth(req.body.idToken)
-      : await authService.generateToken(req.body.email, req.body.password);
+    if (!req.body.idToken) {
+      throw new Error("idToken should exist on request body");
+    }
+    const authDTO = await authService.generateTokenOAuth(req.body.idToken);
 
     const { refreshToken, ...rest } = authDTO;
 
