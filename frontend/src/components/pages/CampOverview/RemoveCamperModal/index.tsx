@@ -18,6 +18,7 @@ type RemoveCamperModalProps = {
   removeModalOnClose: () => void;
   camper: Camper;
   handleRefetch: () => void;
+  deleteActionCleanUp: () => void;
 };
 
 const RemoveCamperModal = ({
@@ -25,6 +26,7 @@ const RemoveCamperModal = ({
   removeModalOnClose,
   camper,
   handleRefetch,
+  deleteActionCleanUp,
 }: RemoveCamperModalProps): JSX.Element => {
   const toast = useToast();
   const [modalStatus, setModalStatus] = useState<ModalStatus>(
@@ -51,6 +53,7 @@ const RemoveCamperModal = ({
         selectedCamper.campSession,
       );
       if (getResponse) {
+        console.log("get response", getResponse, "camper", camper);
         setRetrievedCampers(
           getResponse.filter(
             (currentCamper: Camper) => currentCamper.id !== camper.id,
@@ -155,6 +158,7 @@ const RemoveCamperModal = ({
           allCampersToBeDeleted={allCampersToBeDeleted}
           deselectAndClose={deselectAndClose}
           submitDeletion={submitDeletion}
+          deleteActionCleanUp={deleteActionCleanUp}
         />
       )}
     </Modal>

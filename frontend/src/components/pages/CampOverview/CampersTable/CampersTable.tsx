@@ -129,6 +129,11 @@ const CampersTable = ({
     Camper | undefined
   >();
 
+  const deleteActionCleanUp = () => {
+    // After a camper is deleted, we run this fn to reset selectCamper back to undefined
+    setSelectedCamper(undefined);
+  };
+
   React.useMemo(() => {
     const tempDetailsCount = {
       earlyDropoff: 0,
@@ -146,7 +151,7 @@ const CampersTable = ({
 
     setCamperDetailsCount(tempDetailsCount);
   }, [campers]);
-
+  console.log("current camper", selectedCamper);
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {campers.length > 0 ? (
@@ -300,6 +305,7 @@ const CampersTable = ({
               removeModalIsOpen={removeModalIsOpen}
               removeModalOnClose={removeModalOnClose}
               handleRefetch={handleRefetch}
+              deleteActionCleanUp={deleteActionCleanUp}
             />
           )}
         </>

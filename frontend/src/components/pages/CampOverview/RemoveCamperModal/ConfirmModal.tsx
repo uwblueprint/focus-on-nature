@@ -18,12 +18,14 @@ type ConfirmModalProps = {
   allCampersToBeDeleted: Camper[];
   deselectAndClose: () => void;
   submitDeletion: () => void;
+  deleteActionCleanUp: () => void;
 };
 
 const ConfirmModal = ({
   allCampersToBeDeleted,
   deselectAndClose,
   submitDeletion,
+  deleteActionCleanUp,
 }: ConfirmModalProps): JSX.Element => {
   return (
     <ModalContent maxWidth="400px" maxHeight="80%">
@@ -75,6 +77,7 @@ const ConfirmModal = ({
           onClick={() => {
             submitDeletion();
             deselectAndClose();
+            deleteActionCleanUp();
           }}
         >
           Remove
