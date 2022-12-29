@@ -25,7 +25,7 @@ export const checkRequiredClauses = (
 export const checkOptionalClause = (
   optionalClauseResponse: OptionalClauseResponse,
 ): boolean => {
-  return optionalClauseResponse.optionSelected;
+  return optionalClauseResponse.agreed !== undefined;
 };
 
 const waiverReducer = (
@@ -49,7 +49,7 @@ const waiverReducer = (
           index: number,
         ): OptionalClauseResponse => {
           if (index === optionalClauseId) {
-            return { ...optionalClause, agreed, optionSelected: true };
+            return { ...optionalClause, agreed };
           }
           return optionalClause;
         },

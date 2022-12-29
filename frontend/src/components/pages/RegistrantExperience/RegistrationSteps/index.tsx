@@ -44,10 +44,7 @@ const RegistrationSteps = ({
         if (!clause.required) {
           optionalClauses.push({
             ...clause,
-            // Assigned a value, but the clause is neither agreed to nor disagreed to
-            // by default, until user explicitly sets a value as tracked by `optionSelected`
-            agreed: false,
-            optionSelected: false,
+            agreed: undefined,
           });
         }
 
