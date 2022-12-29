@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { CartItem } from "../../../../../types/RegistrationTypes";
+import { calculateTotalPrice } from "../../../../../utils/RegistrationUtils";
 
 const tableHeadingTextStyles = {
   base: "xSmallBold",
@@ -39,9 +40,6 @@ const PaymentSummary = ({
   campName,
   items,
 }: PaymentSummaryProps): React.ReactElement => {
-  const calculateTotalPrice = (cartItems: CartItem[]): number =>
-    cartItems.reduce((prevTotal, curItem) => prevTotal + curItem.totalPrice, 0);
-
   return (
     <Box>
       <Text
@@ -96,7 +94,7 @@ const PaymentSummary = ({
           <Tbody>
             {items.map((item, index) => (
               <Tr
-                key={item.name}
+                key={index}
                 borderBottom={index + 1 === items.length ? "0px" : "1px"}
                 borderColor="border.secondary.100"
               >

@@ -1,5 +1,5 @@
-import { Box, Flex } from "@chakra-ui/react";
-import React, { useState, useReducer, Reducer, useRef } from "react";
+import { Box, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
   OptionalClauseResponse,
@@ -17,13 +17,22 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
+import {
+  mapCampToCartItems,
+  saveRegistrationSessionToSessionStorage,
+} from "../../../../utils/RegistrationUtils";
+import { CheckoutData } from "../../../../types/RegistrationTypes";
+import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
+import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
+import { mapToCreateCamperDTO } from "../../../../utils/CampUtils";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
   selectedSessions: CampSession[];
   waiver: WaiverType;
   onClickBack: () => void;
+  failedCheckoutData?: CheckoutData;
 };
 
 const RegistrationSteps = ({
@@ -31,10 +40,49 @@ const RegistrationSteps = ({
   selectedSessions,
   waiver,
   onClickBack,
+  failedCheckoutData,
 }: RegistrationStepsProps): React.ReactElement => {
+  const {
+    isOpen: errorModalIsOpen,
+    onOpen: errorModalOnOpen,
+    onClose: errorModalOnClose,
+  } = useDisclosure();
+  const toast = useToast();
+
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
+
+  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
+    {
+      firstName: "",
+      lastName: "",
+      age: NaN,
+      contacts: [
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+      ],
+      optionalClauses: [],
+    },
+  ]);
+
+  const [
+    requireEarlyDropOffLatePickup,
+    setRequireEarlyDropOffLatePickup,
+  ] = useState<boolean | null>(null);
+
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
@@ -60,34 +108,77 @@ const RegistrationSteps = ({
     waiverCompleted: false,
   });
 
-  const [sampleRegisterField, setSampleRegisterField] = useState(false);
-  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
-    {
-      firstName: "",
-      lastName: "",
-      age: NaN,
-      registrationDate: new Date(),
-      hasPaid: false,
-      contacts: [
-        {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneNumber: "",
-          relationshipToCamper: "",
-        },
-        {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneNumber: "",
-          relationshipToCamper: "",
-        },
-      ],
-      chargeId: "",
-      optionalClauses: [],
-    },
-  ]);
+  const [reviewRegistrationVisited, setReviewRegistrationVisited] = useState(
+    false,
+  );
+
+  const [registrationLoading, setRegistrationLoading] = useState(false);
+
+  const [checkoutUrl, setCheckoutUrl] = useState<string | undefined>(undefined);
+  const [checkoutChargeId, setCheckoutChargeId] = useState<string | undefined>(
+    undefined,
+  );
+
+  const goToCheckout = (
+    checkoutSessionUrl: string,
+    chargeId: string,
+    currentCamp: CampResponse,
+  ) => {
+    saveRegistrationSessionToSessionStorage(currentCamp.id, {
+      campers,
+      camp,
+      items: mapCampToCartItems(currentCamp, campers),
+      waiver: waiverInterface.waiver as WaiverType,
+      checkoutUrl: checkoutSessionUrl,
+      selectedSessionIds: selectedSessions.map((session) => session.id),
+      requireEarlyDropOffLatePickup,
+      chargeId,
+    });
+
+    window.location.assign(checkoutSessionUrl);
+  };
+
+  const registerCampers = async (
+    newCampers: RegistrantExperienceCamper[],
+    currentCamp: CampResponse,
+  ) => {
+    try {
+      if (newCampers.length === 0) {
+        throw new Error("Registration must have at least one camper");
+      }
+
+      setRegistrationLoading(true);
+      const {
+        checkoutSessionUrl,
+        campers: campersResponse,
+      } = await CamperAPIClient.registerCampers(
+        mapToCreateCamperDTO(newCampers),
+        selectedSessions.map((cs) => cs.id),
+      );
+
+      setRegistrationLoading(false);
+      goToCheckout(
+        checkoutSessionUrl,
+        campersResponse[0].chargeId,
+        currentCamp,
+      );
+    } catch (error: Error | unknown) {
+      let errorMessage =
+        "Unable to create a checkout session. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      toast({
+        title: "Checkout failed.",
+        description: errorMessage,
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+    }
+  };
+
   const campSpecificFormQuestions = camp.formQuestions.filter(
     (question) => question.category === "CampSpecific",
   );
@@ -98,11 +189,6 @@ const RegistrationSteps = ({
     camp.latePickup !== undefined &&
     camp.latePickup !== "";
 
-  const [
-    requireEarlyDropOffLatePickup,
-    setRequireEarlyDropOffLatePickup,
-  ] = useState<boolean | null>(null);
-
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
     campers,
@@ -111,7 +197,7 @@ const RegistrationSteps = ({
     requireEarlyDropOffLatePickup,
   );
   const isWaiverFilled = waiverInterface.waiverCompleted;
-  const isReviewRegistrationFilled = sampleRegisterField;
+  const isReviewRegistrationFilled = reviewRegistrationVisited;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
@@ -162,15 +248,15 @@ const RegistrationSteps = ({
             nextBtnRef={nextBtnRef}
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
-            campName={camp?.name || ""}
+            campName={camp.name}
           />
         );
       case RegistrantExperienceSteps.ReviewRegistrationPage:
         return (
           <ReviewRegistration
-            isChecked={sampleRegisterField}
-            toggleChecked={() => setSampleRegisterField(!sampleRegisterField)}
-            campName={camp?.name || ""}
+            campers={campers}
+            camp={camp}
+            onPageVisited={() => setReviewRegistrationVisited(true)}
           />
         );
       default:
@@ -182,12 +268,31 @@ const RegistrationSteps = ({
     const desiredStep = currentStep + stepsToMove;
     if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
+      window.scrollTo(0, 0);
     } else if (desiredStep < 0) {
       onClickBack();
     } else {
-      alert("PLACEHOLDER - go to payment");
+      registerCampers(campers, camp);
     }
   };
+
+  useEffect(() => {
+    if (failedCheckoutData) {
+      setCampers(failedCheckoutData.campers);
+      setCheckoutUrl(failedCheckoutData.checkoutUrl);
+      setCheckoutChargeId(failedCheckoutData.chargeId);
+
+      // There is a soft (front-end flow) check that this value is not null, as they
+      // cannot pass to the checkout page that would produce `failedCheckoutData` without
+      // assigning a non-null value, however this is not enforced in types so it is technically
+      // possible to go to the final step with a null value.
+      setRequireEarlyDropOffLatePickup(
+        failedCheckoutData.requireEarlyDropOffLatePickup,
+      );
+      setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
+      errorModalOnOpen();
+    }
+  }, [failedCheckoutData, errorModalOnOpen]);
 
   return (
     <Flex
@@ -210,7 +315,17 @@ const RegistrationSteps = ({
         nextBtnRef={nextBtnRef}
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
+        registrationLoading={registrationLoading}
         handleStepNavigation={handleStepNavigation}
+      />
+      <RegistrationErrorModal
+        onConfirm={() => {
+          if (checkoutUrl && checkoutChargeId && camp) {
+            goToCheckout(checkoutUrl, checkoutChargeId, camp);
+          }
+        }}
+        isOpen={errorModalIsOpen}
+        onClose={errorModalOnClose}
       />
     </Flex>
   );

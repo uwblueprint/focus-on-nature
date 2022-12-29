@@ -1,6 +1,17 @@
 import { format } from "date-fns";
+import {
+  checkEmail,
+  checkFirstName,
+  checkLastName,
+  checkPhoneNumber,
+  checkRelationToCamper,
+} from "../components/pages/RegistrantExperience/RegistrationSteps/PersonalInfo/personalInfoReducer";
 import MONTHS from "../constants/CampManagementConstants";
 import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
+import {
+  CreateCamperDTO,
+  RegistrantExperienceCamper,
+} from "../types/CamperTypes";
 import {
   CampResponse,
   CampSession,
@@ -260,4 +271,36 @@ export const getMeridianTime = (time: string): string => {
   const hour = parseInt(hourString, 10);
   const adjustedHour = hour > 12 ? hour - 12 : hour;
   return `${adjustedHour}:${minutesString}${hour < 12 ? "AM" : "PM"}`;
+};
+
+export const mapToCreateCamperDTO = (
+  campers: RegistrantExperienceCamper[],
+): CreateCamperDTO[] => {
+  return campers.map((camper) => {
+    const camperDTO = {
+      ...camper,
+      earlyDropoff: camper.earlyDropoff?.map((date) => date.toString()) ?? [],
+      latePickup: camper.latePickup?.map((date) => date.toString()) ?? [],
+      optionalClauses: camper.optionalClauses ?? [],
+    };
+
+    if (camperDTO.contacts.length === 2) {
+      const [firstContact, secondContact] = camperDTO.contacts;
+      // Remove second contact if empty
+      // TODO show error states if second contact partially filled
+      if (
+        !(
+          checkFirstName(secondContact.firstName) &&
+          checkLastName(secondContact.lastName) &&
+          checkEmail(secondContact.email) &&
+          checkPhoneNumber(secondContact.phoneNumber) &&
+          checkRelationToCamper(secondContact.relationshipToCamper)
+        )
+      ) {
+        camperDTO.contacts = [firstContact];
+      }
+    }
+
+    return camperDTO;
+  });
 };

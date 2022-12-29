@@ -29,9 +29,9 @@ const CamperQuestionsCard = ({
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
       <VStack py="24px">
         <Wrap width="100%" px="20px" justify="space-between">
-          {campSpecificFormQuestions.map((question) => (
+          {campSpecificFormQuestions.map((question, questionIndex) => (
             <WrapItem
-              key={`additional_info_question_${question}`}
+              key={`additional_info_question_${questionIndex}`}
               width={{ sm: "100%", md: mdWrapWidth }}
               px="20px"
               py="12px"

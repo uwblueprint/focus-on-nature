@@ -6,7 +6,10 @@ import {
   UpdateCamper,
   UpdateContact,
 } from "../../../../../types/PersonalInfoTypes";
-import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../types/CamperTypes";
 import { CampResponse } from "../../../../../types/CampsTypes";
 
 export const CamperReducer = (
@@ -26,14 +29,11 @@ export const CamperReducer = (
           lastName: "",
           age: NaN,
           contacts: [],
-          registrationDate: new Date(),
-          hasPaid: false,
-          chargeId: "",
           optionalClauses: [],
         });
 
         // inject contact info
-        newCampers[0].contacts.forEach((contact) => {
+        newCampers[0].contacts.forEach((contact: EmergencyContact) => {
           newCampers[newCampers.length - 1].contacts.push(
             JSON.parse(JSON.stringify(contact)),
           ); // Deep copy the contact
