@@ -4,28 +4,23 @@ import {
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
   UpdateCamperDTO,
+  CampRegistrationDTO,
 } from "../../types";
 
 interface ICamperService {
   /**
-   * Create a camper
-   * @param campers the campers to be created
-   * @param waitlistedCamperId the waitlistedCamperIds to be set to registered
-   * @returns an array of CamperDTO with the created campers' information
-   * @throws Error if user creation fails
+   * Creates a Camper document for each camper and each session. Also handles registering a waitlisted camper for 1 particular session
+   * @param campers the campers to be created. The function uses this data to create 1 Camper document per camper per session
+   * @param campSessions the ids of the sessions to register the campers for
+   * @param waitlistedCamperId the id of the waitlisted camper who will be registered for 1 session
+   * @returns an array of CamperDTO with the created campers' information, and checkout URL as a string
+   * @throws Error if user creation or checkout session creation fails
    */
-  createCampers(
+  createCampersAndCheckout(
     campers: CreateCampersDTO,
+    campSessions: string[],
     waitlistedCamperId?: string,
-  ): Promise<Array<CamperDTO>>;
-
-  /**
-   * Create a checkout session for the camper
-   * @param campers the campers that are being registered
-   * @returns a url string to the stripe checkout page
-   * @throws Error if the checkout session creation fails
-   */
-  createCampersCheckoutSession(campers: CreateCampersDTO): Promise<string>;
+  ): Promise<CampRegistrationDTO>;
 
   /**
    * Get all campers and their information
@@ -68,14 +63,16 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
-   * Create a waitlisted camper
-   * @param waitlistedCamper the waitlisted camper to be created
+   * Creates a waitlisted camper entity for each camper in each campSession
+   * @param waitlistedCampers the waitlisted campers to be created
+   * @param campSessions the session ids for which the campers should be waitlisted
    * @returns a WaitlistedCamperDTO with the created waitlisted camper's information
    * @throws Error if waitlisted camper creation fails
    */
-  createWaitlistedCamper(
-    waitlistedCamper: CreateWaitlistedCamperDTO,
-  ): Promise<WaitlistedCamperDTO>;
+  createWaitlistedCampers(
+    waitlistedCampers: CreateWaitlistedCamperDTO[],
+    campSessions: string[],
+  ): Promise<WaitlistedCamperDTO[]>;
 
   /**
    * Update an array of campers

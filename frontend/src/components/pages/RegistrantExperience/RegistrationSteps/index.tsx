@@ -2,9 +2,10 @@ import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
+  OptionalClauseResponse,
   WaiverInterface,
   WaiverReducerDispatch,
-} from "../../../../types/waiverTypes";
+} from "../../../../types/waiverRegistrationTypes";
 import RegistrationFooter from "./RegistrationFooter";
 import RegistrationNavStepper from "./RegistrationNavStepper";
 import AdditionalInfo from "./AdditionalInfo";
@@ -23,6 +24,7 @@ import {
 import { CheckoutData } from "../../../../types/RegistrationTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
+import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 
 type RegistrationErrorModalMessage = {
   title: string;
@@ -60,7 +62,6 @@ const RegistrationSteps = ({
       lastName: "",
       age: NaN,
       registrationDate: new Date(),
-      hasPaid: false,
       contacts: [
         {
           firstName: "",
@@ -77,7 +78,6 @@ const RegistrationSteps = ({
           relationshipToCamper: "",
         },
       ],
-      chargeId: "",
       optionalClauses: [],
     },
   ]);
@@ -97,10 +97,21 @@ const RegistrationSteps = ({
   >(waiverReducer, {
     campName: camp.name,
     waiver,
-    optionalClauses: [],
-    requiredClauses: [],
+    optionalClauses: waiver.clauses.reduce(
+      (optionalClauses: OptionalClauseResponse[], clause) => {
+        if (!clause.required) {
+          optionalClauses.push({
+            ...clause,
+            agreed: undefined,
+          });
+        }
+
+        return optionalClauses;
+      },
+      [],
+    ),
+    requiredClauses: waiver.clauses.filter((clause) => clause.required),
     agreedRequiredClauses: false,
-    loadingWaiver: true,
     date: "",
     name: "",
     waiverCompleted: false,
@@ -147,9 +158,28 @@ const RegistrationSteps = ({
       errorModalOnOpen();
     }
   };
+  const campSpecificFormQuestions = camp.formQuestions.filter(
+    (question) => question.category === "CampSpecific",
+  );
+
+  const hasEarlyDropOffLatePickup =
+    camp.earlyDropoff !== undefined &&
+    camp.earlyDropoff !== "" &&
+    camp.latePickup !== undefined &&
+    camp.latePickup !== "";
+
+  const [
+    requireEarlyDropOffLatePickup,
+    setRequireEarlyDropOffLatePickup,
+  ] = useState<boolean | null>(null);
 
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
-  const isAdditionalInfoFilled = sampleAdditionalInfo;
+  const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
+    campers,
+    campSpecificFormQuestions,
+    hasEarlyDropOffLatePickup,
+    requireEarlyDropOffLatePickup,
+  );
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = reviewRegistrationVisited;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
@@ -186,13 +216,20 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
-            isChecked={sampleAdditionalInfo}
-            toggleChecked={() => setSampleAdditionalInfo(!sampleAdditionalInfo)}
+            nextBtnRef={nextBtnRef}
+            campers={campers}
+            setCampers={setCampers}
+            campName={camp.name}
+            campSpecificFormQuestions={campSpecificFormQuestions}
+            hasEDLP={hasEarlyDropOffLatePickup}
+            requireEDLP={requireEarlyDropOffLatePickup}
+            setRequireEDLP={setRequireEarlyDropOffLatePickup}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
         return (
           <Waiver
+            nextBtnRef={nextBtnRef}
             waiverInterface={waiverInterface}
             waiverDispatch={waiverDispatch}
             campName={camp.name}

@@ -21,8 +21,7 @@ interface PersonalInfoDispatchWithData<T> extends PersonalInfoDispatchBase {
 }
 
 /* eslint-disable-next-line */
-export interface AddCamper extends PersonalInfoDispatchBase {
-}
+export interface AddCamper extends PersonalInfoDispatchBase {}
 
 /* eslint-disable-next-line */
 export interface DeleteCamper extends PersonalInfoDispatchBase {

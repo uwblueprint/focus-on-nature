@@ -34,7 +34,7 @@ export type Camper = {
 
 export type RegistrantExperienceCamper = Omit<
   Camper,
-  "campSession" | "id" | "charges"
+  "campSession" | "id" | "charges" | "hasPaid" | "chargeId"
 >;
 
 export type EditCamperInfoFields = Omit<

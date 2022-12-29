@@ -6,7 +6,27 @@ import {
   ClickOptionalClause,
   FillDate,
   FillName,
-} from "../../../../../types/waiverTypes";
+} from "../../../../../types/waiverRegistrationTypes";
+
+export const checkName = (name: string): boolean => {
+  return !!name;
+};
+
+export const checkDate = (date: string): boolean => {
+  return !!date;
+};
+
+export const checkRequiredClauses = (
+  requiredClausesAgreed: boolean,
+): boolean => {
+  return requiredClausesAgreed;
+};
+
+export const checkOptionalClause = (
+  optionalClauseResponse: OptionalClauseResponse,
+): boolean => {
+  return optionalClauseResponse.agreed !== undefined;
+};
 
 const waiverReducer = (
   waiverInterface: WaiverInterface,
@@ -21,7 +41,7 @@ const waiverReducer = (
 
     case WaiverActions.CLICK_OPTIONAL_CLAUSE: {
       if (!newWaiverInterface.optionalClauses) break;
-      const { optionalClauseId } = action as ClickOptionalClause;
+      const { optionalClauseId, agreed } = action as ClickOptionalClause;
 
       const newOptionalClauses: OptionalClauseResponse[] = newWaiverInterface.optionalClauses?.map(
         (
@@ -29,7 +49,7 @@ const waiverReducer = (
           index: number,
         ): OptionalClauseResponse => {
           if (index === optionalClauseId) {
-            return { ...optionalClause, agreed: !optionalClause.agreed };
+            return { ...optionalClause, agreed };
           }
           return optionalClause;
         },
@@ -49,10 +69,18 @@ const waiverReducer = (
     }
     default:
   }
+
+  const optionalClausesAgreed = newWaiverInterface.optionalClauses.reduce(
+    (accumulator, currentOptionalClause) =>
+      accumulator && checkOptionalClause(currentOptionalClause),
+    true,
+  );
+
   newWaiverInterface.waiverCompleted =
-    newWaiverInterface.agreedRequiredClauses &&
-    newWaiverInterface.name !== "" &&
-    newWaiverInterface.date !== "";
+    checkRequiredClauses(newWaiverInterface.agreedRequiredClauses) &&
+    checkName(newWaiverInterface.name) &&
+    checkDate(newWaiverInterface.date) &&
+    optionalClausesAgreed;
   return newWaiverInterface;
 };
 
