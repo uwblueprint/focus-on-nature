@@ -30,6 +30,7 @@ type RegistrationErrorModalMessage = {
   title: string;
   body: string;
 };
+import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
@@ -158,6 +159,7 @@ const RegistrationSteps = ({
       errorModalOnOpen();
     }
   };
+
   const campSpecificFormQuestions = camp.formQuestions.filter(
     (question) => question.category === "CampSpecific",
   );
