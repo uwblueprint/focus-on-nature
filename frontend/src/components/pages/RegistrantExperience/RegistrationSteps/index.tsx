@@ -18,6 +18,7 @@ import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
+import { EdlpChoice } from "./AdditionalInfo/edlpSessionRegistration";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
@@ -88,9 +89,6 @@ const RegistrationSteps = ({
       optionalClauses: [],
     },
   ]);
-  const campSpecificFormQuestions = camp.formQuestions.filter(
-    (question) => question.category === "CampSpecific",
-  );
 
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&
@@ -106,7 +104,9 @@ const RegistrationSteps = ({
   const isPersonalInfoFilled = checkPersonalInfoFilled(campers, camp);
   const isAdditionalInfoFilled = checkAdditionalQuestionsAnswered(
     campers,
-    campSpecificFormQuestions,
+    camp.formQuestions.filter(
+      (question) => question.category === "CampSpecific",
+    ),
     hasEarlyDropOffLatePickup,
     requireEarlyDropOffLatePickup,
   );
@@ -129,6 +129,20 @@ const RegistrationSteps = ({
     }
   };
 
+  // Each camp session has an array of EdlpChoice objects
+  // Each EdlpChoice object looks like {date: "date of a day of camp", edlp: ["8:30", "16:00"], edlpCost: [40, 20]}
+  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(
+    selectedSessions.map((campSession) => {
+      return campSession.dates.map((date) => {
+        return {
+          date,
+          edlp: ["-", "-"],
+          edlpCost: [0, 0],
+        };
+      });
+    }),
+  );
+
   const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
   ) => {
@@ -146,14 +160,16 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.AdditionalInfoPage:
         return (
           <AdditionalInfo
+            selectedSessions={selectedSessions}
             nextBtnRef={nextBtnRef}
             campers={campers}
             setCampers={setCampers}
-            campName={camp.name}
-            campSpecificFormQuestions={campSpecificFormQuestions}
+            camp={camp}
             hasEDLP={hasEarlyDropOffLatePickup}
             requireEDLP={requireEarlyDropOffLatePickup}
             setRequireEDLP={setRequireEarlyDropOffLatePickup}
+            edlpChoices={edlpChoices}
+            setEdlpChoices={setEdlpChoices}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
