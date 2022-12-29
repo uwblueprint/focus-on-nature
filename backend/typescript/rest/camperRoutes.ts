@@ -14,7 +14,6 @@ import { getErrorMessage } from "../utilities/errorUtils";
 import { sendResponseByMimeType } from "../utilities/responseUtil";
 import {
   CamperDTO,
-  CreateCampersDTO,
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
 } from "../types";
@@ -28,14 +27,13 @@ const camperService: ICamperService = new CamperService();
 /* Create a camper */
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
   try {
-    const campers = req.body.campers as CreateCampersDTO;
-    const campSessions = req.body.campSessions as string[];
-    const newCampers = await camperService.createCampers(
+    const { campers, campSessions } = req.body;
+    const data = await camperService.createCampersAndCheckout(
       campers,
       campSessions,
       req.query?.wId as string,
     );
-    res.status(201).json(newCampers);
+    res.status(200).json({ ...data });
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
