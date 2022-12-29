@@ -37,14 +37,12 @@ export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 export enum WaiverActions {
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
-  GET_CLAUSES,
   WRITE_NAME,
   WRITE_DATE,
 }
 
 export interface OptionalClauseResponse extends WaiverClause {
-  agreed: boolean;
-  optionSelected: boolean; // Whether the registrant has seleted either "I agree" or "I disagree" for the clause
+  agreed: boolean | undefined;
 }
 
 /* eslint-disable-next-line */
@@ -56,7 +54,6 @@ export type WaiverInterface = {
   optionalClauses: OptionalClauseResponse[];
   requiredClauses: RequiredClauseResponse[];
   agreedRequiredClauses: boolean;
-  loadingWaiver: boolean;
   name: string;
   date: string;
   waiverCompleted: boolean;

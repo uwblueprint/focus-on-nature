@@ -210,7 +210,7 @@ const WaiverPage = ({
                     });
                   }}
                   key={index}
-                  value={String(clause.optionSelected ? clause.agreed : null)}
+                  value={String(clause.agreed)}
                 >
                   <HStack spacing={5}>
                     <Radio value="true" mb={0}>

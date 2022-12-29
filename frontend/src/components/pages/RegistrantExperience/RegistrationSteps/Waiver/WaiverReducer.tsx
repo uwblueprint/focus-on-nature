@@ -1,4 +1,3 @@
-import { WaiverClause } from "../../../../../types/AdminTypes";
 import {
   WaiverInterface,
   OptionalClauseResponse,
@@ -7,7 +6,6 @@ import {
   ClickOptionalClause,
   FillDate,
   FillName,
-  RequiredClauseResponse,
 } from "../../../../../types/waiverRegistrationTypes";
 
 export const checkName = (name: string): boolean => {
@@ -27,7 +25,7 @@ export const checkRequiredClauses = (
 export const checkOptionalClause = (
   optionalClauseResponse: OptionalClauseResponse,
 ): boolean => {
-  return optionalClauseResponse.optionSelected !== false;
+  return optionalClauseResponse.agreed !== undefined;
 };
 
 const waiverReducer = (
@@ -36,25 +34,6 @@ const waiverReducer = (
 ): WaiverInterface => {
   const newWaiverInterface: WaiverInterface = { ...waiverInterface };
   switch (action.type) {
-    case WaiverActions.GET_CLAUSES: {
-      const optionalClauses: OptionalClauseResponse[] = [];
-      const requiredClauses: RequiredClauseResponse[] = [];
-
-      newWaiverInterface.waiver.clauses.forEach((clause: WaiverClause) => {
-        if (clause.required) requiredClauses.push(clause);
-        else
-          optionalClauses.push({
-            ...clause,
-            agreed: false,
-            optionSelected: false,
-          }); // Note that we set agreed to false by default while in actuality, the clause is neither agreed to disagreed to by default
-      });
-      newWaiverInterface.optionalClauses = optionalClauses;
-      newWaiverInterface.requiredClauses = requiredClauses;
-      newWaiverInterface.agreedRequiredClauses = false;
-      newWaiverInterface.loadingWaiver = false;
-      break;
-    }
     case WaiverActions.ClICK_REQUIRED_CLAUSE: {
       newWaiverInterface.agreedRequiredClauses = !newWaiverInterface.agreedRequiredClauses;
       break;
@@ -70,7 +49,7 @@ const waiverReducer = (
           index: number,
         ): OptionalClauseResponse => {
           if (index === optionalClauseId) {
-            return { ...optionalClause, agreed, optionSelected: true };
+            return { ...optionalClause, agreed };
           }
           return optionalClause;
         },
