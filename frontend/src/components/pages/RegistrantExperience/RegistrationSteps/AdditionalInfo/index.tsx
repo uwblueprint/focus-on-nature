@@ -1,33 +1,40 @@
-import { Box, Divider, Text, VStack } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+
+import { Box, Divider, Text, VStack, Accordion } from "@chakra-ui/react";
+
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import { FormQuestion } from "../../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
+import EdlpSessionRegistration, { EdlpChoice } from "./edlpSessionRegistration";
 import { useAdditionalInfoDispatcher } from "./additionalInfoReducer";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
 
 type AdditionalInfoProps = {
+  selectedSessions: CampSession[];
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   campers: RegistrantExperienceCamper[];
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
-  campName: string;
-  campSpecificFormQuestions: FormQuestion[];
+  camp: CampResponse;
   hasEDLP: boolean;
   requireEDLP: boolean | null;
   setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
+  edlpChoices: EdlpChoice[][];
+  setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
 };
 
 const AdditionalInfo = ({
+  selectedSessions,
   nextBtnRef,
   campers,
   setCampers,
-  campName,
-  campSpecificFormQuestions,
+  camp,
   hasEDLP,
   requireEDLP,
   setRequireEDLP,
+  edlpChoices,
+  setEdlpChoices,
 }: AdditionalInfoProps): React.ReactElement => {
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
@@ -52,7 +59,7 @@ const AdditionalInfo = ({
 
   return (
     <Box pb={14}>
-      <Text textStyle="displayXLarge">{`${campName} Registration`}</Text>
+      <Text textStyle="displayXLarge">{`${camp.name} Registration`}</Text>
       <VStack alignItems="flex-start" spacing={8} marginTop={8}>
         <Text textStyle="displayLarge" textColor="primary.green.100">
           Camper-specific Additional Questions
@@ -62,23 +69,66 @@ const AdditionalInfo = ({
             key={`additional_info_camper_${camperIndex}`}
             camper={camper}
             camperIndex={camperIndex}
-            campSpecificFormQuestions={campSpecificFormQuestions}
+            campSpecificFormQuestions={camp.formQuestions.filter(
+              (question) => question.category === "CampSpecific",
+            )}
             dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
             nextClicked={nextClicked}
           />
         ))}
         {hasEDLP && (
-          <Box width="100%">
-            <Divider borderColor="border.secondary.100" mb={6} />
-            <Text textStyle="displayLarge" textColor="primary.green.100">
-              Camp-specific Additional Questions
-            </Text>
-            <EarlyDropOffLatePickupCard
-              requireEDLP={requireEDLP}
-              setRequireEDLP={setRequireEDLP}
-              nextClicked={nextClicked}
-            />
-          </Box>
+          <>
+            <Box width="100%">
+              <Divider borderColor="border.secondary.100" mb={6} />
+              <Text textStyle="displayLarge" textColor="primary.green.100">
+                Early Drop-off and Late Pick-up
+              </Text>
+
+              <EarlyDropOffLatePickupCard
+                requireEDLP={requireEDLP}
+                setRequireEDLP={setRequireEDLP}
+                nextClicked={nextClicked}
+              />
+
+              <Box display={requireEDLP ? "" : "none"}>
+                <Text
+                  textStyle={{ base: "xSmallRegular", md: "bodyRegular" }}
+                  marginTop="20px"
+                  marginBottom="11px"
+                >
+                  The cost of Early Dropoff Late Pickup is ${camp.pickupFee} per
+                  30 minutes for pickup or dropoff for each child.
+                </Text>
+                <Text
+                  as="i"
+                  textStyle={{ base: "xSmallRegular", md: "bodyRegular" }}
+                  color="text.critical.100"
+                >
+                  Note: EDLP applies to all children in a given registeration.
+                  For specific requests, contact Focus On Nature admin at
+                  camps@focusonnature.ca
+                </Text>
+
+                <Accordion allowToggle>
+                  {selectedSessions.map(
+                    (campSession: CampSession, campSessionIndex: number) => {
+                      return (
+                        <EdlpSessionRegistration
+                          key={`session_${campSession.id}_edlp`}
+                          selectedSessionIndex={campSessionIndex}
+                          camp={camp}
+                          edlpCost={camp.pickupFee}
+                          session={campSession}
+                          edlpChoices={edlpChoices}
+                          setEdlpChoices={setEdlpChoices}
+                        />
+                      );
+                    },
+                  )}
+                </Accordion>
+              </Box>
+            </Box>
+          </>
         )}
       </VStack>
     </Box>
