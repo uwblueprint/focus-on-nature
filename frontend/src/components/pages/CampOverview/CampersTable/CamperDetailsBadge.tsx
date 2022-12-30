@@ -46,24 +46,27 @@ export const CamperDetailsBadgeGroup = ({
   camper: Camper;
   paddingLeft?: string;
 }): JSX.Element => {
+  const latePickup = camper.latePickup && camper.latePickup.length > 0;
+  const earlyDropoff = camper.earlyDropoff && camper.earlyDropoff.length > 0;
+
   return (
     <Container width="-webkit-fit-content" marginStart="0px" pl={paddingLeft}>
       <HStack>
-        {camper.latePickup && camper.earlyDropoff && (
+        {latePickup && earlyDropoff && (
           <CamperDetailsBadge
             icon={<PickupIcon />}
             description="pick-up & drop-off"
             color="camperDetailsCards.latePickupAndEarlyDropOff"
           />
         )}
-        {camper.latePickup && !camper.earlyDropoff && (
+        {latePickup && !earlyDropoff && (
           <CamperDetailsBadge
             icon={<SunriseIcon fill="black" />}
             description="late pick-up"
             color="camperDetailsCards.latePickup"
           />
         )}
-        {!camper.latePickup && camper.earlyDropoff && (
+        {!latePickup && earlyDropoff && (
           <CamperDetailsBadge
             icon={<SunsetIcon fill="black" />}
             description="early drop-off"
