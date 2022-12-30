@@ -20,20 +20,26 @@ const CampCreationFooter = ({
   createUpdateCamp,
   isEditingCamp,
 }: CampCreationFooterProps): React.ReactElement => {
+  const [isAwaitingReq, setIsAwaitingReq] = React.useState(false);
+
   const onNextStep = async () => {
     handleStepNavigation(1);
 
     if (currentStep === CampCreationPages.RegistrationFormPage) {
       const isPublishedCamp = true;
       const isNewCamp = !isEditingCamp;
-      createUpdateCamp(isPublishedCamp, isNewCamp);
+      setIsAwaitingReq(true);
+      await createUpdateCamp(isPublishedCamp, isNewCamp);
+      setIsAwaitingReq(false);
     }
   };
 
-  const onSaveAsDraft = () => {
+  const onSaveAsDraft = async () => {
     const isNewCamp = !isEditingCamp;
     const isPublishedCamp = false;
-    createUpdateCamp(isPublishedCamp, isNewCamp);
+    setIsAwaitingReq(true);
+    await createUpdateCamp(isPublishedCamp, isNewCamp);
+    setIsAwaitingReq(false);
   };
 
   return (
@@ -57,6 +63,7 @@ const CampCreationFooter = ({
           height="48px"
           variant="secondary"
           onClick={() => onSaveAsDraft()}
+          isLoading={isAwaitingReq}
         >
           Save as draft
         </Button>
@@ -78,6 +85,10 @@ const CampCreationFooter = ({
         variant="primary"
         onClick={onNextStep}
         disabled={!isCurrentStepCompleted}
+        isLoading={
+          isAwaitingReq &&
+          currentStep === CampCreationPages.RegistrationFormPage
+        }
       >
         {currentStep === CampCreationPages.RegistrationFormPage
           ? "Publish"
