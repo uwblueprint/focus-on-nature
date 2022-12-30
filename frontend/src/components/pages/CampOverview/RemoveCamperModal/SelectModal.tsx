@@ -78,7 +78,7 @@ const SelectModal = ({
                   : setCampersToBeDeleted(new Set<Camper>())
               }
               mb={0}
-              colorScheme="primary.green"
+              variant="primary"
             >
               Select all
             </Checkbox>
@@ -93,7 +93,7 @@ const SelectModal = ({
                       ? removeCamperToBeDeleted(currentCamper)
                       : addCamperToBeDeleted(currentCamper)
                   }
-                  colorScheme="primary.green"
+                  variant="primary"
                 >
                   {currentCamper.firstName} {currentCamper.lastName}
                 </Checkbox>
@@ -106,7 +106,7 @@ const SelectModal = ({
         <Button variant="ghost" onClick={deselectAndClose} mr={3}>
           Cancel
         </Button>
-        <Button colorScheme="primary.green" onClick={setStatusAsConfirm}>
+        <Button variant="primary" onClick={setStatusAsConfirm}>
           Next
         </Button>
       </ModalFooter>

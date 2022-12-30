@@ -3,9 +3,8 @@ import "@fontsource/noto-sans";
 
 import colors from "./colors";
 import Button from "./components/Button";
-// import Button from "./components/Button";
-// import Container from "./components/Container";
-// import Input from "./components/Input";
+import Checkbox from "./components/Checkbox";
+
 import layerStyles from "./layerStyles";
 import textStyles from "./textStyles";
 
@@ -31,9 +30,7 @@ const customTheme = extendTheme({
   },
   components: {
     Button,
-    // Steps,
-    // Container,
-    // Input,
+    Checkbox,
   },
   config: {
     initialColorMode: "light",
