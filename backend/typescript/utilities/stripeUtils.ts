@@ -168,3 +168,9 @@ export async function createStripeCheckoutSession(
 
   return checkoutSession;
 }
+
+export async function retrieveStripeCheckoutSession(
+  chargeId: string,
+): Promise<Stripe.Response<Stripe.Checkout.Session>> {
+  return stripe.checkout.sessions.retrieve(chargeId);
+}

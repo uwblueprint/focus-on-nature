@@ -63,6 +63,14 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
+   * Confirm successful payment, marking associated campers with `hasPaid=true`
+   * @param chargeId id from Stripe checkout session object
+   * @returns boolean result, if camper `hasPaid` status updates successfully
+   * @throws Error if camper update fails
+   */
+  confirmCamperPayment(chargeId: string): Promise<boolean>;
+
+  /**
    * Creates a waitlisted camper entity for each camper in each campSession
    * @param waitlistedCampers the waitlisted campers to be created
    * @param campSessions the session ids for which the campers should be waitlisted
