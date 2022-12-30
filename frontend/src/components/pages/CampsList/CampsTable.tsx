@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverFooter,
   PopoverTrigger,
+  Spinner,
   Table,
   Tag,
   TagLabel,
@@ -44,6 +45,7 @@ type CampsTableProps = {
   campDrawerInfo: CampResponse | undefined;
   setCampDrawerInfo: Dispatch<SetStateAction<CampResponse | undefined>>;
   onDeleteClick: (camp: CampResponse) => void;
+  loading: boolean;
 };
 
 const CampsTable = ({
@@ -53,6 +55,7 @@ const CampsTable = ({
   campDrawerInfo,
   setCampDrawerInfo,
   onDeleteClick,
+  loading,
 }: CampsTableProps): JSX.Element => {
   const filterOptions = [
     CampStatus.PUBLISHED,
@@ -245,7 +248,12 @@ const CampsTable = ({
           ))}
         </Tbody>
       </Table>
-      {tableData.length === 0 && (
+      {loading && (
+        <Center bg="background.white.100" p="30px">
+          <Spinner />
+        </Center>
+      )}
+      {!loading && tableData.length === 0 && (
         <Center
           bg="background.white.100"
           color="text.grey.600"
