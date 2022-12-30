@@ -20,6 +20,7 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
+import { retrieveStripeCheckoutSession } from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -455,7 +456,10 @@ class CamperService implements ICamperService {
   ): Promise<CamperDTO[]> {
     try {
       // eslint-disable-next-line prettier/prettier
-      const campers: Camper[] = await MgCamper.find({ chargeId, campSession: sessionId });
+      const campers: Camper[] = await MgCamper.find({
+        chargeId,
+        campSession: sessionId,
+      });
 
       if (!campers || campers.length === 0) {
         throw new Error(
@@ -489,6 +493,46 @@ class CamperService implements ICamperService {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
+  }
+
+  async confirmCamperPayment(chargeId: string): Promise<boolean> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
+      if (!checkoutSession) {
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+
+      if (checkoutSession.payment_status !== "paid") {
+        throw new Error(
+          `Checkout session status is ${checkoutSession.payment_status}, expected status to be "paid"`,
+        );
+      }
+
+      const campers = await MgCamper.find({ chargeId });
+      if (!campers || campers.length === 0) {
+        throw new Error(
+          `Could not find campers belonging to checkout session with id ${chargeId}`,
+        );
+      }
+
+      await MgCamper.updateMany(
+        { chargeId },
+        { $set: { hasPaid: true } },
+        { session, runValidators: true },
+      );
+      await session.commitTransaction();
+    } catch (error: unknown) {
+      await session.abortTransaction();
+      Logger.error("Failed to confirm payment and mark campers as paid.");
+      throw error;
+    } finally {
+      session.endSession();
+    }
+
+    return true;
   }
 
   /* eslint-disable class-methods-use-this */
