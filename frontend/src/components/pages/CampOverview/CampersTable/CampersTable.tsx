@@ -151,7 +151,6 @@ const CampersTable = ({
 
     setCamperDetailsCount(tempDetailsCount);
   }, [campers]);
-  console.log("current camper", selectedCamper);
   return (
     <Box px="-5" py="5" background="background.grey.100" borderRadius="20">
       {campers.length > 0 ? (

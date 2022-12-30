@@ -5,9 +5,6 @@ import colors from "./colors";
 import Button from "./components/Button";
 import Checkbox from "./components/Checkbox";
 
-// import Button from "./components/Button";
-// import Container from "./components/Container";
-// import Input from "./components/Input";
 import layerStyles from "./layerStyles";
 import textStyles from "./textStyles";
 
@@ -34,9 +31,6 @@ const customTheme = extendTheme({
   components: {
     Button,
     Checkbox,
-    // Steps,
-    // Container,
-    // Input,
   },
   config: {
     initialColorMode: "light",

@@ -53,7 +53,6 @@ const RemoveCamperModal = ({
         selectedCamper.campSession,
       );
       if (getResponse) {
-        console.log("get response", getResponse, "camper", camper);
         setRetrievedCampers(
           getResponse.filter(
             (currentCamper: Camper) => currentCamper.id !== camper.id,
