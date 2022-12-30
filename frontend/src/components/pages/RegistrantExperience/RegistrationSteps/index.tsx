@@ -67,8 +67,6 @@ const RegistrationSteps = ({
       firstName: "",
       lastName: "",
       age: NaN,
-      registrationDate: new Date(),
-      hasPaid: false,
       contacts: [
         {
           firstName: "",
@@ -85,7 +83,6 @@ const RegistrationSteps = ({
           relationshipToCamper: "",
         },
       ],
-      chargeId: "",
       optionalClauses: [],
     },
   ]);

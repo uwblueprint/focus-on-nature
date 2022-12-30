@@ -23,14 +23,14 @@ export type CampResponse = {
   campCounsellors: string[];
   name: string;
   description: string;
-  earlyDropoff: string;
-  endTime: string;
-  latePickup: string;
   location: Location;
   startTime: string;
+  endTime: string;
   fee: number;
-  pickupFee: number;
+  earlyDropoff: string;
+  latePickup: string;
   dropoffFee: number;
+  pickupFee: number;
   formQuestions: FormQuestion[];
   campSessions: CampSession[];
   volunteers: string;
