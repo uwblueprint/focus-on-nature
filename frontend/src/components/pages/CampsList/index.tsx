@@ -31,12 +31,15 @@ const CampsListPage = (): React.ReactElement => {
 
   const toast = useToast();
 
+  const [loading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
     const getCamps = async () => {
       const res = await CampsAPIClient.getAllCamps(year);
       if (res) {
         setCamps(res);
       }
+      setLoading(false);
     };
 
     getCamps();
@@ -118,6 +121,7 @@ const CampsListPage = (): React.ReactElement => {
             campDrawerInfo={campDrawerInfo}
             setCampDrawerInfo={setCampDrawerInfo}
             onDeleteClick={onDeleteClick}
+            loading={loading}
           />
         </Box>
         <PreviewCampDrawer
