@@ -1,3 +1,4 @@
+import { Waiver } from "../../../../../types/AdminTypes";
 import {
   WaiverInterface,
   OptionalClauseResponse,
@@ -6,6 +7,7 @@ import {
   ClickOptionalClause,
   FillDate,
   FillName,
+  SetWaiverInterace,
 } from "../../../../../types/waiverRegistrationTypes";
 
 export const checkName = (name: string): boolean => {
@@ -32,8 +34,13 @@ const waiverReducer = (
   waiverInterface: WaiverInterface,
   action: WaiverReducerDispatch,
 ): WaiverInterface => {
-  const newWaiverInterface: WaiverInterface = { ...waiverInterface };
+  let newWaiverInterface: WaiverInterface = { ...waiverInterface };
   switch (action.type) {
+    case WaiverActions.SET_WAIVER_INTERFACE: {
+      const { waiver } = action as SetWaiverInterace;
+      newWaiverInterface = waiver;
+      break;
+    }
     case WaiverActions.ClICK_REQUIRED_CLAUSE: {
       newWaiverInterface.agreedRequiredClauses = !newWaiverInterface.agreedRequiredClauses;
       break;

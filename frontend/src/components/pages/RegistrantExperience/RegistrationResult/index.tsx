@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 import { Text, Flex, VStack, HStack } from "@chakra-ui/react";
-import { CartItem } from "../../../../types/RegistrationTypes";
+import { CartItem, EdlpChoice } from "../../../../types/RegistrationTypes";
 
-import { calculateTotalPrice } from "../../../../utils/RegistrationUtils";
+import {
+  calculateTotalPrice,
+  mapCampToCartItems,
+} from "../../../../utils/RegistrationUtils";
 import RegistrationInfoCard from "./RegistrationInfoCard";
 import {
   cardBoldStyles,
@@ -11,7 +14,7 @@ import {
   resultTitleStyles,
   subheadingStyles,
 } from "./textStyles";
-import { CampResponse } from "../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 
@@ -58,14 +61,16 @@ const PaymentSummaryList = ({
 type RegistrationResultProps = {
   camp?: CampResponse;
   campers?: RegistrantExperienceCamper[];
-  items?: CartItem[];
+  sessions?: CampSession[];
+  edlpChoices?: EdlpChoice[][];
   chargeId?: string;
 };
 
 const RegistrationResult = ({
   camp,
   campers,
-  items,
+  sessions,
+  edlpChoices,
   chargeId,
 }: RegistrationResultProps): React.ReactElement => {
   useEffect(() => {
@@ -81,7 +86,7 @@ const RegistrationResult = ({
       mx={{ sm: "20px", md: "40px", lg: "10vw" }}
       my={{ base: "64px", lg: "10vh" }}
     >
-      {camp && campers && items && chargeId ? (
+      {camp && campers && sessions && edlpChoices && chargeId ? (
         <>
           <Text textStyle={resultTitleStyles}>Thank you for registering!</Text>
           <Text
@@ -126,7 +131,9 @@ const RegistrationResult = ({
               >
                 Payment Summary
               </Text>
-              <PaymentSummaryList items={items} />
+              <PaymentSummaryList
+                items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+              />
             </VStack>
           </Flex>
         </>

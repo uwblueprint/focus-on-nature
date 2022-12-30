@@ -1,55 +1,81 @@
 import { CAMP_ID_SESSION_STORAGE_KEY } from "../constants/RegistrationConstants";
 import { RegistrantExperienceCamper } from "../types/CamperTypes";
-import { CampResponse } from "../types/CampsTypes";
-import { CartItem, CheckoutData } from "../types/RegistrationTypes";
+import { CampResponse, CampSession } from "../types/CampsTypes";
+import { CartItem, CheckoutData, EdlpChoice } from "../types/RegistrationTypes";
 
 export const getCheckoutSessionStorageKey = (campId: string): string =>
   `checkout-${campId}`;
 
 export const mapCampToCartItems = (
   camp: CampResponse,
+  sessions: CampSession[],
   campers: RegistrantExperienceCamper[],
+  edlpChoices: EdlpChoice[][],
 ): CartItem[] => {
-  const items: CartItem[] = [
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-      details: "Some sample details",
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-    {
-      name: "yes",
-      campers: 2,
-      totalPrice: 15.5,
-    },
-  ];
+  return sessions
+    .sort(
+      (sessionA, sessionB) =>
+        // Assumes all sessions have at least one date
+        new Date(sessionA.dates[0]).getTime() -
+        new Date(sessionB.dates[0]).getTime(),
+    )
+    .flatMap((campSession, sessionIndex) => {
+      const sessionDisplayIndex = sessionIndex + 1;
+      const cartItems: CartItem[] = [
+        {
+          name: `Session ${sessionDisplayIndex}`,
+          campers: campers.length,
+          totalPrice: campers.length * campSession.dates.length * camp.fee,
+        },
+      ];
 
-  return items;
+      if (
+        edlpChoices[sessionIndex].some(
+          (edlpChoice) => edlpChoice.earlyDropoff.timeSlot === "-",
+        )
+      ) {
+        const [cost, units] = edlpChoices[sessionIndex].reduce(
+          ([costSum, unitsSum], edlpDay) => {
+            return [
+              costSum + edlpDay.earlyDropoff.cost,
+              unitsSum + edlpDay.earlyDropoff.cost,
+            ];
+          },
+          [0, 0],
+        );
+
+        cartItems.push({
+          name: `Session ${sessionDisplayIndex} - Early Dropoff`,
+          campers: campers.length,
+          totalPrice: cost,
+          details: `${units * 30} mintues`,
+        });
+      }
+
+      if (
+        edlpChoices[sessionIndex].some(
+          (edlpChoice) => edlpChoice.latePickup.timeSlot === "-",
+        )
+      ) {
+        const [cost, units] = edlpChoices[sessionIndex].reduce(
+          ([costSum, unitsSum], edlpDay) => {
+            return [
+              costSum + edlpDay.latePickup.cost,
+              unitsSum + edlpDay.latePickup.cost,
+            ];
+          },
+          [0, 0],
+        );
+
+        cartItems.push({
+          name: `Session ${sessionDisplayIndex} - Late Pickup`,
+          campers: campers.length,
+          totalPrice: cost,
+          details: `${units * 30} mintues`,
+        });
+      }
+      return cartItems;
+    });
 };
 
 export const calculateTotalPrice = (cartItems: CartItem[]): number =>

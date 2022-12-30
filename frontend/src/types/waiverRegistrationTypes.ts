@@ -1,6 +1,7 @@
 import { Waiver, WaiverClause } from "./AdminTypes";
 
 export type WaiverReducerDispatch =
+  | SetWaiverInterace
   | ClickOptionalClause
   | ClickRequiredClauses
   | FillName
@@ -14,6 +15,11 @@ export interface GetClauses extends WaiverReducerDispatchBase {
 
 export interface WaiverReducerDispatchBase {
   type: WaiverActions;
+}
+
+export interface SetWaiverInterace extends WaiverReducerDispatchBase {
+  type: WaiverActions;
+  waiver: WaiverInterface;
 }
 
 export interface ClickOptionalClause extends WaiverReducerDispatchBase {
@@ -35,6 +41,7 @@ export interface FillDate extends WaiverReducerDispatchBase {
 export interface ClickRequiredClauses extends WaiverReducerDispatchBase {}
 
 export enum WaiverActions {
+  SET_WAIVER_INTERFACE,
   CLICK_OPTIONAL_CLAUSE,
   ClICK_REQUIRED_CLAUSE,
   WRITE_NAME,

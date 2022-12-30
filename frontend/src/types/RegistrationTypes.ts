@@ -1,6 +1,6 @@
-import { Waiver } from "./AdminTypes";
 import { RegistrantExperienceCamper } from "./CamperTypes";
 import { CampResponse } from "./CampsTypes";
+import { WaiverInterface } from "./waiverRegistrationTypes";
 
 export type CartItem = {
   name: string;
@@ -9,24 +9,28 @@ export type CartItem = {
   details?: string;
 };
 
+export type EdlpDetails = {
+  timeSlot: string; // Selected EDLP time
+  units: number; // The units (# of time slots) of the ed (index 0) and lp (index 1) for the selected day per camper
+  cost: number;
+};
+
+export type EdlpChoice = {
+  date: string;
+  earlyDropoff: EdlpDetails;
+  latePickup: EdlpDetails;
+};
+
 // Used for caching data useful for restoring session on failure,
 // or for passing data through checkout flow to display on success
 export type CheckoutData = {
   campers: RegistrantExperienceCamper[];
   camp: CampResponse | undefined;
-  items: CartItem[];
-  waiver: Waiver;
+  waiverInterface: WaiverInterface;
   // Set doesn't work with JSON stringify: https://stackoverflow.com/questions/31190885/json-stringify-a-set
   selectedSessionIds: string[];
   checkoutUrl: string;
   requireEarlyDropOffLatePickup: boolean | null;
+  edlpChoices: EdlpChoice[][];
   chargeId: string;
 };
-
-export enum RegistrationErrors {
-  EmailRecipientsUndefined = "No recipients defined",
-}
-
-export enum RegistrationErrorMessages {
-  Email = "Email validation failed. Please check email and try again.",
-}

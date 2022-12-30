@@ -3,18 +3,23 @@ import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
 import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import { CampResponse } from "../../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";
+import { EdlpChoice } from "../../../../../types/RegistrationTypes";
 
 type ReviewRegistrationProps = {
   campers: RegistrantExperienceCamper[];
+  sessions: CampSession[];
   camp: CampResponse;
+  edlpChoices: EdlpChoice[][];
   onPageVisited: () => void;
 };
 
 const ReviewRegistration = ({
   campers,
+  sessions,
   camp,
+  edlpChoices,
   onPageVisited,
 }: ReviewRegistrationProps): React.ReactElement => {
   useEffect(() => onPageVisited());
@@ -22,7 +27,7 @@ const ReviewRegistration = ({
     <Box>
       <PaymentSummary
         campName={camp.name}
-        items={mapCampToCartItems(camp, campers)}
+        items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
       />
 
       {/* <ReviewInformation /> */}

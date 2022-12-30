@@ -4,10 +4,11 @@ import { Box, Divider, Text, VStack, Accordion } from "@chakra-ui/react";
 
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
-import EdlpSessionRegistration, { EdlpChoice } from "./edlpSessionRegistration";
+import EdlpSessionRegistration from "./edlpSessionRegistration";
 import { useAdditionalInfoDispatcher } from "./additionalInfoReducer";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
+import { EdlpChoice } from "../../../../../types/RegistrationTypes";
 
 type AdditionalInfoProps = {
   selectedSessions: CampSession[];
@@ -117,7 +118,8 @@ const AdditionalInfo = ({
                           key={`session_${campSession.id}_edlp`}
                           selectedSessionIndex={campSessionIndex}
                           camp={camp}
-                          edlpCost={camp.pickupFee}
+                          edCost={camp.dropoffFee}
+                          lpCost={camp.pickupFee}
                           session={campSession}
                           edlpChoices={edlpChoices}
                           setEdlpChoices={setEdlpChoices}

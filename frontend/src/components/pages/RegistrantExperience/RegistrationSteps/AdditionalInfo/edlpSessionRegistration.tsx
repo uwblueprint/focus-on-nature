@@ -20,20 +20,16 @@ import {
   formatAMPM,
   getFormattedSingleDateString,
 } from "../../../../../utils/CampUtils";
+import { EdlpChoice } from "../../../../../types/RegistrationTypes";
 
 type EDLPSessionRegistrationProps = {
   selectedSessionIndex: number;
   camp: CampResponse;
-  edlpCost: number;
+  edCost: number;
+  lpCost: number;
   session: CampSession;
   edlpChoices: EdlpChoice[][];
   setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
-};
-
-export type EdlpChoice = {
-  date: string; // The date of 1 particular day of camp (sessions consist of multiple days)
-  edlp: string[]; // edlp = [string, string] where index 0 = ed and index 1 = lp, each representing the time slot of edlp selected
-  edlpCost: number[]; // The cost of the ed (index 0) and lp (index 1) for the selected day per camper
 };
 
 const computeIntervals = (
@@ -79,7 +75,8 @@ const computeIntervals = (
 const EDLPSessionRegistration = ({
   selectedSessionIndex,
   camp,
-  edlpCost,
+  edCost,
+  lpCost,
   session,
   edlpChoices,
   setEdlpChoices,
@@ -95,14 +92,14 @@ const EDLPSessionRegistration = ({
   const getEdCostForDay = (date: string): number => {
     return (
       edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.edlpCost[0] ?? 0
+        ?.earlyDropoff.cost ?? 0
     );
   };
 
   const getLpCostForDay = (date: string): number => {
     return (
       edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.edlpCost[1] ?? 0
+        ?.latePickup.cost ?? 0
     );
   };
 
@@ -127,13 +124,21 @@ const EDLPSessionRegistration = ({
     timeInterval: string,
     isLatePickup: boolean,
   ) => {
-    const temp = edlpChoices;
-    temp[selectedSessionIndex][dayIndex].edlp[
-      isLatePickup ? 1 : 0
-    ] = timeInterval;
-    temp[selectedSessionIndex][dayIndex].edlpCost[isLatePickup ? 1 : 0] =
-      numSlots * edlpCost;
-    setEdlpChoices(temp);
+    const newChoices = edlpChoices;
+
+    const changedSlot = {
+      timeSlot: timeInterval,
+      units: numSlots,
+      cost: numSlots * (isLatePickup ? lpCost : edCost),
+    };
+
+    if (isLatePickup) {
+      newChoices[selectedSessionIndex][dayIndex].latePickup = changedSlot;
+    } else {
+      newChoices[selectedSessionIndex][dayIndex].earlyDropoff = changedSlot;
+    }
+
+    setEdlpChoices(newChoices);
     forceUpdate();
   };
 
@@ -161,20 +166,6 @@ const EDLPSessionRegistration = ({
         </option>
       );
     });
-
-  const getDefaultSelectOption = (
-    dateIndex: number,
-    isLatePickup: boolean,
-  ): number => {
-    const interval =
-      edlpChoices[selectedSessionIndex][dateIndex].edlp[isLatePickup ? 1 : 0];
-    if (isLatePickup) {
-      return lpIntervals.indexOf(interval);
-    }
-    return interval === "-"
-      ? 0
-      : edIntervals.length - edIntervals.indexOf(interval);
-  };
 
   return (
     <AccordionItem
@@ -253,10 +244,10 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(
-                            dateIndex,
-                            false,
-                          )}
+                          defaultValue={
+                            edlpChoices[selectedSessionIndex][dateIndex]
+                              .earlyDropoff.timeSlot
+                          }
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -274,7 +265,10 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(dateIndex, true)}
+                          defaultValue={
+                            edlpChoices[selectedSessionIndex][dateIndex]
+                              .latePickup.timeSlot
+                          }
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -323,7 +317,10 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={
+                    edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff
+                      .timeSlot
+                  }
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
@@ -343,7 +340,10 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={
+                    edlpChoices[selectedSessionIndex][dateIndex].latePickup
+                      .timeSlot
+                  }
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),

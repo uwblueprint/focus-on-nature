@@ -6,15 +6,13 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
 import { SUCCESS_RESULT_CODE } from "../../../constants/RegistrationConstants";
-import {
-  mapCampToCartItems,
-  restoreRegistrationSessionFromSessionStorage,
-} from "../../../utils/RegistrationUtils";
+import { restoreRegistrationSessionFromSessionStorage } from "../../../utils/RegistrationUtils";
 import { CheckoutData } from "../../../types/RegistrationTypes";
 import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
+import { WaiverInterface } from "../../../types/waiverRegistrationTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -62,7 +60,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
         setSessionSelectionIsComplete(true);
         setCamp(cachedRegistration.camp);
-        setWaiver(cachedRegistration.waiver);
+        setWaiver(cachedRegistration.waiverInterface.waiver);
       }
     }
 
@@ -96,14 +94,15 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   }, [campId, registrationResult]);
 
   if (registrationResult === SUCCESS_RESULT_CODE) {
+    const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
+
     return (
       <RegistrationResultPage
         camp={camp}
         campers={restoredRegistration?.campers}
-        items={
-          restoredRegistration && camp
-            ? mapCampToCartItems(camp, restoredRegistration.campers)
-            : undefined
+        sessions={
+          camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
+          []
         }
         chargeId={restoredRegistration?.chargeId}
       />

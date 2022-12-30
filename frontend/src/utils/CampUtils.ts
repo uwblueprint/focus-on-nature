@@ -21,6 +21,7 @@ import {
   Location,
   QuestionType,
 } from "../types/CampsTypes";
+import { EdlpChoice } from "../types/RegistrationTypes";
 
 export const CampStatusColor = {
   [CampStatus.DRAFT]: "yellow",
@@ -296,12 +297,33 @@ export const getMeridianTime = (time: string): string => {
 
 export const mapToCreateCamperDTO = (
   campers: RegistrantExperienceCamper[],
+  edlpChoices: EdlpChoice[][],
 ): CreateCamperDTO[] => {
+  const earlyDropoff = edlpChoices.flatMap((sessionChoices) => {
+    return sessionChoices.reduce((dates: string[], edlpChoice) => {
+      if (edlpChoice.earlyDropoff.timeSlot !== "-") {
+        dates.push(edlpChoice.date.toString());
+      }
+
+      return dates;
+    }, []);
+  });
+
+  const latePickup = edlpChoices.flatMap((sessionChoices) => {
+    return sessionChoices.reduce((dates: string[], edlpChoice) => {
+      if (edlpChoice.latePickup.timeSlot !== "-") {
+        dates.push(edlpChoice.date.toString());
+      }
+
+      return dates;
+    }, []);
+  });
+
   return campers.map((camper) => {
     const camperDTO = {
       ...camper,
-      earlyDropoff: camper.earlyDropoff?.map((date) => date.toString()) ?? [],
-      latePickup: camper.latePickup?.map((date) => date.toString()) ?? [],
+      earlyDropoff,
+      latePickup,
       optionalClauses: camper.optionalClauses ?? [],
     };
 

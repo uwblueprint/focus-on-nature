@@ -3,6 +3,7 @@ import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
   OptionalClauseResponse,
+  WaiverActions,
   WaiverInterface,
   WaiverReducerDispatch,
 } from "../../../../types/waiverRegistrationTypes";
@@ -17,15 +18,11 @@ import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
-import {
-  mapCampToCartItems,
-  saveRegistrationSessionToSessionStorage,
-} from "../../../../utils/RegistrationUtils";
-import { CheckoutData } from "../../../../types/RegistrationTypes";
+import { saveRegistrationSessionToSessionStorage } from "../../../../utils/RegistrationUtils";
+import { CheckoutData, EdlpChoice } from "../../../../types/RegistrationTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
-import { EdlpChoice } from "./AdditionalInfo/edlpSessionRegistration";
 import { mapToCreateCamperDTO } from "../../../../utils/CampUtils";
 
 type RegistrationStepsProps = {
@@ -84,6 +81,20 @@ const RegistrationSteps = ({
     setRequireEarlyDropOffLatePickup,
   ] = useState<boolean | null>(null);
 
+  // Each camp session has an array of EdlpChoice objects
+  // Each EdlpChoice object looks like {date: "date of a day of camp", edlp: ["8:30", "16:00"], edlpCost: [40, 20]}
+  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(
+    selectedSessions.map((campSession) => {
+      return campSession.dates.map((date) => {
+        return {
+          date,
+          earlyDropoff: { timeSlot: "-", units: 0, cost: 0 },
+          latePickup: { timeSlot: "-", units: 0, cost: 0 },
+        };
+      });
+    }),
+  );
+
   const [waiverInterface, waiverDispatch] = useReducer<
     Reducer<WaiverInterface, WaiverReducerDispatch>
   >(waiverReducer, {
@@ -120,18 +131,14 @@ const RegistrationSteps = ({
     undefined,
   );
 
-  const goToCheckout = (
-    checkoutSessionUrl: string,
-    chargeId: string,
-    currentCamp: CampResponse,
-  ) => {
-    saveRegistrationSessionToSessionStorage(currentCamp.id, {
+  const goToCheckout = (checkoutSessionUrl: string, chargeId: string) => {
+    saveRegistrationSessionToSessionStorage(camp.id, {
       campers,
       camp,
-      items: mapCampToCartItems(currentCamp, campers),
-      waiver: waiverInterface.waiver as WaiverType,
+      waiverInterface,
       checkoutUrl: checkoutSessionUrl,
       selectedSessionIds: selectedSessions.map((session) => session.id),
+      edlpChoices,
       requireEarlyDropOffLatePickup,
       chargeId,
     });
@@ -141,7 +148,7 @@ const RegistrationSteps = ({
 
   const registerCampers = async (
     newCampers: RegistrantExperienceCamper[],
-    currentCamp: CampResponse,
+    edlp: EdlpChoice[][],
   ) => {
     try {
       if (newCampers.length === 0) {
@@ -153,16 +160,12 @@ const RegistrationSteps = ({
         checkoutSessionUrl,
         campers: campersResponse,
       } = await CamperAPIClient.registerCampers(
-        mapToCreateCamperDTO(newCampers),
+        mapToCreateCamperDTO(newCampers, edlp),
         selectedSessions.map((cs) => cs.id),
       );
 
       setRegistrationLoading(false);
-      goToCheckout(
-        checkoutSessionUrl,
-        campersResponse[0].chargeId,
-        currentCamp,
-      );
+      goToCheckout(checkoutSessionUrl, campersResponse[0].chargeId);
     } catch (error: Error | unknown) {
       let errorMessage =
         "Unable to create a checkout session. Please try again.";
@@ -179,10 +182,6 @@ const RegistrationSteps = ({
       });
     }
   };
-
-  const campSpecificFormQuestions = camp.formQuestions.filter(
-    (question) => question.category === "CampSpecific",
-  );
 
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&
@@ -217,20 +216,6 @@ const RegistrationSteps = ({
         return false;
     }
   };
-
-  // Each camp session has an array of EdlpChoice objects
-  // Each EdlpChoice object looks like {date: "date of a day of camp", edlp: ["8:30", "16:00"], edlpCost: [40, 20]}
-  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(
-    selectedSessions.map((campSession) => {
-      return campSession.dates.map((date) => {
-        return {
-          date,
-          edlp: ["-", "-"],
-          edlpCost: [0, 0],
-        };
-      });
-    }),
-  );
 
   const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
@@ -274,7 +259,9 @@ const RegistrationSteps = ({
         return (
           <ReviewRegistration
             campers={campers}
+            sessions={selectedSessions}
             camp={camp}
+            edlpChoices={edlpChoices}
             onPageVisited={() => setReviewRegistrationVisited(true)}
           />
         );
@@ -291,7 +278,7 @@ const RegistrationSteps = ({
     } else if (desiredStep < 0) {
       onClickBack();
     } else {
-      registerCampers(campers, camp);
+      registerCampers(campers, edlpChoices);
     }
   };
 
@@ -300,6 +287,11 @@ const RegistrationSteps = ({
       setCampers(failedCheckoutData.campers);
       setCheckoutUrl(failedCheckoutData.checkoutUrl);
       setCheckoutChargeId(failedCheckoutData.chargeId);
+      setEdlpChoices(failedCheckoutData.edlpChoices);
+      waiverDispatch({
+        type: WaiverActions.SET_WAIVER_INTERFACE,
+        waiver: failedCheckoutData.waiverInterface,
+      });
 
       // There is a soft (front-end flow) check that this value is not null, as they
       // cannot pass to the checkout page that would produce `failedCheckoutData` without
@@ -308,6 +300,7 @@ const RegistrationSteps = ({
       setRequireEarlyDropOffLatePickup(
         failedCheckoutData.requireEarlyDropOffLatePickup,
       );
+
       setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
       errorModalOnOpen();
     }
@@ -339,8 +332,8 @@ const RegistrationSteps = ({
       />
       <RegistrationErrorModal
         onConfirm={() => {
-          if (checkoutUrl && checkoutChargeId && camp) {
-            goToCheckout(checkoutUrl, checkoutChargeId, camp);
+          if (checkoutUrl && checkoutChargeId) {
+            goToCheckout(checkoutUrl, checkoutChargeId);
           }
         }}
         isOpen={errorModalIsOpen}
