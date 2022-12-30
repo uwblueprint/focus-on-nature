@@ -28,11 +28,14 @@ const FooterDeleteModal = ({
   onClose,
 }: FooterDeleteModalProps): JSX.Element => {
   const [redirect, setRedirect] = useState<boolean>(false);
+  const [isAwaitingReq, setIsAwaitingReq] = React.useState(false);
 
   const toast = useToast();
 
   const handleDeleteCamp = async () => {
+    setIsAwaitingReq(true);
     const res = await CampsAPIClient.deleteCamp(camp.id);
+    setIsAwaitingReq(false);
     if (res) {
       toast({
         description: `${camp.name} has been successfully deleted`,
@@ -88,6 +91,7 @@ const FooterDeleteModal = ({
             color="background.white.100"
             p="16px"
             onClick={handleDeleteCamp}
+            isLoading={isAwaitingReq}
           >
             Remove
           </Button>
