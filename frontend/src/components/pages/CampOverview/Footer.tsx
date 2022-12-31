@@ -28,12 +28,16 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
   const toast = useToast();
   const history = useHistory();
 
+  const [isAwaitingReq, setIsAwaitingReq] = React.useState(false);
+
   const handlePublish = async () => {
     // Ensure that we are not dealing with a published camp already
     // (should not happen due to conditional rendering, but checking to be sure)
     if (camp.active) {
       return;
     }
+
+    setIsAwaitingReq(true);
 
     // change formQuestions to CreateFormQuestions
     const newFormQuestions: CreateFormQuestionRequest[] = [];
@@ -103,6 +107,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
       });
     }
 
+    setIsAwaitingReq(false);
     onClose();
   };
 
@@ -126,6 +131,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
         color="background.white.100"
         p="16px"
         onClick={onOpen}
+        isLoading={isAwaitingReq}
       >
         Delete camp
       </Button>
@@ -151,6 +157,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
             color="background.white.100"
             p="16px"
             onClick={handlePublish}
+            isLoading={isAwaitingReq}
           >
             Publish camp
           </Button>
