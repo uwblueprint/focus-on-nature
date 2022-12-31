@@ -28,7 +28,10 @@ import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
 import DeleteModal from "../../../../common/DeleteModal";
-import { CampResponse } from "../../../../../types/CampsTypes";
+import { CampResponse, FormQuestion } from "../../../../../types/CampsTypes";
+import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../QuestionGroups/MultiselectGroup";
+import TextInputGroup from "../QuestionGroups/TextInputGroup";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
@@ -36,6 +39,7 @@ type CamperCardProps = {
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  personalInfoQuestions: FormQuestion[];
 };
 
 const CamperCard = ({
@@ -44,10 +48,15 @@ const CamperCard = ({
   camperIndex,
   dispatchPersonalInfoAction,
   camp,
+  personalInfoQuestions,
 }: CamperCardProps): React.ReactElement => {
+  const mdWrapWidth = personalInfoQuestions.length > 1 ? "47%" : "100%";
+
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
   const [isAgeInvalid, setIsAgeInvalid] = useState<boolean>(false);
+
+  const [nextClicked, setNextClicked] = useState(false);
 
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
@@ -56,6 +65,7 @@ const CamperCard = ({
       if (!checkLastName(camper.lastName)) setIsLastNameInvalid(true);
       if (!checkAge(camper.age, camp.ageUpper, camp.ageLower))
         setIsAgeInvalid(true);
+      setNextClicked(true);
     };
 
     if (nextBtnRef && nextBtnRef.current) {
@@ -69,6 +79,34 @@ const CamperCard = ({
       }
     };
   }, [camper, nextBtnRef, camp.ageLower, camp.ageUpper]);
+
+
+  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: response,
+    });
+  }
 
   function DeleteRegistrantConfirmationModal() {
     const toast = useToast();
@@ -295,6 +333,39 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
+          {personalInfoQuestions.map((question) => (
+            <WrapItem
+              key={`additional_info_question_${question}`}
+              width={{ sm: "100%", md: mdWrapWidth }}
+              px="20px"
+              py="12px"
+            >
+              {question.type === "Text" && (
+                <TextInputGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  handleTextChange={handleTextChange}
+                  nextClicked={nextClicked}
+                />
+              )}
+              {question.type === "Multiselect" && (
+                <MultiselectGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  dispatchFormResponseAction={handleSelectionChange}
+                  nextClicked={nextClicked}
+                />
+              )}
+              {question.type === "MultipleChoice" && (
+                <MultipleChoiceGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
+                  nextClicked={nextClicked}
+                />
+              )}
+            </WrapItem>
+          ))}
         </Wrap>
       </Box>
     </Box>

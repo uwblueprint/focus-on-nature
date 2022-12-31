@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   FormControl,
   FormErrorMessage,
@@ -7,39 +9,23 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
-import {
-  AdditionalInfoActions,
-  AdditionalInfoReducerDispatch,
-} from "../../../../../../types/AdditionalInfoTypes";
-import { FormQuestion } from "../../../../../../types/CampsTypes";
+import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultipleChoiceGroupProps = {
   formResponses: Map<string, string> | undefined;
-  camperIndex: number;
   question: FormQuestion;
-  dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
+  handleMultipleChoiceUpdate: (choice: string, question: FormQuestion) => void;
   nextClicked: boolean;
 };
 
 const MultipleChoiceGroup = ({
   formResponses,
-  camperIndex,
   question,
-  dispatchAdditionalInfoAction,
+  handleMultipleChoiceUpdate,
   nextClicked,
 }: MultipleChoiceGroupProps): React.ReactElement => {
   const invalid =
     nextClicked && !formResponses?.get(question.question) && question.required;
-
-  const handleMultipleChoiceUpdate = (choice: string) => {
-    dispatchAdditionalInfoAction({
-      type: AdditionalInfoActions.UPDATE_RESPONSE,
-      camperIndex,
-      question: question.question,
-      data: choice,
-    });
-  };
 
   return (
     <FormControl isRequired={question.required} isInvalid={invalid}>
@@ -54,7 +40,7 @@ const MultipleChoiceGroup = ({
       )}
       <RadioGroup
         value={formResponses?.get(question.question)}
-        onChange={(choice) => handleMultipleChoiceUpdate(choice)}
+        onChange={(choice) => handleMultipleChoiceUpdate(choice, question)}
       >
         <VStack alignItems="flex-start">
           {question.options?.map((option) => (

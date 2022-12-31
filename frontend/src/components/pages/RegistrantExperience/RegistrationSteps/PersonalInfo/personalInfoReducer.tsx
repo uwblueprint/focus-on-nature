@@ -5,6 +5,7 @@ import {
   PersonalInfoReducerDispatch,
   UpdateCamper,
   UpdateContact,
+  UpdateResponse,
 } from "../../../../../types/PersonalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse } from "../../../../../types/CampsTypes";
@@ -74,6 +75,14 @@ export const CamperReducer = (
           else if (field === "relationshipToCamper")
             camper.contacts[contactIndex][field] = data as string;
         }
+        break;
+      }
+      case PersonalInfoActions.UPDATE_RESPONSE: {
+        const { camperIndex, question, data } = action as UpdateResponse;
+        const newResponses =
+          newCampers[camperIndex].formResponses ?? new Map<string, string>();
+        newResponses.set(question, data as string);
+        newCampers[camperIndex].formResponses = newResponses;
         break;
       }
       default:

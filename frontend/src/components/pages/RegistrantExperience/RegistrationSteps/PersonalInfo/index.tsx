@@ -45,6 +45,7 @@ const PersonalInfo = ({
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
+  console.log("camp: ", camp);
   return (
     <Box pb={14}>
       <Text textStyle="displayXLarge">{camp.name} Registration</Text>
@@ -64,6 +65,7 @@ const PersonalInfo = ({
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             camperIndex={index}
             camp={camp}
+            personalInfoQuestions={camp.formQuestions.filter(q => q.category === "PersonalInfo")}
           />
         ))}
       </VStack>
