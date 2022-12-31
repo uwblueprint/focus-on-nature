@@ -95,6 +95,7 @@ const RegistrationSteps = ({
     },
   ]);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (waitlistedCamper) {
       const curCampers = [...campers];
@@ -107,7 +108,7 @@ const RegistrationSteps = ({
       curCampers[0].contacts[0].phoneNumber = waitlistedCamper.contactNumber;
       setCampers(curCampers);
     }
-  }, [waitlistedCamper, campers]);
+  }, [waitlistedCamper]);
 
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&

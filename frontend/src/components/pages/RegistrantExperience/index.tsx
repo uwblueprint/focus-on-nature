@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
-import { useLocation, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
@@ -17,6 +17,7 @@ type InitialLoadingState = {
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const toast = useToast();
+  const history = useHistory();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -56,32 +57,38 @@ const RegistrantExperiencePage = (): React.ReactElement => {
               (cs) => cs.id === waitlistedSessionId,
             );
             if (!waitlistedCampSession) {
-              toast({
-                description: `Could not find requested session to register for in this camp.`,
-                status: "error",
-                variant: "subtle",
-                duration: 3000,
-              });
-              return;
+              throw new Error(
+                "Could not find requested session to register for in this camp",
+              );
             }
             // Find the waitlisted camper id in the list of waitlisted campers in the given session
             const waitlistCamper = waitlistedCampSession.waitlist.find(
               (camper) => camper.id === waitlistedCamperId,
             );
-            if (!waitlistCamper) {
-              toast({
-                description: `Could not find details of requested waitlisted camper for this camp session.`,
-                status: "error",
-                variant: "subtle",
-                duration: 3000,
-              });
-              return;
+            if (!waitlistCamper || !waitlistCamper.linkExpiry) {
+              throw new Error(
+                "Could not find details of requested waitlisted camper for this camp session",
+              );
+            }
+
+            // Ensure the invitation link has not expired
+            if (new Date(waitlistCamper.linkExpiry) < new Date()) {
+              throw new Error("The invitation link has expired");
             }
             setSessionSelectionIsComplete(true);
             setWaitlistedCamper(waitlistCamper);
             setSelectedSessions(new Set(waitlistedSessionId));
           }
         }
+      })
+      .catch((error) => {
+        history.push(`/error`);
+        toast({
+          description: error.message,
+          status: "error",
+          variant: "subtle",
+          duration: 3000,
+        });
       })
       .finally(() =>
         setIsLoading((i) => {
@@ -99,7 +106,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           };
         }),
       );
-  }, [campId, waitlistedSessionId, waitlistedCamperId, toast]);
+  }, [campId, waitlistedSessionId, waitlistedCamperId, toast, history]);
 
   if (campResponse && waiverResponse) {
     return sessionSelectionIsComplete ? (

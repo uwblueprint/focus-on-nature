@@ -313,6 +313,7 @@ class CampService implements ICampService {
               contactEmail: waitlistedCamper.contactEmail,
               contactNumber: waitlistedCamper.contactNumber,
               status: waitlistedCamper.status,
+              linkExpiry: waitlistedCamper.linkExpiry,
             };
           },
         );
