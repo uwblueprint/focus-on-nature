@@ -1,5 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
-import React, { useState, useReducer, Reducer, useRef } from "react";
+import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
   OptionalClauseResponse,
@@ -15,7 +15,10 @@ import ReviewRegistration from "./ReviewRegistration";
 import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import {
+  RegistrantExperienceCamper,
+  WaitlistedCamper,
+} from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 import { EdlpChoice } from "./AdditionalInfo/edlpSessionRegistration";
@@ -24,6 +27,7 @@ type RegistrationStepsProps = {
   camp: CampResponse;
   selectedSessions: CampSession[];
   waiver: WaiverType;
+  waitlistedCamper?: WaitlistedCamper;
   onClickBack: () => void;
 };
 
@@ -32,6 +36,7 @@ const RegistrationSteps = ({
   selectedSessions,
   waiver,
   onClickBack,
+  waitlistedCamper,
 }: RegistrationStepsProps): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
@@ -89,6 +94,20 @@ const RegistrationSteps = ({
       optionalClauses: [],
     },
   ]);
+
+  useEffect(() => {
+    if (waitlistedCamper) {
+      const curCampers = [...campers];
+      curCampers[0].firstName = waitlistedCamper.firstName;
+      curCampers[0].lastName = waitlistedCamper.lastName;
+      curCampers[0].age = waitlistedCamper.age;
+      curCampers[0].contacts[0].firstName = waitlistedCamper.contactFirstName;
+      curCampers[0].contacts[0].lastName = waitlistedCamper.contactLastName;
+      curCampers[0].contacts[0].email = waitlistedCamper.contactEmail;
+      curCampers[0].contacts[0].phoneNumber = waitlistedCamper.contactNumber;
+      setCampers(curCampers);
+    }
+  }, [waitlistedCamper, campers]);
 
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&
@@ -155,6 +174,7 @@ const RegistrationSteps = ({
             setCampers={setCampers}
             campSessions={selectedSessions}
             camp={camp}
+            isWaitlistRegistration={waitlistedCamper !== undefined}
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
@@ -227,6 +247,7 @@ const RegistrationSteps = ({
         currentStep={currentStep}
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         handleStepNavigation={handleStepNavigation}
+        isWaitlistRegistration={waitlistedCamper !== undefined}
       />
     </Flex>
   );

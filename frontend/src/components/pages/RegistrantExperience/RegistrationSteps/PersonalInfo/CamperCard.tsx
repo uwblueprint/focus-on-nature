@@ -208,10 +208,7 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <NumberInput
-                precision={0}
-                defaultValue={camper.age ? camper.age : ""}
-              >
+              <NumberInput precision={0} value={camper.age || ""}>
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {

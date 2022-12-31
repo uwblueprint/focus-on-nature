@@ -73,7 +73,8 @@ export type WaitlistedCamper = {
   firstName: string;
   lastName: string;
   age: number;
-  contactName: string;
+  contactFirstName: string;
+  contactLastName: string;
   contactEmail: string;
   contactNumber: string;
   status: WaitlistedCamperStatus;

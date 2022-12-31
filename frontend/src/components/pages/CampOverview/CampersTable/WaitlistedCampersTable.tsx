@@ -194,7 +194,7 @@ const WaitlistedCampersTable = ({
                   <Td paddingRight="0px" maxWidth="320px">
                     <VStack align="start">
                       <Text style={textStyles.buttonSemiBold}>
-                        {camper.contactName}
+                        {camper.contactFirstName} {camper.contactLastName}
                       </Text>
                       <Text>
                         {camper.contactNumber}&nbsp;|&nbsp;{camper.contactEmail}

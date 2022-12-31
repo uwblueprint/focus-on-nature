@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Text, Spinner, Flex } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
+import { useLocation, useParams } from "react-router-dom";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
@@ -8,6 +8,7 @@ import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { Waiver } from "../../../types/AdminTypes";
+import { WaitlistedCamper } from "../../../types/CamperTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -15,7 +16,13 @@ type InitialLoadingState = {
 };
 
 const RegistrantExperiencePage = (): React.ReactElement => {
+  const toast = useToast();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const { id: campId } = useParams<{ id: string }>();
+  const waitlistedSessionId = searchParams.get("waitlistedSessionId");
+  const waitlistedCamperId = searchParams.get("waitlistedCamperId");
 
   const [campResponse, setCampResponse] = useState<CampResponse | undefined>(
     undefined,
@@ -35,10 +42,47 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [sessionSelectionIsComplete, setSessionSelectionIsComplete] = useState(
     false,
   );
+  const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
 
   useEffect(() => {
     CampsAPIClient.getCampById(campId)
-      .then((camp) => (camp.id ? setCampResponse(camp) : null))
+      .then((camp) => {
+        if (camp.id) {
+          setCampResponse(camp);
+
+          if (waitlistedSessionId && waitlistedCamperId) {
+            // Ensure the given waitlisted session id is in the camp sessions of this camp
+            const waitlistedCampSession = camp.campSessions.find(
+              (cs) => cs.id === waitlistedSessionId,
+            );
+            if (!waitlistedCampSession) {
+              toast({
+                description: `Could not find requested session to register for in this camp.`,
+                status: "error",
+                variant: "subtle",
+                duration: 3000,
+              });
+              return;
+            }
+            // Find the waitlisted camper id in the list of waitlisted campers in the given session
+            const waitlistCamper = waitlistedCampSession.waitlist.find(
+              (camper) => camper.id === waitlistedCamperId,
+            );
+            if (!waitlistCamper) {
+              toast({
+                description: `Could not find details of requested waitlisted camper for this camp session.`,
+                status: "error",
+                variant: "subtle",
+                duration: 3000,
+              });
+              return;
+            }
+            setSessionSelectionIsComplete(true);
+            setWaitlistedCamper(waitlistCamper);
+            setSelectedSessions(new Set(waitlistedSessionId));
+          }
+        }
+      })
       .finally(() =>
         setIsLoading((i) => {
           return { ...i, camp: false };
@@ -55,7 +99,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           };
         }),
       );
-  }, [campId]);
+  }, [campId, waitlistedSessionId, waitlistedCamperId, toast]);
 
   if (campResponse && waiverResponse) {
     return sessionSelectionIsComplete ? (
@@ -66,6 +110,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         )}
         waiver={waiverResponse}
         onClickBack={() => setSessionSelectionIsComplete(false)}
+        waitlistedCamper={waitlistedCamper}
       />
     ) : (
       <SessionSelection
