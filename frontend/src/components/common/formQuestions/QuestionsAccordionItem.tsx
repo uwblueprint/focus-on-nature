@@ -1,9 +1,6 @@
 import React from "react";
 
-import {
-  AccordionItem,
-  AccordionPanel,
-} from "@chakra-ui/react";
+import { AccordionItem, AccordionPanel } from "@chakra-ui/react";
 
 import {
   CreateFormQuestionRequest,

@@ -5,31 +5,28 @@ import {
   Divider,
   Flex,
   FormControl,
-  FormLabel,
+  FormErrorMessage,
   Heading,
   Input,
   Spacer,
   Text,
   Textarea,
-  useDisclosure,
-  useToast,
   Wrap,
   WrapItem,
-  FormErrorMessage,
 } from "@chakra-ui/react";
 import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
-} from "../../../../../types/PersonalInfoTypes";
-import RequiredAsterisk from "../../../../common/RequiredAsterisk";
-import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+} from "../../../../../../types/PersonalInfoTypes";
+import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import {
   checkAge,
   checkFirstName,
   checkLastName,
-} from "../PersonalInfo/personalInfoReducer";
-import DeleteModal from "../../../../common/DeleteModal";
-import { CampResponse } from "../../../../../types/CampsTypes";
+} from "../../PersonalInfo/personalInfoReducer";
+import { CampResponse } from "../../../../../../types/CampsTypes";
+import EditFormLabel from "./EditFormLabel";
+import EditCardFooter from "./EditCardFooter";
 
 type EditCamperCardProps = {
   camper: RegistrantExperienceCamper;
@@ -45,6 +42,7 @@ const EditCamperCard = ({
   camp,
 }: EditCamperCardProps): React.ReactElement => {
   const [updateMemo, setUpdateMemo] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialCamper: RegistrantExperienceCamper = useMemo(() => camper, [
     updateMemo,
   ]);
@@ -76,86 +74,47 @@ const EditCamperCard = ({
     }
   };
 
-  const CancelChangesModal = () => {
-    const toast = useToast();
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const deleteCamperModal = DeleteModal({
-      title: "Discard Edits",
-      bodyText: "Are you sure you want to discard all edits?",
-      bodyNote: "Note: this action is irreversible.",
-      buttonLabel: "Discard Edits",
-      isOpen,
-      onClose,
-      onDelete: () => {
-        setIsFirstNameInvalid(false);
-        setIsLastNameInvalid(false);
-        setIsAgeInvalid(false);
+  const EditCamperOnDelete = () => {
+    setIsFirstNameInvalid(false);
+    setIsLastNameInvalid(false);
+    setIsAgeInvalid(false);
 
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CAMPER,
-          field: "firstName",
-          camperIndex,
-          data: initialCamper.firstName,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CAMPER,
-          field: "lastName",
-          camperIndex,
-          data: initialCamper.lastName,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CAMPER,
-          field: "age",
-          camperIndex,
-          data: initialCamper.age,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CAMPER,
-          field: "allergies",
-          camperIndex,
-          data: initialCamper.allergies,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CAMPER,
-          field: "specialNeeds",
-          camperIndex,
-          data: initialCamper.specialNeeds,
-        });
-
-        setEditing(false);
-
-        toast({
-          description: `Edits have been discarded.`,
-          status: "success",
-          duration: 3000,
-          isClosable: false,
-          variant: "subtle",
-        });
-        onClose();
-      },
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CAMPER,
+      field: "firstName",
+      camperIndex,
+      data: initialCamper.firstName,
     });
 
-    return (
-      <>
-        <Button
-          color="text.critical.100"
-          variant="outline"
-          onClick={onOpen}
-          colorScheme="red"
-          w={{ sm: "80px", lg: "100px" }}
-          h={{ sm: "30px", lg: "40px" }}
-        >
-          <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-            Cancel
-          </Text>
-        </Button>
-        {deleteCamperModal}
-      </>
-    );
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CAMPER,
+      field: "lastName",
+      camperIndex,
+      data: initialCamper.lastName,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CAMPER,
+      field: "age",
+      camperIndex,
+      data: initialCamper.age,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CAMPER,
+      field: "allergies",
+      camperIndex,
+      data: initialCamper.allergies,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CAMPER,
+      field: "specialNeeds",
+      camperIndex,
+      data: initialCamper.specialNeeds,
+    });
+
+    setEditing(false);
   };
 
   return (
@@ -193,21 +152,7 @@ const EditCamperCard = ({
             <Wrap pt={7}>
               <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
                 <FormControl isInvalid={isFirstNameInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      First Name{" "}
-                      <Text
-                        as="span"
-                        color="text.critical.100"
-                        fontSize="xs"
-                        verticalAlign="super"
-                      >
-                        <RequiredAsterisk />
-                      </Text>
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel title="First Name" required />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={camper.firstName}
@@ -229,21 +174,7 @@ const EditCamperCard = ({
 
               <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
                 <FormControl isInvalid={isLastNameInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Last Name{" "}
-                      <Text
-                        as="span"
-                        color="text.critical.100"
-                        fontSize="xs"
-                        verticalAlign="super"
-                      >
-                        <RequiredAsterisk />
-                      </Text>
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel title="First Name" required />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={camper.lastName}
@@ -265,22 +196,7 @@ const EditCamperCard = ({
 
               <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>
                 <FormControl isInvalid={isAgeInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Age{" "}
-                      <Text
-                        as="span"
-                        color="text.critical.100"
-                        fontSize="xs"
-                        verticalAlign="super"
-                      >
-                        <RequiredAsterisk />
-                      </Text>
-                    </Text>
-                  </FormLabel>
-
+                  <EditFormLabel title="Age" required />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={camper.age}
@@ -315,19 +231,10 @@ const EditCamperCard = ({
             <Wrap py={7}>
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Allergies
-                    </Text>
-                    <Text
-                      textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
-                    >
-                      Please list any allergies the camper has{" "}
-                    </Text>
-                  </FormLabel>
-
+                  <EditFormLabel
+                    title="Allergies"
+                    subtitle="Please list any allergies the camper has"
+                  />
                   <Textarea
                     backgroundColor="#FFFFFF"
                     value={camper.allergies ? camper.allergies : ""}
@@ -347,19 +254,10 @@ const EditCamperCard = ({
 
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Special Needs
-                    </Text>
-                    <Text
-                      textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
-                    >
-                      Please list any special needs the camper has{" "}
-                    </Text>
-                  </FormLabel>
-
+                  <EditFormLabel
+                    title="Special Needs"
+                    subtitle="Please list any special needs the camper has"
+                  />
                   <Textarea
                     backgroundColor="#FFFFFF"
                     value={camper.specialNeeds ? camper.specialNeeds : ""}
@@ -377,29 +275,10 @@ const EditCamperCard = ({
             </Wrap>
           </Box>
 
-          <Box rounded="xl">
-            <Wrap>
-              <Spacer />
-              <WrapItem>
-                <Heading textStyle="displayLarge">
-                  <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
-                    <Spacer />
-                    <Button
-                      variant="primary"
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                      w={{ sm: "80px", lg: "200px" }}
-                      mr={4}
-                      h={{ sm: "30px", lg: "40px" }}
-                      onClick={updateFormErrorMsgs}
-                    >
-                      Save
-                    </Button>
-                    {CancelChangesModal()}
-                  </Flex>
-                </Heading>
-              </WrapItem>
-            </Wrap>
-          </Box>
+          <EditCardFooter
+            onDelete={EditCamperOnDelete}
+            updateFormErrorMsgs={updateFormErrorMsgs}
+          />
         </Box>
       </Box>
     </Box>

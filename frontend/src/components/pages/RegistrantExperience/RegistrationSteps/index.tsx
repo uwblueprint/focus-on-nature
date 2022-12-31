@@ -209,10 +209,11 @@ const RegistrationSteps = ({
     hasEarlyDropOffLatePickup,
     requireEarlyDropOffLatePickup,
   );
+
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = reviewRegistrationVisited;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
-  const [reviewSummary, setReviewSummary] = useState(false);
+  const [isPaymentSummary, setIsPaymentSummary] = useState(false);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -229,7 +230,7 @@ const RegistrationSteps = ({
     }
   };
 
-   const getCurrentRegistrantStepComponent = (
+  const getCurrentRegistrantStepComponent = (
     step: RegistrantExperienceSteps,
   ) => {
     switch (step) {
@@ -286,16 +287,16 @@ const RegistrationSteps = ({
     const desiredStep = currentStep + stepsToMove;
     if (
       currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
-      !reviewSummary &&
+      !isPaymentSummary &&
       stepsToMove === 1
     ) {
-      setReviewSummary(true);
+      setIsPaymentSummary(true);
     } else if (
       currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
-      reviewSummary &&
+      isPaymentSummary &&
       stepsToMove === -1
     ) {
-      setReviewSummary(false);
+      setIsPaymentSummary(false);
     } else if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
       window.scrollTo(0, 0);
@@ -343,7 +344,7 @@ const RegistrationSteps = ({
         isPersonalInfoFilled={isPersonalInfoFilled}
         isAdditionalInfoFilled={isAdditionalInfoFilled}
         isWaiverFilled={isWaiverFilled}
-        isReviewRegistrationFilled={reviewSummary}
+        isReviewRegistrationFilled={isPaymentSummary}
         setCurrentStep={setCurrentStep}
       />
       <Box mx="10vw">{getCurrentRegistrantStepComponent(currentStep)}</Box>

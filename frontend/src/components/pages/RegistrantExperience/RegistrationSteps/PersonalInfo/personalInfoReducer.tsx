@@ -126,6 +126,64 @@ export const checkRelationToCamper = (relation: string): boolean => {
   return !!relation;
 };
 
+export const checkCamperCardComplete = (
+  camp: CampResponse,
+  camper: RegistrantExperienceCamper,
+): boolean => {
+  if (
+    !(
+      checkFirstName(camper.firstName) &&
+      checkLastName(camper.lastName) &&
+      checkAge(camper.age, camp.ageUpper, camp.ageLower)
+    )
+  ) {
+    return false;
+  }
+  return true;
+};
+
+export const checkContactCardComplete = (
+  camper: RegistrantExperienceCamper,
+): boolean => {
+  if (camper.contacts.length > 2 || camper.contacts.length < 1) {
+    return false; // Need to have either 1 or 2 contacts only
+  }
+  // Check primary contact card
+  const primaryContact = camper.contacts[0];
+  if (
+    !(
+      checkFirstName(primaryContact.firstName) &&
+      checkLastName(primaryContact.lastName) &&
+      checkEmail(primaryContact.email) &&
+      checkPhoneNumber(primaryContact.phoneNumber) &&
+      checkRelationToCamper(primaryContact.relationshipToCamper)
+    )
+  ) {
+    return false;
+  }
+  // Check secondary contact card
+  if (camper.contacts.length > 1) {
+    const secondaryContact = camper.contacts[1];
+    if (
+      (secondaryContact.firstName ||
+        secondaryContact.lastName ||
+        secondaryContact.email ||
+        secondaryContact.phoneNumber ||
+        secondaryContact.relationshipToCamper) &&
+      !(
+        checkFirstName(secondaryContact.firstName) &&
+        checkLastName(secondaryContact.lastName) &&
+        checkEmail(secondaryContact.email) &&
+        checkPhoneNumber(secondaryContact.phoneNumber) &&
+        checkRelationToCamper(secondaryContact.relationshipToCamper)
+      )
+    ) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const checkPersonalInfoFilled = (
   campers: RegistrantExperienceCamper[],
   camp: CampResponse | undefined,
@@ -137,52 +195,13 @@ export const checkPersonalInfoFilled = (
 
   /* eslint-disable-next-line */
   for (const camper of campers) {
-    // Check camper card
     if (
       !(
-        checkFirstName(camper.firstName) &&
-        checkLastName(camper.lastName) &&
-        checkAge(camper.age, camp.ageUpper, camp.ageLower)
-      )
-    )
-      return false;
-
-    // Check contact cards
-    if (camper.contacts.length > 2 || camper.contacts.length < 1) {
-      return false; // Need to have either 1 or 2 contacts only
-    }
-    // Check primary contact card
-    const primaryContact = camper.contacts[0];
-    if (
-      !(
-        checkFirstName(primaryContact.firstName) &&
-        checkLastName(primaryContact.lastName) &&
-        checkEmail(primaryContact.email) &&
-        checkPhoneNumber(primaryContact.phoneNumber) &&
-        checkRelationToCamper(primaryContact.relationshipToCamper)
+        checkCamperCardComplete(camp, camper) &&
+        checkContactCardComplete(camper)
       )
     ) {
       return false;
-    }
-    // Check secondary contact card
-    if (camper.contacts.length > 1) {
-      const secondaryContact = camper.contacts[1];
-      if (
-        (secondaryContact.firstName ||
-          secondaryContact.lastName ||
-          secondaryContact.email ||
-          secondaryContact.phoneNumber ||
-          secondaryContact.relationshipToCamper) &&
-        !(
-          checkFirstName(secondaryContact.firstName) &&
-          checkLastName(secondaryContact.lastName) &&
-          checkEmail(secondaryContact.email) &&
-          checkPhoneNumber(secondaryContact.phoneNumber) &&
-          checkRelationToCamper(secondaryContact.relationshipToCamper)
-        )
-      ) {
-        return false;
-      }
     }
   }
   return true;

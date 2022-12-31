@@ -6,31 +6,28 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
   Input,
   Spacer,
   Text,
   Textarea,
-  useDisclosure,
-  useToast,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
 import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
-} from "../../../../../types/PersonalInfoTypes";
-import { EmergencyContact } from "../../../../../types/CamperTypes";
-import RequiredAsterisk from "../../../../common/RequiredAsterisk";
-import DeleteModal from "../../../../common/DeleteModal";
+} from "../../../../../../types/PersonalInfoTypes";
+import { EmergencyContact } from "../../../../../../types/CamperTypes";
 import {
   checkEmail,
   checkFirstName,
   checkLastName,
   checkPhoneNumber,
   checkRelationToCamper,
-} from "../PersonalInfo/personalInfoReducer";
+} from "../../PersonalInfo/personalInfoReducer";
+import EditFormLabel from "./EditFormLabel";
+import EditCardFooter from "./EditCardFooter";
 
 type EditContactCardProps = {
   contact: EmergencyContact;
@@ -44,6 +41,8 @@ const EditContactCard = ({
   dispatchPersonalInfoAction,
 }: EditContactCardProps): React.ReactElement => {
   const [updateMemo, setUpdateMemo] = useState(0);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialContact: EmergencyContact = useMemo(() => contact, [updateMemo]);
 
   const [editing, setEditing] = useState(false);
@@ -57,7 +56,6 @@ const EditContactCard = ({
   const [isRelationInvalid, setIsRelationInvalid] = useState<boolean>(false);
 
   const updateFormErrorMsgs = () => {
-    // Check if we're on secondary contact. If so, then we display error messages only if user has started filling secondary contact.
     if (
       contactIndex === 1 &&
       !(
@@ -104,88 +102,49 @@ const EditContactCard = ({
     }
   };
 
-  const CancelChangesModal = () => {
-    const toast = useToast();
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const deleteCamperModal = DeleteModal({
-      title: "Discard Edits",
-      bodyText: "Are you sure you want to discard all edits?",
-      bodyNote: "Note: this action is irreversible.",
-      buttonLabel: "Discard Edits",
-      isOpen,
-      onClose,
-      onDelete: () => {
-        setIsFirstNameInvalid(false);
-        setIsLastNameInvalid(false);
-        setIsEmailInvalid(false);
-        setIsPhoneNumberInvalid(false);
-        setIsRelationInvalid(false);
+  const EditContactOnDelete = () => {
+    setIsFirstNameInvalid(false);
+    setIsLastNameInvalid(false);
+    setIsEmailInvalid(false);
+    setIsPhoneNumberInvalid(false);
+    setIsRelationInvalid(false);
 
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CONTACT,
-          field: "firstName",
-          contactIndex,
-          data: initialContact.firstName,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CONTACT,
-          field: "lastName",
-          contactIndex,
-          data: initialContact.lastName,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CONTACT,
-          field: "email",
-          contactIndex,
-          data: initialContact.email,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CONTACT,
-          field: "phoneNumber",
-          contactIndex,
-          data: initialContact.phoneNumber,
-        });
-
-        dispatchPersonalInfoAction({
-          type: PersonalInfoActions.UPDATE_CONTACT,
-          field: "relationshipToCamper",
-          contactIndex,
-          data: initialContact.relationshipToCamper,
-        });
-
-        setEditing(false);
-
-        toast({
-          description: `Edits have been discarded.`,
-          status: "success",
-          duration: 3000,
-          isClosable: false,
-          variant: "subtle",
-        });
-        onClose();
-      },
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT,
+      field: "firstName",
+      contactIndex,
+      data: initialContact.firstName,
     });
 
-    return (
-      <>
-        <Button
-          color="text.critical.100"
-          variant="outline"
-          onClick={onOpen}
-          colorScheme="red"
-          w={{ sm: "80px", lg: "100px" }}
-          h={{ sm: "30px", lg: "40px" }}
-        >
-          <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-            Cancel
-          </Text>
-        </Button>
-        {deleteCamperModal}
-      </>
-    );
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT,
+      field: "lastName",
+      contactIndex,
+      data: initialContact.lastName,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT,
+      field: "email",
+      contactIndex,
+      data: initialContact.email,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT,
+      field: "phoneNumber",
+      contactIndex,
+      data: initialContact.phoneNumber,
+    });
+
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT,
+      field: "relationshipToCamper",
+      contactIndex,
+      data: initialContact.relationshipToCamper,
+    });
+
+    setEditing(false);
   };
 
   return (
@@ -223,13 +182,10 @@ const EditContactCard = ({
             <Wrap pt="7">
               <WrapItem width={{ sm: "100%", md: "45%", lg: "20%" }}>
                 <FormControl isInvalid={isFirstNameInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      First Name {contactIndex === 0 && <RequiredAsterisk />}
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel
+                    title="First Name"
+                    required={contactIndex === 0}
+                  />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={contact.firstName}
@@ -251,13 +207,10 @@ const EditContactCard = ({
               <Spacer />
               <WrapItem width={{ sm: "100%", md: "45%", lg: "20%" }}>
                 <FormControl isInvalid={isLastNameInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Last Name {contactIndex === 0 && <RequiredAsterisk />}
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel
+                    title="Last Name"
+                    required={contactIndex === 0}
+                  />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={contact.lastName}
@@ -279,13 +232,7 @@ const EditContactCard = ({
               <Spacer />
               <WrapItem width={{ sm: "100%", md: "45%", lg: "20%" }}>
                 <FormControl isInvalid={isEmailInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Email {contactIndex === 0 && <RequiredAsterisk />}
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel title="Email" required={contactIndex === 0} />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={contact.email}
@@ -307,13 +254,10 @@ const EditContactCard = ({
               <Spacer />
               <WrapItem width={{ sm: "100%", md: "45%", lg: "25%" }}>
                 <FormControl isInvalid={isPhoneNumberInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Phone Number {contactIndex === 0 && <RequiredAsterisk />}
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel
+                    title="Phone Number"
+                    required={contactIndex === 0}
+                  />
                   <Input
                     backgroundColor="#FFFFFF"
                     value={contact.phoneNumber}
@@ -338,14 +282,10 @@ const EditContactCard = ({
             <Wrap py={7}>
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl isInvalid={isRelationInvalid}>
-                  <FormLabel>
-                    <Text
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                    >
-                      Relation To Camper{" "}
-                      {contactIndex === 0 && <RequiredAsterisk />}
-                    </Text>
-                  </FormLabel>
+                  <EditFormLabel
+                    title="Relation To Camper"
+                    required={contactIndex === 0}
+                  />
                   <Textarea
                     backgroundColor="#FFFFFF"
                     value={contact.relationshipToCamper}
@@ -367,29 +307,10 @@ const EditContactCard = ({
             </Wrap>
           </Box>
 
-          <Box rounded="xl">
-            <Wrap>
-              <Spacer />
-              <WrapItem>
-                <Heading textStyle="displayLarge">
-                  <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
-                    <Spacer />
-                    <Button
-                      variant="primary"
-                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-                      w={{ sm: "80px", lg: "200px" }}
-                      mr={4}
-                      h={{ sm: "30px", lg: "40px" }}
-                      onClick={updateFormErrorMsgs}
-                    >
-                      Save
-                    </Button>
-                    {CancelChangesModal()}
-                  </Flex>
-                </Heading>
-              </WrapItem>
-            </Wrap>
-          </Box>
+          <EditCardFooter
+            onDelete={EditContactOnDelete}
+            updateFormErrorMsgs={updateFormErrorMsgs}
+          />
         </Box>
       </Box>
     </Box>
