@@ -85,6 +85,20 @@ export const CamperReducer = (
         newCampers[camperIndex].formResponses = newResponses;
         break;
       }
+      case PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE: {
+        const {question, data } = action as UpdateResponse;
+
+        const newResponses =
+          newCampers[0].formResponses ?? new Map<string, string>();
+        newResponses.set(question, data as string);
+
+        // Update all the campers with the new formResponses
+        /* eslint-disable-next-line */
+        for (const camper of newCampers) { 
+          camper.formResponses = newResponses;
+        }
+        break;
+      }
       default:
     }
     return newCampers;

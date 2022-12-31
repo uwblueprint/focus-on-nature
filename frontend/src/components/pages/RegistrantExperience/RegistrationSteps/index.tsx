@@ -16,7 +16,7 @@ import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import { Waiver as WaiverType } from "../../../../types/AdminTypes";
+import { FormTemplate, Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 import { EdlpChoice } from "./AdditionalInfo/edlpSessionRegistration";
 
@@ -24,6 +24,7 @@ type RegistrationStepsProps = {
   camp: CampResponse;
   selectedSessions: CampSession[];
   waiver: WaiverType;
+  formTemplate: FormTemplate;
   onClickBack: () => void;
 };
 
@@ -31,6 +32,7 @@ const RegistrationSteps = ({
   camp,
   selectedSessions,
   waiver,
+  formTemplate,
   onClickBack,
 }: RegistrationStepsProps): React.ReactElement => {
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
@@ -155,6 +157,7 @@ const RegistrationSteps = ({
             setCampers={setCampers}
             campSessions={selectedSessions}
             camp={camp}
+            
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:

@@ -7,11 +7,12 @@ import { CampResponse } from "../../../types/CampsTypes";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { Waiver } from "../../../types/AdminTypes";
+import { FormTemplate, Waiver } from "../../../types/AdminTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
   camp: boolean;
+  formTemplate: boolean;
 };
 
 const RegistrantExperiencePage = (): React.ReactElement => {
@@ -23,10 +24,12 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [waiverResponse, setWaiverResponse] = useState<Waiver | undefined>(
     undefined,
   );
+  const [templateResponse, setTemplateResponse] = useState<FormTemplate | undefined>();
 
   const [isLoading, setIsLoading] = useState<InitialLoadingState>({
     waiver: true,
     camp: true,
+    formTemplate: true,
   });
 
   const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
@@ -55,9 +58,21 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           };
         }),
       );
+    
+    AdminAPIClient.getFormTemplate()
+      .then(template => template.formQuestions? setTemplateResponse(template) : null)
+      .finally(() =>
+        setIsLoading((i) => {
+          return {
+            ...i,
+            formTemplate: false,
+          };
+        }),
+      );
+
   }, [campId]);
 
-  if (campResponse && waiverResponse) {
+  if (campResponse && waiverResponse && templateResponse) {
     return sessionSelectionIsComplete ? (
       <RegistrationSteps
         camp={campResponse}
@@ -65,6 +80,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           selectedSessions.has(session.id),
         )}
         waiver={waiverResponse}
+        formTemplate={templateResponse}
         onClickBack={() => setSessionSelectionIsComplete(false)}
       />
     ) : (

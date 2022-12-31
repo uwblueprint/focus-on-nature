@@ -58,6 +58,33 @@ const CamperCard = ({
 
   const [nextClicked, setNextClicked] = useState(false);
 
+  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: response,
+    });
+  }
+
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
     const updateFormErrorMsgs = () => {
@@ -80,33 +107,6 @@ const CamperCard = ({
     };
   }, [camper, nextBtnRef, camp.ageLower, camp.ageUpper]);
 
-
-  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
-    dispatchPersonalInfoAction({
-      type: PersonalInfoActions.UPDATE_RESPONSE,
-      camperIndex,
-      question: question.question,
-      data: choice,
-    });
-  };
-
-  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion ) => {
-    dispatchPersonalInfoAction({
-      type: PersonalInfoActions.UPDATE_RESPONSE,
-      camperIndex,
-      question: question.question,
-      data: selectionsResponse,
-    });
-  };
-
-  const handleTextChange = (response: string, question: FormQuestion) => {
-    dispatchPersonalInfoAction({
-      type: PersonalInfoActions.UPDATE_RESPONSE,
-      camperIndex,
-      question: question.question,
-      data: response,
-    });
-  }
 
   function DeleteRegistrantConfirmationModal() {
     const toast = useToast();
@@ -335,7 +335,7 @@ const CamperCard = ({
           </WrapItem>
           {personalInfoQuestions.map((question) => (
             <WrapItem
-              key={`additional_info_question_${question}`}
+              key={`personal_info_question_${question.question}`}
               width={{ sm: "100%", md: mdWrapWidth }}
               px="20px"
               py="12px"

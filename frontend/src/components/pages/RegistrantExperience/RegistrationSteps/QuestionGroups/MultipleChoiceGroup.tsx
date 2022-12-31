@@ -29,8 +29,10 @@ const MultipleChoiceGroup = ({
 
   return (
     <FormControl isRequired={question.required} isInvalid={invalid}>
-      <FormLabel fontWeight="bold" fontSize="18px">
-        {question.question}
+      <FormLabel>
+        <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+          {question.question}
+        </Text>
       </FormLabel>
       <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
         {question.description}
