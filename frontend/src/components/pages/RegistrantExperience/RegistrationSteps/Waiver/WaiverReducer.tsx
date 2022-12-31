@@ -1,4 +1,3 @@
-import { Waiver } from "../../../../../types/AdminTypes";
 import {
   WaiverInterface,
   OptionalClauseResponse,

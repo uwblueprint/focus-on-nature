@@ -1,4 +1,7 @@
-import { CAMP_ID_SESSION_STORAGE_KEY } from "../constants/RegistrationConstants";
+import {
+  CAMP_ID_SESSION_STORAGE_KEY,
+  EDLP_PLACEHOLDER_TIMESLOT,
+} from "../constants/RegistrationConstants";
 import { RegistrantExperienceCamper } from "../types/CamperTypes";
 import { CampResponse, CampSession } from "../types/CampsTypes";
 import { CartItem, CheckoutData, EdlpChoice } from "../types/RegistrationTypes";
@@ -31,7 +34,8 @@ export const mapCampToCartItems = (
 
       if (
         edlpChoices[sessionIndex].some(
-          (edlpChoice) => edlpChoice.earlyDropoff.timeSlot === "-",
+          (edlpChoice) =>
+            edlpChoice.earlyDropoff.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
         )
       ) {
         const [cost, units] = edlpChoices[sessionIndex].reduce(
@@ -54,7 +58,8 @@ export const mapCampToCartItems = (
 
       if (
         edlpChoices[sessionIndex].some(
-          (edlpChoice) => edlpChoice.latePickup.timeSlot === "-",
+          (edlpChoice) =>
+            edlpChoice.latePickup.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
         )
       ) {
         const [cost, units] = edlpChoices[sessionIndex].reduce(

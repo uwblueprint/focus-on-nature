@@ -24,6 +24,7 @@ import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
 import { mapToCreateCamperDTO } from "../../../../utils/CampUtils";
+import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../constants/RegistrationConstants";
 
 type RegistrationStepsProps = {
   camp: CampResponse;
@@ -88,8 +89,16 @@ const RegistrationSteps = ({
       return campSession.dates.map((date) => {
         return {
           date,
-          earlyDropoff: { timeSlot: "-", units: 0, cost: 0 },
-          latePickup: { timeSlot: "-", units: 0, cost: 0 },
+          earlyDropoff: {
+            timeSlot: EDLP_PLACEHOLDER_TIMESLOT,
+            units: 0,
+            cost: 0,
+          },
+          latePickup: {
+            timeSlot: EDLP_PLACEHOLDER_TIMESLOT,
+            units: 0,
+            cost: 0,
+          },
         };
       });
     }),
@@ -160,13 +169,15 @@ const RegistrationSteps = ({
         checkoutSessionUrl,
         campers: campersResponse,
       } = await CamperAPIClient.registerCampers(
-        mapToCreateCamperDTO(newCampers, edlp),
+        mapToCreateCamperDTO(newCampers, edlp, waiverInterface.optionalClauses),
         selectedSessions.map((cs) => cs.id),
       );
 
       setRegistrationLoading(false);
       goToCheckout(checkoutSessionUrl, campersResponse[0].chargeId);
     } catch (error: Error | unknown) {
+      setRegistrationLoading(false);
+
       let errorMessage =
         "Unable to create a checkout session. Please try again.";
       if (error instanceof Error) {

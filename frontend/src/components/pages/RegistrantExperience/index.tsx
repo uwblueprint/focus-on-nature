@@ -12,7 +12,6 @@ import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
-import { WaiverInterface } from "../../../types/waiverRegistrationTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -104,6 +103,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
           []
         }
+        edlpChoices={restoredRegistration?.edlpChoices}
         chargeId={restoredRegistration?.chargeId}
       />
     );

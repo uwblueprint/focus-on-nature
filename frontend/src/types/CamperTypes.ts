@@ -42,8 +42,9 @@ export type RegistrantExperienceCamper = Omit<
 // Fields are required by backend
 export type CreateCamperDTO = Omit<
   RegistrantExperienceCamper,
-  "earlyDropoff" | "latePickup" | "optionalClauses"
+  "earlyDropoff" | "latePickup" | "optionalClauses" | "formResponses"
 > & {
+  formResponses?: { [key: string]: string };
   earlyDropoff: string[];
   latePickup: string[];
   optionalClauses: OptionalClause[];

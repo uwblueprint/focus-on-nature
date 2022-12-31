@@ -21,6 +21,7 @@ import {
   getFormattedSingleDateString,
 } from "../../../../../utils/CampUtils";
 import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../../constants/RegistrationConstants";
 
 type EDLPSessionRegistrationProps = {
   selectedSessionIndex: number;
@@ -81,11 +82,11 @@ const EDLPSessionRegistration = ({
   edlpChoices,
   setEdlpChoices,
 }: EDLPSessionRegistrationProps): React.ReactElement => {
-  const edIntervals = ["-"].concat(
+  const edIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.startTime, camp.earlyDropoff, false),
   );
 
-  const lpIntervals = ["-"].concat(
+  const lpIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.endTime, camp.latePickup, true),
   );
 
@@ -147,7 +148,9 @@ const EDLPSessionRegistration = ({
       // edIntervals look like this: ["-", "8:00", "8:30", "9:00", "9:30"] for a start time of 10:00 and ed starting at 8:00
       // numSlots determines how many 30 min slots of ED the option equates to
       const numSlots =
-        edInterval === "-" ? 0 : edIntervals.length - intervalIndex;
+        edInterval === EDLP_PLACEHOLDER_TIMESLOT
+          ? 0
+          : edIntervals.length - intervalIndex;
       return (
         <option key={`${day}_edOption_${intervalIndex}`} value={numSlots}>
           {edInterval}
@@ -166,6 +169,21 @@ const EDLPSessionRegistration = ({
         </option>
       );
     });
+
+  const getDefaultSelectOption = (
+    dateIndex: number,
+    isLatePickup: boolean,
+  ): number => {
+    const interval = isLatePickup
+      ? edlpChoices[selectedSessionIndex][dateIndex].latePickup.timeSlot
+      : edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff.timeSlot;
+    if (isLatePickup) {
+      return lpIntervals.indexOf(interval);
+    }
+    return interval === EDLP_PLACEHOLDER_TIMESLOT
+      ? 0
+      : edIntervals.length - edIntervals.indexOf(interval);
+  };
 
   return (
     <AccordionItem
@@ -244,10 +262,10 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={
-                            edlpChoices[selectedSessionIndex][dateIndex]
-                              .earlyDropoff.timeSlot
-                          }
+                          defaultValue={getDefaultSelectOption(
+                            dateIndex,
+                            false,
+                          )}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -265,10 +283,7 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={
-                            edlpChoices[selectedSessionIndex][dateIndex]
-                              .latePickup.timeSlot
-                          }
+                          defaultValue={getDefaultSelectOption(dateIndex, true)}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -317,10 +332,7 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={
-                    edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff
-                      .timeSlot
-                  }
+                  defaultValue={getDefaultSelectOption(dateIndex, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
@@ -340,10 +352,7 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={
-                    edlpChoices[selectedSessionIndex][dateIndex].latePickup
-                      .timeSlot
-                  }
+                  defaultValue={getDefaultSelectOption(dateIndex, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),

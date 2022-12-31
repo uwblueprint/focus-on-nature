@@ -7,6 +7,7 @@ import {
   checkRelationToCamper,
 } from "../components/pages/RegistrantExperience/RegistrationSteps/PersonalInfo/personalInfoReducer";
 import MONTHS from "../constants/CampManagementConstants";
+import { EDLP_PLACEHOLDER_TIMESLOT } from "../constants/RegistrationConstants";
 import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
 import {
   CreateCamperDTO,
@@ -22,6 +23,7 @@ import {
   QuestionType,
 } from "../types/CampsTypes";
 import { EdlpChoice } from "../types/RegistrationTypes";
+import { OptionalClauseResponse } from "../types/waiverRegistrationTypes";
 
 export const CampStatusColor = {
   [CampStatus.DRAFT]: "yellow",
@@ -295,14 +297,47 @@ export const getMeridianTime = (time: string): string => {
   return `${adjustedHour}:${minutesString}${hour < 12 ? "AM" : "PM"}`;
 };
 
+// Create date string if EDLP available in this slot
+const getEdlpDateString = (
+  timeSlot: string,
+  dateString: string,
+): string | undefined => {
+  try {
+    if (timeSlot === EDLP_PLACEHOLDER_TIMESLOT) {
+      throw new Error("No EDLP selected");
+    }
+
+    // Expect Meridian time string, 9:30 AM
+    const [hours, minutes, meridiem] = timeSlot.split(/:|\s/);
+    const edlpDate = new Date(dateString);
+    const utcHours =
+      meridiem === "AM" ? parseInt(hours, 10) : parseInt(hours, 10) + 12;
+    const displayedEstToUtcAdjust = 5; // TODO adjust with DST
+    edlpDate.setUTCHours(
+      utcHours + displayedEstToUtcAdjust,
+      parseInt(minutes, 10),
+    );
+
+    return edlpDate.toUTCString();
+  } catch (error: unknown) {
+    return undefined;
+  }
+};
+
 export const mapToCreateCamperDTO = (
   campers: RegistrantExperienceCamper[],
   edlpChoices: EdlpChoice[][],
+  optionalClauses: OptionalClauseResponse[],
 ): CreateCamperDTO[] => {
   const earlyDropoff = edlpChoices.flatMap((sessionChoices) => {
     return sessionChoices.reduce((dates: string[], edlpChoice) => {
-      if (edlpChoice.earlyDropoff.timeSlot !== "-") {
-        dates.push(edlpChoice.date.toString());
+      const edDate = getEdlpDateString(
+        edlpChoice.earlyDropoff.timeSlot,
+        edlpChoice.date,
+      );
+
+      if (edDate) {
+        dates.push(edDate);
       }
 
       return dates;
@@ -311,8 +346,13 @@ export const mapToCreateCamperDTO = (
 
   const latePickup = edlpChoices.flatMap((sessionChoices) => {
     return sessionChoices.reduce((dates: string[], edlpChoice) => {
-      if (edlpChoice.latePickup.timeSlot !== "-") {
-        dates.push(edlpChoice.date.toString());
+      const lpDate = getEdlpDateString(
+        edlpChoice.latePickup.timeSlot,
+        edlpChoice.date,
+      );
+
+      if (lpDate) {
+        dates.push(lpDate);
       }
 
       return dates;
@@ -324,7 +364,16 @@ export const mapToCreateCamperDTO = (
       ...camper,
       earlyDropoff,
       latePickup,
-      optionalClauses: camper.optionalClauses ?? [],
+      optionalClauses: optionalClauses.map((optionalClause) => {
+        return {
+          clause: optionalClause.text,
+          // Type may be undefined, but frontend enforces this not being undefined
+          agreed: optionalClause.agreed === true,
+        };
+      }),
+      formResponses: camper.formResponses
+        ? Object.fromEntries(camper.formResponses)
+        : undefined,
     };
 
     if (camperDTO.contacts.length === 2) {
