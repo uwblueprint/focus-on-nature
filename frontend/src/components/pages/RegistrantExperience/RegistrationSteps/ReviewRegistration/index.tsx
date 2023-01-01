@@ -27,7 +27,7 @@ const ReviewRegistration = ({
   setCampers,
   isPaymentSummary,
 }: ReviewRegistrationProps): React.ReactElement => {
-  useEffect(() => onPageVisited());
+  useEffect(onPageVisited);
   return !isPaymentSummary ? (
     <ReviewInformation camp={camp} campers={campers} setCampers={setCampers} />
   ) : (
