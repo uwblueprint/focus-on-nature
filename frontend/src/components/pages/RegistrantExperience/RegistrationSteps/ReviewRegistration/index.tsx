@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
 import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
