@@ -8,7 +8,7 @@ import {
   UpdateResponse,
 } from "../../../../../types/PersonalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import { CampResponse } from "../../../../../types/CampsTypes";
+import { CampResponse, FormQuestion } from "../../../../../types/CampsTypes";
 
 export const CamperReducer = (
   setCampers: React.Dispatch<
@@ -151,11 +151,11 @@ export const checkRelationToCamper = (relation: string): boolean => {
 
 export const checkPersonalInfoFilled = (
   campers: RegistrantExperienceCamper[],
-  camp: CampResponse | undefined,
+  camp: CampResponse | undefined
 ): boolean => {
   // Wait for the camp info as we need it to determine personalInfo age field validity
   if (!camp) return false;
-
+  
   if (!(campers.length >= 1)) return false;
 
   /* eslint-disable-next-line */
@@ -208,5 +208,16 @@ export const checkPersonalInfoFilled = (
       }
     }
   }
+
+  // Check required personal info and contact info questions
+  const step1RequiredQuestions = camp.formQuestions
+    .filter(question => question.category === "PersonalInfo" || question.category === "EmergencyContact")
+    .filter((question) => question.required)
+    .map((question) => question.question);
+    
+  if (!campers.every((camper) => step1RequiredQuestions.every((question) => camper.formResponses?.get(question)))) {
+    return false;
+  }
+
   return true;
 };

@@ -157,7 +157,6 @@ const RegistrationSteps = ({
             setCampers={setCampers}
             campSessions={selectedSessions}
             camp={camp}
-            
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
@@ -198,12 +197,14 @@ const RegistrationSteps = ({
   };
 
   const handleStepNavigation = (stepsToMove: number) => {
+    console.log("campers: ", campers);
     const desiredStep = currentStep + stepsToMove;
     if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
     } else if (desiredStep < 0) {
       onClickBack();
     } else {
+      console.log("campers: ", campers);
       alert("PLACEHOLDER - go to payment");
     }
   };
