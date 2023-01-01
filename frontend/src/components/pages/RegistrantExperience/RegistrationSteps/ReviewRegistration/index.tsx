@@ -12,6 +12,10 @@ type ReviewRegistrationProps = {
   camp: CampResponse;
   edlpChoices: EdlpChoice[][];
   onPageVisited: () => void;
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >;
+  isPaymentSummary: boolean;
 };
 
 const ReviewRegistration = ({
@@ -20,32 +24,17 @@ const ReviewRegistration = ({
   camp,
   edlpChoices,
   onPageVisited,
+  setCampers,
+  isPaymentSummary,
 }: ReviewRegistrationProps): React.ReactElement => {
   useEffect(() => onPageVisited());
-  return (
-    <Box>
-      <PaymentSummary
-        campName={camp.name}
-        items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
-      />
-
-        <AccordionItem border="none" mb={4}>
-          <GeneralAccordionButton title="Contact Information" />
-          <AccordionPanel pb={4}>
-            {campers[0].contacts.map((contact, index) => (
-              <EditContactCard
-                key={index}
-                contact={contact}
-                contactIndex={index}
-                dispatchPersonalInfoAction={dispatchPersonalInfoAction}
-              />
-            ))}
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-    </Box>
+  return !isPaymentSummary ? (
+    <ReviewInformation camp={camp} campers={campers} setCampers={setCampers} />
   ) : (
-    <PaymentSummary campName={camp.name} items={items} />
+    <PaymentSummary
+      campName={camp.name}
+      items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+    />
   );
 };
 

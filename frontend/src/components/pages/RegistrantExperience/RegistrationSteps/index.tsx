@@ -211,6 +211,7 @@ const RegistrationSteps = ({
   );
 
   const isWaiverFilled = waiverInterface.waiverCompleted;
+  const isReviewRegistrationFilled = reviewRegistrationVisited;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
   const [isPaymentSummary, setIsPaymentSummary] = useState(false);
 
@@ -223,7 +224,7 @@ const RegistrationSteps = ({
       case RegistrantExperienceSteps.WaiverPage:
         return isWaiverFilled;
       case RegistrantExperienceSteps.ReviewRegistrationPage:
-        return true;
+        return isReviewRegistrationFilled;
       default:
         return false;
     }
@@ -275,6 +276,8 @@ const RegistrationSteps = ({
             camp={camp}
             edlpChoices={edlpChoices}
             onPageVisited={() => setReviewRegistrationVisited(true)}
+            setCampers={setCampers}
+            isPaymentSummary={isPaymentSummary}
           />
         );
       default:
@@ -353,6 +356,7 @@ const RegistrationSteps = ({
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         registrationLoading={registrationLoading}
         handleStepNavigation={handleStepNavigation}
+        isPaymentSummary={isPaymentSummary}
       />
       <RegistrationErrorModal
         onConfirm={() => {
