@@ -62,7 +62,7 @@ const PaymentSummary = ({
       <TableContainer
         mb={5}
         mt={8}
-        maxW={{ base: "100%", lg: "50%" }}
+        maxW={{ base: "100%", lg: "60%" }}
         h={{ lg: "35vh" }}
         overflowY={{ base: "visible", lg: "auto" }}
       >
@@ -131,14 +131,14 @@ const PaymentSummary = ({
       <Divider
         borderBottom="2px"
         borderColor="border.secondary.100"
-        w={{ base: "100%", lg: "50%" }}
+        w={{ base: "100%", lg: "60%" }}
       />
 
       <Flex
         direction="row"
         justify="space-between"
         my={4}
-        w={{ base: "100%", lg: "30%" }}
+        w={{ base: "100%", lg: "450px" }}
       >
         <Text textStyle={totalRowTextStyles}>Total</Text>
         <Text textStyle={totalRowTextStyles}>
