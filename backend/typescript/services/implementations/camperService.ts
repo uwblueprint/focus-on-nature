@@ -14,13 +14,18 @@ import {
   WaitlistedCamperDTO,
   UpdateCamperDTO,
   CamperCharges,
+  CampRegistrationDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
-import { retrieveStripeCheckoutSession } from "../../utilities/stripeUtils";
+import {
+  createStripeCheckoutSession,
+  createStripeLineItems,
+  retrieveStripeCheckoutSession,
+} from "../../utilities/stripeUtils";
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -78,17 +83,18 @@ function getLPCost(lpDates: string[], camp: Camp) {
 }
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
-  async createCampers(
+  async createCampersAndCheckout(
     campers: CreateCampersDTO,
     campSessions: string[],
     waitlistedCamperId?: string,
-  ): Promise<CamperDTO[]> {
+  ): Promise<CampRegistrationDTO> {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
+    let checkoutSessionUrl = "";
 
     try {
       // Perform session checks:
@@ -97,10 +103,12 @@ class CamperService implements ICamperService {
         {},
         { session },
       );
+
       // Ensure all session ids passed in are found in the db
       if (sessionsToRegister.length !== campSessions.length) {
         throw new Error("Not all session ids passed in were found");
       }
+
       // Ensure we have enough space to register all campers in all the sessions
       if (
         !sessionsToRegister.every(
@@ -110,6 +118,15 @@ class CamperService implements ICamperService {
         throw new Error(
           "Not enough space in all the selected sessions to register the given campers",
         );
+      }
+
+      // Cannot register for sessions in progress
+      if (
+        !sessionsToRegister.every((cs) =>
+          cs.dates.every((csDate) => csDate.getTime() > Date.now()),
+        )
+      ) {
+        throw new Error("Cannot register for sessions in progress or finished");
       }
 
       const camp = await MgCamp.findById(
@@ -123,13 +140,49 @@ class CamperService implements ICamperService {
         );
       }
 
-      // Ensure all sessions passed in belong to the same camp
+      if (!camp.active) {
+        throw new Error(
+          `Camp associated with camp sessions is a draft camp, must publish camp to add campers`,
+        );
+      }
+
       if (!sessionsToRegister.every((cs) => cs.camp.toString() === camp.id)) {
         throw new Error("All sessions must belong to the same camp");
       }
 
+      // Ensure all campers meet the age requirements
+      if (
+        !campers.every(
+          (camper) =>
+            camper.age >= camp.ageLower && camper.age <= camp.ageUpper,
+        )
+      ) {
+        throw new Error("Not all campers meet the age requirements");
+      }
+
+      // Add the total charges for the campers:
+      const lineItems = createStripeLineItems(
+        sessionsToRegister,
+        campers,
+        camp.dropoffPriceId,
+        camp.pickupPriceId,
+      );
+
+      const createStripeCheckoutSessionResponse = await createStripeCheckoutSession(
+        lineItems,
+        camp.id,
+      );
+
+      if (
+        !createStripeCheckoutSessionResponse.id ||
+        !createStripeCheckoutSessionResponse.url
+      ) {
+        throw new Error(`Failed to create checkout session.`);
+      }
+
+      checkoutSessionUrl = createStripeCheckoutSessionResponse.url;
+
       // Create a camper entity for each session
-      // const campersToRegister: Array<Omit<CamperDTO, "id">> = [];
       const campersToRegister: Array<
         Omit<CamperDTO, "id">
       > = sessionsToRegister.flatMap((cs) => {
@@ -144,10 +197,10 @@ class CamperService implements ICamperService {
             latePickup: camper.latePickup,
             specialNeeds: camper.specialNeeds,
             contacts: camper.contacts,
-            registrationDate: camper.registrationDate,
-            hasPaid: camper.hasPaid,
+            registrationDate: new Date().toString(),
+            hasPaid: false,
             formResponses: camper.formResponses,
-            chargeId: camper.chargeId,
+            chargeId: createStripeCheckoutSessionResponse.id,
             charges: {
               camp: 0,
               earlyDropoff: 0,
@@ -158,7 +211,6 @@ class CamperService implements ICamperService {
         });
       });
 
-      // Add the total charges for the campers:
       campersToRegister.forEach((camper) => {
         const daysOfCamp = sessionsToRegister
           .map((cs) => cs.dates.length)
@@ -171,16 +223,6 @@ class CamperService implements ICamperService {
         /* eslint-disable no-param-reassign */
         camper.charges = totalCharges;
       });
-
-      // Ensure all campers meet the age requirements
-      if (
-        !campersToRegister.every(
-          (camper) =>
-            camper.age >= camp.ageLower && camper.age <= camp.ageUpper,
-        )
-      ) {
-        throw new Error("Not all campers meet the age requirements");
-      }
 
       // Insert the campers
       registeredCampers = await MgCamper.insertMany(campersToRegister, {
@@ -282,7 +324,7 @@ class CamperService implements ICamperService {
           specialNeeds: newCamper.specialNeeds,
           contacts: newCamper.contacts,
           registrationDate: newCamper.registrationDate.toString(),
-          hasPaid: newCamper.hasPaid,
+          hasPaid: false,
           chargeId: newCamper.chargeId,
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
@@ -293,7 +335,7 @@ class CamperService implements ICamperService {
       await session.commitTransaction();
     } catch (error: unknown) {
       Logger.error(
-        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+        `Failed to create camper(s). Reason: ${getErrorMessage(error)}`,
       );
       await session.abortTransaction();
       throw error;
@@ -301,7 +343,7 @@ class CamperService implements ICamperService {
       await session.endSession();
     }
 
-    return createCamperResponse;
+    return { campers: createCamperResponse, checkoutSessionUrl };
   }
 
   /* eslint-disable class-methods-use-this */
