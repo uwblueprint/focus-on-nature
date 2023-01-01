@@ -20,6 +20,11 @@ export const CamperReducer = (
     const newCampers: RegistrantExperienceCamper[] = JSON.parse(
       JSON.stringify(campers),
     ); // Deep Copy
+
+    for (let i = 0; i < campers.length; i += 1) {
+      newCampers[i].formResponses = campers[i].formResponses;
+    } // Copy the formResponses map
+
     switch (action.type) {
       case PersonalInfoActions.ADD_CAMPER: {
         newCampers.push({
@@ -33,7 +38,7 @@ export const CamperReducer = (
           optionalClauses: [],
         });
 
-        // inject contact info
+        // Inject contact info
         newCampers[0].contacts.forEach((contact) => {
           newCampers[newCampers.length - 1].contacts.push(
             JSON.parse(JSON.stringify(contact)),
