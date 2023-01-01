@@ -20,8 +20,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const history = useHistory();
 
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
   const { id: campId } = useParams<{ id: string }>();
+  const searchParams = new URLSearchParams(location.search);
   const waitlistedSessionId = searchParams.get("waitlistedSessionId");
   const waitlistedCamperId = searchParams.get("waitlistedCamperId");
 

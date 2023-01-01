@@ -41,8 +41,10 @@ const RegistrationFooter = ({
       bottom="0"
       zIndex="5"
     >
-      {(!isWaitlistRegistration ||
-        currentStep !== RegistrantExperienceSteps.PersonalInfoPage) && (
+      {!(
+        isWaitlistRegistration &&
+        currentStep === RegistrantExperienceSteps.PersonalInfoPage
+      ) && (
         <Button
           width={{ sm: "95vw", md: "45vw", lg: "auto" }}
           height="48px"
