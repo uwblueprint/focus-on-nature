@@ -120,6 +120,15 @@ class CamperService implements ICamperService {
         );
       }
 
+      // Cannot register for sessions in progress
+      if (
+        !sessionsToRegister.every((cs) =>
+          cs.dates.every((csDate) => csDate.getTime() > Date.now()),
+        )
+      ) {
+        throw new Error("Cannot register for sessions in progress or finished");
+      }
+
       const camp = await MgCamp.findById(
         sessionsToRegister[0].camp,
         {},
@@ -131,7 +140,12 @@ class CamperService implements ICamperService {
         );
       }
 
-      // Ensure all sessions passed in belong to the same camp
+      if (!camp.active) {
+        throw new Error(
+          `Camp associated with camp sessions is a draft camp, must publish camp to add campers`,
+        );
+      }
+
       if (!sessionsToRegister.every((cs) => cs.camp.toString() === camp.id)) {
         throw new Error("All sessions must belong to the same camp");
       }
@@ -321,7 +335,7 @@ class CamperService implements ICamperService {
       await session.commitTransaction();
     } catch (error: unknown) {
       Logger.error(
-        `Failed to create camper. Reason: ${getErrorMessage(error)}`,
+        `Failed to create camper(s). Reason: ${getErrorMessage(error)}`,
       );
       await session.abortTransaction();
       throw error;
