@@ -1,9 +1,12 @@
 import { getBearerToken } from "../constants/AuthConstants";
 import {
+  Camper,
   WaitlistedCamper,
   UpdateWaitlistedStatusType,
   EditCamperInfoFields,
-  Camper,
+  CreateWaitlistedCamperDTO,
+  CreateCamperDTO,
+  CreateCamperResponse,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -109,6 +112,48 @@ const getCampersByChargeIdAndSessionId = async (
   }
 };
 
+const registerCampers = async (
+  campers: CreateCamperDTO[],
+  campSessions: string[],
+): Promise<CreateCamperResponse> => {
+  const body = {
+    campers,
+    campSessions,
+  };
+  const { data } = await baseAPIClient.post(`/campers/register`, body, {
+    headers: { Authorization: getBearerToken() },
+  });
+
+  return data;
+};
+
+const waitlistCampers = async (
+  campers: CreateWaitlistedCamperDTO[],
+  campSessions: string[],
+): Promise<WaitlistedCamper[]> => {
+  const body = { waitlistedCampers: campers, campSessions };
+  const { data } = await baseAPIClient.post("/campers/waitlist", body, {
+    headers: { Authorization: getBearerToken() },
+  });
+
+  return data;
+};
+
+const confirmPayment = async (chargeId: string): Promise<boolean> => {
+  try {
+    const { data } = await baseAPIClient.post(
+      `/campers/confirm-payment/${chargeId}`,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    return false;
+  }
+};
+
 export default {
   getWaitlistedCamperById,
   updateCamperRegistrationStatus,
@@ -116,4 +161,7 @@ export default {
   updateCampersById,
   getCampersByChargeIdAndSessionId,
   deleteMultipleCampersById,
+  registerCampers,
+  waitlistCampers,
+  confirmPayment,
 };

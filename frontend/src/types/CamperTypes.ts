@@ -6,6 +6,11 @@ export type EmergencyContact = {
   relationshipToCamper: string;
 };
 
+export type OptionalClause = {
+  clause: string;
+  agreed: boolean;
+};
+
 export type Camper = {
   id: string;
   campSession: string;
@@ -26,10 +31,22 @@ export type Camper = {
     earlyDropoff: number;
     latePickup: number;
   };
-  optionalClauses?: {
-    clause: string;
-    agreed: boolean;
-  }[];
+  optionalClauses?: OptionalClause[];
+};
+
+export type RegistrantExperienceCamper = Omit<
+  Camper,
+  "campSession" | "id" | "charges" | "hasPaid" | "chargeId" | "registrationDate"
+>;
+
+// Fields are required by backend
+export type CreateCamperDTO = Omit<
+  RegistrantExperienceCamper,
+  "earlyDropoff" | "latePickup" | "optionalClauses"
+> & {
+  earlyDropoff: string[];
+  latePickup: string[];
+  optionalClauses: OptionalClause[];
 };
 
 export type EditCamperInfoFields = Omit<
@@ -43,11 +60,6 @@ export type EditCamperInfoFields = Omit<
   | "optionalClauses"
   | "id"
   | "campSession"
->;
-
-export type RegistrantExperienceCamper = Omit<
-  Camper,
-  "campSession" | "id" | "charges"
 >;
 
 export type EditModalSetterFunctions = {
@@ -76,7 +88,17 @@ export type WaitlistedCamper = {
   contactName: string;
   contactEmail: string;
   contactNumber: string;
-  status: WaitlistedCamperStatus;
   campSession: string;
+  status: WaitlistedCamperStatus;
   linkExpiry?: Date;
+};
+
+export type CreateWaitlistedCamperDTO = Omit<
+  WaitlistedCamper,
+  "id" | "campSession" | "status" | "linkExpiry"
+>;
+
+export type CreateCamperResponse = {
+  campers: Camper[];
+  checkoutSessionUrl: string;
 };
