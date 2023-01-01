@@ -89,3 +89,9 @@ export async function createStripePrice(
   });
   return priceObject;
 }
+
+export async function retrieveStripeCheckoutSession(
+  chargeId: string,
+): Promise<Stripe.Response<Stripe.Checkout.Session>> {
+  return stripe.checkout.sessions.retrieve(chargeId);
+}

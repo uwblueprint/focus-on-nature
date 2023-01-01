@@ -116,6 +116,20 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
   }
 });
 
+// ROLES: unprotected
+/* On successful payment, mark camper as paid */
+camperRouter.post("/confirm-payment/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const camper = await camperService.confirmCamperPayment(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(camper);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to waitlist @dhruv
 camperRouter.post(
   "/waitlist",
