@@ -50,6 +50,9 @@ inputs:
   stripe-secret-key:
     description: "Stripe secret key for checkout flow"
     required: true
+  client-url:
+    description: "Client base URL for Stripe checkout result redirection"
+    required: true
   deploy-branch:
     description: "Source branch for deployment. Expected to be dev or main"
     required: true
@@ -95,6 +98,7 @@ runs:
         heroku config:set STRIPE_SECRET_TEST_KEY="${{ inputs.stripe-secret-key }}" -a $HEROKU_APP_NAME && \
         heroku config:set PREVIEW_DEPLOY=$([ "${{inputs.deploy-branch}}" = "main" ] && echo "false" || echo "true") -a $HEROKU_APP_NAME
         heroku config:set NODE_ENV="${{ inputs.node-env }}"
+        heroku config:set CLIENT_URL="${{ inputs.client-url }}"
       env:
         HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
       shell: bash
