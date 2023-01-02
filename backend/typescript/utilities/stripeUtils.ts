@@ -140,6 +140,7 @@ export async function createStripeCheckoutSession(
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=success`,
       cancel_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=cancel`,
+      allow_promotion_codes: true,
     },
   );
 
