@@ -15,7 +15,6 @@ export function convertCampTimingToDate(
     parseInt(hours, 10) + estTimeZoneOffset,
     parseInt(minutes, 10),
   );
-  // console.log(startTimeDate);
   return startTimeDate;
 }
 
@@ -27,8 +26,6 @@ export function getEDUnits(edDates: string[], camp: Camp): number {
   return dates
     .map((edDate) => {
       const startTime = convertCampTimingToDate(edDate, camp.startTime);
-      console.log(edDate);
-      console.log(startTime);
       // get the number of seconds between the ED time and start time
       let timeDiff: number = (startTime.getTime() - edDate.getTime()) / 1000;
       // convert to number of minutes
