@@ -11,6 +11,8 @@ import {
   Checkbox,
   Button,
   Image,
+  AspectRatio,
+  VStack,
 } from "@chakra-ui/react";
 import IconImage from "../../../../assets/icon_image.svg";
 import { MAX_CAMP_DESC_LENGTH } from "../../../../constants/CampManagementConstants";
@@ -550,44 +552,43 @@ const CampCreationDetails = ({
         style={{ display: "none" }}
         accept="image/*"
       />
-      <Box
-        marginTop="32px"
-        bg="background.grey.200"
-        width="528px"
-        height="325px"
-        border="3px"
-        borderStyle="dashed"
-        borderColor="gray.200"
-        onDragOver={handleOnDragOver}
-        onDrop={handleOnDrop}
-        _hover={{
-          borderColor: "gray.400",
-        }}
-        onClick={handleCampImageClick}
-        cursor="pointer"
-      >
-        {!campImageURL ? (
-          <>
+      <AspectRatio marginTop="32px" width="528px" ratio={16 / 9}>
+        <Box
+          bg="background.grey.200"
+          border="3px"
+          borderStyle="dashed"
+          borderColor="gray.200"
+          onDragOver={handleOnDragOver}
+          onDrop={handleOnDrop}
+          _hover={{
+            borderColor: "gray.400",
+          }}
+          onClick={handleCampImageClick}
+          cursor="pointer"
+        >
+          {!campImageURL ? (
+            <VStack spacing={4} justify="center">
+              <Image src={IconImage} alt="File upload icon" width="150px" />
+              <Text
+                textStyle="buttonSemiBold"
+                textAlign="center"
+                marginTop="30px"
+              >
+                Click or drag and drop to add an image
+                <br />
+                Max File Size: 5 MB{" "}
+              </Text>
+            </VStack>
+          ) : (
             <Image
-              margin="35px auto 0 auto"
-              src={IconImage}
-              alt="File upload icon"
-              width="190px"
+              src={campImageURL}
+              alt="Selected camp image"
+              objectFit="scale-down"
             />
-            <Text
-              textStyle="buttonSemiBold"
-              textAlign="center"
-              marginTop="30px"
-            >
-              Click or drag and drop to add an image
-              <br />
-              Max File Size: 5 MB{" "}
-            </Text>
-          </>
-        ) : (
-          <Image width="528px" height="319px" src={campImageURL} alt="camp" />
-        )}
-      </Box>
+          )}
+        </Box>
+      </AspectRatio>
+
       <Text
         textStyle="caption"
         color="red"
