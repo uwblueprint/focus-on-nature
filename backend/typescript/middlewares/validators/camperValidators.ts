@@ -42,8 +42,6 @@ export const createCampersDtoValidator = async (
       .status(400)
       .send("Can only register 1 waitlisted camper for 1 session at a time");
   }
-  // Validate each camper data
-  const commonChargeId = campers[0].chargeId;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const camper of campers) {
@@ -149,20 +147,6 @@ export const createCampersDtoValidator = async (
       return res
         .status(400)
         .send(getApiValidationError("formResponses", "mixed", true));
-    }
-    if (!validateDate(camper.registrationDate)) {
-      return res
-        .status(400)
-        .send(getApiValidationError("registrationDate", "Date string"));
-    }
-    if (!validatePrimitive(camper.hasPaid, "boolean")) {
-      return res.status(400).send(getApiValidationError("hasPaid", "boolean"));
-    }
-    if (!validatePrimitive(camper.chargeId, "string")) {
-      return res.status(400).send(getApiValidationError("chargeId", "string"));
-    }
-    if (camper.chargeId !== commonChargeId) {
-      return res.status(400).send("Campers must have the same chargeId.");
     }
     if (camper.charges) {
       return res

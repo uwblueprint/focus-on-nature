@@ -4,6 +4,7 @@ import {
   CreateWaitlistedCamperDTO,
   WaitlistedCamperDTO,
   UpdateCamperDTO,
+  CampRegistrationDTO,
 } from "../../types";
 
 interface ICamperService {
@@ -12,14 +13,14 @@ interface ICamperService {
    * @param campers the campers to be created. The function uses this data to create 1 Camper document per camper per session
    * @param campSessions the ids of the sessions to register the campers for
    * @param waitlistedCamperId the id of the waitlisted camper who will be registered for 1 session
-   * @returns an array of CamperDTO with the created campers' information
-   * @throws Error if user creation fails
+   * @returns an array of CamperDTO with the created campers' information, and checkout URL as a string
+   * @throws Error if user creation or checkout session creation fails
    */
-  createCampers(
+  createCampersAndCheckout(
     campers: CreateCampersDTO,
     campSessions: string[],
     waitlistedCamperId?: string,
-  ): Promise<CamperDTO[]>;
+  ): Promise<CampRegistrationDTO>;
 
   /**
    * Get all campers and their information
@@ -60,6 +61,14 @@ interface ICamperService {
     chargeId: string,
     sessionId: string,
   ): Promise<Array<CamperDTO>>;
+
+  /**
+   * Confirm successful payment, marking associated campers with `hasPaid=true`
+   * @param chargeId id from Stripe checkout session object
+   * @returns boolean result, if camper `hasPaid` status updates successfully
+   * @throws Error if camper update fails
+   */
+  confirmCamperPayment(chargeId: string): Promise<boolean>;
 
   /**
    * Creates a waitlisted camper entity for each camper in each campSession

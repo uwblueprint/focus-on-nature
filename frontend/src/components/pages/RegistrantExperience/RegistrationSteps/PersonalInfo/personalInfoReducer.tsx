@@ -7,8 +7,11 @@ import {
   UpdateContact,
   UpdateResponse,
 } from "../../../../../types/PersonalInfoTypes";
-import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, FormQuestion } from "../../../../../types/CampsTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../types/CamperTypes";
 
 export const CamperReducer = (
   setCampers: React.Dispatch<
@@ -32,14 +35,11 @@ export const CamperReducer = (
           lastName: "",
           age: NaN,
           contacts: [],
-          registrationDate: new Date(),
-          hasPaid: false,
-          chargeId: "",
           optionalClauses: [],
         });
 
         // Inject contact info
-        newCampers[0].contacts.forEach((contact) => {
+        newCampers[0].contacts.forEach((contact: EmergencyContact) => {
           newCampers[newCampers.length - 1].contacts.push(
             JSON.parse(JSON.stringify(contact)),
           ); // Deep copy the contact

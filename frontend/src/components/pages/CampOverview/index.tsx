@@ -41,9 +41,6 @@ const CampOverviewPage = (): JSX.Element => {
     campCounsellors: [],
     name: "",
     description: "",
-    earlyDropoff: "",
-    endTime: "",
-    latePickup: "",
     location: {
       streetAddress1: "",
       city: "",
@@ -51,13 +48,16 @@ const CampOverviewPage = (): JSX.Element => {
       postalCode: "",
     },
     startTime: "",
+    endTime: "",
+    earlyDropoff: "",
+    latePickup: "",
+    dropoffFee: 0,
+    pickupFee: 0,
     fee: 0,
     formQuestions: [],
     campSessions: [],
     volunteers: "",
     campPhotoUrl: "",
-    dropoffFee: 0,
-    pickupFee: 0,
   });
   const numSessions = camp.campSessions?.length;
 

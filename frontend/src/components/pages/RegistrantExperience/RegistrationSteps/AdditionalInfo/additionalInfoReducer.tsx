@@ -53,7 +53,10 @@ export const checkAdditionalQuestionsAnswered = (
   const requiredQuestions = campSpecificFormQuestions
     .filter((question) => question.required)
     .map((question) => question.question);
+
   return campers.every((camper) =>
-    requiredQuestions.every((question) => camper.formResponses?.get(question)),
+    requiredQuestions.every(
+      (question) => camper.formResponses?.get(question) ?? false,
+    ),
   );
 };

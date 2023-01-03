@@ -1,4 +1,8 @@
 import Stripe from "stripe";
+import { Camp } from "../models/camp.model";
+import { CampSession } from "../models/campSession.model";
+import { CreateCampersDTO } from "../types";
+import { getEDUnits, getLPUnits } from "./CampUtils";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
@@ -88,4 +92,63 @@ export async function createStripePrice(
     unit_amount,
   });
   return priceObject;
+}
+
+export const createStripeLineItems = (
+  sessionsToRegister: CampSession[],
+  campers: CreateCampersDTO,
+  camp: Camp,
+): Stripe.Checkout.SessionCreateParams.LineItem[] => {
+  return sessionsToRegister.flatMap((campSession) => {
+    const priceItems = [
+      { price: campSession.campPriceId, quantity: campers.length },
+    ];
+
+    const [earlyDropoffs, latePickups] = campers.reduce(
+      ([earlyTotal, lateTotal]: [number, number], camper) => [
+        earlyTotal + getEDUnits(camper.earlyDropoff, camp),
+        lateTotal + getLPUnits(camper.latePickup, camp),
+      ],
+      [0, 0],
+    );
+
+    if (earlyDropoffs) {
+      priceItems.push({
+        price: camp.dropoffPriceId,
+        quantity: earlyDropoffs,
+      });
+    }
+
+    if (latePickups) {
+      priceItems.push({
+        price: camp.pickupPriceId,
+        quantity: latePickups,
+      });
+    }
+
+    return priceItems;
+  });
+};
+
+export async function createStripeCheckoutSession(
+  lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
+  campId: string,
+): Promise<Stripe.Response<Stripe.Checkout.Session>> {
+  const checkoutSession: Stripe.Response<Stripe.Checkout.Session> = await stripe.checkout.sessions.create(
+    {
+      line_items: lineItems,
+      mode: "payment",
+      success_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=success`,
+      cancel_url: `${process.env.CLIENT_URL}/register/camp/${campId}?result=cancel`,
+      allow_promotion_codes: true,
+    },
+  );
+
+  return checkoutSession;
+}
+
+export async function retrieveStripeCheckoutSession(
+  chargeId: string,
+): Promise<Stripe.Response<Stripe.Checkout.Session>> {
+  return stripe.checkout.sessions.retrieve(chargeId);
 }
