@@ -94,18 +94,26 @@ export const WaitlistDetailsBadgeGroup = ({
   linkExpiry,
 }: {
   status: WaitlistedCamperStatus;
-  linkExpiry: Date | undefined;
-}): JSX.Element => {
+  linkExpiry?: Date;
+}): React.ReactElement => {
   let bkgColor = "";
   let statusText = "";
   let icon: JSX.Element = <FontAwesomeIcon icon={faEnvelopesBulk} />;
   let validStatus = true;
 
+  // This is a work around to a typing issue we are having
+  // The linkExpiry prop is passed as a string, probably because we are using JSX.Element
+  // This checks if the type is string and creates a date
+  let linkExpiryDate = linkExpiry;
+  if (typeof linkExpiry === "string") {
+    linkExpiryDate = new Date(linkExpiry);
+  }
+
   if (status === "Registered") {
     bkgColor = "waitlistCards.complete";
     statusText = "registration complete";
     icon = <FontAwesomeIcon icon={faUserCheck} />;
-  } else if (linkExpiry && linkExpiry.getTime() < Date.now()) {
+  } else if (linkExpiryDate && linkExpiryDate.getTime() < Date.now()) {
     bkgColor = "waitlistCards.expired";
     statusText = "registration expired";
     icon = <FontAwesomeIcon icon={faHourglassEnd} />;
