@@ -5,7 +5,10 @@ import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import CamperCard from "./CamperCard";
 import ContactCard from "./ContactCard";
 import { usePersonalInfoDispatcher } from "./personalInfoReducer";
-import { CampResponse, CampSession, FormQuestion } from "../../../../../types/CampsTypes";
+import {
+  CampResponse,
+  CampSession,
+} from "../../../../../types/CampsTypes";
 import { PersonalInfoActions } from "../../../../../types/PersonalInfoTypes";
 
 type PersonalInfoProps = {
@@ -45,9 +48,7 @@ const PersonalInfo = ({
   setCampers,
 }: PersonalInfoProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
-  console.log("camp: ", camp);
 
-  
   return (
     <Box pb={14}>
       <Text textStyle="displayXLarge">{camp.name} Registration</Text>
@@ -67,7 +68,9 @@ const PersonalInfo = ({
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             camperIndex={index}
             camp={camp}
-            personalInfoQuestions={camp.formQuestions.filter(q => q.category === "PersonalInfo")}
+            personalInfoQuestions={camp.formQuestions.filter(
+              (q) => q.category === "PersonalInfo",
+            )}
           />
         ))}
       </VStack>
@@ -106,7 +109,9 @@ const PersonalInfo = ({
             camper={campers[0]}
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             contactIndex={index}
-            emergencyContactQuestions={camp.formQuestions.filter(q => q.category === "EmergencyContact")}
+            emergencyContactQuestions={camp.formQuestions.filter(
+              (q) => q.category === "EmergencyContact",
+            )}
           />
         ))}
       </VStack>

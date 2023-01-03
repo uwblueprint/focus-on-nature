@@ -17,7 +17,10 @@ import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
 } from "../../../../../types/PersonalInfoTypes";
-import { EmergencyContact, RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../types/CamperTypes";
 import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import {
   checkEmail,
@@ -48,11 +51,12 @@ const ContactCard = ({
   dispatchPersonalInfoAction,
   emergencyContactQuestions,
 }: ContactCardProps): React.ReactElement => {
-  
   const mdWrapWidth = emergencyContactQuestions.length > 1 ? "47%" : "100%";
 
-
-  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
+  const handleMultipleChoiceUpdate = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
     dispatchPersonalInfoAction({
       type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
       question: question.question,
@@ -60,7 +64,10 @@ const ContactCard = ({
     });
   };
 
-  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion) => {
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
     dispatchPersonalInfoAction({
       type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
       question: question.question,
@@ -74,8 +81,7 @@ const ContactCard = ({
       question: question.question,
       data: response,
     });
-  }
-
+  };
 
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
@@ -271,40 +277,40 @@ const ContactCard = ({
             </FormControl>
           </WrapItem>
 
-          {emergencyContactQuestions.map((question) => (
-            <WrapItem
-              key={`personal_info_question_${question.question}`}
-              width={{ sm: "100%", md: mdWrapWidth }}
-              px="20px"
-              py="12px"
-            >
-              {question.type === "Text" && (
-                <TextInputGroup
-                  formResponses={camper.formResponses}
-                  question={question}
-                  handleTextChange={handleTextChange}
-                  nextClicked={nextClicked}
-                />
-              )}
-              {question.type === "Multiselect" && (
-                <MultiselectGroup
-                  formResponses={camper.formResponses}
-                  question={question}
-                  dispatchFormResponseAction={handleSelectionChange}
-                  nextClicked={nextClicked}
-                />
-              )}
-              {question.type === "MultipleChoice" && (
-                <MultipleChoiceGroup
-                  formResponses={camper.formResponses}
-                  question={question}
-                  handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
-                  nextClicked={nextClicked}
-                />
-              )}
-            </WrapItem>
-          ))}
-
+          {contactIndex === 0 &&
+            emergencyContactQuestions.map((question) => (
+              <WrapItem
+                key={`contact_info_question_${question.question}`}
+                width={{ sm: "100%", md: mdWrapWidth }}
+                px="20px"
+                py="12px"
+              >
+                {question.type === "Text" && (
+                  <TextInputGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    handleTextChange={handleTextChange}
+                    nextClicked={nextClicked}
+                  />
+                )}
+                {question.type === "Multiselect" && (
+                  <MultiselectGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    dispatchFormResponseAction={handleSelectionChange}
+                    nextClicked={nextClicked}
+                  />
+                )}
+                {question.type === "MultipleChoice" && (
+                  <MultipleChoiceGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
+                    nextClicked={nextClicked}
+                  />
+                )}
+              </WrapItem>
+            ))}
         </Wrap>
       </Box>
     </Box>

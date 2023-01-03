@@ -1,6 +1,9 @@
 import { VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import React from "react";
-import { AdditionalInfoActions, AdditionalInfoReducerDispatch } from "../../../../../../types/AdditionalInfoTypes";
+import {
+  AdditionalInfoActions,
+  AdditionalInfoReducerDispatch,
+} from "../../../../../../types/AdditionalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import { FormQuestion } from "../../../../../../types/CampsTypes";
 import MultipleChoiceGroup from "../../QuestionGroups/MultipleChoiceGroup";
@@ -25,8 +28,10 @@ const CamperQuestionsCard = ({
 }: CamperQuestionsCardProps): React.ReactElement => {
   const mdWrapWidth = campSpecificFormQuestions.length > 1 ? "47%" : "100%";
 
-
-  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
+  const handleMultipleChoiceUpdate = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
     dispatchAdditionalInfoAction({
       type: AdditionalInfoActions.UPDATE_RESPONSE,
       camperIndex,
@@ -35,7 +40,10 @@ const CamperQuestionsCard = ({
     });
   };
 
-  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion ) => {
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
     dispatchAdditionalInfoAction({
       type: AdditionalInfoActions.UPDATE_RESPONSE,
       camperIndex,
@@ -51,7 +59,7 @@ const CamperQuestionsCard = ({
       question: question.question,
       data: response,
     });
-  }
+  };
 
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>

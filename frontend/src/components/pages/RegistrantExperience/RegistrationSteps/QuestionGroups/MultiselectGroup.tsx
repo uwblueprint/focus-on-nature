@@ -14,7 +14,10 @@ import { FormQuestion } from "../../../../../types/CampsTypes";
 type MultiselectGroupProps = {
   formResponses: Map<string, string> | undefined;
   question: FormQuestion;
-  dispatchFormResponseAction : (selectionsResponse: string, question: FormQuestion ) => void;
+  dispatchFormResponseAction: (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => void;
   nextClicked: boolean;
 };
 

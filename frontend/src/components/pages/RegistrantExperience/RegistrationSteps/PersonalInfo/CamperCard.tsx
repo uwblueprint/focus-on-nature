@@ -58,7 +58,10 @@ const CamperCard = ({
 
   const [nextClicked, setNextClicked] = useState(false);
 
-  const handleMultipleChoiceUpdate = (choice: string, question: FormQuestion) => {
+  const handleMultipleChoiceUpdate = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
     dispatchPersonalInfoAction({
       type: PersonalInfoActions.UPDATE_RESPONSE,
       camperIndex,
@@ -67,7 +70,10 @@ const CamperCard = ({
     });
   };
 
-  const handleSelectionChange = (selectionsResponse: string, question: FormQuestion) => {
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
     dispatchPersonalInfoAction({
       type: PersonalInfoActions.UPDATE_RESPONSE,
       camperIndex,
@@ -83,7 +89,7 @@ const CamperCard = ({
       question: question.question,
       data: response,
     });
-  }
+  };
 
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
@@ -106,7 +112,6 @@ const CamperCard = ({
       }
     };
   }, [camper, nextBtnRef, camp.ageLower, camp.ageUpper]);
-
 
   function DeleteRegistrantConfirmationModal() {
     const toast = useToast();

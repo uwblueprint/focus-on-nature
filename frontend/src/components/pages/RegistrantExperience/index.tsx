@@ -1,7 +1,8 @@
-import { useLocation, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
+import { useLocation, useParams } from "react-router-dom";
 import { Text, Spinner, Flex } from "@chakra-ui/react";
+
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
@@ -11,19 +12,16 @@ import { CheckoutData } from "../../../types/RegistrationTypes";
 import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
-import { FormTemplate, Waiver } from "../../../types/AdminTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
   camp: boolean;
-  formTemplate: boolean;
 };
 
 const RegistrantExperiencePage = (): React.ReactElement => {
   const { id: campId } = useParams<{ id: string }>();
 
-  const [formTemplate, setFormTemplate] = useState<FormTemplate | undefined>();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const registrationResult = params.get("result");
@@ -33,7 +31,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<InitialLoadingState>({
     waiver: true,
     camp: true,
-    formTemplate: true,
   });
 
   const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
@@ -93,17 +90,6 @@ const RegistrantExperiencePage = (): React.ReactElement => {
             };
           }),
         );
-
-      AdminAPIClient.getFormTemplate()
-        .then(templateResponse => templateResponse.formQuestions? setFormTemplate(templateResponse) : null)
-        .finally(() =>
-          setIsLoading((i) => {
-            return {
-              ...i,
-              formTemplate: false,
-            };
-          }),
-        );
     }
   }, [campId, registrationResult]);
 
@@ -124,14 +110,13 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     );
   }
 
-  if (camp && waiver && formTemplate) {
+  if (camp && waiver) {
     return sessionSelectionIsComplete ? (
       <RegistrationSteps
         camp={camp}
         selectedSessions={camp.campSessions.filter((session) =>
           selectedSessions.has(session.id),
         )}
-        formTemplate={formTemplate}
         waiver={waiver}
         onClickBack={() => setSessionSelectionIsComplete(false)}
         failedCheckoutData={restoredRegistration}
