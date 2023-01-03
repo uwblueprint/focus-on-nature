@@ -238,7 +238,7 @@ class EmailService implements IEmailService {
     campSession: CampSession,
     waitlistedCamper: WaitlistedCamper,
   ): Promise<void> {
-    const link = `${process.env.CLIENT_URL}/camp/${camp.id}/session/${campSession.id}/register?wld=${waitlistedCamper.id}`;
+    const link = `${process.env.CLIENT_URL}/register/camp/${camp.id}?waitlistedSessionId=${campSession.id}&waitlistedCamperId=${waitlistedCamper.id}`;
     await this.sendEmail(
       waitlistedCamper.contactEmail,
       "Focus on Nature Camp Registration - Invitation to Register",
