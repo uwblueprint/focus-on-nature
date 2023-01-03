@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+;import React, { useEffect, useState } from "react";
 import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
+import { SUCCESS_RESULT_CODE } from "../../../constants/RegistrationConstants";
+import { restoreRegistrationSessionFromSessionStorage } from "../../../utils/RegistrationUtils";
+import { CheckoutData } from "../../../types/RegistrationTypes";
+import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { Waiver } from "../../../types/AdminTypes";
 import { WaitlistedCamper } from "../../../types/CamperTypes";
+import { Waiver as WaiverType } from "../../../types/AdminTypes";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -25,13 +29,11 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const waitlistedSessionId = searchParams.get("waitlistedSessionId");
   const waitlistedCamperId = searchParams.get("waitlistedCamperId");
 
-  const [campResponse, setCampResponse] = useState<CampResponse | undefined>(
-    undefined,
-  );
-  const [waiverResponse, setWaiverResponse] = useState<Waiver | undefined>(
-    undefined,
-  );
+  const params = new URLSearchParams(location.search);
+  const registrationResult = params.get("result");
 
+  const [camp, setCamp] = useState<CampResponse | undefined>(undefined);
+  const [waiver, setWaiver] = useState<WaiverType | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<InitialLoadingState>({
     waiver: true,
     camp: true,
@@ -45,11 +47,41 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   );
   const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
 
+  const [restoredRegistration, setRestoredRegistration] = useState<
+    CheckoutData | undefined
+  >(undefined);
+
   useEffect(() => {
+    // We could remove this conditional, if we want to handle the "navigate back" action
+    let cachedRegistration: CheckoutData | undefined;
+    if (registrationResult) {
+      cachedRegistration = restoreRegistrationSessionFromSessionStorage();
+
+      if (cachedRegistration) {
+        // Some data is expected by the default camp registration flow, and is
+        // passed through individual state variables. Data generated in the previous
+        // session (eg. checkout URL) is passed via `restoredRegistration` field,
+        // which is `undefined` if by default if no previous sessions exists.
+        setRestoredRegistration(cachedRegistration);
+
+        setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
+        setSessionSelectionIsComplete(true);
+        setCamp(cachedRegistration.camp);
+        setWaiver(cachedRegistration.waiverInterface.waiver);
+      }
+    }
+
+    // If we expect session cache to exist, and it doesn't exist, do not repopulate
+    // via network call -- instead show generic message in RegistrationResult in case
+    // the user entered `?result=success` manually into the URL (so no actually success)
+    if (!cachedRegistration && registrationResult !== SUCCESS_RESULT_CODE) {
+
+    }
+    
     CampsAPIClient.getCampById(campId)
       .then((camp) => {
         if (camp.id) {
-          setCampResponse(camp);
+          setCamp(camp);
 
           if (waitlistedSessionId && waitlistedCamperId) {
             // Ensure the given waitlisted session id is in the camp sessions of this camp
@@ -91,37 +123,55 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         });
       })
       .finally(() =>
-        setIsLoading((i) => {
-          return { ...i, camp: false };
+        setIsLoading((prevLoadingState) => {
+          return { ...prevLoadingState, camp: false };
         }),
       );
 
     AdminAPIClient.getWaiver()
-      .then((waiver) => (waiver.clauses ? setWaiverResponse(waiver) : null))
+      .then((waiver) => (waiver.clauses ? setWaiver(waiver) : null))
       .finally(() =>
-        setIsLoading((i) => {
+        setIsLoading((prevLoadingState) => {
           return {
-            ...i,
+            ...prevLoadingState,
             waiver: false,
           };
         }),
       );
   }, [campId, waitlistedSessionId, waitlistedCamperId, toast, history]);
 
-  if (campResponse && waiverResponse) {
+  if (registrationResult === SUCCESS_RESULT_CODE) {
+    const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
+
+    return (
+      <RegistrationResultPage
+        camp={camp}
+        campers={restoredRegistration?.campers}
+        sessions={
+          camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
+          []
+        }
+        edlpChoices={restoredRegistration?.edlpChoices}
+        chargeId={restoredRegistration?.chargeId}
+      />
+    );
+  }
+
+  if (camp && waiver) {
     return sessionSelectionIsComplete ? (
       <RegistrationSteps
-        camp={campResponse}
-        selectedSessions={campResponse.campSessions.filter((session) =>
+        camp={camp}
+        selectedSessions={camp.campSessions.filter((session) =>
           selectedSessions.has(session.id),
         )}
-        waiver={waiverResponse}
+        waiver={waiver}
         onClickBack={() => setSessionSelectionIsComplete(false)}
         waitlistedCamper={waitlistedCamper}
+        failedCheckoutData={restoredRegistration}
       />
     ) : (
       <SessionSelection
-        camp={campResponse}
+        camp={camp}
         selectedSessions={selectedSessions}
         setSelectedSessions={setSelectedSessions}
         onFormSubmission={() => setSessionSelectionIsComplete(true)}

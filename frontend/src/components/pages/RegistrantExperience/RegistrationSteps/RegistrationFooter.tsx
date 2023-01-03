@@ -1,11 +1,12 @@
 import React from "react";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, useToast } from "@chakra-ui/react";
 import RegistrantExperienceSteps from "./RegistrationExperienceSteps";
 
 export type RegistrationFooterProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   currentStep: RegistrantExperienceSteps;
   isCurrentStepCompleted: boolean;
+  registrationLoading: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
   isWaitlistRegistration: boolean;
 };
@@ -14,16 +15,25 @@ const RegistrationFooter = ({
   nextBtnRef,
   currentStep,
   isCurrentStepCompleted,
+  registrationLoading,
   handleStepNavigation,
   isWaitlistRegistration,
 }: RegistrationFooterProps): React.ReactElement => {
+  const toast = useToast();
+
   const onNextStep = () => {
     if (isCurrentStepCompleted) {
       handleStepNavigation(1);
     } else {
-      alert(
-        "Form does not pass validaiton. Please complete all form fields according to requirements.",
-      );
+      toast({
+        title: "Form does not pass validation.",
+        description:
+          "Please complete all form fields according to requirements.",
+        variant: "subtle",
+        duration: 3000,
+        status: "error",
+        position: "top",
+      });
     }
   };
 
@@ -61,6 +71,8 @@ const RegistrationFooter = ({
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}
         height="48px"
         variant="primary"
+        isLoading={registrationLoading}
+        loadingText="Submitting"
         onClick={onNextStep}
       >
         {currentStep === RegistrantExperienceSteps.ReviewRegistrationPage

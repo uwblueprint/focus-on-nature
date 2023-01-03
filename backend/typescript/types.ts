@@ -43,6 +43,11 @@ export type CamperCharges = {
   latePickup: number; // Total fees of LP in session (ie: EDLP fee * total hours of LP selected in session)
 };
 
+export type CampRegistrationDTO = {
+  campers: CamperDTO[];
+  checkoutSessionUrl: string;
+};
+
 export type CamperDTO = {
   id: string;
   campSession: string;
@@ -85,7 +90,7 @@ export type CamperCSVInfoDTO = {
   "Requires Early Drop-off": string;
   "Requires Late Pick-up": string;
   // eslint-disable-next-line
-  "Allergies": string;
+  Allergies: string;
   "Amount Paid": number;
   "Additional Accomodations": string;
   "Additional Camp-Specific Q's": string;
@@ -210,12 +215,20 @@ export type UpdateCampSessionsDTO = Partial<
 export type UpdateFormQuestionDTO = Omit<FormQuestionDTO, "id">[];
 
 export type CreateCampersDTO = Array<
-  Omit<CamperDTO, "id" | "campSession" | "charges">
+  Omit<
+    CamperDTO,
+    | "id"
+    | "campSession"
+    | "charges"
+    | "hasPaid"
+    | "chargeId"
+    | "registrationDate"
+  >
 >;
 
 export type CreateWaitlistedCamperDTO = Omit<
   WaitlistedCamperDTO,
-  "id" | "campSession"
+  "id" | "campSession" | "status" | "linkExpiry"
 >;
 
 export type UpdateCamperDTO = Omit<

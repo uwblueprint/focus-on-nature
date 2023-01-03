@@ -1,62 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
-import { CartItem } from "../../../../../types/RegistrationTypes";
 import ReviewInformation from "./ReviewInformation";
+import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
+import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";
+import { EdlpChoice } from "../../../../../types/RegistrationTypes";
 
 type ReviewRegistrationProps = {
-  isChecked: boolean;
-  toggleChecked: () => void;
-  campName: string;
+  campers: RegistrantExperienceCamper[];
+  sessions: CampSession[];
+  camp: CampResponse;
+  edlpChoices: EdlpChoice[][];
+  onPageVisited: () => void;
 };
 
-const items: CartItem[] = [
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-    details: "Some sample details",
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-  {
-    name: "yes",
-    campers: 2,
-    totalPrice: 15.5,
-  },
-];
-
 const ReviewRegistration = ({
-  isChecked,
-  toggleChecked,
-  campName,
+  campers,
+  sessions,
+  camp,
+  edlpChoices,
+  onPageVisited,
 }: ReviewRegistrationProps): React.ReactElement => {
+  useEffect(() => onPageVisited());
   return (
     <Box>
-      <PaymentSummary campName={campName} items={items} />
+      <PaymentSummary
+        campName={camp.name}
+        items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+      />
 
       {/* <ReviewInformation /> */}
     </Box>

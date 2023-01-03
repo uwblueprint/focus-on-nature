@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { CartItem } from "../../../../../types/RegistrationTypes";
+import { calculateTotalPrice } from "../../../../../utils/RegistrationUtils";
 
 const tableHeadingTextStyles = {
   base: "xSmallBold",
@@ -39,9 +40,6 @@ const PaymentSummary = ({
   campName,
   items,
 }: PaymentSummaryProps): React.ReactElement => {
-  const calculateTotalPrice = (cartItems: CartItem[]): number =>
-    cartItems.reduce((prevTotal, curItem) => prevTotal + curItem.totalPrice, 0);
-
   return (
     <Box>
       <Text
@@ -64,7 +62,7 @@ const PaymentSummary = ({
       <TableContainer
         mb={5}
         mt={8}
-        maxW={{ base: "100%", lg: "50%" }}
+        maxW={{ base: "100%", lg: "60%" }}
         h={{ lg: "35vh" }}
         overflowY={{ base: "visible", lg: "auto" }}
       >
@@ -96,7 +94,7 @@ const PaymentSummary = ({
           <Tbody>
             {items.map((item, index) => (
               <Tr
-                key={item.name}
+                key={`payment_summary_item_${index}`}
                 borderBottom={index + 1 === items.length ? "0px" : "1px"}
                 borderColor="border.secondary.100"
               >
@@ -133,14 +131,14 @@ const PaymentSummary = ({
       <Divider
         borderBottom="2px"
         borderColor="border.secondary.100"
-        w={{ base: "100%", lg: "50%" }}
+        w={{ base: "100%", lg: "60%" }}
       />
 
       <Flex
         direction="row"
         justify="space-between"
         my={4}
-        w={{ base: "100%", lg: "30%" }}
+        w={{ base: "100%", lg: "450px" }}
       >
         <Text textStyle={totalRowTextStyles}>Total</Text>
         <Text textStyle={totalRowTextStyles}>

@@ -20,20 +20,17 @@ import {
   formatAMPM,
   getFormattedSingleDateString,
 } from "../../../../../utils/CampUtils";
+import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../../constants/RegistrationConstants";
 
 type EDLPSessionRegistrationProps = {
   selectedSessionIndex: number;
   camp: CampResponse;
-  edlpCost: number;
+  edCost: number;
+  lpCost: number;
   session: CampSession;
   edlpChoices: EdlpChoice[][];
   setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
-};
-
-export type EdlpChoice = {
-  date: string; // The date of 1 particular day of camp (sessions consist of multiple days)
-  edlp: string[]; // edlp = [string, string] where index 0 = ed and index 1 = lp, each representing the time slot of edlp selected
-  edlpCost: number[]; // The cost of the ed (index 0) and lp (index 1) for the selected day per camper
 };
 
 const computeIntervals = (
@@ -79,30 +76,31 @@ const computeIntervals = (
 const EDLPSessionRegistration = ({
   selectedSessionIndex,
   camp,
-  edlpCost,
+  edCost,
+  lpCost,
   session,
   edlpChoices,
   setEdlpChoices,
 }: EDLPSessionRegistrationProps): React.ReactElement => {
-  const edIntervals = ["-"].concat(
+  const edIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.startTime, camp.earlyDropoff, false),
   );
 
-  const lpIntervals = ["-"].concat(
+  const lpIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.endTime, camp.latePickup, true),
   );
 
   const getEdCostForDay = (date: string): number => {
     return (
       edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.edlpCost[0] ?? 0
+        ?.earlyDropoff.cost ?? 0
     );
   };
 
   const getLpCostForDay = (date: string): number => {
     return (
       edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.edlpCost[1] ?? 0
+        ?.latePickup.cost ?? 0
     );
   };
 
@@ -127,13 +125,21 @@ const EDLPSessionRegistration = ({
     timeInterval: string,
     isLatePickup: boolean,
   ) => {
-    const temp = edlpChoices;
-    temp[selectedSessionIndex][dayIndex].edlp[
-      isLatePickup ? 1 : 0
-    ] = timeInterval;
-    temp[selectedSessionIndex][dayIndex].edlpCost[isLatePickup ? 1 : 0] =
-      numSlots * edlpCost;
-    setEdlpChoices(temp);
+    const newChoices = edlpChoices;
+
+    const changedSlot = {
+      timeSlot: timeInterval,
+      units: numSlots,
+      cost: numSlots * (isLatePickup ? lpCost : edCost),
+    };
+
+    if (isLatePickup) {
+      newChoices[selectedSessionIndex][dayIndex].latePickup = changedSlot;
+    } else {
+      newChoices[selectedSessionIndex][dayIndex].earlyDropoff = changedSlot;
+    }
+
+    setEdlpChoices(newChoices);
     forceUpdate();
   };
 
@@ -142,7 +148,9 @@ const EDLPSessionRegistration = ({
       // edIntervals look like this: ["-", "8:00", "8:30", "9:00", "9:30"] for a start time of 10:00 and ed starting at 8:00
       // numSlots determines how many 30 min slots of ED the option equates to
       const numSlots =
-        edInterval === "-" ? 0 : edIntervals.length - intervalIndex;
+        edInterval === EDLP_PLACEHOLDER_TIMESLOT
+          ? 0
+          : edIntervals.length - intervalIndex;
       return (
         <option key={`${day}_edOption_${intervalIndex}`} value={numSlots}>
           {edInterval}
@@ -166,12 +174,13 @@ const EDLPSessionRegistration = ({
     dateIndex: number,
     isLatePickup: boolean,
   ): number => {
-    const interval =
-      edlpChoices[selectedSessionIndex][dateIndex].edlp[isLatePickup ? 1 : 0];
+    const interval = isLatePickup
+      ? edlpChoices[selectedSessionIndex][dateIndex].latePickup.timeSlot
+      : edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff.timeSlot;
     if (isLatePickup) {
       return lpIntervals.indexOf(interval);
     }
-    return interval === "-"
+    return interval === EDLP_PLACEHOLDER_TIMESLOT
       ? 0
       : edIntervals.length - edIntervals.indexOf(interval);
   };
