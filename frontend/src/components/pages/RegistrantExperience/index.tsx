@@ -1,4 +1,4 @@
-;import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
@@ -75,70 +75,77 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     // via network call -- instead show generic message in RegistrationResult in case
     // the user entered `?result=success` manually into the URL (so no actually success)
     if (!cachedRegistration && registrationResult !== SUCCESS_RESULT_CODE) {
+      CampsAPIClient.getCampById(campId)
+        .then((campResponse) => {
+          if (campResponse.id) {
+            setCamp(campResponse);
 
-    }
-    
-    CampsAPIClient.getCampById(campId)
-      .then((camp) => {
-        if (camp.id) {
-          setCamp(camp);
-
-          if (waitlistedSessionId && waitlistedCamperId) {
-            // Ensure the given waitlisted session id is in the camp sessions of this camp
-            const waitlistedCampSession = camp.campSessions.find(
-              (cs) => cs.id === waitlistedSessionId,
-            );
-            if (!waitlistedCampSession) {
-              throw new Error(
-                "Could not find requested session to register for in this camp",
+            if (waitlistedSessionId && waitlistedCamperId) {
+              // Ensure the given waitlisted session id is in the camp sessions of this camp
+              const waitlistedCampSession = campResponse.campSessions.find(
+                (cs) => cs.id === waitlistedSessionId,
               );
-            }
-            // Find the waitlisted camper id in the list of waitlisted campers in the given session
-            const waitlistCamper = waitlistedCampSession.waitlist.find(
-              (camper) => camper.id === waitlistedCamperId,
-            );
-            if (!waitlistCamper || !waitlistCamper.linkExpiry) {
-              throw new Error(
-                "Could not find details of requested waitlisted camper for this camp session",
+              if (!waitlistedCampSession) {
+                throw new Error(
+                  "Could not find requested session to register for in this camp",
+                );
+              }
+              // Find the waitlisted camper id in the list of waitlisted campers in the given session
+              const waitlistCamper = waitlistedCampSession.waitlist.find(
+                (camper) => camper.id === waitlistedCamperId,
               );
-            }
+              if (!waitlistCamper || !waitlistCamper.linkExpiry) {
+                throw new Error(
+                  "Could not find details of requested waitlisted camper for this camp session",
+                );
+              }
 
-            // Ensure the invitation link has not expired
-            if (new Date(waitlistCamper.linkExpiry) < new Date()) {
-              throw new Error("The invitation link has expired");
+              // Ensure the invitation link has not expired
+              if (new Date(waitlistCamper.linkExpiry) < new Date()) {
+                throw new Error("The invitation link has expired");
+              }
+              setSessionSelectionIsComplete(true);
+              setWaitlistedCamper(waitlistCamper);
+              setSelectedSessions(new Set(waitlistedSessionId));
             }
-            setSessionSelectionIsComplete(true);
-            setWaitlistedCamper(waitlistCamper);
-            setSelectedSessions(new Set(waitlistedSessionId));
           }
-        }
-      })
-      .catch((error) => {
-        history.push(`/error`);
-        toast({
-          description: error.message,
-          status: "error",
-          variant: "subtle",
-          duration: 3000,
-        });
-      })
-      .finally(() =>
-        setIsLoading((prevLoadingState) => {
-          return { ...prevLoadingState, camp: false };
-        }),
-      );
+        })
+        .catch((error) => {
+          history.push(`/error`);
+          toast({
+            description: error.message,
+            status: "error",
+            variant: "subtle",
+            duration: 3000,
+          });
+        })
+        .finally(() =>
+          setIsLoading((prevLoadingState) => {
+            return { ...prevLoadingState, camp: false };
+          }),
+        );
 
-    AdminAPIClient.getWaiver()
-      .then((waiver) => (waiver.clauses ? setWaiver(waiver) : null))
-      .finally(() =>
-        setIsLoading((prevLoadingState) => {
-          return {
-            ...prevLoadingState,
-            waiver: false,
-          };
-        }),
-      );
-  }, [campId, waitlistedSessionId, waitlistedCamperId, toast, history]);
+      AdminAPIClient.getWaiver()
+        .then((waiverResponse) =>
+          waiverResponse.clauses ? setWaiver(waiverResponse) : null,
+        )
+        .finally(() =>
+          setIsLoading((prevLoadingState) => {
+            return {
+              ...prevLoadingState,
+              waiver: false,
+            };
+          }),
+        );
+    }
+  }, [
+    campId,
+    waitlistedSessionId,
+    waitlistedCamperId,
+    toast,
+    history,
+    registrationResult,
+  ]);
 
   if (registrationResult === SUCCESS_RESULT_CODE) {
     const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
