@@ -1,5 +1,6 @@
 // The start and end time of a camp is stored as a string in format hh::mm
 
+import { zonedTimeToUtc } from "date-fns-tz";
 import { Camp } from "../models/camp.model";
 
 // convertCampTimingToDate returns the start and end time attached to a particular date
@@ -8,14 +9,16 @@ export function convertCampTimingToDate(
   estStartTime: string,
 ): Date {
   const [hours, minutes] = estStartTime.split(":"); // based on 24h string like `9:30`
-  const estTimeZoneOffset = 5; // TODO consider EDT
 
-  const startTimeDate = new Date(date.getTime());
-  startTimeDate.setUTCHours(
-    parseInt(hours, 10) + estTimeZoneOffset,
+  const adjustedDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    parseInt(hours, 10),
     parseInt(minutes, 10),
   );
-  return startTimeDate;
+
+  return zonedTimeToUtc(adjustedDate, "America/Toronto");
 }
 
 // Calculates total cost of early dropoff from the given timings
