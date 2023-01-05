@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Text, VStack, Flex, useMediaQuery } from "@chakra-ui/react";
-import { CampSessionResponse } from "../../../../types/CampsTypes";
+import { CampSession } from "../../../../types/CampsTypes";
 import { SessionCardState } from "./SessionSelectionTypes";
 import {
   sessionCardBoldTextStyles,
   sessionCardDatesTextStyles,
   sessionCardDetailsTextStyles,
 } from "./SessionSelectionStyles";
-import { getMeridianTime } from "../../../../utils/CampUtils";
+import {
+  getFormattedDateRangeStringFromStringArray,
+  getMeridianTime,
+} from "../../../../utils/CampUtils";
 
 const WAITLISTED_COLOR = "red.100";
 const AVAILABLE_COLOR = "green.100";
@@ -17,7 +20,7 @@ type SessionCardDetailsProps = {
   fee: number;
   startTime: string;
   endTime: string;
-  campSession: CampSessionResponse;
+  campSession: CampSession;
 };
 
 const SessionCardDetails = ({
@@ -26,36 +29,31 @@ const SessionCardDetails = ({
   endTime,
   campSession,
 }: SessionCardDetailsProps): React.ReactElement => {
-  const getCampSessionDates = () => {
-    const startDate = new Date(campSession.dates[0]);
-    const endDate = new Date(campSession.dates[campSession.dates.length - 1]);
-    return `${startDate.toLocaleString("default", {
-      month: "short",
-    })} ${startDate.getDay()} - ${endDate.toLocaleString("default", {
-      month: "short",
-    })} ${endDate.getDay()}, ${endDate.getFullYear()}`;
-  };
-
-  const formattedTimeString = (start: string, end: string): string => {
-    return `${getMeridianTime(start)} - ${getMeridianTime(end)}`;
-  };
-
   const [isMobile] = useMediaQuery("(max-width: 767px)");
+
+  const formattedTimeString = useMemo(
+    () => `${getMeridianTime(startTime)} - ${getMeridianTime(endTime)}`,
+    [startTime, endTime],
+  );
+
+  const dateRangeString = useMemo(
+    () => getFormattedDateRangeStringFromStringArray(campSession.dates),
+    [campSession.dates],
+  );
+
   return (
     <>
-      <Text textStyle={sessionCardDatesTextStyles}>
-        {getCampSessionDates()}
-      </Text>
+      <Text textStyle={sessionCardDatesTextStyles}>{dateRangeString}</Text>
       {isMobile ? (
         <>
           <Text textStyle={sessionCardDetailsTextStyles}>
-            {formattedTimeString(startTime, endTime)}
+            {formattedTimeString}
           </Text>
           <Text textStyle={sessionCardDetailsTextStyles}>${fee}</Text>
         </>
       ) : (
         <Text textStyle={sessionCardDetailsTextStyles}>
-          {formattedTimeString(startTime, endTime)} · ${fee}
+          {formattedTimeString} · ${fee}
         </Text>
       )}
     </>
@@ -66,7 +64,7 @@ type SessionCardProps = {
   fee: number;
   startTime: string;
   endTime: string;
-  campSession: CampSessionResponse;
+  campSession: CampSession;
   handleClick: (sessionID: string) => void;
   state: SessionCardState;
   sessionIsWaitlisted: boolean;

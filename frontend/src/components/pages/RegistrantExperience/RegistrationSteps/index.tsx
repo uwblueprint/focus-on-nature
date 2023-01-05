@@ -27,7 +27,10 @@ import { CheckoutData, EdlpChoice } from "../../../../types/RegistrationTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
-import { mapToCreateCamperDTO } from "../../../../utils/CampUtils";
+import {
+  mapToCreateCamperDTO,
+  sortDatestrings,
+} from "../../../../utils/CampUtils";
 import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../constants/RegistrationConstants";
 
 type RegistrationStepsProps = {
@@ -92,7 +95,7 @@ const RegistrationSteps = ({
   // Each EdlpChoice object looks like {date: "date of a day of camp", edlp: ["8:30", "16:00"], edlpCost: [40, 20]}
   const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(
     selectedSessions.map((campSession) => {
-      return campSession.dates.map((date) => {
+      return sortDatestrings(campSession.dates).map((date) => {
         return {
           date,
           earlyDropoff: {

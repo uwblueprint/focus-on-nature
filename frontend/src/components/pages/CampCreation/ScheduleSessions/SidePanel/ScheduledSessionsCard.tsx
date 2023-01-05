@@ -3,7 +3,7 @@ import { Box, HStack, Text, Button, Wrap, WrapItem } from "@chakra-ui/react";
 import SessionDayButton from "./SessionDayButton";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 import {
-  getFormattedDateStringFromDateArray,
+  getFormattedDateRangeStringFromDateArray,
   getSessionBorderColor,
   getSessionDates,
 } from "../../../../../utils/CampUtils";
@@ -21,7 +21,7 @@ const ScheduledSessionsCard = ({
   updateSession,
   onDelete,
 }: ScheduledSessionsCardProps): React.ReactElement => {
-  const sessionDatesRangeString = getFormattedDateStringFromDateArray(
+  const sessionDatesRangeString = getFormattedDateRangeStringFromDateArray(
     scheduledSession.dates,
   );
   const { selectedWeekDays } = scheduledSession;

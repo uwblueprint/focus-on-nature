@@ -1,21 +1,41 @@
 import React from "react";
 import { Box, Text, Grid, GridItem, VStack } from "@chakra-ui/react";
-import {
-  CampResponse,
-  CampSessionResponse,
-} from "../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
   SessionCardState,
   SessionSelectionState,
 } from "./SessionSelectionTypes";
 import SessionCard from "./SessionCard";
 import { sessionSectionTitleStyles } from "./SessionSelectionStyles";
+import { sessionIsInProgressOrCompleted } from "../../../../utils/CampUtils";
 
 type CampSessionBoardProps = {
   camp: CampResponse;
   selectedSessions: Set<string>;
   selectionState: SessionSelectionState | undefined;
   handleSessionClick: (sessionID: string) => void;
+};
+
+const buildGridItem = (
+  campSession: CampSession,
+  camp: CampResponse,
+  cardState: SessionCardState,
+  isWaitlistItem: boolean,
+  onClick: (sessionId: string) => void,
+): React.ReactElement => {
+  return (
+    <GridItem key={`selectionGrid_campSession_${campSession.id}`}>
+      <SessionCard
+        fee={camp.fee}
+        startTime={camp.startTime}
+        endTime={camp.endTime}
+        campSession={campSession}
+        handleClick={onClick}
+        state={cardState}
+        sessionIsWaitlisted={isWaitlistItem}
+      />
+    </GridItem>
+  );
 };
 
 const CampSessionBoard = ({
@@ -44,55 +64,56 @@ const CampSessionBoard = ({
   const availableSessionGridItems: React.ReactElement[] = [];
 
   camp.campSessions.forEach((campSession) => {
-    if (campSession.campers.length === campSession.capacity) {
-      const cardSelectionAllowed =
-        selectionState !== SessionSelectionState.SelectingAvailableSessions;
-      waitlistSessionGridItems.push(
-        <GridItem key={campSession.id}>
-          <SessionCard
-            fee={camp.fee}
-            startTime={camp.startTime}
-            endTime={camp.endTime}
-            campSession={campSession as CampSessionResponse}
-            handleClick={handleSessionClick}
-            state={getCardState(
+    // We only show camp sessions in the future
+    if (!sessionIsInProgressOrCompleted(campSession)) {
+      if (campSession.campers.length === campSession.capacity) {
+        const isWaitlisted = true;
+        const cardSelectionAllowed =
+          selectionState !== SessionSelectionState.SelectingAvailableSessions;
+        waitlistSessionGridItems.push(
+          buildGridItem(
+            campSession,
+            camp,
+            getCardState(
               campSession.id,
               selectedSessions,
               cardSelectionAllowed,
-            )}
-            sessionIsWaitlisted
-          />
-        </GridItem>,
-      );
-    } else {
-      const cardSelectionAllowed =
-        selectionState !== SessionSelectionState.SelectingWaitlistSessions;
-      availableSessionGridItems.push(
-        <GridItem key={campSession.id} className="bo">
-          <SessionCard
-            fee={camp.fee}
-            startTime={camp.startTime}
-            endTime={camp.endTime}
-            campSession={campSession as CampSessionResponse}
-            handleClick={handleSessionClick}
-            state={getCardState(
+            ),
+            isWaitlisted,
+            handleSessionClick,
+          ),
+        );
+      } else {
+        console.log("available");
+        console.log(campSession.dates);
+        const isWaitlisted = false;
+        const cardSelectionAllowed =
+          selectionState !== SessionSelectionState.SelectingWaitlistSessions;
+        availableSessionGridItems.push(
+          buildGridItem(
+            campSession,
+            camp,
+            getCardState(
               campSession.id,
               selectedSessions,
               cardSelectionAllowed,
-            )}
-            sessionIsWaitlisted={false}
-          />
-        </GridItem>,
-      );
+            ),
+            isWaitlisted,
+            handleSessionClick,
+          ),
+        );
+      }
     }
   });
+
+  console.log(availableSessionGridItems.length);
 
   return (
     <VStack spacing={{ sm: 5, md: 8, lg: 8 }} w="100%" align="flex-start">
       {availableSessionGridItems.length > 0 && (
         <Box w="100%">
           <Text textStyle={sessionSectionTitleStyles} mb={4}>
-            Available Camps
+            Available Sessions
           </Text>
           <Grid
             templateColumns={{
@@ -110,7 +131,7 @@ const CampSessionBoard = ({
       {waitlistSessionGridItems.length > 0 && (
         <Box w="100%">
           <Text textStyle={sessionSectionTitleStyles} my={4}>
-            Waitlist Only Camps
+            Waitlist Only Sessions
           </Text>
           <Grid
             templateColumns={{

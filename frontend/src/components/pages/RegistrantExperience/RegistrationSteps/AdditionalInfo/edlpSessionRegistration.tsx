@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import {
-  getFormattedDateString,
+  getFormattedDateRangeStringFromStringArray,
   formatAMPM,
   getFormattedSingleDateString,
 } from "../../../../../utils/CampUtils";
@@ -216,7 +216,7 @@ const EDLPSessionRegistration = ({
               as="span"
               textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
             >
-              {getFormattedDateString(session.dates)}
+              {getFormattedDateRangeStringFromStringArray(session.dates)}
             </Text>
             <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>
               {formatAMPM(camp.startTime)} - {formatAMPM(camp.endTime)}

@@ -40,38 +40,26 @@ export const locationString = (location: Location): string => {
     ${location.city} ${location.province}, ${location.postalCode}`;
 };
 
-export const ongoingSession = (session: CampSession): boolean => {
-  const today = new Date();
-  const lastDay = new Date(session.dates[session.dates.length - 1]);
-  return today <= lastDay;
-};
+const sessionCompleted = (session: CampSession): boolean =>
+  session.dates.every((date) => new Date(date) < new Date());
 
 export const getCampStatus = (camp: CampResponse): CampStatus => {
   if (!camp.active) {
     return CampStatus.DRAFT;
   }
-  if (camp.campSessions.some(ongoingSession)) {
-    return CampStatus.PUBLISHED;
+
+  if (camp.campSessions.every(sessionCompleted)) {
+    return CampStatus.COMPLETED;
   }
-  return CampStatus.COMPLETED;
+
+  return CampStatus.PUBLISHED;
 };
 
-export const getFormattedDateString = (dates: Array<string>): string => {
-  const startDate = new Date(dates[0]).toLocaleDateString("en-us", {
-    month: "short",
-    day: "numeric",
-  });
-  const endDate = new Date(dates[dates.length - 1]).toLocaleDateString(
-    "en-us",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  );
+export const sortDates = (dates: Date[]): Date[] =>
+  dates.sort((a, b) => a.getTime() - b.getTime());
 
-  return `${startDate} - ${endDate}`;
-};
+export const sortDatestrings = (dates: string[]): string[] =>
+  dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
 // Takes a 24 hour time string and converts it to AM/PM time
 export const formatAMPM = (time: string): string => {
@@ -95,27 +83,41 @@ export const getFormattedSingleDateString = (date: string): string => {
 };
 
 // returns in the form "Jan 1 - Feb 2, 2022"
-export const getFormattedDateStringFromDateArray = (dates: Date[]): string => {
+export const getFormattedDateRangeStringFromDateArray = (
+  dates: Date[],
+): string => {
   if (dates.length === 0) return "No dates selected";
 
-  const startDate = dates[0].toLocaleDateString("en-us", {
+  const orderedDates = sortDates(dates);
+  const startDate = orderedDates[0].toLocaleDateString("en-us", {
     month: "short",
     day: "numeric",
   });
-  const endDate = dates[dates.length - 1].toLocaleDateString("en-us", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const endDate = orderedDates[orderedDates.length - 1].toLocaleDateString(
+    "en-us",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    },
+  );
 
   return `${startDate} - ${endDate}`;
 };
 
-export const getFormattedSessionDatetime = (
+export const getFormattedDateRangeStringFromStringArray = (
   dates: Array<string>,
+): string =>
+  getFormattedDateRangeStringFromDateArray(dates.map((date) => new Date(date)));
+
+export const getFormattedSessionDatetime = (
+  dates: Array<string>, // array is ordered ascendingly in `getFormattedDateRangeStringFromStringArray`
   startTime: string,
   endTime: string,
-): string => `${getFormattedDateString(dates)} | ${startTime} - ${endTime}`;
+): string => {
+  const dateRange = getFormattedDateRangeStringFromStringArray(dates);
+  return `${dateRange} | ${startTime} - ${endTime}`;
+};
 
 export const sortScheduledSessions = (
   sessions: CreateCampSession[],
@@ -397,3 +399,8 @@ export const mapToCreateCamperDTO = (
     return camperDTO;
   });
 };
+
+export const sessionIsInProgressOrCompleted = (
+  campSession: CampSession,
+): boolean =>
+  campSession.dates.some((dateString) => new Date(dateString) <= new Date());
