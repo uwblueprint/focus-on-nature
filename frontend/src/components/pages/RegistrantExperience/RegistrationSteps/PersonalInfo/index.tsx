@@ -5,10 +5,7 @@ import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import CamperCard from "./CamperCard";
 import ContactCard from "./ContactCard";
 import { usePersonalInfoDispatcher } from "./personalInfoReducer";
-import {
-  CampResponse,
-  CampSession,
-} from "../../../../../types/CampsTypes";
+import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { PersonalInfoActions } from "../../../../../types/PersonalInfoTypes";
 
 type PersonalInfoProps = {
