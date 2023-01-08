@@ -16,7 +16,10 @@ import ReviewRegistration from "./ReviewRegistration";
 import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import {
+  RegistrantExperienceCamper,
+  WaitlistedCamper,
+} from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { saveRegistrationSessionToSessionStorage } from "../../../../utils/RegistrationUtils";
 import { CheckoutData, EdlpChoice } from "../../../../types/RegistrationTypes";
@@ -30,6 +33,7 @@ type RegistrationStepsProps = {
   camp: CampResponse;
   selectedSessions: CampSession[];
   waiver: WaiverType;
+  waitlistedCamper?: WaitlistedCamper;
   onClickBack: () => void;
   failedCheckoutData?: CheckoutData;
 };
@@ -39,6 +43,7 @@ const RegistrationSteps = ({
   selectedSessions,
   waiver,
   onClickBack,
+  waitlistedCamper,
   failedCheckoutData,
 }: RegistrationStepsProps): React.ReactElement => {
   const {
@@ -194,6 +199,21 @@ const RegistrationSteps = ({
     }
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    if (waitlistedCamper) {
+      const curCampers = [...campers];
+      curCampers[0].firstName = waitlistedCamper.firstName;
+      curCampers[0].lastName = waitlistedCamper.lastName;
+      curCampers[0].age = waitlistedCamper.age;
+      curCampers[0].contacts[0].firstName = waitlistedCamper.contactFirstName;
+      curCampers[0].contacts[0].lastName = waitlistedCamper.contactLastName;
+      curCampers[0].contacts[0].email = waitlistedCamper.contactEmail;
+      curCampers[0].contacts[0].phoneNumber = waitlistedCamper.contactNumber;
+      setCampers(curCampers);
+    }
+  }, [waitlistedCamper]);
+
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&
     camp.earlyDropoff !== "" &&
@@ -240,6 +260,7 @@ const RegistrationSteps = ({
             setCampers={setCampers}
             campSessions={selectedSessions}
             camp={camp}
+            isWaitlistRegistration={waitlistedCamper !== undefined}
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
@@ -340,6 +361,7 @@ const RegistrationSteps = ({
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         registrationLoading={registrationLoading}
         handleStepNavigation={handleStepNavigation}
+        isWaitlistRegistration={waitlistedCamper !== undefined}
       />
       <RegistrationErrorModal
         onConfirm={() => {

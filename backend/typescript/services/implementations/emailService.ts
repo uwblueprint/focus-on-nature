@@ -203,7 +203,9 @@ class EmailService implements IEmailService {
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",
-      `Hi ${waitlistedCampers[0].contactName},<br><br>
+      `Hi ${waitlistedCampers[0].contactFirstName} ${
+        waitlistedCampers[0].contactLastName
+      },<br><br>
       Thank you for joining the waitlist for a Focus on Nature Camp! We will 
       reach out to you if a spot opens up. <br>
       Please find your waitlist information below, and if you need to edit any 
@@ -242,7 +244,9 @@ class EmailService implements IEmailService {
     await this.sendEmail(
       waitlistedCamper.contactEmail,
       "Focus on Nature Camp Registration - Invitation to Register",
-      `Hi ${waitlistedCamper.contactName},<br><br>
+      `Hi ${waitlistedCamper.contactFirstName} ${
+        waitlistedCamper.contactLastName
+      },<br><br>
       A spot opened up in ${camp.name} for the following session dates: 
       ${sessionDatesToString(
         campSession.dates,
