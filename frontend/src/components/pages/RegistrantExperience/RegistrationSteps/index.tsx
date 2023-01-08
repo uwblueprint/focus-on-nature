@@ -17,6 +17,7 @@ import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import {
+  OptionalClause,
   RegistrantExperienceCamper,
   WaitlistedCamper,
 } from "../../../../types/CamperTypes";
@@ -158,6 +159,40 @@ const RegistrationSteps = ({
     });
 
     window.location.assign(checkoutSessionUrl);
+  };
+
+  const appendOptionalClausesToCampers = (
+    newOptionalClauses: OptionalClauseResponse[],
+  ) => {
+    setCampers(
+      (
+        oldCampers: RegistrantExperienceCamper[],
+      ): RegistrantExperienceCamper[] => {
+        const newCampers: RegistrantExperienceCamper[] = JSON.parse(
+          JSON.stringify(oldCampers),
+        ); // Deep Copy
+
+        for (let i = 0; i < campers.length; i += 1) {
+          newCampers[i].formResponses = campers[i].formResponses;
+        } // Copy the formResponses map
+
+        // Map the OptionalClauseResponse[] to OptionalClause[]
+        const newCamperOptionalClauses: OptionalClause[] = [];
+        newOptionalClauses.forEach((optionalClause) => {
+          newCamperOptionalClauses.push({
+            clause: optionalClause.text,
+            agreed: optionalClause.agreed ?? false,
+          });
+        });
+
+        // Update all the campers' optionalClauses field
+        /* eslint-disable-next-line */
+      for (const camper of newCampers){
+          camper.optionalClauses = newCamperOptionalClauses;
+        }
+        return newCampers;
+      },
+    );
   };
 
   const registerCampers = async (
@@ -310,6 +345,8 @@ const RegistrationSteps = ({
     } else if (desiredStep < 0) {
       onClickBack();
     } else {
+      // Append the optional clauses to all the campers before registering the campers
+      appendOptionalClausesToCampers(waiverInterface.optionalClauses);
       registerCampers(campers, edlpChoices);
     }
   };

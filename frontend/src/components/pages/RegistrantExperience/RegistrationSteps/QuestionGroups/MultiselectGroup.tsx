@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 import {
   Checkbox,
   FormControl,
@@ -6,26 +8,23 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import {
-  AdditionalInfoActions,
-  AdditionalInfoReducerDispatch,
-} from "../../../../../../types/AdditionalInfoTypes";
-import { FormQuestion } from "../../../../../../types/CampsTypes";
+
+import { FormQuestion } from "../../../../../types/CampsTypes";
 
 type MultiselectGroupProps = {
   formResponses: Map<string, string> | undefined;
-  camperIndex: number;
   question: FormQuestion;
-  dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
+  dispatchFormResponseAction: (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => void;
   nextClicked: boolean;
 };
 
 const MultiselectGroup = ({
   formResponses,
-  camperIndex,
   question,
-  dispatchAdditionalInfoAction,
+  dispatchFormResponseAction,
   nextClicked,
 }: MultiselectGroupProps): React.ReactElement => {
   const getInitialSelections = (): Set<string> => {
@@ -55,19 +54,16 @@ const MultiselectGroup = ({
     setSelections(newSelections);
     const selectionsResponse = Array.from(newSelections).join(", ");
 
-    dispatchAdditionalInfoAction({
-      type: AdditionalInfoActions.UPDATE_RESPONSE,
-      camperIndex,
-      question: question.question,
-      data: selectionsResponse,
-    });
+    dispatchFormResponseAction(selectionsResponse, question);
   };
 
   return (
     <VStack alignItems="flex-start">
       <FormControl isRequired={question.required} isInvalid={invalid}>
-        <FormLabel fontWeight="bold" fontSize="18px">
-          {question.question}
+        <FormLabel>
+          <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+            {question.question}
+          </Text>
         </FormLabel>
         <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
           {question.description}

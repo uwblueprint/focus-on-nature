@@ -47,6 +47,7 @@ const PersonalInfo = ({
   isWaitlistRegistration,
 }: PersonalInfoProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
+
   return (
     <Box pb={14}>
       <Text textStyle="displayXLarge">{camp.name} Registration</Text>
@@ -66,6 +67,9 @@ const PersonalInfo = ({
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             camperIndex={index}
             camp={camp}
+            personalInfoQuestions={camp.formQuestions.filter(
+              (q) => q.category === "PersonalInfo",
+            )}
           />
         ))}
       </VStack>
@@ -103,8 +107,12 @@ const PersonalInfo = ({
             nextBtnRef={nextBtnRef}
             key={index}
             contact={contact}
+            camper={campers[0]}
             dispatchPersonalInfoAction={dispatchPersonalInfoAction}
             contactIndex={index}
+            emergencyContactQuestions={camp.formQuestions.filter(
+              (q) => q.category === "EmergencyContact",
+            )}
           />
         ))}
       </VStack>
