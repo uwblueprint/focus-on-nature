@@ -6,7 +6,8 @@ export interface WaitlistedCamper extends Document {
   firstName: string;
   lastName: string;
   age: number;
-  contactName: string;
+  contactFirstName: string;
+  contactLastName: string;
   contactEmail: string;
   contactNumber: string;
   status: WaitlistedCamperStatus;
@@ -27,7 +28,11 @@ const WaitlistedCamperSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  contactName: {
+  contactFirstName: {
+    type: String,
+    required: true,
+  },
+  contactLastName: {
     type: String,
     required: true,
   },

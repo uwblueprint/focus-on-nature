@@ -142,7 +142,8 @@ class CampService implements ICampService {
                     firstName: waitlistedCamper.firstName,
                     lastName: waitlistedCamper.lastName,
                     age: waitlistedCamper.age,
-                    contactName: waitlistedCamper.contactName,
+                    contactFirstName: waitlistedCamper.contactFirstName,
+                    contactLastName: waitlistedCamper.contactLastName,
                     contactEmail: waitlistedCamper.contactEmail,
                     contactNumber: waitlistedCamper.contactNumber,
                     status: waitlistedCamper.status,
@@ -307,10 +308,12 @@ class CampService implements ICampService {
               firstName: waitlistedCamper.firstName,
               lastName: waitlistedCamper.lastName,
               age: waitlistedCamper.age,
-              contactName: waitlistedCamper.contactName,
+              contactFirstName: waitlistedCamper.contactFirstName,
+              contactLastName: waitlistedCamper.contactLastName,
               contactEmail: waitlistedCamper.contactEmail,
               contactNumber: waitlistedCamper.contactNumber,
               status: waitlistedCamper.status,
+              linkExpiry: waitlistedCamper.linkExpiry,
             };
           },
         );

@@ -19,6 +19,7 @@ type PersonalInfoProps = {
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
+  isWaitlistRegistration?: boolean;
 };
 
 const checkSpaceAvailable = (
@@ -46,6 +47,7 @@ const PersonalInfo = ({
   campSessions,
   camp,
   setCampers,
+  isWaitlistRegistration,
 }: PersonalInfoProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
 
@@ -75,22 +77,24 @@ const PersonalInfo = ({
         ))}
       </VStack>
 
-      <Button
-        w="100%"
-        backgroundColor="primary.green.100"
-        color="#ffffff"
-        isDisabled={!checkSpaceAvailable(campSessions, campers)}
-        onClick={() => {
-          dispatchPersonalInfoAction({
-            type: PersonalInfoActions.ADD_CAMPER,
-          });
-        }}
-      >
-        <SmallAddIcon boxSize={6} />
-        <Text pl={3} textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-          Add Another Camper
-        </Text>
-      </Button>
+      {!isWaitlistRegistration && (
+        <Button
+          w="100%"
+          backgroundColor="primary.green.100"
+          color="#ffffff"
+          isDisabled={!checkSpaceAvailable(campSessions, campers)}
+          onClick={() => {
+            dispatchPersonalInfoAction({
+              type: PersonalInfoActions.ADD_CAMPER,
+            });
+          }}
+        >
+          <SmallAddIcon boxSize={6} />
+          <Text pl={3} textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+            Add Another Camper
+          </Text>
+        </Button>
+      )}
 
       <Divider py={4} borderColor="border.secondary.100" />
       <Text

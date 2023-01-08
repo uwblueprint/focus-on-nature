@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import {
   checkEmail,
   checkFirstName,
@@ -309,16 +310,16 @@ const getEdlpDateString = (
 
     // Expect Meridian time string, 9:30 AM
     const [hours, minutes, meridiem] = timeSlot.split(/:|\s/);
-    const edlpDate = new Date(dateString);
-    const utcHours =
-      meridiem === "AM" ? parseInt(hours, 10) : parseInt(hours, 10) + 12;
-    const displayedEstToUtcAdjust = 5; // TODO adjust with DST
-    edlpDate.setUTCHours(
-      utcHours + displayedEstToUtcAdjust,
+    const edlpDay = new Date(dateString);
+    const adjustedDate = new Date(
+      edlpDay.getFullYear(),
+      edlpDay.getMonth(),
+      edlpDay.getDate(),
+      meridiem === "AM" ? parseInt(hours, 10) : parseInt(hours, 10) + 12,
       parseInt(minutes, 10),
     );
 
-    return edlpDate.toUTCString();
+    return zonedTimeToUtc(adjustedDate, "America/Toronto").toString();
   } catch (error: unknown) {
     return undefined;
   }

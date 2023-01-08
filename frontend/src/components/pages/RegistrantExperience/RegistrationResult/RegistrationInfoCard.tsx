@@ -4,13 +4,26 @@ import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
 import defaultCampImage from "../../../../assets/default_camp_image.png";
 import { cardBoldStyles, regularTextStyles } from "./textStyles";
+import { CampSession } from "../../../../types/CampsTypes";
 
 export type RegistrationInfoCardProps = {
   imageSrc: string;
   campName: string;
-  sessions: string;
+  sessions: CampSession[];
   registeredCampers: RegistrantExperienceCamper[];
 };
+
+const formatSessionDate = (dateString: string): string =>
+  new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+const formatSessionInfo = (
+  index: number,
+  dates: string[],
+): string => `Session ${index + 1} - ${formatSessionDate(dates[0])}{" "}
+${dates.length > 1 ? formatSessionDate(dates[dates.length - 1]) : ""}`;
 
 const RegistrationInfoCard = ({
   imageSrc,
@@ -69,7 +82,19 @@ const RegistrationInfoCard = ({
       />
       <VStack align="flex-start" spacing={2} w={{ lg: "25vw" }}>
         <Text textStyle={cardBoldStyles}>{campName}</Text>
-        <Text textStyle={regularTextStyles}>{sessions}</Text>
+        {sessions
+          .sort(
+            (sessionA, sessionB) =>
+              new Date(sessionA.dates[0]).getTime() -
+              new Date(sessionB.dates[0]).getTime(),
+          )
+          .map((campSession, index) => {
+            return (
+              <Text textStyle={regularTextStyles} key={index}>
+                {formatSessionInfo(index, campSession.dates)}
+              </Text>
+            );
+          })}
         <Text textStyle={{ base: "xSmallMedium", lg: "displaySmallSemiBold" }}>
           {formatRegisteredCampers(registeredCampers)}
         </Text>

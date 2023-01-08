@@ -8,6 +8,7 @@ export type RegistrationFooterProps = {
   isCurrentStepCompleted: boolean;
   registrationLoading: boolean;
   handleStepNavigation: (stepsToMove: number) => void;
+  isWaitlistRegistration: boolean;
 };
 
 const RegistrationFooter = ({
@@ -16,6 +17,7 @@ const RegistrationFooter = ({
   isCurrentStepCompleted,
   registrationLoading,
   handleStepNavigation,
+  isWaitlistRegistration,
 }: RegistrationFooterProps): React.ReactElement => {
   const toast = useToast();
 
@@ -49,17 +51,21 @@ const RegistrationFooter = ({
       bottom="0"
       zIndex="5"
     >
-      <Button
-        width={{ sm: "95vw", md: "45vw", lg: "auto" }}
-        height="48px"
-        variant="secondary"
-        onClick={() => handleStepNavigation(-1)}
-        mb={{ sm: 4, md: 0 }}
-        mr={{ sm: 0, md: 4 }}
-        disabled={registrationLoading}
-      >
-        Back
-      </Button>
+      {!(
+        isWaitlistRegistration &&
+        currentStep === RegistrantExperienceSteps.PersonalInfoPage
+      ) && (
+        <Button
+          width={{ sm: "95vw", md: "45vw", lg: "auto" }}
+          height="48px"
+          variant="secondary"
+          onClick={() => handleStepNavigation(-1)}
+          mb={{ sm: 4, md: 0 }}
+          mr={{ sm: 0, md: 4 }}
+        >
+          Back
+        </Button>
+      )}
       <Button
         ref={nextBtnRef}
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}
