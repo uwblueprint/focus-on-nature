@@ -106,7 +106,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
               }
               setSessionSelectionIsComplete(true);
               setWaitlistedCamper(waitlistCamper);
-              setSelectedSessions(new Set(waitlistedSessionId));
+              setSelectedSessions(new Set([waitlistedSessionId]));
             }
           }
         })

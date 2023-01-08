@@ -33,6 +33,7 @@ export const mapCampToCartItems = (
       ];
 
       if (
+        edlpChoices.length &&
         edlpChoices[sessionIndex].some(
           (edlpChoice) =>
             edlpChoice.earlyDropoff.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
@@ -57,6 +58,7 @@ export const mapCampToCartItems = (
       }
 
       if (
+        edlpChoices.length &&
         edlpChoices[sessionIndex].some(
           (edlpChoice) =>
             edlpChoice.latePickup.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
