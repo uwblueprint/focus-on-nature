@@ -718,17 +718,42 @@ class CamperService implements ICamperService {
           );
         }
 
+        const timeNow = new Date()
+        const newCampSessionDate = newCampSession.dates[0]
+        if (timeNow > newCampSessionDate){
+          throw new Error (
+            `Error: you can only move campers to future sessions`,
+          )
+        }
+
+        const newCampSessionCapcityRemaining = newCampSession.capacity - newCampSession.campers.length
         const oldCampSessionOriginalCampers = oldCampSession.campers; // for roll back
 
-        if (newCampSession) {
-          // campers for new camp session
-          newCampSession.campers = newCampSession.campers.concat(oldCampers);
-
-          // campers for old camp session
-          oldCampSession.campers = oldCampSession.campers.filter(
-            (camperId) => !camperIds.includes(camperId.toString()),
-          );
+        if (oldCampSessionOriginalCampers.length > newCampSessionCapcityRemaining){
+          throw new Error(
+            `Error: camp session to move to is full`
+          )
         }
+
+        // campers for new camp session
+        newCampSession.campers = newCampSession.campers.concat(oldCampers);
+
+        // campers for old camp session
+        oldCampSession.campers = oldCampSession.campers.filter(
+          (camperId) => !camperIds.includes(camperId.toString()),
+        );
+  
+        // Remove campers from old camp session
+        await MgCampSession.updateOne(
+          { _id: oldCampSession.id },
+          { $pullAll: { campers: camperIds } },
+        );
+
+        // Move campers to new camp session
+        await MgCampSession.updateOne(
+          { _id: newCampSession.id },
+          { $push: { campers: { $each: camperIds } } },
+        );
 
         try {
           await newCampSession.save();
@@ -751,7 +776,6 @@ class CamperService implements ICamperService {
           }
         }
       }
-
       try {
         const updatedResult = await MgCamper.updateMany(
           {

@@ -61,7 +61,8 @@ export type EditCamperInfoFields = Omit<
   | "optionalClauses"
   | "id"
   | "campSession"
->;
+> &
+  Partial<Pick<Camper, "campSession">>;
 
 export type EditModalSetterFunctions = {
   setFirstName: (firstName: string) => void;
