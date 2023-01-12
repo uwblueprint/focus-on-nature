@@ -32,6 +32,7 @@ import EditCamperModal from "../EditCamperModal";
 import ViewCamperModal from "../ViewCamperModal/index";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import RemoveCamperModal from "../RemoveCamperModal/index";
+import MoveCamperModal from "../MoveCamperModal";
 
 const ExportButton = ({
   generateCsv,
@@ -88,6 +89,12 @@ const CampersTable = ({
     isOpen: viewModalIsOpen,
     onOpen: viewModalOnOpen,
     onClose: viewModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: moveModalIsOpen,
+    onOpen: moveModalOnOpen,
+    onClose: moveModalOnClose,
   } = useDisclosure();
 
   const {
@@ -267,8 +274,8 @@ const CampersTable = ({
                         viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
-                        /* eslint-disable no-console */
-                        console.log("Moving Camper");
+                        setSelectedCamper(camper);
+                        moveModalOnOpen();
                       }}
                       removeCamperFunc={() => {
                         setSelectedCamper(camper);
@@ -295,6 +302,15 @@ const CampersTable = ({
               camper={selectedCamper}
               viewCamperModalIsOpen={viewModalIsOpen}
               viewCamperOnClose={viewModalOnClose}
+            />
+          )}
+
+          {selectedCamper && (
+            <MoveCamperModal
+              camper={selectedCamper}
+              moveCamperModalIsOpen={moveModalIsOpen}
+              handleRefetch={handleRefetch}
+              moveCamperModalOnClose={moveModalOnClose}
             />
           )}
 

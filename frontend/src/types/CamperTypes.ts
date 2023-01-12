@@ -51,7 +51,7 @@ export type CreateCamperDTO = Omit<
 };
 
 export type EditCamperInfoFields = Omit<
-  Camper,
+  Partial<Camper>,
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
@@ -60,9 +60,7 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
-  | "campSession"
-> &
-  Partial<Pick<Camper, "campSession">>;
+>
 
 export type EditModalSetterFunctions = {
   setFirstName: (firstName: string) => void;

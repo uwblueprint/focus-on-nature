@@ -662,7 +662,7 @@ class CamperService implements ICamperService {
     let oldCampSession: CampSession | null = null;
     let movedCampSession = false;
     let camp: Camp | null;
-
+    console.log("updat ecmapers called", camperIds, updatedFields)
     try {
       oldCampers = await MgCamper.find({
         _id: {
