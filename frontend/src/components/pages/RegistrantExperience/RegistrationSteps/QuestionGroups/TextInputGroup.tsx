@@ -42,6 +42,7 @@ const TextInputGroup = ({
       <Textarea
         value={formResponses?.get(question.question) ?? ""}
         placeholder="Type here..."
+        textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}
         backgroundColor="background.white.100"
         onChange={(e) => handleTextChange(e.target.value, question)}
       />

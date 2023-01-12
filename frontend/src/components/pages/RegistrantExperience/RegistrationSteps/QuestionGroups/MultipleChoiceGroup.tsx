@@ -51,7 +51,9 @@ const MultipleChoiceGroup = ({
               value={option}
               colorScheme="green"
             >
-              {option}
+              <Text textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}>
+                {option}
+              </Text>
             </Radio>
           ))}
         </VStack>

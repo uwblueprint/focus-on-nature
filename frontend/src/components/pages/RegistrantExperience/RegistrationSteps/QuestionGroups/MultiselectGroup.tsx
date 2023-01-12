@@ -84,7 +84,9 @@ const MultiselectGroup = ({
             }
             onChange={(e) => handleSelectionChange(e)}
           >
-            {option}
+            <Text textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}>
+              {option}
+            </Text>
           </Checkbox>
         ))}
       </VStack>
