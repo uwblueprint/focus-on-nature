@@ -28,7 +28,7 @@ const CamperQuestionsCard = ({
 }: CamperQuestionsCardProps): React.ReactElement => {
   const mdWrapWidth = campSpecificFormQuestions.length > 1 ? "47%" : "100%";
 
-  const handleMultipleChoiceUpdate = (
+  const handleMultipleChoiceChange = (
     choice: string,
     question: FormQuestion,
   ) => {
@@ -84,7 +84,7 @@ const CamperQuestionsCard = ({
                 <MultiselectGroup
                   formResponses={camper.formResponses}
                   question={question}
-                  dispatchFormResponseAction={handleSelectionChange}
+                  handleSelectionChange={handleSelectionChange}
                   nextClicked={nextClicked}
                 />
               )}
@@ -92,7 +92,7 @@ const CamperQuestionsCard = ({
                 <MultipleChoiceGroup
                   formResponses={camper.formResponses}
                   question={question}
-                  handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
+                  handleMultipleChoiceChange={handleMultipleChoiceChange}
                   nextClicked={nextClicked}
                 />
               )}

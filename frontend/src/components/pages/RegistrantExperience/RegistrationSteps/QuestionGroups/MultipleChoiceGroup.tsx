@@ -14,14 +14,14 @@ import { FormQuestion } from "../../../../../types/CampsTypes";
 type MultipleChoiceGroupProps = {
   formResponses: Map<string, string> | undefined;
   question: FormQuestion;
-  handleMultipleChoiceUpdate: (choice: string, question: FormQuestion) => void;
+  handleMultipleChoiceChange: (choice: string, question: FormQuestion) => void;
   nextClicked: boolean;
 };
 
 const MultipleChoiceGroup = ({
   formResponses,
   question,
-  handleMultipleChoiceUpdate,
+  handleMultipleChoiceChange,
   nextClicked,
 }: MultipleChoiceGroupProps): React.ReactElement => {
   const invalid =
@@ -42,7 +42,7 @@ const MultipleChoiceGroup = ({
       )}
       <RadioGroup
         value={formResponses?.get(question.question)}
-        onChange={(choice) => handleMultipleChoiceUpdate(choice, question)}
+        onChange={(choice) => handleMultipleChoiceChange(choice, question)}
       >
         <VStack alignItems="flex-start">
           {question.options?.map((option) => (

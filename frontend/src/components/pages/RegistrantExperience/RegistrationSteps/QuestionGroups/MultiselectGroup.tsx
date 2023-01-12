@@ -14,7 +14,7 @@ import { FormQuestion } from "../../../../../types/CampsTypes";
 type MultiselectGroupProps = {
   formResponses: Map<string, string> | undefined;
   question: FormQuestion;
-  dispatchFormResponseAction: (
+  handleSelectionChange: (
     selectionsResponse: string,
     question: FormQuestion,
   ) => void;
@@ -24,7 +24,7 @@ type MultiselectGroupProps = {
 const MultiselectGroup = ({
   formResponses,
   question,
-  dispatchFormResponseAction,
+  handleSelectionChange,
   nextClicked,
 }: MultiselectGroupProps): React.ReactElement => {
   const getInitialSelections = (): Set<string> => {
@@ -42,7 +42,7 @@ const MultiselectGroup = ({
 
   const invalid = nextClicked && selections.size <= 0 && question.required;
 
-  const handleSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSetUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
 
     if (e.target.checked) {
@@ -54,7 +54,7 @@ const MultiselectGroup = ({
     setSelections(newSelections);
     const selectionsResponse = Array.from(newSelections).join(", ");
 
-    dispatchFormResponseAction(selectionsResponse, question);
+    handleSelectionChange(selectionsResponse, question);
   };
 
   return (
@@ -82,7 +82,7 @@ const MultiselectGroup = ({
             isChecked={
               formResponses?.get(question.question)?.includes(option) ?? false
             }
-            onChange={(e) => handleSelectionChange(e)}
+            onChange={(e) => handleSetUpdate(e)}
           >
             <Text textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}>
               {option}

@@ -58,7 +58,7 @@ const CamperCard = ({
 
   const [nextClicked, setNextClicked] = useState(false);
 
-  const handleMultipleChoiceUpdate = (
+  const handleMultipleChoiceChange = (
     choice: string,
     question: FormQuestion,
   ) => {
@@ -354,7 +354,7 @@ const CamperCard = ({
                 <MultiselectGroup
                   formResponses={camper.formResponses}
                   question={question}
-                  dispatchFormResponseAction={handleSelectionChange}
+                  handleSelectionChange={handleSelectionChange}
                   nextClicked={nextClicked}
                 />
               )}
@@ -362,7 +362,7 @@ const CamperCard = ({
                 <MultipleChoiceGroup
                   formResponses={camper.formResponses}
                   question={question}
-                  handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
+                  handleMultipleChoiceChange={handleMultipleChoiceChange}
                   nextClicked={nextClicked}
                 />
               )}

@@ -41,6 +41,15 @@ export const useAdditionalInfoDispatcher = (
   return dispatch;
 };
 
+export const checkAdditionalQuestionsAnsweredSingleCamper = (
+  camper: RegistrantExperienceCamper,
+  requiredQuestions: string[],
+): boolean => {
+  return requiredQuestions.every(
+    (question) => camper.formResponses?.get(question) ?? false,
+  );
+};
+
 export const checkAdditionalQuestionsAnswered = (
   campers: RegistrantExperienceCamper[],
   campSpecificFormQuestions: FormQuestion[],
@@ -55,8 +64,6 @@ export const checkAdditionalQuestionsAnswered = (
     .map((question) => question.question);
 
   return campers.every((camper) =>
-    requiredQuestions.every(
-      (question) => camper.formResponses?.get(question) ?? false,
-    ),
+    checkAdditionalQuestionsAnsweredSingleCamper(camper, requiredQuestions)
   );
 };
