@@ -49,9 +49,9 @@ const EditCamperCard = ({
 
   const [editing, setEditing] = useState(false);
 
-  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
-  const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
-  const [isAgeInvalid, setIsAgeInvalid] = useState<boolean>(false);
+  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
+  const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
+  const [isAgeInvalid, setIsAgeInvalid] = useState(false);
 
   const updateFormErrorMsgs = () => {
     let valid = true;

@@ -47,13 +47,11 @@ const EditContactCard = ({
 
   const [editing, setEditing] = useState(false);
 
-  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
-  const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
-  const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
-  const [isPhoneNumberInvalid, setIsPhoneNumberInvalid] = useState<boolean>(
-    false,
-  );
-  const [isRelationInvalid, setIsRelationInvalid] = useState<boolean>(false);
+  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
+  const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
+  const [isEmailInvalid, setIsEmailInvalid] = useState(false);
+  const [isPhoneNumberInvalid, setIsPhoneNumberInvalid] = useState(false);
+  const [isRelationInvalid, setIsRelationInvalid] = useState(false);
 
   const updateFormErrorMsgs = () => {
     if (

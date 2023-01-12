@@ -155,16 +155,11 @@ export const checkCamperCardComplete = (
   camp: CampResponse,
   camper: RegistrantExperienceCamper,
 ): boolean => {
-  if (
-    !(
-      checkFirstName(camper.firstName) &&
-      checkLastName(camper.lastName) &&
-      checkAge(camper.age, camp.ageUpper, camp.ageLower)
-    )
-  ) {
-    return false;
-  }
-  return true;
+  return (
+    checkFirstName(camper.firstName) &&
+    checkLastName(camper.lastName) &&
+    checkAge(camper.age, camp.ageUpper, camp.ageLower)
+  );
 };
 
 export const checkContactCardComplete = (
