@@ -5,12 +5,13 @@ import {
   PersonalInfoReducerDispatch,
   UpdateCamper,
   UpdateContact,
+  UpdateResponse,
 } from "../../../../../types/PersonalInfoTypes";
+import { CampResponse } from "../../../../../types/CampsTypes";
 import {
   EmergencyContact,
   RegistrantExperienceCamper,
 } from "../../../../../types/CamperTypes";
-import { CampResponse } from "../../../../../types/CampsTypes";
 
 export const CamperReducer = (
   setCampers: React.Dispatch<
@@ -78,6 +79,30 @@ export const CamperReducer = (
             camper.contacts[contactIndex][field] = data as string;
           else if (field === "relationshipToCamper")
             camper.contacts[contactIndex][field] = data as string;
+        }
+        break;
+      }
+      case PersonalInfoActions.UPDATE_RESPONSE: {
+        const { camperIndex, question, data } = action as UpdateResponse;
+        const newResponses =
+          newCampers[camperIndex].formResponses ?? new Map<string, string>();
+        newResponses.set(question, data as string);
+        newCampers[camperIndex].formResponses = newResponses;
+        break;
+      }
+      case PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE: {
+        // question is the question stem of the emergency contact question
+        // data is a string response
+        const { question, data } = action as UpdateResponse;
+
+        // Update all the campers with the new formResponses.
+        // All campers will have the same emergency contact responses
+        /* eslint-disable-next-line */
+        for (const camper of newCampers) { 
+          const newResponses =
+            camper.formResponses ?? new Map<string, string>();
+          newResponses.set(question, data as string);
+          camper.formResponses = newResponses;
         }
         break;
       }
@@ -204,5 +229,26 @@ export const checkPersonalInfoFilled = (
       return false;
     }
   }
+
+  // Check required personal info and contact info questions
+  const step1RequiredQuestions = camp.formQuestions
+    .filter(
+      (question) =>
+        question.category === "PersonalInfo" ||
+        question.category === "EmergencyContact",
+    )
+    .filter((question) => question.required)
+    .map((question) => question.question);
+
+  if (
+    !campers.every((camper) =>
+      step1RequiredQuestions.every((question) =>
+        camper.formResponses?.get(question),
+      ),
+    )
+  ) {
+    return false;
+  }
+
   return true;
 };

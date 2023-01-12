@@ -33,6 +33,7 @@ export const mapCampToCartItems = (
       ];
 
       if (
+        edlpChoices.length &&
         edlpChoices[sessionIndex].some(
           (edlpChoice) =>
             edlpChoice.earlyDropoff.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
@@ -41,8 +42,8 @@ export const mapCampToCartItems = (
         const [cost, units] = edlpChoices[sessionIndex].reduce(
           ([costSum, unitsSum], edlpDay) => {
             return [
-              costSum + edlpDay.earlyDropoff.cost,
-              unitsSum + edlpDay.earlyDropoff.cost,
+              costSum + edlpDay.earlyDropoff.cost * campers.length,
+              unitsSum + edlpDay.earlyDropoff.units * campers.length,
             ];
           },
           [0, 0],
@@ -57,6 +58,7 @@ export const mapCampToCartItems = (
       }
 
       if (
+        edlpChoices.length &&
         edlpChoices[sessionIndex].some(
           (edlpChoice) =>
             edlpChoice.latePickup.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
@@ -65,8 +67,8 @@ export const mapCampToCartItems = (
         const [cost, units] = edlpChoices[sessionIndex].reduce(
           ([costSum, unitsSum], edlpDay) => {
             return [
-              costSum + edlpDay.latePickup.cost,
-              unitsSum + edlpDay.latePickup.cost,
+              costSum + edlpDay.latePickup.cost * campers.length,
+              unitsSum + edlpDay.latePickup.units * campers.length,
             ];
           },
           [0, 0],

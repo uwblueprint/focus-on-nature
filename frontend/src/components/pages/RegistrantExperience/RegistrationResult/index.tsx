@@ -115,7 +115,7 @@ const RegistrationResult = ({
               <RegistrationInfoCard
                 imageSrc="src"
                 campName={camp.name}
-                sessions="Session 1 - Aug 5 to Aug 8\nSession 2 - Aug 12 to Aug 15"
+                sessions={sessions}
                 registeredCampers={campers}
               />
             </VStack>

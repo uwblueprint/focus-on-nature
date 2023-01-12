@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import PaymentSummary from "./PaymentSummary";
-import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";

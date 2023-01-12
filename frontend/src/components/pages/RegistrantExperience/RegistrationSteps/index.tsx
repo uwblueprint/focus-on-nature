@@ -16,7 +16,11 @@ import ReviewRegistration from "./ReviewRegistration";
 import Waiver from "./Waiver";
 import waiverReducer from "./Waiver/WaiverReducer";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
+import {
+  OptionalClause,
+  RegistrantExperienceCamper,
+  WaitlistedCamper,
+} from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { saveRegistrationSessionToSessionStorage } from "../../../../utils/RegistrationUtils";
 import { CheckoutData, EdlpChoice } from "../../../../types/RegistrationTypes";
@@ -30,6 +34,7 @@ type RegistrationStepsProps = {
   camp: CampResponse;
   selectedSessions: CampSession[];
   waiver: WaiverType;
+  waitlistedCamper?: WaitlistedCamper;
   onClickBack: () => void;
   failedCheckoutData?: CheckoutData;
 };
@@ -39,6 +44,7 @@ const RegistrationSteps = ({
   selectedSessions,
   waiver,
   onClickBack,
+  waitlistedCamper,
   failedCheckoutData,
 }: RegistrationStepsProps): React.ReactElement => {
   const {
@@ -155,6 +161,40 @@ const RegistrationSteps = ({
     window.location.assign(checkoutSessionUrl);
   };
 
+  const appendOptionalClausesToCampers = (
+    newOptionalClauses: OptionalClauseResponse[],
+  ) => {
+    setCampers(
+      (
+        oldCampers: RegistrantExperienceCamper[],
+      ): RegistrantExperienceCamper[] => {
+        const newCampers: RegistrantExperienceCamper[] = JSON.parse(
+          JSON.stringify(oldCampers),
+        ); // Deep Copy
+
+        for (let i = 0; i < campers.length; i += 1) {
+          newCampers[i].formResponses = campers[i].formResponses;
+        } // Copy the formResponses map
+
+        // Map the OptionalClauseResponse[] to OptionalClause[]
+        const newCamperOptionalClauses: OptionalClause[] = [];
+        newOptionalClauses.forEach((optionalClause) => {
+          newCamperOptionalClauses.push({
+            clause: optionalClause.text,
+            agreed: optionalClause.agreed ?? false,
+          });
+        });
+
+        // Update all the campers' optionalClauses field
+        /* eslint-disable-next-line */
+      for (const camper of newCampers){
+          camper.optionalClauses = newCamperOptionalClauses;
+        }
+        return newCampers;
+      },
+    );
+  };
+
   const registerCampers = async (
     newCampers: RegistrantExperienceCamper[],
     edlp: EdlpChoice[][],
@@ -193,6 +233,21 @@ const RegistrationSteps = ({
       });
     }
   };
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    if (waitlistedCamper) {
+      const curCampers = [...campers];
+      curCampers[0].firstName = waitlistedCamper.firstName;
+      curCampers[0].lastName = waitlistedCamper.lastName;
+      curCampers[0].age = waitlistedCamper.age;
+      curCampers[0].contacts[0].firstName = waitlistedCamper.contactFirstName;
+      curCampers[0].contacts[0].lastName = waitlistedCamper.contactLastName;
+      curCampers[0].contacts[0].email = waitlistedCamper.contactEmail;
+      curCampers[0].contacts[0].phoneNumber = waitlistedCamper.contactNumber;
+      setCampers(curCampers);
+    }
+  }, [waitlistedCamper]);
 
   const hasEarlyDropOffLatePickup =
     camp.earlyDropoff !== undefined &&
@@ -242,6 +297,7 @@ const RegistrationSteps = ({
             setCampers={setCampers}
             campSessions={selectedSessions}
             camp={camp}
+            isWaitlistRegistration={waitlistedCamper !== undefined}
           />
         );
       case RegistrantExperienceSteps.AdditionalInfoPage:
@@ -305,6 +361,8 @@ const RegistrationSteps = ({
     } else if (desiredStep < 0) {
       onClickBack();
     } else {
+      // Append the optional clauses to all the campers before registering the campers
+      appendOptionalClausesToCampers(waiverInterface.optionalClauses);
       registerCampers(campers, edlpChoices);
     }
   };
@@ -357,6 +415,7 @@ const RegistrationSteps = ({
         registrationLoading={registrationLoading}
         handleStepNavigation={handleStepNavigation}
         isPaymentSummary={isPaymentSummary}
+        isWaitlistRegistration={waitlistedCamper !== undefined}
       />
       <RegistrationErrorModal
         onConfirm={() => {

@@ -34,10 +34,15 @@ export const createWaitlistedCampersDtoValidator = async (
     if (!validatePrimitive(camper.age, "integer")) {
       return res.status(400).send(getApiValidationError("age", "integer"));
     }
-    if (!validatePrimitive(camper.contactName, "string")) {
+    if (!validatePrimitive(camper.contactFirstName, "string")) {
       return res
         .status(400)
-        .send(getApiValidationError("contactName", "string"));
+        .send(getApiValidationError("contactFirstName", "string"));
+    }
+    if (!validatePrimitive(camper.contactLastName, "string")) {
+      return res
+        .status(400)
+        .send(getApiValidationError("contactLastName", "string"));
     }
     if (!validatePrimitive(camper.contactEmail, "string")) {
       return res

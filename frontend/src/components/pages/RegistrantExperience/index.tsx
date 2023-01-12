@@ -1,8 +1,7 @@
-import { useLocation, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
-import { Text, Spinner, Flex } from "@chakra-ui/react";
-import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
 import { CampResponse } from "../../../types/CampsTypes";
 import { SUCCESS_RESULT_CODE } from "../../../constants/RegistrationConstants";
@@ -11,6 +10,8 @@ import { CheckoutData } from "../../../types/RegistrationTypes";
 import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
+import AdminAPIClient from "../../../APIClients/AdminAPIClient";
+import { WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
 
 type InitialLoadingState = {
@@ -19,9 +20,15 @@ type InitialLoadingState = {
 };
 
 const RegistrantExperiencePage = (): React.ReactElement => {
-  const { id: campId } = useParams<{ id: string }>();
+  const toast = useToast();
+  const history = useHistory();
 
   const location = useLocation();
+  const { id: campId } = useParams<{ id: string }>();
+  const searchParams = new URLSearchParams(location.search);
+  const waitlistedSessionId = searchParams.get("waitlistedSessionId");
+  const waitlistedCamperId = searchParams.get("waitlistedCamperId");
+
   const params = new URLSearchParams(location.search);
   const registrationResult = params.get("result");
 
@@ -38,6 +45,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [sessionSelectionIsComplete, setSessionSelectionIsComplete] = useState(
     false,
   );
+  const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
 
   const [restoredRegistration, setRestoredRegistration] = useState<
     CheckoutData | undefined
@@ -68,9 +76,49 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     // the user entered `?result=success` manually into the URL (so no actually success)
     if (!cachedRegistration && registrationResult !== SUCCESS_RESULT_CODE) {
       CampsAPIClient.getCampById(campId)
-        .then((campResponse) =>
-          campResponse.id ? setCamp(campResponse) : null,
-        )
+        .then((campResponse) => {
+          if (campResponse.id) {
+            setCamp(campResponse);
+
+            if (waitlistedSessionId && waitlistedCamperId) {
+              // Ensure the given waitlisted session id is in the camp sessions of this camp
+              const waitlistedCampSession = campResponse.campSessions.find(
+                (cs) => cs.id === waitlistedSessionId,
+              );
+              if (!waitlistedCampSession) {
+                throw new Error(
+                  "Could not find requested session to register for in this camp",
+                );
+              }
+              // Find the waitlisted camper id in the list of waitlisted campers in the given session
+              const waitlistCamper = waitlistedCampSession.waitlist.find(
+                (camper) => camper.id === waitlistedCamperId,
+              );
+              if (!waitlistCamper || !waitlistCamper.linkExpiry) {
+                throw new Error(
+                  "Could not find details of requested waitlisted camper for this camp session",
+                );
+              }
+
+              // Ensure the invitation link has not expired
+              if (new Date(waitlistCamper.linkExpiry) < new Date()) {
+                throw new Error("The invitation link has expired");
+              }
+              setSessionSelectionIsComplete(true);
+              setWaitlistedCamper(waitlistCamper);
+              setSelectedSessions(new Set([waitlistedSessionId]));
+            }
+          }
+        })
+        .catch((error) => {
+          history.push(`/error`);
+          toast({
+            description: error.message,
+            status: "error",
+            variant: "subtle",
+            duration: 3000,
+          });
+        })
         .finally(() =>
           setIsLoading((prevLoadingState) => {
             return { ...prevLoadingState, camp: false };
@@ -90,7 +138,14 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           }),
         );
     }
-  }, [campId, registrationResult]);
+  }, [
+    campId,
+    waitlistedSessionId,
+    waitlistedCamperId,
+    toast,
+    history,
+    registrationResult,
+  ]);
 
   if (registrationResult === SUCCESS_RESULT_CODE) {
     const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
@@ -118,6 +173,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         )}
         waiver={waiver}
         onClickBack={() => setSessionSelectionIsComplete(false)}
+        waitlistedCamper={waitlistedCamper}
         failedCheckoutData={restoredRegistration}
       />
     ) : (

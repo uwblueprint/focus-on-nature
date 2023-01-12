@@ -107,7 +107,8 @@ export type WaitlistedCamperDTO = {
   firstName: string;
   lastName: string;
   age: number;
-  contactName: string;
+  contactFirstName: string;
+  contactLastName: string;
   contactEmail: string;
   contactNumber: string;
   campSession: string;
