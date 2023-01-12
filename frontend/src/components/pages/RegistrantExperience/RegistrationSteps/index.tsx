@@ -264,9 +264,11 @@ const RegistrationSteps = ({
     hasEarlyDropOffLatePickup,
     requireEarlyDropOffLatePickup,
   );
+
   const isWaiverFilled = waiverInterface.waiverCompleted;
   const isReviewRegistrationFilled = reviewRegistrationVisited;
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const [isPaymentSummary, setIsPaymentSummary] = useState(false);
 
   const isCurrentStepCompleted = (step: RegistrantExperienceSteps) => {
     switch (step) {
@@ -330,6 +332,8 @@ const RegistrationSteps = ({
             camp={camp}
             edlpChoices={edlpChoices}
             onPageVisited={() => setReviewRegistrationVisited(true)}
+            setCampers={setCampers}
+            isPaymentSummary={isPaymentSummary}
           />
         );
       default:
@@ -339,7 +343,19 @@ const RegistrationSteps = ({
 
   const handleStepNavigation = (stepsToMove: number) => {
     const desiredStep = currentStep + stepsToMove;
-    if (RegistrantExperienceSteps[desiredStep]) {
+    if (
+      currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
+      !isPaymentSummary &&
+      stepsToMove === 1
+    ) {
+      setIsPaymentSummary(true);
+    } else if (
+      currentStep === RegistrantExperienceSteps.ReviewRegistrationPage &&
+      isPaymentSummary &&
+      stepsToMove === -1
+    ) {
+      setIsPaymentSummary(false);
+    } else if (RegistrantExperienceSteps[desiredStep]) {
       setCurrentStep(currentStep + stepsToMove);
       window.scrollTo(0, 0);
     } else if (desiredStep < 0) {
@@ -388,7 +404,7 @@ const RegistrationSteps = ({
         isPersonalInfoFilled={isPersonalInfoFilled}
         isAdditionalInfoFilled={isAdditionalInfoFilled}
         isWaiverFilled={isWaiverFilled}
-        isReviewRegistrationFilled={isReviewRegistrationFilled}
+        isReviewRegistrationFilled={isPaymentSummary}
         setCurrentStep={setCurrentStep}
       />
       <Box mx="10vw">{getCurrentRegistrantStepComponent(currentStep)}</Box>
@@ -398,6 +414,7 @@ const RegistrationSteps = ({
         isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
         registrationLoading={registrationLoading}
         handleStepNavigation={handleStepNavigation}
+        isPaymentSummary={isPaymentSummary}
         isWaitlistRegistration={waitlistedCamper !== undefined}
       />
       <RegistrationErrorModal

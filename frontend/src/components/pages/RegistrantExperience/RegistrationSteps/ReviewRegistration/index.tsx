@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Box } from "@chakra-ui/react";
 import PaymentSummary from "./PaymentSummary";
+import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";
@@ -12,6 +12,10 @@ type ReviewRegistrationProps = {
   camp: CampResponse;
   edlpChoices: EdlpChoice[][];
   onPageVisited: () => void;
+  setCampers: React.Dispatch<
+    React.SetStateAction<RegistrantExperienceCamper[]>
+  >;
+  isPaymentSummary: boolean;
 };
 
 const ReviewRegistration = ({
@@ -20,17 +24,17 @@ const ReviewRegistration = ({
   camp,
   edlpChoices,
   onPageVisited,
+  setCampers,
+  isPaymentSummary,
 }: ReviewRegistrationProps): React.ReactElement => {
-  useEffect(() => onPageVisited());
-  return (
-    <Box>
-      <PaymentSummary
-        campName={camp.name}
-        items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
-      />
-
-      {/* <ReviewInformation /> */}
-    </Box>
+  useEffect(onPageVisited);
+  return !isPaymentSummary ? (
+    <ReviewInformation camp={camp} campers={campers} setCampers={setCampers} />
+  ) : (
+    <PaymentSummary
+      campName={camp.name}
+      items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+    />
   );
 };
 
