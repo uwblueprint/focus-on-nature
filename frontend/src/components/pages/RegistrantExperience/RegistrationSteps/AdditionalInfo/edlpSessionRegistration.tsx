@@ -199,7 +199,6 @@ const EDLPSessionRegistration = ({
           bg="background.white.100"
           px={{ sm: "5", lg: "20" }}
           py={{ sm: "4", lg: "8" }}
-
           borderRadius="10px"
           _expanded={{
             borderBottomRadius: "0",
@@ -233,24 +232,36 @@ const EDLPSessionRegistration = ({
             padding={{ sm: "16px 40px", lg: "32px 80px" }}
             bg="background.grey.500"
           >
-            <Table
-              variant="simple"
-              colorScheme="blackAlpha"
-              size="sm"
-            >
+            <Table variant="simple" colorScheme="blackAlpha" size="sm">
               <Thead>
                 <Tr textAlign="left">
                   <Td color="text.default.100" border="none" padding="3px">
-                    <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>Date</Text>
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Date
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>Early Dropoff</Text>
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Early Dropoff
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>Late Pickup</Text>
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Late Pickup
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>Cost/Child</Text>
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Cost/Child
+                    </Text>
                   </Td>
                 </Tr>
               </Thead>
@@ -258,7 +269,11 @@ const EDLPSessionRegistration = ({
                 {session.dates.map((date: string, dateIndex: number) => {
                   return (
                     <Tr key={`${date}_edlp_row`}>
-                      <Td border="none" textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} padding="3px">
+                      <Td
+                        border="none"
+                        textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                        padding="3px"
+                      >
                         {getFormattedSingleDateString(date)}
                       </Td>
                       <Td border="none" padding="3px">
@@ -268,7 +283,10 @@ const EDLPSessionRegistration = ({
                             dateIndex,
                             false,
                           )}
-                          textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                          textStyle={{
+                            sm: "xSmallRegular",
+                            lg: "buttonRegular",
+                          }}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -287,7 +305,10 @@ const EDLPSessionRegistration = ({
                         <Select
                           width="120px"
                           defaultValue={getDefaultSelectOption(dateIndex, true)}
-                          textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                          textStyle={{
+                            sm: "xSmallRegular",
+                            lg: "buttonRegular",
+                          }}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
@@ -302,7 +323,11 @@ const EDLPSessionRegistration = ({
                           {getLpOptions(date)}
                         </Select>
                       </Td>
-                      <Td border="none" textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} padding="3px">
+                      <Td
+                        border="none"
+                        textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                        padding="3px"
+                      >
                         ${getTotalEdlpCostForDay(date)}
                       </Td>
                     </Tr>

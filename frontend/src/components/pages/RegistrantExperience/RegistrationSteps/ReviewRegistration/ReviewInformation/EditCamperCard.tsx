@@ -127,7 +127,12 @@ const EditCamperCard = ({
         borderRadius="0px 0px 10px 10px"
         _hover={{ cursor: editing ? "auto" : "not-allowed" }}
       >
-        <Box zIndex={editing ? 1 : -1} position="relative" bg="background.grey.500" borderRadius="0px 0px 16px 16px">
+        <Box
+          zIndex={editing ? 1 : -1}
+          position="relative"
+          bg="background.grey.500"
+          borderRadius="0px 0px 16px 16px"
+        >
           <Box px={{ sm: "5", lg: "20" }}>
             <Wrap pt={7}>
               <WrapItem width={{ sm: "100%", md: "45%", lg: "30%" }}>

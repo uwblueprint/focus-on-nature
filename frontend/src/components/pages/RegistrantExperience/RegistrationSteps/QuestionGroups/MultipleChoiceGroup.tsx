@@ -33,7 +33,7 @@ const MultipleChoiceGroup = ({
       <FormLabel>
         <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
           {question.question}{" "}
-          {question.required && 
+          {question.required && (
             <Text
               as="span"
               color="text.critical.100"
@@ -42,7 +42,7 @@ const MultipleChoiceGroup = ({
             >
               <RequiredAsterisk />
             </Text>
-            }
+          )}
         </Text>
       </FormLabel>
       <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">

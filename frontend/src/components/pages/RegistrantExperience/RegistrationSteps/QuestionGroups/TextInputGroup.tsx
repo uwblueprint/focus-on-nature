@@ -32,18 +32,16 @@ const TextInputGroup = ({
       <FormLabel>
         <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
           {question.question}{" "}
-          
-          {question.required && 
-          <Text
-            as="span"
-            color="text.critical.100"
-            fontSize="xs"
-            verticalAlign="super"
-          >
-            <RequiredAsterisk />
-          </Text>
-          }
-
+          {question.required && (
+            <Text
+              as="span"
+              color="text.critical.100"
+              fontSize="xs"
+              verticalAlign="super"
+            >
+              <RequiredAsterisk />
+            </Text>
+          )}
         </Text>
       </FormLabel>
       <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">

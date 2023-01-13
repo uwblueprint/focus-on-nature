@@ -64,6 +64,6 @@ export const checkAdditionalQuestionsAnswered = (
     .map((question) => question.question);
 
   return campers.every((camper) =>
-    checkAdditionalQuestionsAnsweredSingleCamper(camper, requiredQuestions)
+    checkAdditionalQuestionsAnsweredSingleCamper(camper, requiredQuestions),
   );
 };

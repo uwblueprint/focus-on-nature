@@ -64,10 +64,18 @@ const EarlyDropOffLatePickupCard = ({
             >
               <VStack alignItems="flex-start">
                 <Radio value="true" colorScheme="green">
-                  <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>Yes</Text>
+                  <Text
+                    textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                  >
+                    Yes
+                  </Text>
                 </Radio>
                 <Radio value="false" colorScheme="green">
-                  <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>No</Text>
+                  <Text
+                    textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                  >
+                    No
+                  </Text>
                 </Radio>
               </VStack>
             </RadioGroup>

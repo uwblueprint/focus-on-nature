@@ -97,7 +97,6 @@ const ReviewInformation = ({
             ))}
           </AccordionPanel>
         </AccordionItem>
-
       </Accordion>
     </Box>
   );
