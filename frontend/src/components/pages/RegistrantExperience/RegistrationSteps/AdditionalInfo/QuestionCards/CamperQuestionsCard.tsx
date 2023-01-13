@@ -63,14 +63,13 @@ const CamperQuestionsCard = ({
 
   return (
     <QuestionsCardWrapper title={`${camper.firstName} ${camper.lastName}`}>
-      <VStack py="24px">
-        <Wrap width="100%" px="20px" justify="space-between">
+      <VStack px={{ sm: "5", lg: "20" }} py={4}>
+        <Wrap width="100%" justify="space-between">
           {campSpecificFormQuestions.map((question) => (
             <WrapItem
               key={`additional_info_question_${question.id}`}
               width={{ sm: "100%", md: mdWrapWidth }}
-              px="20px"
-              py="12px"
+              py={4}
             >
               {question.type === "Text" && (
                 <TextInputGroup

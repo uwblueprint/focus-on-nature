@@ -10,6 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { FormQuestion } from "../../../../../types/CampsTypes";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 
 type MultipleChoiceGroupProps = {
   formResponses: Map<string, string> | undefined;
@@ -28,10 +29,20 @@ const MultipleChoiceGroup = ({
     nextClicked && !formResponses?.get(question.question) && question.required;
 
   return (
-    <FormControl isRequired={question.required} isInvalid={invalid}>
+    <FormControl isInvalid={invalid}>
       <FormLabel>
         <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-          {question.question}
+          {question.question}{" "}
+          {question.required && 
+            <Text
+              as="span"
+              color="text.critical.100"
+              fontSize="xs"
+              verticalAlign="super"
+            >
+              <RequiredAsterisk />
+            </Text>
+            }
         </Text>
       </FormLabel>
       <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">

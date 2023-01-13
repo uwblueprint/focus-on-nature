@@ -68,6 +68,7 @@ const colors = {
       200: "#F5F5F5",
       300: "#F4F4F4",
       400: "#D8DBDF",
+      500: "#FBFBFB",
     },
     interactive: {
       100: "#D3E9D3",

@@ -159,10 +159,10 @@ const CamperCard = ({
   }
 
   return (
-    <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%">
-      <Box backgroundColor="#FFFFFF" rounded="xl">
+    <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%" backgroundColor="background.grey.500">
+      <Box backgroundColor="background.white.100" rounded="xl">
         <Heading textStyle="displayLarge">
-          <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
+          <Flex py={6} px={{ sm: "5", lg: "20" }}  alignItems="center">
             <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
               Camper #{camperIndex + 1}
             </Text>
@@ -339,8 +339,6 @@ const CamperCard = ({
             <WrapItem
               key={`personal_info_question_${question.question}`}
               width={{ sm: "100%", md: mdWrapWidth }}
-              px="20px"
-              py="12px"
             >
               {question.type === "Text" && (
                 <TextInputGroup

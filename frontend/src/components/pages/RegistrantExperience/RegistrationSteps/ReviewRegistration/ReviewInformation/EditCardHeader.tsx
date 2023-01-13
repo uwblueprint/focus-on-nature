@@ -21,7 +21,7 @@ const EditCardHeader = ({
   editing,
 }: EditCardHeaderProps): React.ReactElement => {
   return (
-    <Box backgroundColor="#FFFFFF" rounded="xl">
+    <Box bg="background.white.100" rounded="xl">
       <Heading textStyle="displayLarge">
         <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
           <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>

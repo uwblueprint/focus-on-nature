@@ -116,7 +116,7 @@ const EditAdditionalQuestionsCard = ({
         borderRadius="0px 0px 10px 10px"
         _hover={{ cursor: editing ? "auto" : "not-allowed" }}
       >
-        <Box zIndex={editing ? 1 : -1} position="relative">
+        <Box zIndex={editing ? 1 : -1} position="relative" bg="background.grey.500" borderRadius="0px 0px 16px 16px">
           <Box px={{ sm: "5", lg: "20" }}>
             <Wrap width="100%" pt={7} justify="space-between">
               {campSpecificFormQuestions.map((question) => (

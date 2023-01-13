@@ -48,7 +48,7 @@ const EditCardFooter = ({
   });
 
   return (
-    <Box rounded="xl">
+    <Box rounded="xl" bg="background.white.100">
       <Wrap>
         <Spacer />
         <WrapItem>

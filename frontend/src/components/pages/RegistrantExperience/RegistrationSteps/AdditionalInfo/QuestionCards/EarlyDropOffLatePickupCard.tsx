@@ -10,6 +10,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import React from "react";
+import RequiredAsterisk from "../../../../../common/RequiredAsterisk";
 import QuestionsCardWrapper from "./QuestionsCardWrapper";
 
 type EarlyDropOffLatePickupCardProps = {
@@ -32,10 +33,18 @@ const EarlyDropOffLatePickupCard = ({
   return (
     <QuestionsCardWrapper title="Early Drop-off and Late Pick-up">
       <Wrap>
-        <WrapItem px="40px" py="12px">
-          <FormControl isRequired isInvalid={invalid}>
-            <FormLabel fontWeight="bold" fontSize="18px">
-              Do your camper(s) require early drop-off or late pick-up?
+        <WrapItem px={{ sm: "5", lg: "20" }} py={4}>
+          <FormControl isInvalid={invalid}>
+            <FormLabel textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
+              Do your camper(s) require early drop-off or late pick-up?{" "}
+              <Text
+                as="span"
+                color="text.critical.100"
+                fontSize="xs"
+                verticalAlign="super"
+              >
+                <RequiredAsterisk />
+              </Text>
             </FormLabel>
             <Text
               textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
@@ -55,10 +64,10 @@ const EarlyDropOffLatePickupCard = ({
             >
               <VStack alignItems="flex-start">
                 <Radio value="true" colorScheme="green">
-                  Yes
+                  <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>Yes</Text>
                 </Radio>
                 <Radio value="false" colorScheme="green">
-                  No
+                  <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>No</Text>
                 </Radio>
               </VStack>
             </RadioGroup>
