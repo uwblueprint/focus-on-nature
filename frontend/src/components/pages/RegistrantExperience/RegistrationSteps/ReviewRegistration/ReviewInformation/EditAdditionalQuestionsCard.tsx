@@ -136,6 +136,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleTextChange={handleTextChange}
                       nextClicked={save}
+                      editing
                     />
                   )}
                   {question.type === "Multiselect" && (
@@ -144,6 +145,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleSelectionChange={handleSelectionChange}
                       nextClicked={save}
+                      editing
                     />
                   )}
                   {question.type === "MultipleChoice" && (
@@ -152,6 +154,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleMultipleChoiceChange={handleMultipleChoiceChange}
                       nextClicked={save}
+                      editing
                     />
                   )}
                 </WrapItem>

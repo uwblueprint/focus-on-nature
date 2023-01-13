@@ -17,6 +17,7 @@ type MultipleChoiceGroupProps = {
   question: FormQuestion;
   handleMultipleChoiceChange: (choice: string, question: FormQuestion) => void;
   nextClicked: boolean;
+  editing?: boolean;
 };
 
 const MultipleChoiceGroup = ({
@@ -24,9 +25,15 @@ const MultipleChoiceGroup = ({
   question,
   handleMultipleChoiceChange,
   nextClicked,
+  editing = false,
 }: MultipleChoiceGroupProps): React.ReactElement => {
-  const invalid =
-    nextClicked && !formResponses?.get(question.question) && question.required;
+  let invalid = false;
+  if (!editing)
+    invalid =
+      nextClicked &&
+      !formResponses?.get(question.question) &&
+      question.required;
+  else invalid = !formResponses?.get(question.question) && question.required;
 
   return (
     <FormControl isInvalid={invalid}>

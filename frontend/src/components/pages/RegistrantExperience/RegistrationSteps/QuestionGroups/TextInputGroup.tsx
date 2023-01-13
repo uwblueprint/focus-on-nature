@@ -16,6 +16,7 @@ type TextInputGroupProps = {
   question: FormQuestion;
   handleTextChange: (response: string, question: FormQuestion) => void;
   nextClicked: boolean;
+  editing?: boolean;
 };
 
 const TextInputGroup = ({
@@ -23,9 +24,15 @@ const TextInputGroup = ({
   question,
   handleTextChange,
   nextClicked,
+  editing = false,
 }: TextInputGroupProps): React.ReactElement => {
-  const invalid =
-    nextClicked && !formResponses?.get(question.question) && question.required;
+  let invalid = false;
+  if (!editing)
+    invalid =
+      nextClicked &&
+      !formResponses?.get(question.question) &&
+      question.required;
+  else invalid = !formResponses?.get(question.question) && question.required;
 
   return (
     <FormControl isInvalid={invalid}>

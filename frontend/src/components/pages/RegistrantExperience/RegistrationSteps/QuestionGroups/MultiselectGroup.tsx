@@ -20,6 +20,7 @@ type MultiselectGroupProps = {
     question: FormQuestion,
   ) => void;
   nextClicked: boolean;
+  editing?: boolean;
 };
 
 const MultiselectGroup = ({
@@ -27,6 +28,7 @@ const MultiselectGroup = ({
   question,
   handleSelectionChange,
   nextClicked,
+  editing = false,
 }: MultiselectGroupProps): React.ReactElement => {
   const getInitialSelections = (): Set<string> => {
     const questionResponse = formResponses?.get(question.question);
@@ -41,7 +43,10 @@ const MultiselectGroup = ({
     getInitialSelections(),
   );
 
-  const invalid = nextClicked && selections.size <= 0 && question.required;
+  let invalid = false;
+  if (!editing)
+    invalid = nextClicked && selections.size <= 0 && question.required;
+  else invalid = selections.size <= 0 && question.required;
 
   const handleSetUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
