@@ -10,22 +10,25 @@ import {
 } from "@chakra-ui/react";
 
 import { FormQuestion } from "../../../../../types/CampsTypes";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 
 type MultiselectGroupProps = {
   formResponses: Map<string, string> | undefined;
   question: FormQuestion;
-  dispatchFormResponseAction: (
+  handleSelectionChange: (
     selectionsResponse: string,
     question: FormQuestion,
   ) => void;
   nextClicked: boolean;
+  editing?: boolean;
 };
 
 const MultiselectGroup = ({
   formResponses,
   question,
-  dispatchFormResponseAction,
+  handleSelectionChange,
   nextClicked,
+  editing = false,
 }: MultiselectGroupProps): React.ReactElement => {
   const getInitialSelections = (): Set<string> => {
     const questionResponse = formResponses?.get(question.question);
@@ -40,9 +43,12 @@ const MultiselectGroup = ({
     getInitialSelections(),
   );
 
-  const invalid = nextClicked && selections.size <= 0 && question.required;
+  let invalid = false;
+  if (!editing)
+    invalid = nextClicked && selections.size <= 0 && question.required;
+  else invalid = selections.size <= 0 && question.required;
 
-  const handleSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSetUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSelections = new Set(selections);
 
     if (e.target.checked) {
@@ -54,15 +60,25 @@ const MultiselectGroup = ({
     setSelections(newSelections);
     const selectionsResponse = Array.from(newSelections).join(", ");
 
-    dispatchFormResponseAction(selectionsResponse, question);
+    handleSelectionChange(selectionsResponse, question);
   };
 
   return (
     <VStack alignItems="flex-start">
-      <FormControl isRequired={question.required} isInvalid={invalid}>
+      <FormControl isInvalid={invalid}>
         <FormLabel>
           <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-            {question.question}
+            {question.question}{" "}
+            {question.required && (
+              <Text
+                as="span"
+                color="text.critical.100"
+                fontSize="xs"
+                verticalAlign="super"
+              >
+                <RequiredAsterisk />
+              </Text>
+            )}
           </Text>
         </FormLabel>
         <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
@@ -82,9 +98,11 @@ const MultiselectGroup = ({
             isChecked={
               formResponses?.get(question.question)?.includes(option) ?? false
             }
-            onChange={(e) => handleSelectionChange(e)}
+            onChange={(e) => handleSetUpdate(e)}
           >
-            {option}
+            <Text textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}>
+              {option}
+            </Text>
           </Checkbox>
         ))}
       </VStack>

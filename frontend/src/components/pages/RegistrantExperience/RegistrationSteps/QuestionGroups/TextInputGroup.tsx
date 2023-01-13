@@ -9,12 +9,14 @@ import {
 } from "@chakra-ui/react";
 
 import { FormQuestion } from "../../../../../types/CampsTypes";
+import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 
 type TextInputGroupProps = {
   formResponses: Map<string, string> | undefined;
   question: FormQuestion;
   handleTextChange: (response: string, question: FormQuestion) => void;
   nextClicked: boolean;
+  editing?: boolean;
 };
 
 const TextInputGroup = ({
@@ -22,15 +24,31 @@ const TextInputGroup = ({
   question,
   handleTextChange,
   nextClicked,
+  editing = false,
 }: TextInputGroupProps): React.ReactElement => {
-  const invalid =
-    nextClicked && !formResponses?.get(question.question) && question.required;
+  let invalid = false;
+  if (!editing)
+    invalid =
+      nextClicked &&
+      !formResponses?.get(question.question) &&
+      question.required;
+  else invalid = !formResponses?.get(question.question) && question.required;
 
   return (
-    <FormControl isRequired={question.required} isInvalid={invalid}>
+    <FormControl isInvalid={invalid}>
       <FormLabel>
         <Text textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}>
-          {question.question}
+          {question.question}{" "}
+          {question.required && (
+            <Text
+              as="span"
+              color="text.critical.100"
+              fontSize="xs"
+              verticalAlign="super"
+            >
+              <RequiredAsterisk />
+            </Text>
+          )}
         </Text>
       </FormLabel>
       <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }} mb="3">
@@ -42,6 +60,7 @@ const TextInputGroup = ({
       <Textarea
         value={formResponses?.get(question.question) ?? ""}
         placeholder="Type here..."
+        textStyle={{ sm: "xSmallRegular", lg: "bodyRegular" }}
         backgroundColor="background.white.100"
         onChange={(e) => handleTextChange(e.target.value, question)}
       />

@@ -8,9 +8,11 @@ import {
 } from "@chakra-ui/react";
 import EditCamperCard from "./EditCamperCard";
 import EditContactCard from "./EditContactCard";
+import EditAdditionalQuestionsCard from "./EditAdditionalQuestionsCard";
 import { CampResponse } from "../../../../../../types/CampsTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import { usePersonalInfoDispatcher } from "../../PersonalInfo/personalInfoReducer";
+import { useAdditionalInfoDispatcher } from "../../AdditionalInfo/additionalInfoReducer";
 import GeneralAccordionButton from "../../../../../common/GeneralAccordionButton";
 
 type ReviewInformationProps = {
@@ -27,6 +29,7 @@ const ReviewInformation = ({
   setCampers,
 }: ReviewInformationProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
+  const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
   return (
     <Box>
@@ -73,6 +76,23 @@ const ReviewInformation = ({
                 contact={contact}
                 contactIndex={index}
                 dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+              />
+            ))}
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem border="none" mb={4}>
+          <GeneralAccordionButton title="Additional Information" />
+          <AccordionPanel pb={4}>
+            {campers.map((camper, camperIndex) => (
+              <EditAdditionalQuestionsCard
+                key={camperIndex}
+                camper={camper}
+                camperIndex={camperIndex}
+                campSpecificFormQuestions={camp.formQuestions.filter(
+                  (question) => question.category === "CampSpecific",
+                )}
+                dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
               />
             ))}
           </AccordionPanel>

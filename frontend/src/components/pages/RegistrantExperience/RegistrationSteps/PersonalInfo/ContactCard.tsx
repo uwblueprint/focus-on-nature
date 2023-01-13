@@ -53,7 +53,7 @@ const ContactCard = ({
 }: ContactCardProps): React.ReactElement => {
   const mdWrapWidth = emergencyContactQuestions.length > 1 ? "47%" : "100%";
 
-  const handleMultipleChoiceUpdate = (
+  const handleMultipleChoiceChange = (
     choice: string,
     question: FormQuestion,
   ) => {
@@ -297,7 +297,7 @@ const ContactCard = ({
                   <MultiselectGroup
                     formResponses={camper.formResponses}
                     question={question}
-                    dispatchFormResponseAction={handleSelectionChange}
+                    handleSelectionChange={handleSelectionChange}
                     nextClicked={nextClicked}
                   />
                 )}
@@ -305,7 +305,7 @@ const ContactCard = ({
                   <MultipleChoiceGroup
                     formResponses={camper.formResponses}
                     question={question}
-                    handleMultipleChoiceUpdate={handleMultipleChoiceUpdate}
+                    handleMultipleChoiceChange={handleMultipleChoiceChange}
                     nextClicked={nextClicked}
                   />
                 )}

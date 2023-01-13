@@ -1,15 +1,10 @@
 import React, { useState, useMemo } from "react";
 import {
   Box,
-  Button,
-  Divider,
-  Flex,
   FormControl,
   FormErrorMessage,
-  Heading,
   Input,
   Spacer,
-  Text,
   Textarea,
   Wrap,
   WrapItem,
@@ -28,6 +23,7 @@ import {
 } from "../../PersonalInfo/personalInfoReducer";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";
+import EditCardHeader from "./EditCardHeader";
 
 type EditContactCardProps = {
   contact: EmergencyContact;
@@ -147,27 +143,11 @@ const EditContactCard = ({
 
   return (
     <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%" mt={2} mb={2}>
-      <Box backgroundColor="#FFFFFF" rounded="xl">
-        <Heading textStyle="displayLarge">
-          <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
-            <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
-              {contactIndex === 0 ? "Primary Contact" : "Secondary Contact"}{" "}
-            </Text>
-            <Spacer />
-            <Button
-              variant="secondary"
-              textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
-              disabled={editing}
-              w={{ sm: "80px", lg: "100px" }}
-              h={{ sm: "30px", lg: "40px" }}
-              onClick={() => setEditing(true)}
-            >
-              Edit
-            </Button>
-          </Flex>
-        </Heading>
-        <Divider borderColor="border.secondary.100" />
-      </Box>
+      <EditCardHeader
+        title={contactIndex === 0 ? "Primary Contact" : "Secondary Contact"}
+        onClick={() => setEditing(true)}
+        editing={editing}
+      />
 
       <Box
         zIndex={0}
@@ -175,7 +155,12 @@ const EditContactCard = ({
         borderRadius="0px 0px 10px 10px"
         _hover={{ cursor: editing ? "auto" : "not-allowed" }}
       >
-        <Box zIndex={editing ? 1 : -1} position="relative">
+        <Box
+          zIndex={editing ? 1 : -1}
+          position="relative"
+          bg="background.grey.500"
+          borderRadius="0px 0px 16px 16px"
+        >
           <Box px={{ sm: "5", lg: "20" }}>
             <Wrap pt="7">
               <WrapItem width={{ sm: "100%", md: "45%", lg: "20%" }}>
