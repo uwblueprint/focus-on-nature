@@ -662,7 +662,6 @@ class CamperService implements ICamperService {
     let oldCampSession: CampSession | null = null;
     let movedCampSession = false;
     let camp: Camp | null;
-    console.log("updat ecmapers called", camperIds, updatedFields)
     try {
       oldCampers = await MgCamper.find({
         _id: {
@@ -718,21 +717,22 @@ class CamperService implements ICamperService {
           );
         }
 
-        const timeNow = new Date()
-        const newCampSessionDate = newCampSession.dates[0]
-        if (timeNow > newCampSessionDate){
-          throw new Error (
+        const timeNow = new Date();
+        const newCampSessionDate = newCampSession.dates[0];
+        if (timeNow > newCampSessionDate) {
+          throw new Error(
             `Error: you can only move campers to future sessions`,
-          )
+          );
         }
 
-        const newCampSessionCapcityRemaining = newCampSession.capacity - newCampSession.campers.length
+        const newCampSessionCapcityRemaining =
+          newCampSession.capacity - newCampSession.campers.length;
         const oldCampSessionOriginalCampers = oldCampSession.campers; // for roll back
 
-        if (oldCampSessionOriginalCampers.length > newCampSessionCapcityRemaining){
-          throw new Error(
-            `Error: camp session to move to is full`
-          )
+        if (
+          oldCampSessionOriginalCampers.length > newCampSessionCapcityRemaining
+        ) {
+          throw new Error(`Error: camp session to move to is full`);
         }
 
         // campers for new camp session
@@ -742,7 +742,7 @@ class CamperService implements ICamperService {
         oldCampSession.campers = oldCampSession.campers.filter(
           (camperId) => !camperIds.includes(camperId.toString()),
         );
-  
+
         // Remove campers from old camp session
         await MgCampSession.updateOne(
           { _id: oldCampSession.id },
