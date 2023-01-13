@@ -74,7 +74,7 @@ const RemoveCamperModal = ({
       setRetrievedCampers([]);
       setCampersToBeDeleted(new Set<Camper>());
     };
-  }, [camper, toast]);
+  }, [camper]);
 
   const deselectAndClose = () => {
     setCampersToBeDeleted(new Set<Camper>());
@@ -119,6 +119,7 @@ const RemoveCamperModal = ({
         variant: "subtle",
       });
     }
+    console.log("refetching")
     handleRefetch();
   };
 

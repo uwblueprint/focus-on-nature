@@ -311,6 +311,7 @@ const CampersTable = ({
               moveCamperModalIsOpen={moveModalIsOpen}
               handleRefetch={handleRefetch}
               moveCamperModalOnClose={moveModalOnClose}
+              deleteActionCleanUp={deleteActionCleanUp}
             />
           )}
 

@@ -20,7 +20,7 @@ type PageTwoProps = {
   moveCampers: () => void 
 };
 
-const PageTwo = ({
+const MoveModal = ({
   camper,
   campersToBeMoved,
   campSessions,
@@ -44,6 +44,7 @@ const PageTwo = ({
         </p>
         {campSessions.length > 0 ? (
           <Select
+            placeholder="Choose an option"
             value={selectedCampSession}
             onChange={(e) => setSelectedCampSession(e.target.value)}
           >
@@ -93,6 +94,7 @@ const PageTwo = ({
             color: "white",
             marginLeft: "10px",
           }}
+          isDisabled={!selectedCampSession}
           onClick={() => {
             moveCampers();
             deselectAndClose();
@@ -105,4 +107,4 @@ const PageTwo = ({
   );
 };
 
-export default PageTwo;
+export default MoveModal;

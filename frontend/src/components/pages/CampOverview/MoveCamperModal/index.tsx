@@ -1,19 +1,20 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { ModalOverlay, ModalContent, Modal, Center, Spinner, Toast } from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, Modal, Center, Spinner, useToast } from "@chakra-ui/react";
 import { CampSession } from "../../../../types/CampsTypes";
 import { Camper } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
-import PageTwo from "./PageTwo";
 import CampsAPIClient from "../../../../APIClients/CampsAPIClient";
 import SelectModal from "./SelectModal";
+import MoveModal from "./MoveModal";
 
 type MoveCamperModalProps = {
   camper: Camper; 
   moveCamperModalIsOpen: boolean;
   moveCamperModalOnClose: () => void;
   handleRefetch: () => void;
+  deleteActionCleanUp: () => void;
 };
 
 const MoveCamperModal = ({
@@ -21,6 +22,7 @@ const MoveCamperModal = ({
   moveCamperModalIsOpen,
   moveCamperModalOnClose,
   handleRefetch,
+  deleteActionCleanUp,
 }: MoveCamperModalProps): JSX.Element => {
   const [additionalCampersToBeMoved, setCampersToBeMoved] = React.useState<Set<Camper>>(new Set())
   const [retrievedCampers, setRetrievedCampers] = React.useState<Camper[]>([])
@@ -28,6 +30,7 @@ const MoveCamperModal = ({
   const [campSessions, setCampSessions] = React.useState<CampSession[]>([]);
   const [selectedCampSession, setSelectedCampSession] = React.useState<string>("");
   const { id: campId } = useParams<{ id: string }>();
+  const toast = useToast();
 
   const allCampersToBeMoved: Camper[] = Array.from(
     additionalCampersToBeMoved,
@@ -36,7 +39,6 @@ const MoveCamperModal = ({
 
   // Clear the modal state
   const deselectAndClose = () => {
-    console.log("deselect and close")
     setCampersToBeMoved(new Set());
     setRetrievedCampers([])
     setSelectedCampSession("");
@@ -44,7 +46,6 @@ const MoveCamperModal = ({
   };
 
   useEffect(() => {
-    console.log("useffect")
     // Check if camper has group members
     CamperAPIClient.getCampersByChargeIdAndSessionId(
       camper.chargeId,
@@ -58,7 +59,6 @@ const MoveCamperModal = ({
         );
         setModalPage(1);
       } else {
-        console.log("called")
         setRetrievedCampers([]);
         setModalPage(2);
       }
@@ -87,30 +87,19 @@ const MoveCamperModal = ({
       } have been removed.`;
       return returnString;
     }
-    return `${allCampersToBeMoved[0].firstName} ${allCampersToBeMoved[0].lastName} has been removed.`;
+    return `${allCampersToBeMoved[0].firstName} ${allCampersToBeMoved[0].lastName} has been moved.`;
   };
 
   const moveCampers = async () => {
-    console.log("FOOOOO")
-    console.log("input to patch", allCampersToBeMoved.map((currentCamper: Camper) => currentCamper.id), {campSession: selectedCampSession})
-    const moveResponse = await CamperAPIClient.updateCampersById(allCampersToBeMoved.map((currentCamper: Camper) => currentCamper.id), {campSession: selectedCampSession})
-    console.log(moveResponse, "response")
-    if (moveResponse){
-      Toast({
-        description: moveMessage(),
-        status: "success",
-        duration: 3000,
-        variant: "subtle",
-      });
-    } else {
-      Toast({
-        description: "Unable to move the selected campers.",
-        status: "error",
-        duration: 3000,
-        variant: "subtle",
-      });
-    }
+    await CamperAPIClient.updateCampersById(allCampersToBeMoved.map((currentCamper: Camper) => currentCamper.id), {campSession: selectedCampSession})
+    toast({
+      description: moveMessage(),
+      status: "success",
+      duration: 3000,
+      variant: "subtle",
+    });
     handleRefetch();
+    deleteActionCleanUp();
   }
 
   const displayModalContent = () => {
@@ -128,14 +117,14 @@ const MoveCamperModal = ({
     }
     if (modalPage === 2) {
       return (
-        <PageTwo
+        <MoveModal
           camper={camper}
           campersToBeMoved={allCampersToBeMoved}
           campSessions={campSessions}
           deselectAndClose={deselectAndClose}
           setSelectedCampSession={setSelectedCampSession}
           selectedCampSession={selectedCampSession}
-          moveCampers={() => {console.log("clicked")}}
+          moveCampers={moveCampers}
         />
       );
     }
