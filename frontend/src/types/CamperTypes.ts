@@ -60,7 +60,7 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
->
+>;
 
 export type EditModalSetterFunctions = {
   setFirstName: (firstName: string) => void;

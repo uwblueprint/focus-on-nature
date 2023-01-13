@@ -17,7 +17,7 @@ type PageTwoProps = {
   selectedCampSession: string;
   setSelectedCampSession: (campSession: string) => void;
   deselectAndClose: () => void;
-  moveCampers: () => void 
+  moveCampers: () => void;
 };
 
 const MoveModal = ({
@@ -31,11 +31,7 @@ const MoveModal = ({
 }: PageTwoProps): JSX.Element => {
   return (
     <>
-      <ModalHeader>
-        Move{" "}
-        {campersToBeMoved.length}{" "}
-        Camper(s)
-      </ModalHeader>
+      <ModalHeader>Move {campersToBeMoved.length} Camper(s)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <p style={{ marginBottom: "20px" }}>

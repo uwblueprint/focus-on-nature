@@ -13,14 +13,13 @@ import {
 } from "@chakra-ui/react";
 import { Camper } from "../../types/CamperTypes";
 
-
 type SelectCampersModalProps = {
-  title: string
-  description: string
+  title: string;
+  description: string;
   campersToBeSelected: Set<Camper>;
   retrievedCampers: Camper[];
   addCamperToBeSelected: (camper: Camper) => void;
-  removeCamperToBeSeleted: (camper: Camper) => void
+  removeCamperToBeSeleted: (camper: Camper) => void;
   deselectAndClose: () => void;
   onNextStep: () => void;
 };
@@ -35,22 +34,17 @@ const SelectCampersModal = ({
   deselectAndClose,
   onNextStep,
 }: SelectCampersModalProps): JSX.Element => {
-
   const addAllCampers = () => {
-    const newSet = new Set<Camper>();
-
     retrievedCampers.forEach((currentCamper: Camper) =>
-      addCamperToBeSelected(currentCamper)
+      addCamperToBeSelected(currentCamper),
     );
   };
 
   const removeAllCampers = () => {
-    const newSet = new Set<Camper>();
-
     retrievedCampers.forEach((currentCamper: Camper) =>
-      removeCamperToBeSeleted(currentCamper)
+      removeCamperToBeSeleted(currentCamper),
     );
-  }
+  };
 
   return (
     <ModalContent maxWidth="400px" maxHeight="80%">
@@ -60,9 +54,7 @@ const SelectCampersModal = ({
 
       <ModalBody pl={8} pr={8} pb={0} pt={0}>
         <Box pt={4} pb={4}>
-          <Text textStyle="bodyRegular">
-            {description}
-          </Text>
+          <Text textStyle="bodyRegular">{description}</Text>
 
           <Stack mt={4}>
             <Checkbox

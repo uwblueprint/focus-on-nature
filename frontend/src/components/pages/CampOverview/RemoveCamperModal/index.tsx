@@ -74,6 +74,7 @@ const RemoveCamperModal = ({
       setRetrievedCampers([]);
       setCampersToBeDeleted(new Set<Camper>());
     };
+    // eslint-disable-next-line
   }, [camper]);
 
   const deselectAndClose = () => {
@@ -119,7 +120,6 @@ const RemoveCamperModal = ({
         variant: "subtle",
       });
     }
-    console.log("refetching")
     handleRefetch();
   };
 

@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { ModalOverlay, ModalContent, Modal, Center, Spinner, useToast } from "@chakra-ui/react";
+import {
+  ModalOverlay,
+  ModalContent,
+  Modal,
+  Center,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
 import { CampSession } from "../../../../types/CampsTypes";
 import { Camper } from "../../../../types/CamperTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
@@ -10,7 +17,7 @@ import SelectModal from "./SelectModal";
 import MoveModal from "./MoveModal";
 
 type MoveCamperModalProps = {
-  camper: Camper; 
+  camper: Camper;
   moveCamperModalIsOpen: boolean;
   moveCamperModalOnClose: () => void;
   handleRefetch: () => void;
@@ -24,11 +31,15 @@ const MoveCamperModal = ({
   handleRefetch,
   deleteActionCleanUp,
 }: MoveCamperModalProps): JSX.Element => {
-  const [additionalCampersToBeMoved, setCampersToBeMoved] = React.useState<Set<Camper>>(new Set())
-  const [retrievedCampers, setRetrievedCampers] = React.useState<Camper[]>([])
+  const [additionalCampersToBeMoved, setCampersToBeMoved] = React.useState<
+    Set<Camper>
+  >(new Set());
+  const [retrievedCampers, setRetrievedCampers] = React.useState<Camper[]>([]);
   const [modalPage, setModalPage] = React.useState<number>(0);
   const [campSessions, setCampSessions] = React.useState<CampSession[]>([]);
-  const [selectedCampSession, setSelectedCampSession] = React.useState<string>("");
+  const [selectedCampSession, setSelectedCampSession] = React.useState<string>(
+    "",
+  );
   const { id: campId } = useParams<{ id: string }>();
   const toast = useToast();
 
@@ -40,7 +51,7 @@ const MoveCamperModal = ({
   // Clear the modal state
   const deselectAndClose = () => {
     setCampersToBeMoved(new Set());
-    setRetrievedCampers([])
+    setRetrievedCampers([]);
     setSelectedCampSession("");
     moveCamperModalOnClose();
   };
@@ -66,13 +77,13 @@ const MoveCamperModal = ({
 
     // Get the sessions of the camp
     CampsAPIClient.getCampById(campId).then((campResponse) => {
-      setCampSessions(campResponse.campSessions)
-    })
+      setCampSessions(campResponse.campSessions);
+    });
 
     return () => {
-      setModalPage(0)
-    }
-  }, [camper])
+      setModalPage(0);
+    };
+  }, [camper, campId]);
 
   const moveMessage = () => {
     if (allCampersToBeMoved.length >= 2) {
@@ -91,7 +102,10 @@ const MoveCamperModal = ({
   };
 
   const moveCampers = async () => {
-    await CamperAPIClient.updateCampersById(allCampersToBeMoved.map((currentCamper: Camper) => currentCamper.id), {campSession: selectedCampSession})
+    await CamperAPIClient.updateCampersById(
+      allCampersToBeMoved.map((currentCamper: Camper) => currentCamper.id),
+      { campSession: selectedCampSession },
+    );
     toast({
       description: moveMessage(),
       status: "success",
@@ -100,7 +114,7 @@ const MoveCamperModal = ({
     });
     handleRefetch();
     deleteActionCleanUp();
-  }
+  };
 
   const displayModalContent = () => {
     if (modalPage === 1) {
@@ -128,9 +142,11 @@ const MoveCamperModal = ({
         />
       );
     }
-    return         <Center bg="background.white.100" p="30px">
-    <Spinner />
-  </Center>;
+    return (
+      <Center bg="background.white.100" p="30px">
+        <Spinner />
+      </Center>
+    );
   };
 
   return (
