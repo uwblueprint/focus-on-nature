@@ -5,7 +5,7 @@ import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 import defaultCampImage from "../../../../assets/default_camp_image.png";
 import { cardBoldStyles, regularTextStyles } from "./textStyles";
 import { CampSession } from "../../../../types/CampsTypes";
-import { getFormattedDateRangeStringFromStringArray } from "../../../../utils/CampUtils";
+import { sortDatestrings } from "../../../../utils/CampUtils";
 
 export type RegistrationInfoCardProps = {
   imageSrc: string;
@@ -20,15 +20,20 @@ const formatSessionDate = (dateString: string): string =>
     day: "numeric",
   });
 
-const formatSessionInfo = (
-  index: number,
-  dates: string[],
-): string => `Session ${index + 1} - 
-${
-  dates.length > 1
-    ? getFormattedDateRangeStringFromStringArray(dates)
-    : formatSessionDate(dates[0])
-}`;
+const formatSessionInfo = (index: number, dates: string[]): string => {
+  const sortedDates = sortDatestrings(dates);
+  let sessionStr = `Session ${index + 1} - ${formatSessionDate(
+    sortedDates[0],
+  )}`;
+
+  if (sortedDates.length > 1) {
+    sessionStr += ` to ${formatSessionDate(
+      sortedDates[sortedDates.length - 1],
+    )}`;
+  }
+
+  return sessionStr;
+};
 
 const RegistrationInfoCard = ({
   imageSrc,

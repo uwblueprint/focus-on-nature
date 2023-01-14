@@ -106,10 +106,12 @@ const CampsListPage = (): React.ReactElement => {
           <CampsNavigationHeading
             year={year}
             onNavigateLeft={() => {
+              setLoading(true);
               setYear(year - 1);
               onDrawerClose();
             }}
             onNavigateRight={() => {
+              setLoading(true);
               setYear(year + 1);
               onDrawerClose();
             }}
