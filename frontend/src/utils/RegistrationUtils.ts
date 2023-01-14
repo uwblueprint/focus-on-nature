@@ -4,7 +4,11 @@ import {
 } from "../constants/RegistrationConstants";
 import { RegistrantExperienceCamper } from "../types/CamperTypes";
 import { CampResponse, CampSession } from "../types/CampsTypes";
-import { CartItem, CheckoutData, EdlpChoice } from "../types/RegistrationTypes";
+import {
+  CartItem,
+  CheckoutData,
+  EdlpSelections,
+} from "../types/RegistrationTypes";
 
 export const getCheckoutSessionStorageKey = (campId: string): string =>
   `checkout-${campId}`;
@@ -13,7 +17,7 @@ export const mapCampToCartItems = (
   camp: CampResponse,
   sessions: CampSession[],
   campers: RegistrantExperienceCamper[],
-  edlpChoices: EdlpChoice[][],
+  edlpSelections: EdlpSelections,
 ): CartItem[] => {
   return sessions
     .sort(
@@ -33,13 +37,15 @@ export const mapCampToCartItems = (
       ];
 
       if (
-        edlpChoices.length &&
-        edlpChoices[sessionIndex].some(
-          (edlpChoice) =>
-            edlpChoice.earlyDropoff.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
+        edlpSelections.length > sessionIndex &&
+        Object.values(edlpSelections[sessionIndex]).some(
+          (edlpSelection) =>
+            edlpSelection.earlyDropoff.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
         )
       ) {
-        const [cost, units] = edlpChoices[sessionIndex].reduce(
+        const [cost, units] = Object.values(
+          edlpSelections[sessionIndex],
+        ).reduce(
           ([costSum, unitsSum], edlpDay) => {
             return [
               costSum + edlpDay.earlyDropoff.cost * campers.length,
@@ -58,13 +64,15 @@ export const mapCampToCartItems = (
       }
 
       if (
-        edlpChoices.length &&
-        edlpChoices[sessionIndex].some(
-          (edlpChoice) =>
-            edlpChoice.latePickup.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
+        edlpSelections.length > sessionIndex &&
+        Object.values(edlpSelections[sessionIndex]).some(
+          (edlpSelection) =>
+            edlpSelection.latePickup.timeSlot !== EDLP_PLACEHOLDER_TIMESLOT,
         )
       ) {
-        const [cost, units] = edlpChoices[sessionIndex].reduce(
+        const [cost, units] = Object.values(
+          edlpSelections[sessionIndex],
+        ).reduce(
           ([costSum, unitsSum], edlpDay) => {
             return [
               costSum + edlpDay.latePickup.cost * campers.length,

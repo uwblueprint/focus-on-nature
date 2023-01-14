@@ -6,7 +6,10 @@ import {
   SessionSelectionState,
 } from "./SessionSelectionTypes";
 import SessionCard from "./SessionCard";
-import { sessionSectionTitleStyles } from "./SessionSelectionStyles";
+import {
+  sessionCardDatesTextStyles,
+  sessionSectionTitleStyles,
+} from "./SessionSelectionStyles";
 import { sessionIsInProgressOrCompleted } from "../../../../utils/CampUtils";
 
 type CampSessionBoardProps = {
@@ -84,8 +87,6 @@ const CampSessionBoard = ({
           ),
         );
       } else {
-        console.log("available");
-        console.log(campSession.dates);
         const isWaitlisted = false;
         const cardSelectionAllowed =
           selectionState !== SessionSelectionState.SelectingWaitlistSessions;
@@ -105,8 +106,6 @@ const CampSessionBoard = ({
       }
     }
   });
-
-  console.log(availableSessionGridItems.length);
 
   return (
     <VStack spacing={{ sm: 5, md: 8, lg: 8 }} w="100%" align="flex-start">
@@ -146,6 +145,12 @@ const CampSessionBoard = ({
           </Grid>
         </Box>
       )}
+      {availableSessionGridItems.length === 0 &&
+        waitlistSessionGridItems.length === 0 && (
+          <Text textStyle={sessionCardDatesTextStyles} w="100%">
+            No sessions found. This camp may be completed.
+          </Text>
+        )}
     </VStack>
   );
 };

@@ -23,7 +23,7 @@ import {
   Location,
   QuestionType,
 } from "../types/CampsTypes";
-import { EdlpChoice } from "../types/RegistrationTypes";
+import { EdlpSelections } from "../types/RegistrationTypes";
 import { OptionalClauseResponse } from "../types/waiverRegistrationTypes";
 
 export const CampStatusColor = {
@@ -125,6 +125,28 @@ export const sortScheduledSessions = (
   return sessions.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 };
 
+const sessionAOccursBeforeSessionB = (
+  a: CampSession,
+  b: CampSession,
+): number => {
+  const sessionADates = a.dates.map((datestring) => new Date(datestring));
+  const sessionBDates = b.dates.map((datestring) => new Date(datestring));
+
+  const startSessionADate = sessionADates[0];
+  const startSessionBDate = sessionBDates[0];
+
+  if (startSessionADate === startSessionBDate) {
+    return (
+      sessionADates[sessionADates.length - 1].getTime() -
+      sessionBDates[sessionBDates.length - 1].getTime()
+    );
+  }
+  return startSessionADate.getTime() - startSessionBDate.getTime();
+};
+
+export const sortSessions = (sessions: CampSession[]): CampSession[] =>
+  sessions.sort(sessionAOccursBeforeSessionB);
+
 export const getSessionDates = (
   sessionStartDate: Date,
   selectedWeekDayValues: boolean[],
@@ -160,21 +182,6 @@ export const getTextFromQuestionType = (questionType: QuestionType): string => {
     default:
       return "";
   }
-};
-
-export const getFormattedCampDateRange = (
-  firstCampSessionDates: Array<string>,
-  lastCampSessionDates: Array<string>,
-): string => {
-  if (firstCampSessionDates && lastCampSessionDates) {
-    const startDate = format(new Date(firstCampSessionDates[0]), "PP");
-    const lastDate = format(
-      new Date(lastCampSessionDates[lastCampSessionDates.length - 1]),
-      "PP",
-    );
-    return `${startDate} - ${lastDate}`;
-  }
-  return "";
 };
 
 const getWeekDayKeyFromDateNum = (num: number): string => {
@@ -329,37 +336,40 @@ const getEdlpDateString = (
 
 export const mapToCreateCamperDTO = (
   campers: RegistrantExperienceCamper[],
-  edlpChoices: EdlpChoice[][],
+  edlpSelections: EdlpSelections,
   optionalClauses: OptionalClauseResponse[],
 ): CreateCamperDTO[] => {
-  const earlyDropoff = edlpChoices.flatMap((sessionChoices) => {
-    return sessionChoices.reduce((dates: string[], edlpChoice) => {
-      const edDate = getEdlpDateString(
-        edlpChoice.earlyDropoff.timeSlot,
-        edlpChoice.date,
-      );
+  const earlyDropoff = edlpSelections.flatMap((sessionChoices) => {
+    return Object.entries(sessionChoices).reduce(
+      (dates: string[], [date, edlpChoice]) => {
+        const edDate = getEdlpDateString(
+          edlpChoice.earlyDropoff.timeSlot,
+          date,
+        );
 
-      if (edDate) {
-        dates.push(edDate);
-      }
+        if (edDate) {
+          dates.push(edDate);
+        }
 
-      return dates;
-    }, []);
+        return dates;
+      },
+      [],
+    );
   });
 
-  const latePickup = edlpChoices.flatMap((sessionChoices) => {
-    return sessionChoices.reduce((dates: string[], edlpChoice) => {
-      const lpDate = getEdlpDateString(
-        edlpChoice.latePickup.timeSlot,
-        edlpChoice.date,
-      );
+  const latePickup = edlpSelections.flatMap((sessionChoices) => {
+    return Object.entries(sessionChoices).reduce(
+      (dates: string[], [date, edlpChoice]) => {
+        const lpDate = getEdlpDateString(edlpChoice.latePickup.timeSlot, date);
 
-      if (lpDate) {
-        dates.push(lpDate);
-      }
+        if (lpDate) {
+          dates.push(lpDate);
+        }
 
-      return dates;
-    }, []);
+        return dates;
+      },
+      [],
+    );
   });
 
   return campers.map((camper) => {
@@ -404,3 +414,72 @@ export const sessionIsInProgressOrCompleted = (
   campSession: CampSession,
 ): boolean =>
   campSession.dates.some((dateString) => new Date(dateString) <= new Date());
+
+export const getFirstDateOfCamp = (camp: CampResponse): Date | undefined => {
+  return camp.campSessions.reduce(
+    (earliestDate: Date | undefined, session: CampSession) => {
+      let earliestSessionDate = earliestDate;
+      session.dates.forEach((date: string) => {
+        const currentDate = new Date(date);
+
+        if (
+          earliestSessionDate === undefined ||
+          currentDate.getTime() < earliestSessionDate.getTime()
+        ) {
+          earliestSessionDate = currentDate;
+        }
+      });
+
+      return earliestSessionDate;
+    },
+    undefined,
+  );
+};
+
+export const getLastDateOfCamp = (camp: CampResponse): Date | undefined => {
+  return camp.campSessions.reduce(
+    (lastDate: Date | undefined, session: CampSession) => {
+      let latestSessionDate = lastDate;
+      session.dates.forEach((date: string) => {
+        const currentDate = new Date(date);
+
+        if (
+          !latestSessionDate ||
+          currentDate.getTime() > latestSessionDate.getTime()
+        ) {
+          latestSessionDate = currentDate;
+        }
+      });
+
+      return latestSessionDate;
+    },
+    undefined,
+  );
+};
+
+export const compareCampDates = (
+  campA: CampResponse,
+  campB: CampResponse,
+): number => {
+  const compareFirstDates =
+    (getFirstDateOfCamp(campA)?.getTime() ?? new Date().getTime()) -
+    (getFirstDateOfCamp(campB)?.getTime() ?? new Date().getTime());
+
+  if (compareFirstDates !== 0) {
+    return compareFirstDates;
+  }
+
+  return (
+    (getLastDateOfCamp(campA)?.getTime() ?? new Date().getTime()) -
+    (getLastDateOfCamp(campB)?.getTime() ?? new Date().getTime())
+  );
+};
+
+export const getFormattedCampDateRange = (camp: CampResponse): string => {
+  const firstCampDate = getFirstDateOfCamp(camp);
+  const lastCampDate = getLastDateOfCamp(camp);
+
+  return firstCampDate && lastCampDate
+    ? `${format(firstCampDate, "PP")} - ${format(lastCampDate, "PP")}`
+    : "";
+};

@@ -3,7 +3,7 @@ import { Text, Spinner, Flex, useToast } from "@chakra-ui/react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import CampsAPIClient from "../../../APIClients/CampsAPIClient";
-import { CampResponse, CampSession } from "../../../types/CampsTypes";
+import { CampResponse } from "../../../types/CampsTypes";
 import { SUCCESS_RESULT_CODE } from "../../../constants/RegistrationConstants";
 import { restoreRegistrationSessionFromSessionStorage } from "../../../utils/RegistrationUtils";
 import { CheckoutData } from "../../../types/RegistrationTypes";
@@ -13,6 +13,7 @@ import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
+import { sortSessions } from "../../../utils/CampUtils";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -164,7 +165,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
           []
         }
-        edlpChoices={restoredRegistration?.edlpChoices}
+        edlpSelections={restoredRegistration?.edlpSelections}
         chargeId={restoredRegistration?.chargeId}
       />
     );
@@ -174,8 +175,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     return sessionSelectionIsComplete ? (
       <RegistrationSteps
         camp={camp}
-        selectedSessions={camp.campSessions.filter((session) =>
-          selectedSessions.has(session.id),
+        orderedSelectedSessions={sortSessions(
+          camp.campSessions.filter((session) =>
+            selectedSessions.has(session.id),
+          ),
         )}
         waiver={waiver}
         onClickBack={() => setSessionSelectionIsComplete(false)}

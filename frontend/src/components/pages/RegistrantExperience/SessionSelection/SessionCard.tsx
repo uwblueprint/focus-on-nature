@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Box, Text, VStack, Flex, useMediaQuery } from "@chakra-ui/react";
 import { CampSession } from "../../../../types/CampsTypes";
 import { SessionCardState } from "./SessionSelectionTypes";

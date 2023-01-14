@@ -31,6 +31,7 @@ import {
 
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import {
+  compareCampDates,
   getCampStatus,
   getFormattedCampDateRange,
   locationString,
@@ -93,10 +94,12 @@ const CampsTable = ({
       return filteredCamps;
     }
 
-    return filteredCamps.filter(
-      (camp) =>
-        camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    return filteredCamps
+      .filter(
+        (camp) =>
+          camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
+      )
+      .sort(compareCampDates);
   }, [search, selectedFilter, camps]);
 
   const handleFilterSelect = (selectedOption: CampStatus) => {
@@ -194,12 +197,7 @@ const CampsTable = ({
                   setCampDrawerInfo(camp);
                 }}
               >
-                {camp.campSessions.length > 0
-                  ? getFormattedCampDateRange(
-                      camp.campSessions[0].dates,
-                      camp.campSessions[camp.campSessions.length - 1].dates,
-                    )
-                  : ""}
+                {getFormattedCampDateRange(camp)}
               </Td>
               <Td
                 padding="0px"
