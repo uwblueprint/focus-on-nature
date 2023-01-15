@@ -73,8 +73,7 @@ const CampCreationPage = (): React.ReactElement => {
     campCapacity &&
     addressLine1 &&
     city &&
-    province &&
-    province &&
+    province !== "-" &&
     postalCode
   )
     isCampDetailsFilled = true;
