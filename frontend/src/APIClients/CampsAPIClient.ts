@@ -36,6 +36,7 @@ const getCampById = async (id: string): Promise<CampResponse> => {
 
 const createNewCamp = async (
   camp: CreateUpdateCampRequest,
+  fileURL?: string,
 ): Promise<CreateUpdateCampResponse> => {
   // Check if atleast the first step and 1 session is scheduled
   if (!isMinCampDetailsFilled(camp)) {
@@ -47,6 +48,11 @@ const createNewCamp = async (
   const formData = new FormData();
   formData.append("data", JSON.stringify(camp));
 
+  if (fileURL) {
+    const file = await fetch(fileURL).then((res) => res.blob());
+    formData.append("file", file);
+  }
+
   const { data } = await baseAPIClient.post("/camp", formData, {
     headers: { Authorization: getBearerToken() },
   });
@@ -56,6 +62,7 @@ const createNewCamp = async (
 const editCampById = async (
   id: string,
   camp: CreateUpdateCampRequest,
+  fileURL?: string,
 ): Promise<CreateUpdateCampResponse> => {
   // Check if atleast the first step and 1 session is scheduled
   if (!isMinCampDetailsFilled(camp)) {
@@ -66,6 +73,12 @@ const editCampById = async (
 
   const formData = new FormData();
   formData.append("data", JSON.stringify({ ...camp }));
+
+  if (fileURL) {
+    const file = await fetch(fileURL).then((res) => res.blob());
+    formData.append("file", file);
+  }
+
   const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
     headers: {
       Authorization: getBearerToken(),

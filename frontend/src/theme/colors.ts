@@ -5,6 +5,9 @@ const colors = {
       200: "#3A7035",
       600: "#146600",
     },
+    green_disabled: {
+      100: "#B5CFB3",
+    },
   },
   secondary: {
     critical: {
