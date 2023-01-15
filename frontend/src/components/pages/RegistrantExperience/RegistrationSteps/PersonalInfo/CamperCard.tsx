@@ -136,7 +136,6 @@ const CamperCard = ({
           isClosable: false,
           variant: "subtle",
         });
-        onClose();
       },
     });
 

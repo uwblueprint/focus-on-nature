@@ -71,7 +71,6 @@ const CampsListPage = (): React.ReactElement => {
         duration: 3000,
       });
     }
-    onDeleteModalClose();
     setCampToDelete(null);
   };
 
@@ -89,7 +88,7 @@ const CampsListPage = (): React.ReactElement => {
         buttonLabel="Remove"
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
-        onDelete={() => handleConfirmDelete()}
+        onDelete={handleConfirmDelete}
       />
       <Flex
         width={isDrawerOpen ? "calc(100% - 500px)" : "100%"}

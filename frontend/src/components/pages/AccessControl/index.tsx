@@ -182,7 +182,6 @@ const AccessControlPage = (): JSX.Element => {
         duration: 3000,
       });
     }
-    onClose();
     setUserToChangeStatus(null);
   };
 
@@ -217,9 +216,13 @@ const AccessControlPage = (): JSX.Element => {
         buttonColor={userToChangeStatus?.active ? "red" : "green"}
         isOpen={isOpen}
         onClose={onClose}
-        onChangeStatus={() =>
-          userToChangeStatus && handleStatusChange(userToChangeStatus)
-        }
+        onChangeStatus={() => {
+          if (userToChangeStatus) {
+            handleStatusChange(userToChangeStatus);
+          }
+
+          onClose();
+        }}
       />
       <Text mb="35px" textStyle="displayXLarge">
         FON Staff Access Control

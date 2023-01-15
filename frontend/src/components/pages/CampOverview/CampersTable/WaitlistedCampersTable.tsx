@@ -108,7 +108,6 @@ const WaitlistedCampersTable = ({
         waitlistedCamper.id,
       );
 
-      onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
           description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
