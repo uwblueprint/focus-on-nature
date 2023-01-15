@@ -389,8 +389,8 @@ const CampCreationPage = (): React.ReactElement => {
                 event: React.ChangeEvent<HTMLInputElement>,
               ) => setCampCapacity(Number(event.target.value))}
               toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) => {
-                // If currently offers EDLP, reset the state of the timings to default values
-                if (offersEDLP) {
+                // When EDLP reset, change timings to default values
+                if (!offersEDLP) {
                   setEarliestDropOffTime("");
                   setLatestPickUpTime("");
                   setPriceEDLP(0);
