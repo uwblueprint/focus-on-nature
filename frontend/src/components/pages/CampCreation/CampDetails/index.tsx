@@ -58,6 +58,7 @@ type CampCreationDetailsProps = {
   handleProvince: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   handlePostalCode: (event: React.ChangeEvent<HTMLInputElement>) => void;
   setCampImageURL: React.Dispatch<React.SetStateAction<string>>;
+  showErrors: boolean;
 };
 
 const CampCreationDetails = ({
@@ -97,8 +98,8 @@ const CampCreationDetails = ({
   handleProvince,
   handlePostalCode,
   setCampImageURL,
+  showErrors,
 }: CampCreationDetailsProps): React.ReactElement => {
-  const [showErrors, setShowErrors] = useState<boolean>(false);
   const [showImageError, setShowImageError] = useState<boolean>(false);
 
   const errorText = (input: boolean | string | number, message: string) => {

@@ -51,6 +51,8 @@ const CampCreationPage = (): React.ReactElement => {
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
 
+  const [showCreationErrors, setShowCreationErrors] = useState<boolean>(false);
+
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
   // if a checkbox is checked is different than determining if an input field is filled.
@@ -420,6 +422,7 @@ const CampCreationPage = (): React.ReactElement => {
                 setPostalCode(event.target.value)
               }
               setCampImageURL={setCampImageURL}
+              showErrors={showCreationErrors}
             />
           </React.Fragment>
         );
@@ -475,6 +478,7 @@ const CampCreationPage = (): React.ReactElement => {
         handleStepNavigation={handleStepNavigation}
         createUpdateCamp={createUpdateCampHelper}
         isEditingCamp={editCampId !== undefined}
+        setShowCreationErrors={setShowCreationErrors}
       />
     </VStack>
   );
