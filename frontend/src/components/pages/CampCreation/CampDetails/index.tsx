@@ -59,6 +59,7 @@ type CampCreationDetailsProps = {
   handlePostalCode: (event: React.ChangeEvent<HTMLInputElement>) => void;
   setCampImageURL: React.Dispatch<React.SetStateAction<string>>;
   showErrors: boolean;
+  startTimeBeforeEndTime: boolean;
 };
 
 const CampCreationDetails = ({
@@ -99,6 +100,7 @@ const CampCreationDetails = ({
   handlePostalCode,
   setCampImageURL,
   showErrors,
+  startTimeBeforeEndTime,
 }: CampCreationDetailsProps): React.ReactElement => {
   const [showImageError, setShowImageError] = useState<boolean>(false);
 
@@ -150,6 +152,12 @@ const CampCreationDetails = ({
     const imageFile = event.dataTransfer.files[0];
     handleFile(imageFile);
   };
+
+  const campFeePositive = dailyCampFee > 0;
+  const ageLowerPositive = ageLower > 0;
+  const ageUpperPositive = ageUpper > 0;
+  const ageLowerLessThanAgeUpper = ageLower <= ageUpper;
+  const capacityPositive = campCapacity > 0;
 
   return (
     <Box paddingLeft="200px" my="56px">
@@ -206,13 +214,13 @@ const CampCreationDetails = ({
           type="number"
           placeholder="0.00"
           defaultValue={dailyCampFee}
-          borderColor={!dailyCampFee && showErrors ? "red" : "gray.200"}
-          borderWidth={!dailyCampFee && showErrors ? "2px" : "1px"}
+          borderColor={!campFeePositive && showErrors ? "red" : "gray.200"}
+          borderWidth={!campFeePositive && showErrors ? "2px" : "1px"}
           onChange={handleDailyCampFee}
           onWheel={(event) => event.currentTarget.blur()}
         />
       </InputGroup>
-      {errorText(dailyCampFee, "You must add a fee.")}
+      {errorText(campFeePositive, "You must add a non-negative fee.")}
 
       <HStack alignItems="start" spacing={4} marginTop="24px">
         <Box width="160px">
@@ -261,6 +269,8 @@ const CampCreationDetails = ({
         </Box>
       </HStack>
 
+      {errorText(startTimeBeforeEndTime, "Start time must be before end time.")}
+
       <HStack
         alignItems="start"
         spacing={8}
@@ -283,12 +293,17 @@ const CampCreationDetails = ({
                 height="52px"
                 maxLength={2}
                 defaultValue={ageLower}
-                borderColor={!ageLower && showErrors ? "red" : "gray.200"}
-                borderWidth={!ageLower && showErrors ? "2px" : "1px"}
+                borderColor={
+                  !ageLowerPositive && showErrors ? "red" : "gray.200"
+                }
+                borderWidth={!ageLowerPositive && showErrors ? "2px" : "1px"}
                 onChange={handleAgeLower}
                 onWheel={(event) => event.currentTarget.blur()}
               />
-              {errorText(ageLower, "You must enter an age.")}
+              {errorText(
+                ageLowerPositive,
+                "You must enter a non-negative age.",
+              )}
             </Box>
             <Text paddingTop="14px"> to </Text>
             <Box width="100px">
@@ -298,12 +313,17 @@ const CampCreationDetails = ({
                 height="52px"
                 maxLength={2}
                 defaultValue={ageUpper}
-                borderColor={!ageUpper && showErrors ? "red" : "gray.200"}
-                borderWidth={!ageUpper && showErrors ? "2px" : "1px"}
+                borderColor={
+                  !ageUpperPositive && showErrors ? "red" : "gray.200"
+                }
+                borderWidth={!ageUpperPositive && showErrors ? "2px" : "1px"}
                 onChange={handleAgeUpper}
                 onWheel={(event) => event.currentTarget.blur()}
               />
-              {errorText(ageUpper, "You must enter an age.")}
+              {errorText(
+                ageUpperPositive,
+                "You must enter a non-negative age.",
+              )}
             </Box>
           </HStack>
         </Box>
@@ -322,15 +342,23 @@ const CampCreationDetails = ({
               height="52px"
               marginTop="8px"
               defaultValue={campCapacity}
-              borderColor={!campCapacity && showErrors ? "red" : "gray.200"}
-              borderWidth={!campCapacity && showErrors ? "2px" : "1px"}
+              borderColor={!capacityPositive && showErrors ? "red" : "gray.200"}
+              borderWidth={!capacityPositive && showErrors ? "2px" : "1px"}
               onChange={handleCampCapacity}
               onWheel={(event) => event.currentTarget.blur()}
             />
-            {errorText(campCapacity, "You must enter a number.")}
+            {errorText(
+              capacityPositive,
+              "You must enter a non-negative capacity.",
+            )}
           </Box>
         </Box>
       </HStack>
+
+      {errorText(
+        ageLowerLessThanAgeUpper,
+        "Lower age bound must be less than upper age bound.",
+      )}
 
       <Checkbox marginTop="8px" onChange={toggleEDLP} isChecked={offersEDLP}>
         <Text textStyle="buttonSemiBold">

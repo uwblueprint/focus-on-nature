@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { useParams, useHistory } from "react-router-dom";
 
@@ -59,18 +59,42 @@ const CampCreationPage = (): React.ReactElement => {
 
   let isCampDetailsFilled = false;
 
+  const startTimeBeforeEndTime = useMemo(() => {
+    try {
+      const [startHours, startMinutes] = startTime
+        .split(":")
+        .map((num) => parseInt(num, 10));
+      const [endHours, endMinutes] = endTime
+        .split(":")
+        .map((num) => parseInt(num, 10));
+
+      if (!(startHours && startMinutes && endHours && endMinutes)) {
+        return true;
+      }
+
+      return (
+        startHours < endHours ||
+        (startHours === endHours && startMinutes < endMinutes)
+      );
+    } catch (error: unknown) {
+      return true;
+    }
+  }, [endTime, startTime]);
+
   if (
     campName &&
     campDescription &&
-    dailyCampFee &&
+    dailyCampFee > 0 &&
     startTime &&
     endTime &&
-    ageLower &&
-    ageUpper &&
+    startTimeBeforeEndTime &&
+    ageLower > 0 &&
+    ageUpper > 0 &&
+    ageLower < ageUpper &&
     (offersEDLP
       ? earliestDropOffTime && latestPickUpTime && priceEDLP
       : true) &&
-    campCapacity &&
+    campCapacity > 0 &&
     addressLine1 &&
     city &&
     province &&
@@ -423,6 +447,7 @@ const CampCreationPage = (): React.ReactElement => {
               }
               setCampImageURL={setCampImageURL}
               showErrors={showCreationErrors}
+              startTimeBeforeEndTime={startTimeBeforeEndTime}
             />
           </React.Fragment>
         );
