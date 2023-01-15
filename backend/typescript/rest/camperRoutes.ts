@@ -18,13 +18,14 @@ import {
   WaitlistedCamperDTO,
 } from "../types";
 import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/waitlistedCampersValidators";
+import {
+  stripeKey,
+  verifyStripeWebhooksRequest,
+} from "../utilities/stripeUtils";
 
 const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
-
-// TODO: secure stripe keys
-const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
 
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
@@ -121,12 +122,19 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 /* Initiated by Stripe webhook. On successful payment, mark camper as paid. */
 camperRouter.post("/confirm-payment", async (req, res) => {
   try {
-    const { body } = req;
+    const event = verifyStripeWebhooksRequest(
+      req.headers["stripe-signature"],
+      req.body,
+    );
 
-    if (body.type === "checkout.session.completed") {
-      const chargeId = body.data.object.id;
+    if (!event) {
+      res.status(400).send("Webhook signature verification failed");
+    }
 
-      if (body.data.object.payment_status === "paid") {
+    if (event.type === "checkout.session.completed") {
+      const chargeId = event.data.object.id;
+
+      if (event.data.object.payment_status === "paid") {
         await camperService.confirmCamperPayment(
           (chargeId as unknown) as string,
         );
