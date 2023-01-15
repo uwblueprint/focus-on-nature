@@ -23,6 +23,9 @@ const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
 
+// TODO: secure stripe keys
+const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
+
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
@@ -115,16 +118,25 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 });
 
 // ROLES: unprotected
-/* On successful payment, mark camper as paid */
-camperRouter.post("/confirm-payment/:chargeId", async (req, res) => {
-  const { chargeId } = req.params;
+/* Initiated by Stripe webhook. On successful payment, mark camper as paid. */
+camperRouter.post("/confirm-payment", async (req, res) => {
   try {
-    const camper = await camperService.confirmCamperPayment(
-      (chargeId as unknown) as string,
-    );
-    res.status(200).json(camper);
+    const { body } = req;
+
+    if (body.type === "checkout.session.completed") {
+      const chargeId = body.data.object.id;
+
+      if (body.data.object.payment_status === "paid") {
+        await camperService.confirmCamperPayment(
+          (chargeId as unknown) as string,
+        );
+      }
+    }
+
+    res.status(200).json();
   } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
+    // Stripe requires that 200 response sent
+    res.status(200).json({ error: getErrorMessage(error) });
   }
 });
 
