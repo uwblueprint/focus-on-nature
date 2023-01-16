@@ -44,7 +44,10 @@ const MoveModal = ({
             value={selectedCampSession}
             onChange={(e) => setSelectedCampSession(e.target.value)}
           >
-            {campSessions.map((campSessionsItem, campSessionsIdx) => (
+            {campSessions.map((campSessionsItem, campSessionsIdx) => { 
+              const earliestSessionDate = new Date(campSessionsItem.dates.reduce((earliest, date) => earliest < new Date(date) ? earliest : new Date(date), new Date(Infinity)))
+              const latestSessionDate = new Date(campSessionsItem.dates.reduce((earliest, date) => earliest > new Date(date) ? earliest : new Date(date), new Date(-Infinity)))
+              return(
               <option
                 key={campSessionsIdx}
                 value={campSessionsItem.id}
@@ -52,11 +55,11 @@ const MoveModal = ({
                   campSessionsItem.id === camper.campSession ||
                   campSessionsItem.capacity - campSessionsItem.campers.length <
                     campersToBeMoved.length ||
-                  new Date(campSessionsItem.dates[1]) < new Date()
+                    earliestSessionDate < new Date()
                 }
               >
                 Session {campSessionsIdx + 1}:{" "}
-                {new Date(campSessionsItem.dates[0]).toLocaleDateString(
+                {earliestSessionDate.toLocaleDateString(
                   "en-US",
                   {
                     month: "short",
@@ -64,9 +67,7 @@ const MoveModal = ({
                   },
                 )}{" "}
                 -{" "}
-                {new Date(
-                  campSessionsItem.dates[1] ?? campSessionsItem.dates[0],
-                ).toLocaleDateString("en-US", {
+                {latestSessionDate.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
@@ -74,7 +75,7 @@ const MoveModal = ({
                 ({campSessionsItem.capacity - campSessionsItem.campers.length}{" "}
                 spots open)
               </option>
-            ))}
+            )})}
           </Select>
         ) : (
           <p>Error loading camp sessions.</p>
