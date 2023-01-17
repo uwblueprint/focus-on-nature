@@ -717,7 +717,7 @@ class CamperService implements ICamperService {
           );
         }
 
-        const timeNow = new Date();
+        const currentTime = new Date();
         // Find the earliest date for the camp session
         const earliestDate = newCampSession.dates.reduce(
           (earliest, date) => (earliest < date ? earliest : date),
@@ -725,7 +725,7 @@ class CamperService implements ICamperService {
         );
 
         const newCampSessionDate = earliestDate;
-        if (timeNow > newCampSessionDate) {
+        if (currentTime > newCampSessionDate) {
           throw new Error(
             `Error: you can only move campers to future sessions`,
           );
