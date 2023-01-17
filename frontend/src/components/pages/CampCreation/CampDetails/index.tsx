@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import IconImage from "../../../../assets/icon_image.svg";
 import { MAX_CAMP_DESC_LENGTH } from "../../../../constants/CampManagementConstants";
+import TimePicker from "../../../common/TimePicker";
 
 type CampCreationDetailsProps = {
   campName: string;
@@ -229,50 +230,37 @@ const CampCreationDetails = ({
       {errorText(campFeePositive, "You must add a non-negative fee.")}
 
       <HStack alignItems="start" spacing={4} marginTop="24px">
-        <Box width="160px">
+        <VStack spacing={2} align="flex-start">
           <Text textStyle="buttonSemiBold">
             Start Time{" "}
             <Text as="span" textStyle="buttonSemiBold" color="red">
               *
             </Text>
           </Text>
-
-          <Input
-            type="time"
-            placeholder="XX:XX"
-            width="160px"
-            height="52px"
-            marginTop="8px"
-            defaultValue={startTime}
-            borderColor={!startTime && showErrors ? "red" : "gray.200"}
-            borderWidth={!startTime && showErrors ? "2px" : "1px"}
+          <TimePicker
+            isShowingErrors={!startTime && showErrors}
+            value={startTime}
             onChange={handleStartTime}
           />
           {errorText(startTime, "You must specify a time.")}
-        </Box>
+        </VStack>
 
         <Text paddingTop="45px"> to </Text>
 
-        <Box width="160px">
+        <VStack width="160px" spacing={2} align="flex-start">
           <Text textStyle="buttonSemiBold">
             End Time{" "}
             <Text as="span" textStyle="buttonSemiBold" color="red">
               *
             </Text>
           </Text>
-          <Input
-            type="time"
-            placeholder="XX:XX"
-            width="160px"
-            height="52px"
-            marginTop="8px"
-            defaultValue={endTime}
-            borderColor={!endTime && showErrors ? "red" : "gray.200"}
-            borderWidth={!endTime && showErrors ? "2px" : "1px"}
+          <TimePicker
+            isShowingErrors={!endTime && showErrors}
+            value={endTime}
             onChange={handleEndTime}
           />
           {errorText(endTime, "You must specify a time.")}
-        </Box>
+        </VStack>
       </HStack>
 
       {errorText(startTimeBeforeEndTime, "Start time must be before end time.")}
@@ -375,25 +363,16 @@ const CampCreationDetails = ({
       {offersEDLP && (
         <Box>
           <HStack alignItems="start" spacing={4} marginTop="24px">
-            <Box width="160px">
+            <VStack width="160px" spacing={2} align="flex-start">
               <Text textStyle="buttonSemiBold">
                 Earliest Drop-off{" "}
                 <Text as="span" textStyle="buttonSemiBold" color="red">
                   *
                 </Text>
               </Text>
-
-              <Input
-                type="time"
-                placeholder="XX:XX"
-                width="160px"
-                height="52px"
-                marginTop="8px"
-                defaultValue={earliestDropOffTime}
-                borderColor={
-                  !earliestDropOffTime && showErrors ? "red" : "gray.200"
-                }
-                borderWidth={!earliestDropOffTime && showErrors ? "2px" : "1px"}
+              <TimePicker
+                isShowingErrors={!earliestDropOffTime && showErrors}
+                value={earliestDropOffTime}
                 onChange={handleEarliestDropOffTime}
               />
               {errorText(earliestDropOffTime, "You must specify a time.")}
@@ -407,25 +386,16 @@ const CampCreationDetails = ({
 
             <Text paddingTop="45px"> to </Text>
 
-            <Box width="160px">
+            <VStack width="160px" spacing={2} align="flex-start">
               <Text textStyle="buttonSemiBold">
                 Latest Pick-up{" "}
                 <Text as="span" textStyle="buttonSemiBold" color="red">
                   *
                 </Text>
               </Text>
-
-              <Input
-                type="time"
-                placeholder="XX:XX"
-                width="160px"
-                height="52px"
-                marginTop="8px"
-                defaultValue={latestPickUpTime}
-                borderColor={
-                  !latestPickUpTime && showErrors ? "red" : "gray.200"
-                }
-                borderWidth={!latestPickUpTime && showErrors ? "2px" : "1px"}
+              <TimePicker
+                isShowingErrors={!latestPickUpTime && showErrors}
+                value={latestPickUpTime}
                 onChange={handleLatestPickUpTime}
               />
               {errorText(latestPickUpTime, "You must specify a time.")}
