@@ -44,38 +44,49 @@ const MoveModal = ({
             value={selectedCampSession}
             onChange={(e) => setSelectedCampSession(e.target.value)}
           >
-            {campSessions.map((campSessionsItem, campSessionsIdx) => { 
-              const earliestSessionDate = new Date(campSessionsItem.dates.reduce((earliest, date) => earliest < new Date(date) ? earliest : new Date(date), new Date(Infinity)))
-              const latestSessionDate = new Date(campSessionsItem.dates.reduce((earliest, date) => earliest > new Date(date) ? earliest : new Date(date), new Date(-Infinity)))
-              return(
-              <option
-                key={campSessionsIdx}
-                value={campSessionsItem.id}
-                disabled={
-                  campSessionsItem.id === camper.campSession ||
-                  campSessionsItem.capacity - campSessionsItem.campers.length <
-                    campersToBeMoved.length ||
+            {campSessions.map((campSessionsItem, campSessionsIdx) => {
+              const earliestSessionDate = new Date(
+                campSessionsItem.dates.reduce(
+                  (earliest, date) =>
+                    earliest < new Date(date) ? earliest : new Date(date),
+                  new Date(Infinity),
+                ),
+              );
+              const latestSessionDate = new Date(
+                campSessionsItem.dates.reduce(
+                  (earliest, date) =>
+                    earliest > new Date(date) ? earliest : new Date(date),
+                  new Date(-Infinity),
+                ),
+              );
+              return (
+                <option
+                  key={campSessionsIdx}
+                  value={campSessionsItem.id}
+                  disabled={
+                    campSessionsItem.id === camper.campSession ||
+                    campSessionsItem.capacity -
+                      campSessionsItem.campers.length <
+                      campersToBeMoved.length ||
                     earliestSessionDate < new Date()
-                }
-              >
-                Session {campSessionsIdx + 1}:{" "}
-                {earliestSessionDate.toLocaleDateString(
-                  "en-US",
-                  {
+                  }
+                >
+                  Session {campSessionsIdx + 1}:{" "}
+                  {earliestSessionDate.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
-                  },
-                )}{" "}
-                -{" "}
-                {latestSessionDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}{" "}
-                ({campSessionsItem.capacity - campSessionsItem.campers.length}{" "}
-                spots open)
-              </option>
-            )})}
+                  })}{" "}
+                  -{" "}
+                  {latestSessionDate.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}{" "}
+                  ({campSessionsItem.capacity - campSessionsItem.campers.length}{" "}
+                  spots open)
+                </option>
+              );
+            })}
           </Select>
         ) : (
           <p>Error loading camp sessions.</p>
