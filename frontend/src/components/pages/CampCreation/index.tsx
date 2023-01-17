@@ -59,7 +59,11 @@ const CampCreationPage = (): React.ReactElement => {
 
   let isCampDetailsFilled = false;
 
-  const useValidateTimeOrder = (start: string, end: string): boolean => {
+  const useValidateTimeOrder = (
+    start: string,
+    end: string,
+    canBeEqual = false,
+  ): boolean => {
     return useMemo(() => {
       try {
         const [startHours, startMinutes] = start
@@ -71,6 +75,13 @@ const CampCreationPage = (): React.ReactElement => {
 
         if (Number.isNaN(startHours) || Number.isNaN(endHours)) {
           return true;
+        }
+
+        if (canBeEqual) {
+          return (
+            startHours < endHours ||
+            (startHours === endHours && startMinutes <= endMinutes)
+          );
         }
 
         return (
@@ -91,10 +102,12 @@ const CampCreationPage = (): React.ReactElement => {
   const earlyDropoffTimeBeforeStartTime = useValidateTimeOrder(
     earliestDropOffTime,
     startTime,
+    true,
   );
   const endTimeBeforeLatePickupTime = useValidateTimeOrder(
     endTime,
     latestPickUpTime,
+    true,
   );
 
   if (

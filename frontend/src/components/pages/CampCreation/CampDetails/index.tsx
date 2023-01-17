@@ -363,7 +363,7 @@ const CampCreationDetails = ({
       {offersEDLP && (
         <Box>
           <HStack alignItems="start" spacing={4} marginTop="24px">
-            <VStack width="160px" spacing={2} align="flex-start">
+            <Box width="160px">
               <Text textStyle="buttonSemiBold">
                 Earliest Drop-off{" "}
                 <Text as="span" textStyle="buttonSemiBold" color="red">
@@ -386,7 +386,7 @@ const CampCreationDetails = ({
 
             <Text paddingTop="45px"> to </Text>
 
-            <VStack width="160px" spacing={2} align="flex-start">
+            <Box width="160px">
               <Text textStyle="buttonSemiBold">
                 Latest Pick-up{" "}
                 <Text as="span" textStyle="buttonSemiBold" color="red">
