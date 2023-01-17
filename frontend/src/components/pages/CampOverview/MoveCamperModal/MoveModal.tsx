@@ -32,7 +32,6 @@ const MoveModal = ({
   return (
     <>
       <ModalHeader>Move {campersToBeMoved.length} Camper(s)</ModalHeader>
-      <ModalCloseButton />
       <ModalBody>
         <p style={{ marginBottom: "20px" }}>
           You can move the camper(s) to another session in this camp by
@@ -94,7 +93,7 @@ const MoveModal = ({
       </ModalBody>
 
       <ModalFooter>
-        <Button onClick={() => deselectAndClose}>Cancel</Button>
+        <Button onClick={deselectAndClose}>Cancel</Button>
         <Button
           variant="solid"
           style={{

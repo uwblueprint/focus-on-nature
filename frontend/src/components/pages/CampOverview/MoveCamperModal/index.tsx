@@ -154,6 +154,7 @@ const MoveCamperModal = ({
       isOpen={moveCamperModalIsOpen}
       onClose={moveCamperModalOnClose}
       isCentered
+      preserveScrollBarGap
     >
       <ModalOverlay />
       <ModalContent>{displayModalContent()}</ModalContent>
