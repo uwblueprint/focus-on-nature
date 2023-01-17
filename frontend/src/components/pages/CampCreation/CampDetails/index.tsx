@@ -60,6 +60,9 @@ type CampCreationDetailsProps = {
   setCampImageURL: React.Dispatch<React.SetStateAction<string>>;
   showErrors: boolean;
   startTimeBeforeEndTime: boolean;
+  earlyDropoffTimeBeforeLatePickupTime: boolean;
+  earlyDropoffTimeBeforeStartTime: boolean;
+  endTimeBeforeLatePickupTime: boolean;
 };
 
 const CampCreationDetails = ({
@@ -101,6 +104,9 @@ const CampCreationDetails = ({
   setCampImageURL,
   showErrors,
   startTimeBeforeEndTime,
+  earlyDropoffTimeBeforeLatePickupTime,
+  earlyDropoffTimeBeforeStartTime,
+  endTimeBeforeLatePickupTime,
 }: CampCreationDetailsProps): React.ReactElement => {
   const [showImageError, setShowImageError] = useState<boolean>(false);
 
@@ -391,6 +397,12 @@ const CampCreationDetails = ({
                 onChange={handleEarliestDropOffTime}
               />
               {errorText(earliestDropOffTime, "You must specify a time.")}
+              {earlyDropoffTimeBeforeLatePickupTime &&
+                earliestDropOffTime &&
+                errorText(
+                  earlyDropoffTimeBeforeStartTime,
+                  "Earliest dropoff time must be before camp start time.",
+                )}
             </Box>
 
             <Text paddingTop="45px"> to </Text>
@@ -417,8 +429,19 @@ const CampCreationDetails = ({
                 onChange={handleLatestPickUpTime}
               />
               {errorText(latestPickUpTime, "You must specify a time.")}
+              {earlyDropoffTimeBeforeLatePickupTime &&
+                latestPickUpTime &&
+                errorText(
+                  endTimeBeforeLatePickupTime,
+                  "Latest pickup time must be after camp end time.",
+                )}
             </Box>
           </HStack>
+
+          {errorText(
+            earlyDropoffTimeBeforeLatePickupTime,
+            "Earliest dropoff time must be before latest pickup time.",
+          )}
 
           <Text textStyle="buttonSemiBold" marginTop="24px">
             EDLP Price Per 30 Minutes{" "}

@@ -59,27 +59,43 @@ const CampCreationPage = (): React.ReactElement => {
 
   let isCampDetailsFilled = false;
 
-  const startTimeBeforeEndTime = useMemo(() => {
-    try {
-      const [startHours, startMinutes] = startTime
-        .split(":")
-        .map((num) => parseInt(num, 10));
-      const [endHours, endMinutes] = endTime
-        .split(":")
-        .map((num) => parseInt(num, 10));
+  const useValidateTimeOrder = (start: string, end: string): boolean => {
+    return useMemo(() => {
+      try {
+        const [startHours, startMinutes] = start
+          .split(":")
+          .map((num) => parseInt(num, 10));
+        const [endHours, endMinutes] = end
+          .split(":")
+          .map((num) => parseInt(num, 10));
 
-      if (!(startHours && startMinutes && endHours && endMinutes)) {
+        if (Number.isNaN(startHours) || Number.isNaN(endHours)) {
+          return true;
+        }
+
+        return (
+          startHours < endHours ||
+          (startHours === endHours && startMinutes < endMinutes)
+        );
+      } catch (error: unknown) {
         return true;
       }
+    }, [start, end]);
+  };
 
-      return (
-        startHours < endHours ||
-        (startHours === endHours && startMinutes < endMinutes)
-      );
-    } catch (error: unknown) {
-      return true;
-    }
-  }, [endTime, startTime]);
+  const startTimeBeforeEndTime = useValidateTimeOrder(startTime, endTime);
+  const earlyDropoffTimeBeforeLatePickupTime = useValidateTimeOrder(
+    earliestDropOffTime,
+    latestPickUpTime,
+  );
+  const earlyDropoffTimeBeforeStartTime = useValidateTimeOrder(
+    earliestDropOffTime,
+    startTime,
+  );
+  const endTimeBeforeLatePickupTime = useValidateTimeOrder(
+    endTime,
+    latestPickUpTime,
+  );
 
   if (
     campName &&
@@ -92,7 +108,12 @@ const CampCreationPage = (): React.ReactElement => {
     ageUpper > 0 &&
     ageLower < ageUpper &&
     (offersEDLP
-      ? earliestDropOffTime && latestPickUpTime && priceEDLP
+      ? earliestDropOffTime &&
+        latestPickUpTime &&
+        priceEDLP &&
+        earlyDropoffTimeBeforeLatePickupTime &&
+        earlyDropoffTimeBeforeStartTime &&
+        endTimeBeforeLatePickupTime
       : true) &&
     campCapacity > 0 &&
     addressLine1 &&
@@ -448,6 +469,11 @@ const CampCreationPage = (): React.ReactElement => {
               setCampImageURL={setCampImageURL}
               showErrors={showCreationErrors}
               startTimeBeforeEndTime={startTimeBeforeEndTime}
+              earlyDropoffTimeBeforeLatePickupTime={
+                earlyDropoffTimeBeforeLatePickupTime
+              }
+              earlyDropoffTimeBeforeStartTime={earlyDropoffTimeBeforeStartTime}
+              endTimeBeforeLatePickupTime={endTimeBeforeLatePickupTime}
             />
           </React.Fragment>
         );
