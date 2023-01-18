@@ -74,8 +74,7 @@ const RemoveCamperModal = ({
       setRetrievedCampers([]);
       setCampersToBeDeleted(new Set<Camper>());
     };
-    // eslint-disable-next-line
-  }, [camper]);
+  }, [camper, toast]);
 
   const deselectAndClose = () => {
     setCampersToBeDeleted(new Set<Camper>());

@@ -5,6 +5,7 @@ import {
   ModalFooter,
   ModalHeader,
   Select,
+  Text,
 } from "@chakra-ui/react";
 import { Camper } from "../../../../types/CamperTypes";
 import { CampSession } from "../../../../types/CampsTypes";
@@ -32,10 +33,10 @@ const MoveModal = ({
     <>
       <ModalHeader>Move {campersToBeMoved.length} Camper(s)</ModalHeader>
       <ModalBody>
-        <p style={{ marginBottom: "20px" }}>
+        <Text mb="20px">
           You can move the camper(s) to another session in this camp by
           selecting it below:
-        </p>
+        </Text>
         {campSessions.length > 0 ? (
           <Select
             placeholder="Choose an option"
@@ -87,7 +88,7 @@ const MoveModal = ({
             })}
           </Select>
         ) : (
-          <p>Error loading camp sessions.</p>
+          <Text>Error loading camp sessions.</Text>
         )}
       </ModalBody>
 

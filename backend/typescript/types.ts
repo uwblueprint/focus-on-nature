@@ -241,9 +241,7 @@ export type UpdateCamperDTO = Omit<
   | "latePickup"
   | "contacts"
   | "optionalClauses"
-  | "campSession"
-> &
-  Partial<Pick<CamperDTO, "campSession">>;
+>;
 
 export type AuthDTO = Token & UserDTO;
 
