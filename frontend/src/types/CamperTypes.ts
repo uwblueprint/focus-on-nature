@@ -51,7 +51,7 @@ export type CreateCamperDTO = Omit<
 };
 
 export type EditCamperInfoFields = Omit<
-  Camper,
+  Partial<Camper>,
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
@@ -60,7 +60,6 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
-  | "campSession"
 >;
 
 export type EditModalSetterFunctions = {

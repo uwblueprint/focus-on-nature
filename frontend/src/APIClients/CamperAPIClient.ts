@@ -28,7 +28,6 @@ const updateCampersById = async (
         ),
       );
     }
-
     const { data } = await baseAPIClient.patch(`/campers`, body, {
       headers: { Authorization: getBearerToken() },
     });
