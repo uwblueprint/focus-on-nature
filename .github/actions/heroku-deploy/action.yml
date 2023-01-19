@@ -50,6 +50,9 @@ inputs:
   stripe-secret-key:
     description: "Stripe secret key for checkout flow"
     required: true
+  stripe-endpoint-key:
+    description: "Stripe endpoint key for verifying webhook calls"
+    required: true
   client-url:
     description: "Client base URL for Stripe checkout result redirection"
     required: true
@@ -96,9 +99,10 @@ runs:
         heroku config:set MAILER_REFRESH_TOKEN="${{ inputs.mailer-refresh-token }}" -a $HEROKU_APP_NAME && \
         heroku config:set STRIPE_PUBLISHABLE_TEST_KEY="${{ inputs.stripe-publishable-key }}" -a $HEROKU_APP_NAME && \
         heroku config:set STRIPE_SECRET_TEST_KEY="${{ inputs.stripe-secret-key }}" -a $HEROKU_APP_NAME && \
-        heroku config:set PREVIEW_DEPLOY=$([ "${{inputs.deploy-branch}}" = "main" ] && echo "false" || echo "true") -a $HEROKU_APP_NAME
-        heroku config:set NODE_ENV="${{ inputs.node-env }}"
-        heroku config:set CLIENT_URL="${{ inputs.client-url }}"
+        heroku config:set STRIPE_ENDPOINT_KEY="${{ inputs.stripe-endpoint-key }}" -a $HEROKU_APP_NAME && \
+        heroku config:set PREVIEW_DEPLOY=$([ "${{inputs.deploy-branch}}" = "main" ] && echo "false" || echo "true") -a $HEROKU_APP_NAME && \
+        heroku config:set NODE_ENV="${{ inputs.node-env }}" -a $HEROKU_APP_NAME && \
+        heroku config:set CLIENT_URL="${{ inputs.client-url }}" -a $HEROKU_APP_NAME
       env:
         HEROKU_APP_NAME: "${{ inputs.heroku-app-name }}"
       shell: bash

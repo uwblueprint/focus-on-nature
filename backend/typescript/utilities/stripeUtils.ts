@@ -8,6 +8,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
+
 const dropoffProductName = "Early Drop Off Fees";
 const pickupProductName = "Late Pick Up Fees";
 
@@ -147,8 +149,21 @@ export async function createStripeCheckoutSession(
   return checkoutSession;
 }
 
-export async function retrieveStripeCheckoutSession(
-  chargeId: string,
-): Promise<Stripe.Response<Stripe.Checkout.Session>> {
-  return stripe.checkout.sessions.retrieve(chargeId);
-}
+// Similar to Stripe example:
+// https://github.com/stripe/stripe-node/blob/master/examples/webhook-signing/typescript-node-express/express-ts.ts
+export const verifyStripeWebhooksRequest = (
+  signature: any,
+  body: any,
+): Stripe.Event | undefined => {
+  try {
+    const event: Stripe.Event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      STRIPE_ENDPOINT_KEY,
+    );
+    return event;
+  } catch (err: any) {
+    console.log(`❌ Error message: ${err.message}`);
+    return undefined;
+  }
+};

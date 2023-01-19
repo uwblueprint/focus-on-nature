@@ -18,6 +18,10 @@ import {
   WaitlistedCamperDTO,
 } from "../types";
 import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/waitlistedCampersValidators";
+import {
+  stripeKey,
+  verifyStripeWebhooksRequest,
+} from "../utilities/stripeUtils";
 
 const camperRouter: Router = Router();
 
@@ -115,16 +119,32 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 });
 
 // ROLES: unprotected
-/* On successful payment, mark camper as paid */
-camperRouter.post("/confirm-payment/:chargeId", async (req, res) => {
-  const { chargeId } = req.params;
+/* Initiated by Stripe webhook. On successful payment, mark camper as paid. */
+camperRouter.post("/confirm-payment", async (req, res) => {
   try {
-    const camper = await camperService.confirmCamperPayment(
-      (chargeId as unknown) as string,
+    const event = verifyStripeWebhooksRequest(
+      req.headers["stripe-signature"],
+      req.body,
     );
-    res.status(200).json(camper);
+
+    if (!event) {
+      res.status(400).send("Webhook signature verification failed");
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const chargeId = event.data.object.id;
+
+      if (event.data.object.payment_status === "paid") {
+        await camperService.confirmCamperPayment(
+          (chargeId as unknown) as string,
+        );
+      }
+    }
+
+    res.status(200).json();
   } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
+    // Stripe requires that 200 response sent
+    res.status(200).json({ error: getErrorMessage(error) });
   }
 });
 

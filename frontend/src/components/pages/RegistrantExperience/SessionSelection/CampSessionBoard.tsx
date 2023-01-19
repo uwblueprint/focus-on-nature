@@ -1,9 +1,6 @@
 import React from "react";
 import { Box, Text, Grid, GridItem, VStack } from "@chakra-ui/react";
-import {
-  CampResponse,
-  CampSessionResponse,
-} from "../../../../types/CampsTypes";
+import { CampResponse } from "../../../../types/CampsTypes";
 import {
   SessionCardState,
   SessionSelectionState,
@@ -53,7 +50,7 @@ const CampSessionBoard = ({
             fee={camp.fee}
             startTime={camp.startTime}
             endTime={camp.endTime}
-            campSession={campSession as CampSessionResponse}
+            campSession={campSession}
             handleClick={handleSessionClick}
             state={getCardState(
               campSession.id,
@@ -73,7 +70,7 @@ const CampSessionBoard = ({
             fee={camp.fee}
             startTime={camp.startTime}
             endTime={camp.endTime}
-            campSession={campSession as CampSessionResponse}
+            campSession={campSession}
             handleClick={handleSessionClick}
             state={getCardState(
               campSession.id,

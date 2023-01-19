@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text, VStack, Flex, useMediaQuery } from "@chakra-ui/react";
-import { CampSessionResponse } from "../../../../types/CampsTypes";
+import { CampSession } from "../../../../types/CampsTypes";
 import { SessionCardState } from "./SessionSelectionTypes";
 import {
   sessionCardBoldTextStyles,
@@ -17,7 +17,7 @@ type SessionCardDetailsProps = {
   fee: number;
   startTime: string;
   endTime: string;
-  campSession: CampSessionResponse;
+  campSession: CampSession;
 };
 
 const SessionCardDetails = ({
@@ -26,14 +26,25 @@ const SessionCardDetails = ({
   endTime,
   campSession,
 }: SessionCardDetailsProps): React.ReactElement => {
-  const getCampSessionDates = () => {
-    const startDate = new Date(campSession.dates[0]);
-    const endDate = new Date(campSession.dates[campSession.dates.length - 1]);
-    return `${startDate.toLocaleString("default", {
-      month: "short",
-    })} ${startDate.getDay()} - ${endDate.toLocaleString("default", {
-      month: "short",
-    })} ${endDate.getDay()}, ${endDate.getFullYear()}`;
+  const getCampSessionDates = (): string => {
+    if (campSession.dates.length > 1) {
+      const startDate = new Date(campSession.dates[0]);
+      const endDate = new Date(campSession.dates[campSession.dates.length - 1]);
+      return `${startDate.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${startDate.getDate()} - ${endDate.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+    }
+
+    if (campSession.dates.length === 1) {
+      const date = new Date(campSession.dates[0]);
+      return `${date.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${date.getDate()}, ${date.getFullYear()}`;
+    }
+
+    return "";
   };
 
   const formattedTimeString = (start: string, end: string): string => {
@@ -66,7 +77,7 @@ type SessionCardProps = {
   fee: number;
   startTime: string;
   endTime: string;
-  campSession: CampSessionResponse;
+  campSession: CampSession;
   handleClick: (sessionID: string) => void;
   state: SessionCardState;
   sessionIsWaitlisted: boolean;
