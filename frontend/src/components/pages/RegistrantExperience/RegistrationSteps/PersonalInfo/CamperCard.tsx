@@ -315,7 +315,6 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem width={{ sm: "100%", md: "47%" }}>
             <FormControl>
               <FormLabel>

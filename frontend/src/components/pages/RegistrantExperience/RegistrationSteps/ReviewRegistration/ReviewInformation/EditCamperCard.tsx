@@ -302,9 +302,6 @@ const EditCamperCard = ({
                   />
                 </FormControl>
               </WrapItem>
-
-              <Spacer />
-
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl>
                   <EditFormLabel
