@@ -49,7 +49,7 @@ const CampsListPage = (): React.ReactElement => {
     if (!campToDelete) {
       return;
     }
-
+    onDeleteModalClose();
     const res = await CampsAPIClient.deleteCamp(campToDelete.id);
     if (res) {
       toast({
@@ -71,7 +71,6 @@ const CampsListPage = (): React.ReactElement => {
         duration: 3000,
       });
     }
-    onDeleteModalClose();
     setCampToDelete(null);
   };
 
