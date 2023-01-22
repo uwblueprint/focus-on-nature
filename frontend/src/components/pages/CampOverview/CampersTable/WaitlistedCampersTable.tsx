@@ -37,10 +37,12 @@ import DeleteModal from "../../../common/DeleteModal";
 
 type WaitlistedCampersTableProps = {
   waitlistedCampers: WaitlistedCamper[];
+  handleRefetch: () => void;
 };
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
+  handleRefetch,
 }: WaitlistedCampersTableProps): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [
@@ -103,12 +105,12 @@ const WaitlistedCampersTable = ({
   const confirmDeleteWaitlistedCamper = async (
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
+    onClose();
     if (waitlistedCamper) {
       const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
         waitlistedCamper.id,
       );
 
-      onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
           description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
@@ -124,6 +126,7 @@ const WaitlistedCampersTable = ({
           duration: 3000,
         });
       }
+      handleRefetch();
     }
   };
 
