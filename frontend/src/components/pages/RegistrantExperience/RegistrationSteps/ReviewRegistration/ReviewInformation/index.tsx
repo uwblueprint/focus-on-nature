@@ -62,6 +62,9 @@ const ReviewInformation = ({
                 camper={camper}
                 camperIndex={index}
                 dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+                personalInfoQuestions={camp.formQuestions.filter(
+                  (q) => q.category === "PersonalInfo",
+                )}
               />
             ))}
           </AccordionPanel>
@@ -73,9 +76,13 @@ const ReviewInformation = ({
             {campers[0].contacts.map((contact, index) => (
               <EditContactCard
                 key={index}
+                camper={campers[0]}
                 contact={contact}
                 contactIndex={index}
                 dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+                emergencyContactQuestions={camp.formQuestions.filter(
+                  (q) => q.category === "EmergencyContact",
+                )}
               />
             ))}
           </AccordionPanel>
