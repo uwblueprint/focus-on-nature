@@ -6,7 +6,7 @@ import {
   checkLastName,
   checkPhoneNumber,
   checkRelationToCamper,
-} from "../components/pages/RegistrantExperience/RegistrationSteps/PersonalInfo/personalInfoReducer";
+} from "../components/common/personalInfoRegistration/personalInfoReducerInterface";
 import MONTHS from "../constants/CampManagementConstants";
 import { EDLP_PLACEHOLDER_TIMESLOT } from "../constants/RegistrationConstants";
 import { BORDER_COLORS, FILL_COLORS } from "../theme/colors";
