@@ -13,6 +13,7 @@ import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
+import { sortSessions } from "../../../utils/CampUtils";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -61,19 +62,25 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         // Some data is expected by the default camp registration flow, and is
         // passed through individual state variables. Data generated in the previous
         // session (eg. checkout URL) is passed via `restoredRegistration` field,
-        // which is `undefined` if by default if no previous sessions exists.
+        // which is `undefined` if by default if no previous session exists.
         setRestoredRegistration(cachedRegistration);
 
+        setCamp(cachedRegistration.camp);
+        // Edge case here -- if they go to checkout, come back, and a session has completed
+        // in that time, we will still let them register for it. This is necessary because
+        // (1) selectedSessions is also the source of truth for the registration result page, where
+        // we would expect all paid-for sessions to appear, and (2) we would otherwise have to
+        // recognize this change and regenerate a new checkout link, and notify them of the change in
+        // checkout items. Checkouts expire within a day (?) so it's a very limited case.
         setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
         setSessionSelectionIsComplete(true);
-        setCamp(cachedRegistration.camp);
         setWaiver(cachedRegistration.waiverInterface.waiver);
       }
     }
 
     // If we expect session cache to exist, and it doesn't exist, do not repopulate
     // via network call -- instead show generic message in RegistrationResult in case
-    // the user entered `?result=success` manually into the URL (so no actually success)
+    // the user entered `?result=success` manually into the URL (so no actual success)
     if (!cachedRegistration && registrationResult !== SUCCESS_RESULT_CODE) {
       CampsAPIClient.getCampById(campId)
         .then((campResponse) => {
@@ -158,7 +165,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
           []
         }
-        edlpChoices={restoredRegistration?.edlpChoices}
+        edlpSelections={restoredRegistration?.edlpSelections}
         chargeId={restoredRegistration?.chargeId}
       />
     );
@@ -168,8 +175,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     return sessionSelectionIsComplete ? (
       <RegistrationSteps
         camp={camp}
-        selectedSessions={camp.campSessions.filter((session) =>
-          selectedSessions.has(session.id),
+        orderedSelectedSessions={sortSessions(
+          camp.campSessions.filter((session) =>
+            selectedSessions.has(session.id),
+          ),
         )}
         waiver={waiver}
         onClickBack={() => setSessionSelectionIsComplete(false)}

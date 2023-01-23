@@ -31,6 +31,7 @@ import {
 
 import { CampResponse, CampStatus } from "../../../types/CampsTypes";
 import {
+  compareCampDates,
   getCampStatus,
   getFormattedCampDateRange,
   locationString,
@@ -93,10 +94,12 @@ const CampsTable = ({
       return filteredCamps;
     }
 
-    return filteredCamps.filter(
-      (camp) =>
-        camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    return filteredCamps
+      .filter(
+        (camp) =>
+          camp.name && camp.name.toLowerCase().includes(search.toLowerCase()),
+      )
+      .sort(compareCampDates);
   }, [search, selectedFilter, camps]);
 
   const handleFilterSelect = (selectedOption: CampStatus) => {
@@ -163,89 +166,88 @@ const CampsTable = ({
           </Tr>
         </Thead>
         <Tbody>
-          {tableData.map((camp, key) => (
-            <Tr
-              key={key}
-              _hover={{
-                background: "background.grey.100",
-              }}
-              background={
-                isDrawerOpen && camp === campDrawerInfo
-                  ? "background.grey.100"
-                  : "background.white.100"
-              }
-            >
-              <Td
-                cursor="pointer"
-                onClick={() => {
-                  onDrawerOpen();
-                  setCampDrawerInfo(camp);
+          {!loading &&
+            tableData.map((camp, key) => (
+              <Tr
+                key={key}
+                _hover={{
+                  background: "background.grey.100",
                 }}
+                background={
+                  isDrawerOpen && camp === campDrawerInfo
+                    ? "background.grey.100"
+                    : "background.white.100"
+                }
               >
-                <Text textStyle="bodyBold">{camp.name}</Text>
-                <Text textStyle="bodyRegular">
-                  {locationString(camp.location)}
-                </Text>
-              </Td>
-              <Td
-                cursor="pointer"
-                onClick={() => {
-                  onDrawerOpen();
-                  setCampDrawerInfo(camp);
-                }}
-              >
-                {camp.campSessions.length > 0
-                  ? getFormattedCampDateRange(
-                      camp.campSessions[0].dates,
-                      camp.campSessions[camp.campSessions.length - 1].dates,
-                    )
-                  : ""}
-              </Td>
-              <Td
-                padding="0px"
-                cursor="pointer"
-                onClick={() => {
-                  onDrawerOpen();
-                  setCampDrawerInfo(camp);
-                }}
-              >
-                <CampStatusLabel status={getCampStatus(camp)} />
-              </Td>
-              <Td>
-                <Popover placement="bottom-end">
-                  <PopoverTrigger>
-                    <IconButton
-                      aria-label="More options button"
-                      icon={<FaEllipsisV />}
-                      variant=""
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent width="inherit">
-                    {getCampStatus(camp) === CampStatus.DRAFT && (
-                      <PopoverBody
+                <Td
+                  cursor="pointer"
+                  onClick={() => {
+                    onDrawerOpen();
+                    setCampDrawerInfo(camp);
+                  }}
+                >
+                  <Text textStyle="bodyBold">{camp.name}</Text>
+                  <Text textStyle="bodyRegular">
+                    {locationString(camp.location)}
+                  </Text>
+                </Td>
+                <Td
+                  cursor="pointer"
+                  onClick={() => {
+                    onDrawerOpen();
+                    setCampDrawerInfo(camp);
+                  }}
+                >
+                  {getFormattedCampDateRange(camp)}
+                </Td>
+                <Td
+                  padding="0px"
+                  cursor="pointer"
+                  onClick={() => {
+                    onDrawerOpen();
+                    setCampDrawerInfo(camp);
+                  }}
+                >
+                  <CampStatusLabel status={getCampStatus(camp)} />
+                </Td>
+                <Td>
+                  <Popover placement="bottom-end">
+                    <PopoverTrigger>
+                      <IconButton
+                        aria-label="More options button"
+                        icon={<FaEllipsisV />}
+                        variant=""
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent width="inherit">
+                      {getCampStatus(camp) === CampStatus.DRAFT && (
+                        <PopoverBody
+                          as={Button}
+                          bg="background.white.100"
+                          onClick={() => onEditCampClick(camp.id)}
+                          padding="1.5em 2em"
+                        >
+                          <Text textStyle="buttonRegular">Edit camp</Text>
+                        </PopoverBody>
+                      )}
+                      <PopoverFooter
                         as={Button}
                         bg="background.white.100"
-                        onClick={() => onEditCampClick(camp.id)}
+                        onClick={() => onDeleteClick(camp)}
                         padding="1.5em 2em"
                       >
-                        <Text textStyle="buttonRegular">Edit camp</Text>
-                      </PopoverBody>
-                    )}
-                    <PopoverFooter
-                      as={Button}
-                      bg="background.white.100"
-                      onClick={() => onDeleteClick(camp)}
-                      padding="1.5em 2em"
-                    >
-                      <Text textStyle="buttonRegular" color="text.critical.100">
-                        Delete camp
-                      </Text>
-                    </PopoverFooter>
-                  </PopoverContent>
-                </Popover>
-              </Td>
-            </Tr>
-          ))}
+                        <Text
+                          textStyle="buttonRegular"
+                          color="text.critical.100"
+                        >
+                          Delete camp
+                        </Text>
+                      </PopoverFooter>
+                    </PopoverContent>
+                  </Popover>
+                </Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
       {loading && (
