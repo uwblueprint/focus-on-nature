@@ -136,7 +136,7 @@ const PersonalInfoCard = ({
         );
       case CamperCardInputTypes.NUMBERINPUT:
         return (
-          <NumberInput precision={0} defaultValue={value}>
+          <NumberInput precision={0} value={value}>
             <NumberInputField
               backgroundColor="#FFFFFF"
               onChange={(event) => {

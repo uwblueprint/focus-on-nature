@@ -17,7 +17,6 @@ export const CamperReducer = (
     const newCampers: CreateWaitlistedCamperDTO[] = JSON.parse(
       JSON.stringify(campers),
     ); // Deep Copy
-
     switch (action.type) {
       case PersonalInfoActions.ADD_CAMPER: {
         newCampers.push({

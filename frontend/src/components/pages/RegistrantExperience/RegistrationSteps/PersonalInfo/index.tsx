@@ -59,7 +59,7 @@ const PersonalInfo = ({
         Camper Information
       </Text>
       <VStack spacing={6} pb={6}>
-      {campers.map((camper, index) => (
+        {campers.map((camper, index) => (
           <CamperCard
             nextBtnRef={nextBtnRef}
             key={index}
@@ -70,8 +70,8 @@ const PersonalInfo = ({
             personalInfoQuestions={camp.formQuestions.filter(
               (q) => q.category === "PersonalInfo",
             )}
-            />
-      ))}
+          />
+        ))}
       </VStack>
 
       {!isWaitlistRegistration && (
