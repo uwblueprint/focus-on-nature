@@ -42,6 +42,7 @@ const CampersTables = ({
               campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
               generateCsv={generateCsv}
+              sessionDates={campSession.dates}
             />
           </TabPanel>
           <TabPanel padding="0">

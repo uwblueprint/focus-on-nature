@@ -409,7 +409,6 @@ const RegistrationSteps = ({
   return (
     <Flex
       direction="column"
-      w="100vw"
       pt={{ sm: "120px", md: "120px", lg: "144px" }}
       pb={{ sm: "170px", md: "108px", lg: "144px" }}
       justifyContent="flex-start"

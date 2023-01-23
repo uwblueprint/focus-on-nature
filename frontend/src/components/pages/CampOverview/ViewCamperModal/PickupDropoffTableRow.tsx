@@ -54,7 +54,7 @@ const PickupDropoffTime = ({
   return (
     <Td pl={0} pt={2} pb={0} color={color}>
       <HStack>
-        {pickup ? <SunriseIcon fill={color} /> : <SunsetIcon fill={color} />}
+        {pickup ? <SunsetIcon fill={color} /> : <SunriseIcon fill={color} />}
         <Text textStyle="bodyRegular" color={color}>
           {time}
         </Text>

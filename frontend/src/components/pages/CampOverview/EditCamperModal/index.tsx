@@ -4,7 +4,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
   Modal,
   ModalBody,
   ModalFooter,
@@ -131,7 +130,6 @@ const EditCamperModal = ({
         <ModalHeader>
           Edit {camper.firstName} {camper.lastName}&apos;s Information
         </ModalHeader>
-        <ModalCloseButton />
         <ModalBody overflowY="scroll">
           <EditCamperModalForm
             formQuestions={formQuestions}

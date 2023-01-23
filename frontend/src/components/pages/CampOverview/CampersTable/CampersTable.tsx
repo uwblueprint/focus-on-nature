@@ -61,19 +61,23 @@ const ExportButton = ({
   );
 };
 
+type CampersTableProps = {
+  campers: Camper[];
+  campSessionCapacity: number;
+  formQuestions: FormQuestion[];
+  handleRefetch: () => void;
+  generateCsv: () => void;
+  sessionDates: string[];
+};
+
 const CampersTable = ({
   campers,
   campSessionCapacity,
   formQuestions,
   handleRefetch,
   generateCsv,
-}: {
-  campers: Camper[];
-  campSessionCapacity: number;
-  formQuestions: FormQuestion[];
-  handleRefetch: () => void;
-  generateCsv: () => void;
-}): JSX.Element => {
+  sessionDates,
+}: CampersTableProps): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
@@ -256,7 +260,10 @@ const CampersTable = ({
                     )}
                   </Td>
                   <Td pl="7px" maxWidth="760px">
-                    <CamperDetailsBadgeGroup camper={camper} />
+                    <CamperDetailsBadgeGroup
+                      camper={camper}
+                      sessionDates={sessionDates}
+                    />
                   </Td>
                   <Td
                     justifyContent="flex-end"
@@ -302,6 +309,7 @@ const CampersTable = ({
               camper={selectedCamper}
               viewCamperModalIsOpen={viewModalIsOpen}
               viewCamperOnClose={viewModalOnClose}
+              sessionDates={sessionDates}
             />
           )}
 
