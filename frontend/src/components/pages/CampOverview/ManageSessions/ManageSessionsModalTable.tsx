@@ -108,6 +108,7 @@ const ManageSessionsModalTable = ({
                       session.dates,
                       campStartTime,
                       campEndTime,
+                      true,
                     )}
                   </Text>
                 </Td>

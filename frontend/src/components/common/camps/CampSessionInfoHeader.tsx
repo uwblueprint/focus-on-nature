@@ -73,6 +73,7 @@ const CampSessionInfoHeader = ({
           campSession.dates,
           camp.startTime,
           camp.endTime,
+          true,
         )}
       </Text>
       <Box marginTop="16px">

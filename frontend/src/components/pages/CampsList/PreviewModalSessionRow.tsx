@@ -38,7 +38,7 @@ const PreviewModalSessionRow = ({
         </>
       </Flex>
       <Text textStyle="subHeading">
-        {getFormattedDateString(session.dates)}
+        {getFormattedDateString(session.dates, true)}
       </Text>
       <Text textStyle="caption">
         Registrations (

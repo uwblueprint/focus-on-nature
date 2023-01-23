@@ -7,7 +7,7 @@ import {
   sessionCardDatesTextStyles,
   sessionCardDetailsTextStyles,
 } from "./SessionSelectionStyles";
-import { getMeridianTime } from "../../../../utils/CampUtils";
+import { getMeridianTime, sortDateStrings } from "../../../../utils/CampUtils";
 
 const WAITLISTED_COLOR = "red.100";
 const AVAILABLE_COLOR = "green.100";
@@ -27,13 +27,14 @@ const SessionCardDetails = ({
   campSession,
 }: SessionCardDetailsProps): React.ReactElement => {
   const getCampSessionDates = () => {
-    const startDate = new Date(campSession.dates[0]);
-    const endDate = new Date(campSession.dates[campSession.dates.length - 1]);
+    const datesToUse = sortDateStrings(campSession.dates);
+    const startDate = new Date(datesToUse[0]);
+    const endDate = new Date(datesToUse[campSession.dates.length - 1]);
     return `${startDate.toLocaleString("default", {
       month: "short",
-    })} ${startDate.getDay()} - ${endDate.toLocaleString("default", {
+    })} ${startDate.getDate()} - ${endDate.toLocaleString("default", {
       month: "short",
-    })} ${endDate.getDay()}, ${endDate.getFullYear()}`;
+    })} ${endDate.getDate()}, ${endDate.getFullYear()}`;
   };
 
   const formattedTimeString = (start: string, end: string): string => {

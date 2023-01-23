@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from "react";
-
 import { useHistory } from "react-router-dom";
 import { SearchIcon } from "@chakra-ui/icons";
 import { FaEllipsisV } from "react-icons/fa";
@@ -195,10 +194,7 @@ const CampsTable = ({
                 }}
               >
                 {camp.campSessions.length > 0
-                  ? getFormattedCampDateRange(
-                      camp.campSessions[0].dates,
-                      camp.campSessions[camp.campSessions.length - 1].dates,
-                    )
+                  ? getFormattedCampDateRange(camp.campSessions)
                   : ""}
               </Td>
               <Td

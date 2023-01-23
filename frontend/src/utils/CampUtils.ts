@@ -56,19 +56,42 @@ export const getCampStatus = (camp: CampResponse): CampStatus => {
   return CampStatus.COMPLETED;
 };
 
-export const getFormattedDateString = (dates: Array<string>): string => {
-  const startDate = new Date(dates[0]).toLocaleDateString("en-us", {
+export const sortDateStrings = (unsortedDates: string[]): string[] => {
+  const dateNumToStrMap: Map<number, string> = new Map();
+  unsortedDates.forEach((curDate: string) => {
+    const parsedDate = Date.parse(curDate);
+    dateNumToStrMap.set(parsedDate, curDate);
+  });
+  const dateNumToStrArr = Array.from(dateNumToStrMap);
+  dateNumToStrArr.sort();
+
+  const sortedDates: string[] = [];
+  dateNumToStrArr.forEach((date) => {
+    sortedDates.push(date[1]);
+  });
+
+  return sortedDates;
+};
+
+export const getFormattedDateString = (
+  dates: string[],
+  requireSorted = false,
+): string => {
+  let datesToUse = dates;
+  if (requireSorted) {
+    datesToUse = sortDateStrings(dates);
+  }
+  const startDate = new Date(datesToUse[0]).toLocaleDateString("en-us", {
     month: "short",
     day: "numeric",
   });
-  const endDate = new Date(dates[dates.length - 1]).toLocaleDateString(
-    "en-us",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  );
+  const endDate = new Date(
+    datesToUse[datesToUse.length - 1],
+  ).toLocaleDateString("en-us", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   return `${startDate} - ${endDate}`;
 };
@@ -115,7 +138,9 @@ export const getFormattedSessionDatetime = (
   dates: Array<string>,
   startTime: string,
   endTime: string,
-): string => `${getFormattedDateString(dates)} | ${startTime} - ${endTime}`;
+  requireSorted?: boolean,
+): string =>
+  `${getFormattedDateString(dates, requireSorted)} | ${startTime} - ${endTime}`;
 
 export const sortScheduledSessions = (
   sessions: CreateCampSession[],
@@ -161,18 +186,19 @@ export const getTextFromQuestionType = (questionType: QuestionType): string => {
 };
 
 export const getFormattedCampDateRange = (
-  firstCampSessionDates: Array<string>,
-  lastCampSessionDates: Array<string>,
+  campSessions: CampSession[],
 ): string => {
-  if (firstCampSessionDates && lastCampSessionDates) {
-    const startDate = format(new Date(firstCampSessionDates[0]), "PP");
-    const lastDate = format(
-      new Date(lastCampSessionDates[lastCampSessionDates.length - 1]),
-      "PP",
-    );
-    return `${startDate} - ${lastDate}`;
-  }
-  return "";
+  let allDates: string[] = [];
+
+  campSessions.forEach((session) => {
+    allDates = allDates.concat(session.dates);
+  });
+
+  const sortedDates = sortDateStrings(allDates);
+
+  const startDate = format(new Date(sortedDates[0]), "PP");
+  const lastDate = format(new Date(sortedDates[sortedDates.length - 1]), "PP");
+  return `${startDate} - ${lastDate}`;
 };
 
 const getWeekDayKeyFromDateNum = (num: number): string => {
