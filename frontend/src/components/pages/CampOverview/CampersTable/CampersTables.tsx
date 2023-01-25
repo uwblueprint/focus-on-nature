@@ -45,7 +45,10 @@ const CampersTables = ({
             />
           </TabPanel>
           <TabPanel padding="0">
-            <WaitlistedCampersTable waitlistedCampers={campSession.waitlist} />
+            <WaitlistedCampersTable
+              waitlistedCampers={campSession.waitlist}
+              handleRefetch={handleRefetch}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
