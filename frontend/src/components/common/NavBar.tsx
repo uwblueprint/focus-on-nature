@@ -26,7 +26,7 @@ import { Role } from "../../types/AuthTypes";
 
 import { FontWeights } from "../../theme/textStyles";
 
-const NavBarIcon = (): React.ReactElement => {
+export const NavBarIcon = (): React.ReactElement => {
   return (
     <Image
       src={FONIcon}

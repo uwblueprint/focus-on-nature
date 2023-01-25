@@ -2,11 +2,11 @@ import React from "react";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Box, Button, Divider, Text, VStack } from "@chakra-ui/react";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
-import CamperCard from "./CamperCard";
 import ContactCard from "./ContactCard";
 import { usePersonalInfoDispatcher } from "./personalInfoReducer";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { PersonalInfoActions } from "../../../../../types/PersonalInfoTypes";
+import CamperCard from "./CamperCard";
 
 type PersonalInfoProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
@@ -59,7 +59,7 @@ const PersonalInfo = ({
         Camper Information
       </Text>
       <VStack spacing={6} pb={6}>
-        {campers.map((camper, index) => (
+      {campers.map((camper, index) => (
           <CamperCard
             nextBtnRef={nextBtnRef}
             key={index}
@@ -70,8 +70,8 @@ const PersonalInfo = ({
             personalInfoQuestions={camp.formQuestions.filter(
               (q) => q.category === "PersonalInfo",
             )}
-          />
-        ))}
+            />
+      ))}
       </VStack>
 
       {!isWaitlistRegistration && (

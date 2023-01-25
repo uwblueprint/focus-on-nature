@@ -14,6 +14,7 @@ import AdminAPIClient from "../../../APIClients/AdminAPIClient";
 import { WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
 import { sortSessions } from "../../../utils/CampUtils";
+import WaitlistExperiencePage from "../WaitlistExperience";
 
 type InitialLoadingState = {
   waiver: boolean;
@@ -43,14 +44,94 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
     new Set(),
   );
-  const [sessionSelectionIsComplete, setSessionSelectionIsComplete] = useState(
-    false,
-  );
+  const [currentStep, setCurrentStep] = useState<
+    "loading" | "selection" | "registration" | "waitlist" | "registrationResult"
+  >("loading");
+
   const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
 
   const [restoredRegistration, setRestoredRegistration] = useState<
     CheckoutData | undefined
   >(undefined);
+
+  const getCurrentStep = () => {
+    switch (currentStep) {
+      case "loading":
+        return (
+          <Flex h="100vh" w="100vw" align="center" justify="center">
+            <Spinner />
+          </Flex>
+        );
+
+      case "selection":
+        return (
+          <SessionSelection
+            camp={camp as CampResponse}
+            selectedSessions={selectedSessions}
+            setSelectedSessions={setSelectedSessions}
+            onWaitListSubmission={() => setCurrentStep("waitlist")}
+            onRegistrationSubmission={() => setCurrentStep("registration")}
+          />
+        );
+      case "registration":
+        return (
+          <RegistrationSteps
+          camp={camp as CampResponse}
+          orderedSelectedSessions={sortSessions(
+            (camp as CampResponse).campSessions.filter((session) =>
+              selectedSessions.has(session.id),
+            ),
+          )}
+          waiver={waiver as WaiverType}
+          onClickBack={() => setCurrentStep("selection") }
+          waitlistedCamper={waitlistedCamper}
+          failedCheckoutData={restoredRegistration}
+        />
+
+        );
+      case "waitlist":
+        return (
+          <WaitlistExperiencePage
+            camp={camp as CampResponse}
+            selectedCampSessions={(camp as CampResponse).campSessions.filter(
+              (session) => selectedSessions.has(session.id),
+            )}
+            onClickBack={() => setCurrentStep("selection")}
+          />
+        );
+      case "registrationResult": {
+        const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
+
+        return (
+          <RegistrationResultPage
+          camp={camp}
+          campers={restoredRegistration?.campers}
+          sessions={
+            camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
+            []
+          }
+          edlpSelections={restoredRegistration?.edlpSelections}
+          chargeId={restoredRegistration?.chargeId}
+        />
+        );
+      }
+      default:
+        return (
+          <Text mx="10vw">
+            Error: Camp not found. Please go back and try again.
+          </Text>
+        );
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoading.camp && !isLoading.waiver) setCurrentStep("selection");
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (registrationResult === SUCCESS_RESULT_CODE)
+      setCurrentStep("registrationResult");
+  }, [registrationResult]);
 
   useEffect(() => {
     // We could remove this conditional, if we want to handle the "navigate back" action
@@ -73,7 +154,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         // recognize this change and regenerate a new checkout link, and notify them of the change in
         // checkout items. Checkouts expire within a day (?) so it's a very limited case.
         setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
-        setSessionSelectionIsComplete(true);
+        setCurrentStep("selection");
+        setCamp(cachedRegistration.camp);
         setWaiver(cachedRegistration.waiverInterface.waiver);
       }
     }
@@ -111,7 +193,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
               if (new Date(waitlistCamper.linkExpiry) < new Date()) {
                 throw new Error("The invitation link has expired");
               }
-              setSessionSelectionIsComplete(true);
+              setCurrentStep("selection");
               setWaitlistedCamper(waitlistCamper);
               setSelectedSessions(new Set([waitlistedSessionId]));
             }
@@ -153,55 +235,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     history,
     registrationResult,
   ]);
-
-  if (registrationResult === SUCCESS_RESULT_CODE) {
-    const sessionsIds = new Set(restoredRegistration?.selectedSessionIds);
-
-    return (
-      <RegistrationResultPage
-        camp={camp}
-        campers={restoredRegistration?.campers}
-        sessions={
-          camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
-          []
-        }
-        edlpSelections={restoredRegistration?.edlpSelections}
-        chargeId={restoredRegistration?.chargeId}
-      />
-    );
-  }
-
-  if (camp && waiver) {
-    return sessionSelectionIsComplete ? (
-      <RegistrationSteps
-        camp={camp}
-        orderedSelectedSessions={sortSessions(
-          camp.campSessions.filter((session) =>
-            selectedSessions.has(session.id),
-          ),
-        )}
-        waiver={waiver}
-        onClickBack={() => setSessionSelectionIsComplete(false)}
-        waitlistedCamper={waitlistedCamper}
-        failedCheckoutData={restoredRegistration}
-      />
-    ) : (
-      <SessionSelection
-        camp={camp}
-        selectedSessions={selectedSessions}
-        setSelectedSessions={setSelectedSessions}
-        onFormSubmission={() => setSessionSelectionIsComplete(true)}
-      />
-    );
-  }
-
-  return isLoading.camp || isLoading.waiver ? (
-    <Flex h="100vh" w="100vw" align="center" justify="center">
-      <Spinner />
-    </Flex>
-  ) : (
-    <Text mx="10vw">Error: Camp not found. Please go back and try again.</Text>
-  );
+  return getCurrentStep();
 };
 
 export default RegistrantExperiencePage;
