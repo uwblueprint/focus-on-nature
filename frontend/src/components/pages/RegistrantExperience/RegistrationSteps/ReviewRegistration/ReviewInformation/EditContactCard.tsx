@@ -14,16 +14,16 @@ import {
   PersonalInfoReducerDispatch,
 } from "../../../../../../types/PersonalInfoTypes";
 import { EmergencyContact } from "../../../../../../types/CamperTypes";
+import EditFormLabel from "./EditFormLabel";
+import EditCardFooter from "./EditCardFooter";
+import EditCardHeader from "./EditCardHeader";
 import {
   checkEmail,
   checkFirstName,
   checkLastName,
   checkPhoneNumber,
   checkRelationToCamper,
-} from "../../PersonalInfo/personalInfoReducer";
-import EditFormLabel from "./EditFormLabel";
-import EditCardFooter from "./EditCardFooter";
-import EditCardHeader from "./EditCardHeader";
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
 
 type EditContactCardProps = {
   contact: EmergencyContact;

@@ -1,6 +1,5 @@
 import React from "react";
 import { Flex, Image, VStack, Text } from "@chakra-ui/react";
-import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
 
 import defaultCampImage from "../../../../assets/default_camp_image.png";
 import { cardBoldStyles, regularTextStyles } from "./textStyles";
@@ -11,7 +10,8 @@ export type RegistrationInfoCardProps = {
   imageSrc: string;
   campName: string;
   sessions: CampSession[];
-  registeredCampers: RegistrantExperienceCamper[];
+  registeredCampers: RegistrantInfoCamper[];
+  isWaitListSummary?: boolean;
 };
 
 const formatSessionDate = (dateString: string): string =>
@@ -35,20 +35,30 @@ const formatSessionInfo = (index: number, dates: string[]): string => {
   return sessionStr;
 };
 
+interface RegistrantInfoCamper {
+  firstName: string;
+  lastName: string;
+  age: number;
+}
+
 const RegistrationInfoCard = ({
   imageSrc,
   campName,
   sessions,
   registeredCampers,
+  isWaitListSummary,
 }: RegistrationInfoCardProps): React.ReactElement => {
-  const formatCamperData = (camper: RegistrantExperienceCamper): string =>
+  const formatCamperData = (camper: RegistrantInfoCamper): string =>
     `${camper.firstName} (Age ${camper.age})`;
 
   // Produces formatted list of campers; eg. "Campers registered: John (Age 8) and Jane (Age 4)"
   const formatRegisteredCampers = (
-    campers: RegistrantExperienceCamper[],
+    campers: RegistrantInfoCamper[],
+    isForWaitList?: boolean,
   ): string => {
-    let campersString = "Campers registered: ";
+    let campersString = isForWaitList
+      ? "Campers registered: "
+      : "Campers on waitlist: ";
     if (campers.length === 1) {
       campersString += formatCamperData(campers[0]);
     } else if (campers.length === 2) {
@@ -71,7 +81,7 @@ const RegistrationInfoCard = ({
   return (
     <Flex
       direction="row"
-      justify="space-between"
+      justify="space-around"
       align="center"
       w="100%"
       border="1px solid"
@@ -86,11 +96,11 @@ const RegistrationInfoCard = ({
         fallbackSrc={defaultCampImage}
         src={imageSrc}
         alt="Camp image"
-        w={{ base: "192px", lg: "6vw" }}
-        h={{ base: "122px", lg: "6vh" }}
-        mb={{ sm: 5 }}
+        w={{ base: "192px", lg: "120px" }}
+        h={{ base: "122px", lg: "71px" }}
+        mb={{ sm: 5, md: 0 }}
       />
-      <VStack align="flex-start" spacing={2} w={{ lg: "25vw" }}>
+      <VStack align="flex-start" spacing={2} w={{ md: "60%", lg: "70%" }}>
         <Text textStyle={cardBoldStyles}>{campName}</Text>
         {sessions
           .sort(
@@ -105,8 +115,11 @@ const RegistrationInfoCard = ({
               </Text>
             );
           })}
-        <Text textStyle={{ base: "xSmallMedium", lg: "displaySmallSemiBold" }}>
-          {formatRegisteredCampers(registeredCampers)}
+        <Text
+          textStyle={{ sm: "xSmallMedium", lg: "displaySmallSemiBold" }}
+          textAlign="left"
+        >
+          {formatRegisteredCampers(registeredCampers, isWaitListSummary)}
         </Text>
       </VStack>
     </Flex>

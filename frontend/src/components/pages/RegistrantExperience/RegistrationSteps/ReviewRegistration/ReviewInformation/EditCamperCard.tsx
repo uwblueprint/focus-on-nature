@@ -14,15 +14,15 @@ import {
   PersonalInfoReducerDispatch,
 } from "../../../../../../types/PersonalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
-import {
-  checkAge,
-  checkFirstName,
-  checkLastName,
-} from "../../PersonalInfo/personalInfoReducer";
 import { CampResponse } from "../../../../../../types/CampsTypes";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";
 import EditCardHeader from "./EditCardHeader";
+import {
+  checkAge,
+  checkFirstName,
+  checkLastName,
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
 
 type EditCamperCardProps = {
   camper: RegistrantExperienceCamper;
