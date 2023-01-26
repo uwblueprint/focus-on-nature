@@ -154,7 +154,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         // recognize this change and regenerate a new checkout link, and notify them of the change in
         // checkout items. Checkouts expire within a day (?) so it's a very limited case.
         setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
-        setCurrentStep("selection");
+        setCurrentStep("registration");
         setCamp(cachedRegistration.camp);
         setWaiver(cachedRegistration.waiverInterface.waiver);
       }
@@ -193,7 +193,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
               if (new Date(waitlistCamper.linkExpiry) < new Date()) {
                 throw new Error("The invitation link has expired");
               }
-              setCurrentStep("selection");
+              setCurrentStep("registration");
               setWaitlistedCamper(waitlistCamper);
               setSelectedSessions(new Set([waitlistedSessionId]));
             }
