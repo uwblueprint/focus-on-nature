@@ -20,11 +20,20 @@ const formatSessionDate = (dateString: string): string =>
     day: "numeric",
   });
 
-const formatSessionInfo = (
-  index: number,
-  dates: string[],
-): string => `Session ${index + 1} - ${formatSessionDate(dates[0])} to
-${dates.length > 1 ? formatSessionDate(dates[dates.length - 1]) : ""}`;
+const formatSessionInfo = (index: number, dates: string[]): string => {
+  const sortedDates = sortDatestrings(dates);
+  let sessionStr = `Session ${index + 1} - ${formatSessionDate(
+    sortedDates[0],
+  )}`;
+
+  if (sortedDates.length > 1) {
+    sessionStr += ` to ${formatSessionDate(
+      sortedDates[sortedDates.length - 1],
+    )}`;
+  }
+
+  return sessionStr;
+};
 
 interface RegistrantInfoCamper {
   firstName: string;
