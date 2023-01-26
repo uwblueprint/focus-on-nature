@@ -76,18 +76,17 @@ const RegistrantExperiencePage = (): React.ReactElement => {
       case "registration":
         return (
           <RegistrationSteps
-          camp={camp as CampResponse}
-          orderedSelectedSessions={sortSessions(
-            (camp as CampResponse).campSessions.filter((session) =>
-              selectedSessions.has(session.id),
-            ),
-          )}
-          waiver={waiver as WaiverType}
-          onClickBack={() => setCurrentStep("selection") }
-          waitlistedCamper={waitlistedCamper}
-          failedCheckoutData={restoredRegistration}
-        />
-
+            camp={camp as CampResponse}
+            orderedSelectedSessions={sortSessions(
+              (camp as CampResponse).campSessions.filter((session) =>
+                selectedSessions.has(session.id),
+              ),
+            )}
+            waiver={waiver as WaiverType}
+            onClickBack={() => setCurrentStep("selection")}
+            waitlistedCamper={waitlistedCamper}
+            failedCheckoutData={restoredRegistration}
+          />
         );
       case "waitlist":
         return (
@@ -104,15 +103,16 @@ const RegistrantExperiencePage = (): React.ReactElement => {
 
         return (
           <RegistrationResultPage
-          camp={camp}
-          campers={restoredRegistration?.campers}
-          sessions={
-            camp?.campSessions.filter((session) => sessionsIds.has(session.id)) ??
-            []
-          }
-          edlpSelections={restoredRegistration?.edlpSelections}
-          chargeId={restoredRegistration?.chargeId}
-        />
+            camp={camp}
+            campers={restoredRegistration?.campers}
+            sessions={
+              camp?.campSessions.filter((session) =>
+                sessionsIds.has(session.id),
+              ) ?? []
+            }
+            edlpSelections={restoredRegistration?.edlpSelections}
+            chargeId={restoredRegistration?.chargeId}
+          />
         );
       }
       default:

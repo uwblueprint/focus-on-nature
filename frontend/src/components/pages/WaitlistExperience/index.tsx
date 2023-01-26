@@ -3,12 +3,12 @@ import React, { useRef, useState } from "react";
 import { CreateWaitlistedCamperDTO } from "../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import EmptyNavBar from "../../common/EmptyNavBar";
-import RegistrationFooter from "../../common/RegistrationFooter";
 
 import WaitlistConfirmationPage from "./ConfirmationPage";
 import WaitlistPersonalInfoPage from "./PersonalInfo";
 import { checkPersonalInfoFilled } from "./PersonalInfo/personalInfoReducer";
 import WaitListExperienceSteps from "./WaitlistExperienceSteps";
+import WaitlistFooter from "./WaitlistFooter";
 
 interface WaitlistExperiencePageProps {
   camp: CampResponse;
@@ -94,17 +94,14 @@ const WaitlistExperiencePage = ({
       <EmptyNavBar />
       <Flex
         direction="column"
-        w="100vw"
-        pt={{ sm: "120px", md: "120px", lg: "144px" }}
+        pt={{ sm: "60px", md: "60px", lg: "72px" }}
         pb={{ sm: "170px", md: "108px", lg: "144px" }}
         justifyContent="flex-start"
       >
         <Box>{getCurrentRegistrantStepComponent(currentStep)}</Box>
         {currentStep !== WaitListExperienceSteps.ConfirmationPage && (
-          <RegistrationFooter
+          <WaitlistFooter
             nextBtnRef={nextBtnRef}
-            currentStep={currentStep}
-            nextStepTxtMap={waitListNextStepTxtMap}
             isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
             registrationLoading={false}
             handleStepNavigation={handleStepNavigation}
