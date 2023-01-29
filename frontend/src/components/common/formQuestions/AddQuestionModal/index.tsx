@@ -58,6 +58,7 @@ const AddQuestionModal = ({
   const [questionOptions, setQuestionOptions] = useState<Array<string>>([]);
 
   const [isQuestionInvalid, setIsQuestionInvalid] = useState<boolean>(false);
+  const [isQuestionOptionsInvalid, setIsQuestionOptionsInvalid] = useState<boolean>(false);
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
@@ -76,6 +77,7 @@ const AddQuestionModal = ({
           : [...questionToBeEdited.options],
       );
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(false);
     } else {
       setQuestion("");
       setQuestionCategory("PersonalInfo");
@@ -84,6 +86,7 @@ const AddQuestionModal = ({
       setIsRequiredQuestion(false);
       setQuestionOptions([]);
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(false);
     }
   };
 
@@ -99,6 +102,12 @@ const AddQuestionModal = ({
   const onSaveQuestion = () => {
     if (question === "") {
       setIsQuestionInvalid(true);
+      return;
+    }
+
+    console.log(questionOptions)
+    if (questionType!=="Text" && questionOptions.length === 1 && questionOptions[0] === '') {
+      setIsQuestionOptionsInvalid(true);
       return;
     }
 
@@ -177,18 +186,24 @@ const AddQuestionModal = ({
               )}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={isQuestionOptionsInvalid}>
               <FormLabel aria-required marginTop="14px">
                 Question Type
               </FormLabel>
               <Select
                 value={questionType}
-                onChange={(e) => setQuestionType(e.target.value)}
+                onChange={(e) => {
+                  setIsQuestionOptionsInvalid(false);
+                  setQuestionType(e.target.value)
+                }}
               >
                 <option value="Text">Short answer</option>
                 <option value="MultipleChoice">Multiple choice</option>
                 <option value="Multiselect">Checkbox</option>
               </Select>
+              {isQuestionOptionsInvalid && (
+                <FormErrorMessage>You must enter at least 1 option</FormErrorMessage>
+              )}
             </FormControl>
 
             {questionType !== "Text" && editing && (
