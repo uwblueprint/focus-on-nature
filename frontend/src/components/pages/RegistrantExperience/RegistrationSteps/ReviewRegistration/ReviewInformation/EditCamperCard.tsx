@@ -4,7 +4,6 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  Spacer,
   Textarea,
   Wrap,
   WrapItem,
@@ -14,21 +13,26 @@ import {
   PersonalInfoReducerDispatch,
 } from "../../../../../../types/PersonalInfoTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
-import { CampResponse } from "../../../../../../types/CampsTypes";
-import EditFormLabel from "./EditFormLabel";
-import EditCardFooter from "./EditCardFooter";
-import EditCardHeader from "./EditCardHeader";
 import {
   checkAge,
   checkFirstName,
   checkLastName,
 } from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
+import { CampResponse, FormQuestion } from "../../../../../../types/CampsTypes";
+import EditFormLabel from "./EditFormLabel";
+import EditCardFooter from "./EditCardFooter";
+import EditCardHeader from "./EditCardHeader";
+import MultipleChoiceGroup from "../../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../../QuestionGroups/MultiselectGroup";
+import TextInputGroup from "../../QuestionGroups/TextInputGroup";
+import { checkAdditionalQuestionsAnsweredSingleCamper } from "../../AdditionalInfo/additionalInfoReducer";
 
 type EditCamperCardProps = {
   camper: RegistrantExperienceCamper;
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  personalInfoQuestions: FormQuestion[];
 };
 
 const EditCamperCard = ({
@@ -36,12 +40,21 @@ const EditCamperCard = ({
   camperIndex,
   dispatchPersonalInfoAction,
   camp,
+  personalInfoQuestions,
 }: EditCamperCardProps): React.ReactElement => {
+  const mdWrapWidth = personalInfoQuestions.length > 1 ? "47%" : "100%";
+
   const [updateMemo, setUpdateMemo] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialCamper: RegistrantExperienceCamper = useMemo(() => camper, [
     updateMemo,
   ]);
+  const initialCamperFormResponses = useMemo(
+    () =>
+      camper.formResponses ? Object.fromEntries(camper.formResponses) : {},
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updateMemo],
+  );
 
   const [editing, setEditing] = useState(false);
 
@@ -49,7 +62,10 @@ const EditCamperCard = ({
   const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
   const [isAgeInvalid, setIsAgeInvalid] = useState(false);
 
+  const [save, setSave] = useState(false);
+
   const updateFormErrorMsgs = () => {
+    setSave(true);
     let valid = true;
 
     if (!checkFirstName(camper.firstName)) {
@@ -64,7 +80,16 @@ const EditCamperCard = ({
       setIsAgeInvalid(true);
       valid = false;
     }
-    if (valid) {
+    const requiredQuestions = personalInfoQuestions
+      .filter((question) => question.required)
+      .map((question) => question.question);
+
+    const personalInfoValid = checkAdditionalQuestionsAnsweredSingleCamper(
+      camper,
+      requiredQuestions,
+    );
+
+    if (valid && personalInfoValid) {
       setEditing(false);
       setUpdateMemo(updateMemo + 1);
     }
@@ -110,7 +135,49 @@ const EditCamperCard = ({
       data: initialCamper.specialNeeds,
     });
 
+    personalInfoQuestions.forEach((question) => {
+      dispatchPersonalInfoAction({
+        type: PersonalInfoActions.UPDATE_RESPONSE,
+        camperIndex,
+        question: question.question,
+        data: initialCamperFormResponses[question.question] || "",
+      });
+    });
+    setSave(false);
     setEditing(false);
+  };
+
+  const handleMultipleChoiceChange = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: response,
+    });
   };
 
   return (
@@ -234,9 +301,6 @@ const EditCamperCard = ({
                   />
                 </FormControl>
               </WrapItem>
-
-              <Spacer />
-
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl>
                   <EditFormLabel
@@ -257,6 +321,38 @@ const EditCamperCard = ({
                   />
                 </FormControl>
               </WrapItem>
+
+              {personalInfoQuestions.map((question) => (
+                <WrapItem
+                  key={`personal_info_question_${question.question}`}
+                  width={{ sm: "100%", md: mdWrapWidth }}
+                >
+                  {question.type === "Text" && (
+                    <TextInputGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleTextChange={handleTextChange}
+                      nextClicked={save}
+                    />
+                  )}
+                  {question.type === "Multiselect" && (
+                    <MultiselectGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleSelectionChange={handleSelectionChange}
+                      nextClicked={save}
+                    />
+                  )}
+                  {question.type === "MultipleChoice" && (
+                    <MultipleChoiceGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleMultipleChoiceChange={handleMultipleChoiceChange}
+                      nextClicked={save}
+                    />
+                  )}
+                </WrapItem>
+              ))}
             </Wrap>
           </Box>
 

@@ -91,7 +91,7 @@ const CampCreationPage = (): React.ReactElement => {
       } catch (error: unknown) {
         return true;
       }
-    }, [start, end]);
+    }, [start, end, canBeEqual]);
   };
 
   const startTimeBeforeEndTime = useValidateTimeOrder(startTime, endTime);

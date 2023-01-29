@@ -282,8 +282,6 @@ const ContactCard = ({
               <WrapItem
                 key={`contact_info_question_${question.question}`}
                 width={{ sm: "100%", md: mdWrapWidth }}
-                px="20px"
-                py="12px"
               >
                 {question.type === "Text" && (
                   <TextInputGroup
