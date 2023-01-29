@@ -58,7 +58,10 @@ const AddQuestionModal = ({
   const [questionOptions, setQuestionOptions] = useState<Array<string>>([]);
 
   const [isQuestionInvalid, setIsQuestionInvalid] = useState<boolean>(false);
-  const [isQuestionOptionsInvalid, setIsQuestionOptionsInvalid] = useState<boolean>(false);
+  const [
+    isQuestionOptionsInvalid,
+    setIsQuestionOptionsInvalid,
+  ] = useState<boolean>(false);
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
@@ -105,8 +108,12 @@ const AddQuestionModal = ({
       return;
     }
 
-    console.log(questionOptions)
-    if (questionType!=="Text" && questionOptions.length === 1 && questionOptions[0] === '') {
+    console.log(questionOptions);
+    if (
+      questionType !== "Text" &&
+      questionOptions.length === 1 &&
+      questionOptions[0] === ""
+    ) {
       setIsQuestionOptionsInvalid(true);
       return;
     }
@@ -194,7 +201,7 @@ const AddQuestionModal = ({
                 value={questionType}
                 onChange={(e) => {
                   setIsQuestionOptionsInvalid(false);
-                  setQuestionType(e.target.value)
+                  setQuestionType(e.target.value);
                 }}
               >
                 <option value="Text">Short answer</option>
@@ -202,7 +209,9 @@ const AddQuestionModal = ({
                 <option value="Multiselect">Checkbox</option>
               </Select>
               {isQuestionOptionsInvalid && (
-                <FormErrorMessage>You must enter at least 1 option</FormErrorMessage>
+                <FormErrorMessage>
+                  You must enter at least 1 option
+                </FormErrorMessage>
               )}
             </FormControl>
 
