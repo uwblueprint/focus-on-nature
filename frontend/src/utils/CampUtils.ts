@@ -483,3 +483,19 @@ export const getFormattedCampDateRange = (camp: CampResponse): string => {
     ? `${format(firstCampDate, "PP")} - ${format(lastCampDate, "PP")}`
     : "";
 };
+
+export const checkDatesInRange = (
+  rangeDates: string[],
+  datesToCheck?: Date[],
+): boolean => {
+  if (!datesToCheck || datesToCheck.length === 0) return false;
+
+  const minDate = Math.min(...rangeDates.map((date) => Date.parse(date)));
+  const maxDate = Math.max(...rangeDates.map((date) => Date.parse(date)));
+
+  return datesToCheck.some(
+    (date: Date) =>
+      new Date(date).getTime() >= minDate &&
+      new Date(date).getTime() <= maxDate,
+  );
+};
