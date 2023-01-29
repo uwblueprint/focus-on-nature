@@ -490,19 +490,12 @@ export const checkDatesInRange = (
 ): boolean => {
   if (!datesToCheck || datesToCheck.length === 0) return false;
 
-  let minDate = Number.MAX_VALUE;
-  let maxDate = Number.MIN_VALUE;
+  const minDate = Math.min(...rangeDates.map((date) => Date.parse(date)));
+  const maxDate = Math.max(...rangeDates.map((date) => Date.parse(date)));
 
-  rangeDates.forEach((dateStr: string) => {
-    minDate = Math.min(Date.parse(dateStr), minDate);
-    maxDate = Math.max(Date.parse(dateStr), maxDate);
-  });
-
-  let result = false;
-  datesToCheck.forEach((date: Date) => {
-    const curDate = new Date(date);
-    const dateNum = curDate.getTime();
-    if (dateNum >= minDate && dateNum <= maxDate) result = true;
-  });
-  return result;
+  return datesToCheck.some(
+    (date: Date) =>
+      new Date(date).getTime() >= minDate &&
+      new Date(date).getTime() <= maxDate,
+  );
 };
