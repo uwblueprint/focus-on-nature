@@ -108,7 +108,6 @@ const AddQuestionModal = ({
       return;
     }
 
-    console.log(questionOptions);
     if (
       questionType !== "Text" &&
       questionOptions.length === 1 &&
