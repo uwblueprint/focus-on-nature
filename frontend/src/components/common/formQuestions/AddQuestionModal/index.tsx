@@ -58,6 +58,11 @@ const AddQuestionModal = ({
   const [questionOptions, setQuestionOptions] = useState<Array<string>>([]);
 
   const [isQuestionInvalid, setIsQuestionInvalid] = useState<boolean>(false);
+  const [
+    isQuestionOptionsInvalid,
+    setIsQuestionOptionsInvalid,
+  ] = useState<boolean>(false);
+  const [isOptionsEmpty, setIsOptionsEmpty] = useState<boolean>(false);
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
@@ -76,6 +81,8 @@ const AddQuestionModal = ({
           : [...questionToBeEdited.options],
       );
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(false);
+      setIsOptionsEmpty(false);
     } else {
       setQuestion("");
       setQuestionCategory("PersonalInfo");
@@ -84,6 +91,8 @@ const AddQuestionModal = ({
       setIsRequiredQuestion(false);
       setQuestionOptions([]);
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(false);
+      setIsOptionsEmpty(false);
     }
   };
 
@@ -97,10 +106,44 @@ const AddQuestionModal = ({
   };
 
   const onSaveQuestion = () => {
+    setIsQuestionInvalid(false);
+    setIsQuestionOptionsInvalid(false);
+    setIsOptionsEmpty(false);
+
     if (question === "") {
       setIsQuestionInvalid(true);
       return;
     }
+
+    if (
+      questionType !== "Text" &&
+      ((questionOptions.length === 1 && questionOptions[0] === "") ||
+        !questionOptions.length)
+    ) {
+      setIsOptionsEmpty(false);
+      setIsQuestionOptionsInvalid(true);
+      return;
+    }
+
+    if (questionType === "MultipleChoice" && questionOptions.length === 1) {
+      setIsOptionsEmpty(false);
+      setIsQuestionOptionsInvalid(true);
+      return;
+    }
+
+    if (questionType !== "Text") {
+      if (
+        questionOptions.some((option: string) => {
+          return !option.replace(/\s/g, "").length;
+        })
+      ) {
+        setIsQuestionOptionsInvalid(false);
+        setIsOptionsEmpty(true);
+        return;
+      }
+    }
+
+    closeModal();
 
     const formQuestion: CreateFormQuestionRequest = {
       type: questionType as QuestionType,
@@ -121,7 +164,6 @@ const AddQuestionModal = ({
     } else if (onSave) {
       onSave(formQuestion);
     }
-    closeModal();
   };
 
   return (
@@ -177,18 +219,39 @@ const AddQuestionModal = ({
               )}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl
+              isRequired
+              isInvalid={isQuestionOptionsInvalid || isOptionsEmpty}
+            >
               <FormLabel aria-required marginTop="14px">
                 Question Type
               </FormLabel>
               <Select
                 value={questionType}
-                onChange={(e) => setQuestionType(e.target.value)}
+                onChange={(e) => {
+                  setIsQuestionOptionsInvalid(false);
+                  setQuestionType(e.target.value);
+                }}
               >
                 <option value="Text">Short answer</option>
                 <option value="MultipleChoice">Multiple choice</option>
                 <option value="Multiselect">Checkbox</option>
               </Select>
+              {questionType === "MultipleChoice" &&
+                isQuestionOptionsInvalid && (
+                  <FormErrorMessage>
+                    You must enter at least 2 options
+                  </FormErrorMessage>
+                )}
+              {questionType !== "MultipleChoice" &&
+                isQuestionOptionsInvalid && (
+                  <FormErrorMessage>
+                    You must enter at least 1 option
+                  </FormErrorMessage>
+                )}
+              {isOptionsEmpty && (
+                <FormErrorMessage>Options cannot be empty</FormErrorMessage>
+              )}
             </FormControl>
 
             {questionType !== "Text" && editing && (
