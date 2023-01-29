@@ -4,13 +4,13 @@ import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";
-import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EdlpSelections } from "../../../../../types/RegistrationTypes";
 
 type ReviewRegistrationProps = {
   campers: RegistrantExperienceCamper[];
   sessions: CampSession[];
   camp: CampResponse;
-  edlpChoices: EdlpChoice[][];
+  edlpSelections: EdlpSelections;
   onPageVisited: () => void;
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
@@ -22,7 +22,7 @@ const ReviewRegistration = ({
   campers,
   sessions,
   camp,
-  edlpChoices,
+  edlpSelections,
   onPageVisited,
   setCampers,
   isPaymentSummary,
@@ -33,7 +33,7 @@ const ReviewRegistration = ({
   ) : (
     <PaymentSummary
       campName={camp.name}
-      items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+      items={mapCampToCartItems(camp, sessions, campers, edlpSelections)}
     />
   );
 };

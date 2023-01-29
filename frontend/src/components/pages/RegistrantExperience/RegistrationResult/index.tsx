@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Text, Flex, VStack, HStack } from "@chakra-ui/react";
-import { CartItem, EdlpChoice } from "../../../../types/RegistrationTypes";
+import { CartItem, EdlpSelections } from "../../../../types/RegistrationTypes";
 
 import {
   calculateTotalPrice,
@@ -62,7 +62,7 @@ type RegistrationResultProps = {
   camp?: CampResponse;
   campers?: RegistrantExperienceCamper[];
   sessions?: CampSession[];
-  edlpChoices?: EdlpChoice[][];
+  edlpSelections?: EdlpSelections;
   chargeId?: string;
 };
 
@@ -70,7 +70,7 @@ const RegistrationResult = ({
   camp,
   campers,
   sessions,
-  edlpChoices,
+  edlpSelections,
   chargeId,
 }: RegistrationResultProps): React.ReactElement => {
   useEffect(() => {
@@ -86,7 +86,7 @@ const RegistrationResult = ({
       mx={{ sm: "20px", md: "40px", lg: "10vw" }}
       my={{ base: "64px", lg: "10vh" }}
     >
-      {camp && campers && sessions && edlpChoices && chargeId ? (
+      {camp && campers && sessions && edlpSelections && chargeId ? (
         <>
           <Text textStyle={resultTitleStyles}>Thank you for registering!</Text>
           <Text
@@ -132,7 +132,12 @@ const RegistrationResult = ({
                 Payment Summary
               </Text>
               <PaymentSummaryList
-                items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+                items={mapCampToCartItems(
+                  camp,
+                  sessions,
+                  campers,
+                  edlpSelections,
+                )}
               />
             </VStack>
           </Flex>

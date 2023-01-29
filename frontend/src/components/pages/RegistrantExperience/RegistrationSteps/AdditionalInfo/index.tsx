@@ -8,7 +8,7 @@ import EdlpSessionRegistration from "./edlpSessionRegistration";
 import { useAdditionalInfoDispatcher } from "./additionalInfoReducer";
 import CamperQuestionsCard from "./QuestionCards/CamperQuestionsCard";
 import EarlyDropOffLatePickupCard from "./QuestionCards/EarlyDropOffLatePickupCard";
-import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EdlpSelections } from "../../../../../types/RegistrationTypes";
 
 type AdditionalInfoProps = {
   selectedSessions: CampSession[];
@@ -21,8 +21,8 @@ type AdditionalInfoProps = {
   hasEDLP: boolean;
   requireEDLP: boolean | null;
   setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
-  edlpChoices: EdlpChoice[][];
-  setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
+  edlpSelections: EdlpSelections;
+  setEdlpSelections: Dispatch<SetStateAction<EdlpSelections>>;
 };
 
 const AdditionalInfo = ({
@@ -34,8 +34,8 @@ const AdditionalInfo = ({
   hasEDLP,
   requireEDLP,
   setRequireEDLP,
-  edlpChoices,
-  setEdlpChoices,
+  edlpSelections,
+  setEdlpSelections,
 }: AdditionalInfoProps): React.ReactElement => {
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
 
@@ -121,8 +121,8 @@ const AdditionalInfo = ({
                           edCost={camp.dropoffFee}
                           lpCost={camp.pickupFee}
                           session={campSession}
-                          edlpChoices={edlpChoices}
-                          setEdlpChoices={setEdlpChoices}
+                          edlpSelections={edlpSelections}
+                          setEdlpSelections={setEdlpSelections}
                         />
                       );
                     },

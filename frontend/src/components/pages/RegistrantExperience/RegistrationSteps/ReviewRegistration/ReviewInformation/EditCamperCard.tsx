@@ -17,7 +17,7 @@ import {
   checkAge,
   checkFirstName,
   checkLastName,
-} from "../../PersonalInfo/personalInfoReducer";
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
 import { CampResponse, FormQuestion } from "../../../../../../types/CampsTypes";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";

@@ -23,7 +23,7 @@ import {
   checkLastName,
   checkPhoneNumber,
   checkRelationToCamper,
-} from "../../PersonalInfo/personalInfoReducer";
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";
 import EditCardHeader from "./EditCardHeader";
