@@ -45,7 +45,12 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     new Set(),
   );
   const [currentStep, setCurrentStep] = useState<
-    "loading" | "selection" | "registration" | "waitlist" | "registrationResult" | "notfound"
+    | "loading"
+    | "selection"
+    | "registration"
+    | "waitlist"
+    | "registrationResult"
+    | "notfound"
   >("loading");
 
   const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
@@ -126,9 +131,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
 
   useEffect(() => {
     if (!isLoading.camp && !isLoading.waiver) {
-      setCurrentStep(camp && waiver ? "selection" : "notfound")
+      setCurrentStep(camp && waiver ? "selection" : "notfound");
     }
-  }, [isLoading]);
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (registrationResult === SUCCESS_RESULT_CODE)
