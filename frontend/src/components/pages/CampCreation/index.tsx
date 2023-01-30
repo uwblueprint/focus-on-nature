@@ -532,7 +532,7 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-      <Box w="100%" flex="1" mt={[0, "0 !important"]} pb={20}>
+      <Box w="100%" flex="1" mt={[0, "0 !important"]} pb={20} overflowX="hidden">
         {getCampCreationStepComponent(currentPage)}
       </Box>
       <CampCreationFooter

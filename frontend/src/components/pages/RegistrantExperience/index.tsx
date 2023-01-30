@@ -45,7 +45,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     new Set(),
   );
   const [currentStep, setCurrentStep] = useState<
-    "loading" | "selection" | "registration" | "waitlist" | "registrationResult"
+    "loading" | "selection" | "registration" | "waitlist" | "registrationResult" | "notfound"
   >("loading");
 
   const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
@@ -125,7 +125,9 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   useEffect(() => {
-    if (!isLoading.camp && !isLoading.waiver) setCurrentStep("selection");
+    if (!isLoading.camp && !isLoading.waiver) {
+      setCurrentStep(camp && waiver ? "selection" : "notfound")
+    }
   }, [isLoading]);
 
   useEffect(() => {
