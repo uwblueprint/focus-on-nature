@@ -1253,20 +1253,27 @@ class CampService implements ICampService {
         _id: { $in: camp.formQuestions },
       });
 
-      const campersWithSpecficQuestions: string[] = [];
-      campers.forEach((camper) => {
-        camper.formResponses.forEach((value, key) => {
-          const campQuestion = formQuestionsData.find(
-            (item) => item.question === key,
-          );
-          if (campQuestion?.category === "CampSpecific") {
-            campersWithSpecficQuestions.push(camper.id);
-          }
-        });
-      });
-
       return await Promise.all(
         campers.map(async (camper) => {
+          let counter = 1;
+          let campSpecificQuestionsResponse = "";
+          camper.formResponses.forEach((value, key) => {
+            const campQuestion = formQuestionsData.find(
+              (item) => item.question === key,
+            );
+            if (campQuestion?.category === "CampSpecific") {
+              campSpecificQuestionsResponse += `(${counter}) ${key} ${value} `;
+              counter += 1;
+            }
+          });
+
+          counter = 1;
+          let waiverQuestionsResponse = "";
+          camper.optionalClauses.forEach((optionalClause) => {
+            waiverQuestionsResponse += `(${counter}) ${optionalClause.clause}: ${optionalClause.agreed} `;
+            counter += 1;
+          });
+
           return {
             "Registration Date": camper.registrationDate
               .toLocaleDateString("en-CA")
@@ -1292,13 +1299,8 @@ class CampService implements ICampService {
               camper.charges.camp +
               camper.charges.earlyDropoff +
               camper.charges.latePickup,
-            "Additional Camp-Specific Q's": campersWithSpecficQuestions.includes(
-              camper.id,
-            )
-              ? "Y"
-              : "N",
-            "Additional Waiver Clauses":
-              camper.optionalClauses.length > 0 ? "Y" : "N",
+            "Additional Camp-Specific Q's": campSpecificQuestionsResponse,
+            "Additional Waiver Clauses": waiverQuestionsResponse,
           };
         }),
       );
