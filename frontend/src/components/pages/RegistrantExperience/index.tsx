@@ -120,7 +120,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
           />
         );
       }
-      default: // Includes "notFound".
+      default:
+        // Includes "notFound".
         return (
           <Text mx="10vw">
             Error: Camp not found. Please go back and try again.
