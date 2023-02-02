@@ -45,7 +45,12 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     new Set(),
   );
   const [currentStep, setCurrentStep] = useState<
-    "loading" | "selection" | "registration" | "waitlist" | "registrationResult"
+    | "loading"
+    | "selection"
+    | "registration"
+    | "waitlist"
+    | "registrationResult"
+    | "notFound"
   >("loading");
 
   const [waitlistedCamper, setWaitlistedCamper] = useState<WaitlistedCamper>();
@@ -116,6 +121,7 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         );
       }
       default:
+        // Includes "notFound".
         return (
           <Text mx="10vw">
             Error: Camp not found. Please go back and try again.
@@ -125,8 +131,10 @@ const RegistrantExperiencePage = (): React.ReactElement => {
   };
 
   useEffect(() => {
-    if (!isLoading.camp && !isLoading.waiver) setCurrentStep("selection");
-  }, [isLoading]);
+    if (!isLoading.camp && !isLoading.waiver) {
+      setCurrentStep(camp && waiver ? "selection" : "notFound");
+    }
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (registrationResult === SUCCESS_RESULT_CODE)

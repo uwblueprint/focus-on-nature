@@ -63,6 +63,7 @@ const WaitlistFooter = ({
       <Button
         ref={nextBtnRef}
         width={{ sm: "95vw", md: "45vw", lg: "auto" }}
+        mr={{ sm: 0, lg: 4 }}
         height="48px"
         variant="primary"
         isLoading={registrationLoading}
