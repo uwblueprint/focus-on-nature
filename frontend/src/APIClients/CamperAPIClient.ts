@@ -1,3 +1,4 @@
+import { AxiosError, AxiosResponse } from "axios";
 import { getBearerToken } from "../constants/AuthConstants";
 import {
   Camper,
@@ -130,12 +131,15 @@ const waitlistCampers = async (
   campers: CreateWaitlistedCamperDTO[],
   campSessions: string[],
 ): Promise<WaitlistedCamper[]> => {
-  const body = { waitlistedCampers: campers, campSessions };
-  const { data } = await baseAPIClient.post("/campers/waitlist", body, {
-    headers: { Authorization: getBearerToken() },
-  });
-
-  return data;
+  try {
+    const body = { waitlistedCampers: campers, campSessions };
+    const { data } = await baseAPIClient.post("/campers/waitlist", body, {
+      headers: { Authorization: getBearerToken() },
+    });
+    return data;
+  } catch (error: AxiosError | unknown) {
+    throw Error(((error as AxiosError).response as AxiosResponse).data.error);
+  }
 };
 
 const confirmPayment = async (chargeId: string): Promise<boolean> => {
