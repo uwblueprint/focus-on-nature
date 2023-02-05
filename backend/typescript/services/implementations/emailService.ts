@@ -199,44 +199,39 @@ class EmailService implements IEmailService {
     const uniqueCamperIds = new Set(
       waitlistedCampers.map((camper) => camper.id),
     );
-    try{
-      await this.sendEmail(
-        waitlistedCampers[0].contactEmail,
-        "Focus on Nature Camp Waitlist - Confirmation",
-        `Hi ${waitlistedCampers[0].contactFirstName} ${
-          waitlistedCampers[0].contactLastName
-        },<br><br>
-        Thank you for joining the waitlist for a Focus on Nature Camp! We will 
-        reach out to you if a spot opens up. <br>
-        Please find your waitlist information below, and if you need to edit any 
-        of the fields, reach out to camps@focusonnature.ca. <br>
-        <ul>
-          <li><b>Camp name:</b> ${camp.name}</li>
-          <li><b>Camp location:</b> ${campLocationString}</li>
-          <li><b>Session dates:</b></li>
-          <ol>
-            ${sessionDatesListItems.join("")}
-          </ol>
-          <li><b>Campers:</b></li>
-          ${waitlistedCampers
-            .filter((camper) => uniqueCamperIds.has(camper.id))
-            .map((camper) => {
-              return `<ul>
-                <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
-                <ul><li><b>Age:</b> ${camper.age}</li></ul>
-              </ul>`;
-            })
-            .join("")}
-          <li><b>Your phone number:</b> ${waitlistedCampers[0].contactNumber}</li>
-        </ul>
-        Thanks, <br><br>
-        Focus on Nature
-        `,
-      );
-    }
-    catch(Error: unknown){
-      throw Error
-    }
+    await this.sendEmail(
+      waitlistedCampers[0].contactEmail,
+      "Focus on Nature Camp Waitlist - Confirmation",
+      `Hi ${waitlistedCampers[0].contactFirstName} ${
+        waitlistedCampers[0].contactLastName
+      },<br><br>
+      Thank you for joining the waitlist for a Focus on Nature Camp! We will 
+      reach out to you if a spot opens up. <br>
+      Please find your waitlist information below, and if you need to edit any 
+      of the fields, reach out to camps@focusonnature.ca. <br>
+      <ul>
+        <li><b>Camp name:</b> ${camp.name}</li>
+        <li><b>Camp location:</b> ${campLocationString}</li>
+        <li><b>Session dates:</b></li>
+        <ol>
+          ${sessionDatesListItems.join("")}
+        </ol>
+        <li><b>Campers:</b></li>
+        ${waitlistedCampers
+          .filter((camper) => uniqueCamperIds.has(camper.id))
+          .map((camper) => {
+            return `<ul>
+              <li><b>Name:</b> ${camper.firstName} ${camper.lastName}</li>
+              <ul><li><b>Age:</b> ${camper.age}</li></ul>
+            </ul>`;
+          })
+          .join("")}
+        <li><b>Your phone number:</b> ${waitlistedCampers[0].contactNumber}</li>
+      </ul>
+      Thanks, <br><br>
+      Focus on Nature
+      `,
+    );
   }
 
   async sendParentRegistrationInviteEmail(
