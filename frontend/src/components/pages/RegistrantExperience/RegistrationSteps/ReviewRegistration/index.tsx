@@ -16,6 +16,10 @@ type ReviewRegistrationProps = {
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
   isPaymentSummary: boolean;
+  hasEDLP: boolean;
+  requireEDLP: boolean | null;
+  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
 };
 
 const ReviewRegistration = ({
@@ -26,10 +30,24 @@ const ReviewRegistration = ({
   onPageVisited,
   setCampers,
   isPaymentSummary,
+  hasEDLP,
+  requireEDLP,
+  setRequireEDLP,
+  setEdlpSelections,
 }: ReviewRegistrationProps): React.ReactElement => {
   useEffect(onPageVisited);
   return !isPaymentSummary ? (
-    <ReviewInformation camp={camp} campers={campers} setCampers={setCampers} />
+    <ReviewInformation
+      camp={camp}
+      campers={campers}
+      setCampers={setCampers}
+      hasEDLP={hasEDLP}
+      requireEDLP={requireEDLP}
+      setRequireEDLP={setRequireEDLP}
+      selectedSessions={sessions}
+      edlpSelections={edlpSelections}
+      setEdlpSelections={setEdlpSelections}
+    />
   ) : (
     <PaymentSummary
       campName={camp.name}
