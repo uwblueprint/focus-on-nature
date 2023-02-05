@@ -50,7 +50,7 @@ const WaitlistExperiencePage = ({
       </Center>
     );
 
-  const registerWaitListCampers = async (): Promise<boolean> => {
+  const registerWaitlistCampers = async (): Promise<boolean> => {
     setRegistrationLoading(true);
     try {
       await CamperAPIClient.waitlistCampers(
@@ -61,14 +61,10 @@ const WaitlistExperiencePage = ({
       return true;
     } catch (error: Error | unknown) {
       setRegistrationLoading(false);
-      let errorMessage =
-        "Unable to create a checkout session. Please try again.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
       toast({
         title: "Checkout failed.",
-        description: errorMessage,
+        description:
+          "Unable to create a checkout session. Please review information try again",
         status: "error",
         variant: "subtle",
         duration: 3000,
@@ -80,7 +76,7 @@ const WaitlistExperiencePage = ({
   const handleStepNavigation = async (stepsToMove: number) => {
     const desiredStep = currentStep + stepsToMove;
     if (desiredStep === WaitListExperienceSteps.ConfirmationPage) {
-      if (await registerWaitListCampers()) {
+      if (await registerWaitlistCampers()) {
         setCurrentStep(desiredStep);
       }
     } else if (desiredStep < 0) {
