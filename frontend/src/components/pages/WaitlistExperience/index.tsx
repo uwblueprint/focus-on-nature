@@ -1,5 +1,6 @@
-import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
+import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
+import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { CreateWaitlistedCamperDTO } from "../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
 import EmptyNavBar from "../../common/EmptyNavBar";
@@ -25,9 +26,11 @@ const WaitlistExperiencePage = ({
   onClickBack,
 }: WaitlistExperiencePageProps): React.ReactElement => {
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const [registrationLoading, setRegistrationLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<WaitListExperienceSteps>(
     WaitListExperienceSteps.PersonalInfoPage,
   );
+  const toast = useToast();
   const [campers, setCampers] = useState<CreateWaitlistedCamperDTO[]>([
     {
       firstName: "",
@@ -47,10 +50,35 @@ const WaitlistExperiencePage = ({
       </Center>
     );
 
-  const handleStepNavigation = (stepsToMove: number) => {
+  const registerWaitlistCampers = async (): Promise<boolean> => {
+    setRegistrationLoading(true);
+    try {
+      await CamperAPIClient.waitlistCampers(
+        campers,
+        Array.from(selectedCampSessions, (campSession) => campSession.id),
+      );
+      setRegistrationLoading(false);
+      return true;
+    } catch (error: Error | unknown) {
+      setRegistrationLoading(false);
+      toast({
+        title: "Checkout failed.",
+        description:
+          "Unable to create a checkout session. Please review information and try again.",
+        status: "error",
+        variant: "subtle",
+        duration: 3000,
+      });
+      return false;
+    }
+  };
+
+  const handleStepNavigation = async (stepsToMove: number) => {
     const desiredStep = currentStep + stepsToMove;
-    if (WaitListExperienceSteps[desiredStep]) {
-      setCurrentStep(currentStep + stepsToMove);
+    if (desiredStep === WaitListExperienceSteps.ConfirmationPage) {
+      if (await registerWaitlistCampers()) {
+        setCurrentStep(desiredStep);
+      }
     } else if (desiredStep < 0) {
       onClickBack();
     }
@@ -88,7 +116,6 @@ const WaitlistExperiencePage = ({
         throw new Error("unexpected page");
     }
   };
-
   return (
     <Box>
       <EmptyNavBar />
@@ -103,7 +130,7 @@ const WaitlistExperiencePage = ({
           <WaitlistFooter
             nextBtnRef={nextBtnRef}
             isCurrentStepCompleted={isCurrentStepCompleted(currentStep)}
-            registrationLoading={false}
+            registrationLoading={registrationLoading}
             handleStepNavigation={handleStepNavigation}
           />
         )}
