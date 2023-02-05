@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   ModalOverlay,
@@ -69,6 +69,9 @@ const EditCamperModal = ({
     formResponses,
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const initialStateVariables = useMemo(() => stateVariables, []);
+
   const resetState = () => {
     setFirstName(camper.firstName);
     setLastName(camper.lastName);
@@ -78,12 +81,24 @@ const EditCamperModal = ({
     setFormResponses(camper.formResponses);
   };
 
-  const closeModal = () => {
+  useEffect(() => {
     resetState();
+  }, [camper]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const closeWithoutSaving = () => {
     editCamperModalOnClose();
+    /* eslint-disable */
+    setFirstName(initialStateVariables.firstName!);
+    setLastName(initialStateVariables.lastName!);
+    setAge(initialStateVariables.age!);
+    setAllergies(initialStateVariables.allergies!);
+    setSpecialNeeds(initialStateVariables.specialNeeds!);
+    setFormResponses(initialStateVariables.formResponses!);
+    /* eslint-enable */
   };
 
   const onSaveClicked = async () => {
+    editCamperModalOnClose();
     const editCamperFields: EditCamperInfoFields = {
       firstName,
       lastName,
@@ -98,7 +113,7 @@ const EditCamperModal = ({
       editCamperFields,
     );
     if (isEditCamperSuccess instanceof Error) {
-      closeModal();
+      closeWithoutSaving();
       toast({
         description: `An error occurred with updating ${camper.firstName} ${camper.lastName}'s information. Please try again.`,
         status: "error",
@@ -107,7 +122,7 @@ const EditCamperModal = ({
       });
     } else {
       // TODO: introduce global state so we don't have to refetch
-      closeModal();
+      closeWithoutSaving();
       toast({
         description: `${camper.firstName} ${camper.lastName}'s information has been updated`,
         status: "success",
@@ -140,7 +155,7 @@ const EditCamperModal = ({
 
         <ModalFooter>
           <Button
-            onClick={editCamperModalOnClose}
+            onClick={closeWithoutSaving}
             background="background.grey.100"
             padding="12px, 25px, 12px, 25px"
             borderRadius="6px"
