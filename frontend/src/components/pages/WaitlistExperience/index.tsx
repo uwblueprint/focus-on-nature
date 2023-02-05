@@ -64,7 +64,7 @@ const WaitlistExperiencePage = ({
       toast({
         title: "Checkout failed.",
         description:
-          "Unable to create a checkout session. Please review information try again",
+          "Unable to create a checkout session. Please review information and try again.",
         status: "error",
         variant: "subtle",
         duration: 3000,
