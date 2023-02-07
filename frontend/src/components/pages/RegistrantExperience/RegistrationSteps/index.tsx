@@ -349,6 +349,10 @@ const RegistrationSteps = ({
             onPageVisited={() => setReviewRegistrationVisited(true)}
             setCampers={setCampers}
             isPaymentSummary={isPaymentSummary}
+            hasEDLP={hasEarlyDropOffLatePickup}
+            requireEDLP={requireEarlyDropOffLatePickup}
+            setRequireEDLP={setRequireEarlyDropOffLatePickup}
+            setEdlpSelections={setEdlpSelections}
           />
         );
       default:
