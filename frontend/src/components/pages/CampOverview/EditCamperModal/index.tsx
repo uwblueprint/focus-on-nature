@@ -69,8 +69,9 @@ const EditCamperModal = ({
     formResponses,
   };
 
+  const [updateMemo, setUpdateMemo] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialStateVariables = useMemo(() => stateVariables, []);
+  const initialStateVariables = useMemo(() => stateVariables, [updateMemo]);
 
   const resetState = () => {
     setFirstName(camper.firstName);
@@ -82,11 +83,11 @@ const EditCamperModal = ({
   };
 
   useEffect(() => {
+    setUpdateMemo(updateMemo + 1);
     resetState();
   }, [camper]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const closeWithoutSaving = () => {
-    editCamperModalOnClose();
     /* eslint-disable */
     setFirstName(initialStateVariables.firstName!);
     setLastName(initialStateVariables.lastName!);
@@ -95,6 +96,7 @@ const EditCamperModal = ({
     setSpecialNeeds(initialStateVariables.specialNeeds!);
     setFormResponses(initialStateVariables.formResponses!);
     /* eslint-enable */
+    editCamperModalOnClose();
   };
 
   const onSaveClicked = async () => {
@@ -136,7 +138,7 @@ const EditCamperModal = ({
   return (
     <Modal
       isOpen={editCamperModalIsOpen}
-      onClose={editCamperModalOnClose}
+      onClose={closeWithoutSaving}
       preserveScrollBarGap
       isCentered
     >
