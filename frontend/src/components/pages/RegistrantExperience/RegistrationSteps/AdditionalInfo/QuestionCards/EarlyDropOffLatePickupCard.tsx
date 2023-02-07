@@ -5,7 +5,7 @@ import QuestionsCardWrapper from "./QuestionsCardWrapper";
 
 type EarlyDropOffLatePickupCardProps = {
   requireEDLP: boolean | null;
-  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   nextClicked: boolean;
 };
 

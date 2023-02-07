@@ -12,7 +12,7 @@ import RequiredAsterisk from "../../../../../common/RequiredAsterisk";
 
 type EDLPSelectionControlProps = {
   requireEDLP: boolean | null;
-  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   nextClicked: boolean;
 };
 

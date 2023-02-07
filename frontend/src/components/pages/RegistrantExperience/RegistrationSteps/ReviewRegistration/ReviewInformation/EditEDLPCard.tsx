@@ -9,7 +9,7 @@ import { EdlpSelections } from "../../../../../../types/RegistrationTypes";
 
 type EditEDLPCardProps = {
   requireEDLP: boolean | null;
-  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   selectedSessions: CampSession[];
   camp: CampResponse;
   edlpSelections: EdlpSelections;

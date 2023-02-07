@@ -18,7 +18,7 @@ type ReviewRegistrationProps = {
   isPaymentSummary: boolean;
   hasEDLP: boolean;
   requireEDLP: boolean | null;
-  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
 };
 

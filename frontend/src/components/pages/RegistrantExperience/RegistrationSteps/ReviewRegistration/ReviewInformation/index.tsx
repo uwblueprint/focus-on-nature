@@ -25,7 +25,7 @@ type ReviewInformationProps = {
   >;
   hasEDLP: boolean;
   requireEDLP: boolean | null;
-  setRequireEDLP: (setRequireEDLP: boolean) => void;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   selectedSessions: CampSession[];
   edlpSelections: EdlpSelections;
   setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
