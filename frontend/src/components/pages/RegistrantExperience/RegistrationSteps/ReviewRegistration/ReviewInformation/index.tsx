@@ -29,6 +29,8 @@ type ReviewInformationProps = {
   selectedSessions: CampSession[];
   edlpSelections: EdlpSelections;
   setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ReviewInformation = ({
@@ -41,6 +43,8 @@ const ReviewInformation = ({
   selectedSessions,
   edlpSelections,
   setEdlpSelections,
+  isEditing,
+  setIsEditing,
 }: ReviewInformationProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
@@ -79,6 +83,8 @@ const ReviewInformation = ({
                 personalInfoQuestions={camp.formQuestions.filter(
                   (q) => q.category === "PersonalInfo",
                 )}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
@@ -97,6 +103,8 @@ const ReviewInformation = ({
                 emergencyContactQuestions={camp.formQuestions.filter(
                   (q) => q.category === "EmergencyContact",
                 )}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
@@ -114,6 +122,8 @@ const ReviewInformation = ({
                   (question) => question.category === "CampSpecific",
                 )}
                 dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
@@ -130,6 +140,8 @@ const ReviewInformation = ({
                 camp={camp}
                 edlpSelections={edlpSelections}
                 setEdlpSelections={setEdlpSelections}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             </AccordionPanel>
           </AccordionItem>

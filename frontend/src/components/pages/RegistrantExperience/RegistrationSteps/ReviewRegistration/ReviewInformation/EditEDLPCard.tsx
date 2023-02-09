@@ -14,6 +14,8 @@ type EditEDLPCardProps = {
   camp: CampResponse;
   edlpSelections: EdlpSelections;
   setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditEDLPCard = ({
@@ -23,8 +25,15 @@ const EditEDLPCard = ({
   camp,
   edlpSelections,
   setEdlpSelections,
+  isEditing,
+  setIsEditing,
 }: EditEDLPCardProps): React.ReactElement => {
-  const [editing, setEditing] = useState(false);
+  const [editingIndividual, setEditingIndividual] = useState(false);
+
+  const setEditing = (state: boolean) => {
+    setEditingIndividual(state); // Local editing state.
+    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
+  };
   const [updateMemo, setUpdateMemo] = useState(0);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,17 +59,17 @@ const EditEDLPCard = ({
       <EditCardHeader
         title="Early Drop-off and Late Pick-up"
         onClick={() => setEditing(true)}
-        editing={editing}
+        editing={editingIndividual}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editing ? 1 : -1}
+          zIndex={editingIndividual ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"
@@ -77,7 +86,11 @@ const EditEDLPCard = ({
             </Wrap>
 
             {requireEDLP && (
-              <Accordion allowToggle mb={6} index={editing ? undefined : -1}>
+              <Accordion
+                allowToggle
+                mb={6}
+                index={editingIndividual ? undefined : -1}
+              >
                 {selectedSessions.map(
                   (campSession: CampSession, campSessionIndex: number) => {
                     return (

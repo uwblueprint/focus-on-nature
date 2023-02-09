@@ -37,6 +37,7 @@ export type RegistrationNavStepperProps = {
   isWaiverFilled: boolean;
   isReviewRegistrationFilled: boolean;
   setCurrentStep: (step: RegistrantExperienceSteps) => void;
+  isEditing: number;
 };
 
 const getPageDetails = (
@@ -45,6 +46,7 @@ const getPageDetails = (
   isAdditionalInfoFilled: boolean,
   isWaiverFilled: boolean,
   isReviewRegistrationFilled: boolean,
+  isPersonalInfoAvailable = true,
   isAdditionalInfoAvailable = true,
   isWaiverAvailable = true,
   isReviewRegistrationAvailable = true,
@@ -57,7 +59,7 @@ const getPageDetails = (
         pageNumber: 1,
         progress: 25,
         isFilled: isPersonalInfoFilled,
-        isAvailable: true,
+        isAvailable: isPersonalInfoAvailable,
         icon: <FontAwesomeIcon icon={faCampground} />,
       };
     case RegistrantExperienceSteps.AdditionalInfoPage:
@@ -102,11 +104,17 @@ const NavStepper = ({
   isWaiverFilled,
   isReviewRegistrationFilled,
   setCurrentStep,
+  isEditing,
 }: RegistrationNavStepperProps): React.ReactElement => {
-  const isAdditionalInfoAvailable = isPersonalInfoFilled;
-  const isWaiverAvailable = isPersonalInfoFilled && isAdditionalInfoFilled;
+  const isPersonalInfoAvailable = !isEditing;
+  const isAdditionalInfoAvailable = isPersonalInfoFilled && !isEditing;
+  const isWaiverAvailable =
+    isPersonalInfoFilled && isAdditionalInfoFilled && !isEditing;
   const isReviewRegistrationAvailable =
-    isPersonalInfoFilled && isAdditionalInfoFilled && isWaiverFilled;
+    isPersonalInfoFilled &&
+    isAdditionalInfoFilled &&
+    isWaiverFilled &&
+    !isEditing;
 
   const steps = [
     RegistrantExperienceSteps.PersonalInfoPage,
@@ -124,6 +132,7 @@ const NavStepper = ({
           isAdditionalInfoFilled,
           isWaiverFilled,
           isReviewRegistrationFilled,
+          isPersonalInfoAvailable,
           isAdditionalInfoAvailable,
           isWaiverAvailable,
           isReviewRegistrationAvailable,
@@ -193,6 +202,7 @@ const RegistrationNavStepper = ({
   isWaiverFilled,
   isReviewRegistrationFilled,
   setCurrentStep,
+  isEditing,
 }: RegistrationNavStepperProps): React.ReactElement => {
   return (
     <Flex
@@ -213,6 +223,7 @@ const RegistrationNavStepper = ({
           isWaiverFilled={isWaiverFilled}
           isReviewRegistrationFilled={isReviewRegistrationFilled}
           setCurrentStep={setCurrentStep}
+          isEditing={isEditing}
         />
       </Show>
       <Hide below="md">
@@ -229,6 +240,7 @@ const RegistrationNavStepper = ({
             isWaiverFilled={isWaiverFilled}
             isReviewRegistrationFilled={isReviewRegistrationFilled}
             setCurrentStep={setCurrentStep}
+            isEditing={isEditing}
           />
         </Flex>
       </Hide>
