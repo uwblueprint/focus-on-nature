@@ -407,7 +407,7 @@ class CampService implements ICampService {
   ): Promise<CampDTO> {
     let oldCamp: Camp | null;
     let newCamp: Camp | null;
-    let newCampSessions: CampSessionDTO[] = [];
+    const newCampSessions: CampSessionDTO[] = [];
     let newFormQuestions: string[] = [];
 
     const session = await mongoose.startSession();
@@ -515,21 +515,6 @@ class CampService implements ICampService {
       if (!newCamp) {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
-
-      // Update the campSessions by deleting all current sessions and creating new sessions
-      const currCampSessionIds = (newCamp.campSessions as CampSession[]).map(
-        (cs) => cs.id,
-      );
-      await this.deleteCampSessionsByIds(
-        newCamp.id,
-        currCampSessionIds,
-        session,
-      );
-      newCampSessions = await this.createCampSessions(
-        newCamp.id,
-        camp.campSessions,
-        session,
-      );
 
       // Update the FormQuestions by deleting all the current questions and creating new ones
       const currFormQuestions = (newCamp.formQuestions as FormQuestion[]).map(
