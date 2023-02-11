@@ -105,7 +105,9 @@ const updateCampSessions = async (
   updatedCampSessions: Array<UpdateCampSessionsRequest>,
 ): Promise<Array<CampSessionResponse>> => {
   try {
-    const { data } = await baseAPIClient.patch(`/camp/${campId}/session`, {
+    const { data } = await baseAPIClient({
+      method: "patch",
+      url: `/camp/${campId}/session`,
       headers: {
         Authorization: getBearerToken(),
       },
