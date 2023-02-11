@@ -396,6 +396,7 @@ class CamperService implements ICamperService {
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
           status: camper.status,
+          registrationDate: camper.registrationDate.toString(),
         };
       });
     } catch (error: unknown) {
@@ -595,6 +596,7 @@ class CamperService implements ICamperService {
             contactNumber: waitlistedCamper.contactNumber,
             campSession: cs,
             status: "NotRegistered",
+            registrationDate: new Date().toString(),
           };
         });
       });
@@ -646,6 +648,7 @@ class CamperService implements ICamperService {
         contactNumber: c.contactNumber,
         campSession: c.campSession.toString(),
         status: c.status,
+        registrationDate: c.registrationDate.toString(),
       };
     });
   }
@@ -1154,6 +1157,7 @@ class CamperService implements ICamperService {
           contactNumber: camperToUpdate.contactNumber,
           campSession: camperToUpdate.campSession,
           status: camperToUpdate.status,
+          registrationDate: camperToUpdate.registrationDate,
         };
     } catch (error: unknown) {
       Logger.error(

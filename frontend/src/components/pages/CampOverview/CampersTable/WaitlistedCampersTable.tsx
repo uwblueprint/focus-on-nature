@@ -50,8 +50,15 @@ const WaitlistedCampersTable = ({
     setCamperToDelete,
   ] = React.useState<WaitlistedCamper | null>(null);
 
+  const sortedCampers = waitlistedCampers.sort((camper1, camper2) => {
+    return (
+      new Date(camper1.registrationDate).getTime() -
+      new Date(camper2.registrationDate).getTime()
+    );
+  });
+
   const tableData = React.useMemo(() => {
-    const filteredCampers = waitlistedCampers;
+    const filteredCampers = sortedCampers;
 
     if (!search) return filteredCampers;
     return filteredCampers.filter((camper: WaitlistedCamper) =>
@@ -60,7 +67,7 @@ const WaitlistedCampersTable = ({
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, waitlistedCampers]);
+  }, [search, sortedCampers]);
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();

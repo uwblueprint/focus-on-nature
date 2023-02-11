@@ -147,6 +147,7 @@ class CampService implements ICampService {
                     contactEmail: waitlistedCamper.contactEmail,
                     contactNumber: waitlistedCamper.contactNumber,
                     status: waitlistedCamper.status,
+                    registrationDate: waitlistedCamper.registrationDate.toString(),
                   };
                 },
               );
@@ -314,6 +315,7 @@ class CampService implements ICampService {
               contactNumber: waitlistedCamper.contactNumber,
               status: waitlistedCamper.status,
               linkExpiry: waitlistedCamper.linkExpiry,
+              registrationDate: waitlistedCamper.registrationDate.toString(),
             };
           },
         );
