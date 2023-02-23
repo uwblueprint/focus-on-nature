@@ -54,7 +54,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   // this is to prevent sending requests while the user is still typing out volunteers.
   useEffect(() => {
     const updateCamp = async () => {
-      await CampsAPIClient.editCampById(camp.id, camp, false);
+      await CampsAPIClient.editCampById(camp.id, camp, false); // No new sessions when viewing.
     };
 
     if (camp.id) {

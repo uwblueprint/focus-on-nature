@@ -88,7 +88,7 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
       const res = await CampsAPIClient.editCampById(
         camp.id,
         updateCampFields,
-        true,
+        true, // We want to create new sessions when editing.
       );
 
       if (res) {

@@ -73,22 +73,18 @@ const editCampById = async (
   }
 
   const formData = new FormData();
-  formData.append("data", JSON.stringify({ ...camp }));
+  formData.append("data", JSON.stringify({ ...camp, createNewSessions }));
 
   if (fileURL) {
     const file = await fetch(fileURL).then((res) => res.blob());
     formData.append("file", file);
   }
 
-  const { data } = await baseAPIClient.patch(
-    `/camp/${createNewSessions ? "newSessions/" : ""}${id}`,
-    formData,
-    {
-      headers: {
-        Authorization: getBearerToken(),
-      },
+  const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
+    headers: {
+      Authorization: getBearerToken(),
     },
-  );
+  });
 
   return data;
 };
