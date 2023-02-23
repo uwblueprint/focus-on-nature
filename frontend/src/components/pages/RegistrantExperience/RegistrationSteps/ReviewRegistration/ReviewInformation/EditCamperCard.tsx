@@ -33,8 +33,6 @@ type EditCamperCardProps = {
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
   personalInfoQuestions: FormQuestion[];
-  isEditing: number;
-  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditCamperCard = ({
@@ -43,8 +41,6 @@ const EditCamperCard = ({
   dispatchPersonalInfoAction,
   camp,
   personalInfoQuestions,
-  isEditing,
-  setIsEditing,
 }: EditCamperCardProps): React.ReactElement => {
   const mdWrapWidth = personalInfoQuestions.length > 1 ? "47%" : "100%";
 
@@ -60,12 +56,7 @@ const EditCamperCard = ({
     [updateMemo],
   );
 
-  const [editingIndividual, setEditingIndividual] = useState(false);
-
-  const setEditing = (state: boolean) => {
-    setEditingIndividual(state); // Local editing state.
-    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
-  };
+  const [editing, setEditing] = useState(false);
 
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
@@ -194,17 +185,17 @@ const EditCamperCard = ({
       <EditCardHeader
         title={`${camper.firstName} ${camper.lastName}`}
         onClick={() => setEditing(true)}
-        editing={editingIndividual}
+        editing={editing}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editingIndividual ? 1 : -1}
+          zIndex={editing ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"

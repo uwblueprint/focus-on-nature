@@ -69,8 +69,6 @@ const RegistrationSteps = ({
     RegistrantExperienceSteps.PersonalInfoPage,
   );
 
-  const [isEditing, setIsEditing] = useState(0);
-
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
       firstName: "",
@@ -355,8 +353,6 @@ const RegistrationSteps = ({
             requireEDLP={requireEarlyDropOffLatePickup}
             setRequireEDLP={setRequireEarlyDropOffLatePickup}
             setEdlpSelections={setEdlpSelections}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
           />
         );
       default:
@@ -428,7 +424,6 @@ const RegistrationSteps = ({
         isWaiverFilled={isWaiverFilled}
         isReviewRegistrationFilled={isPaymentSummary}
         setCurrentStep={setCurrentStep}
-        isEditing={isEditing}
       />
       <Box mx="10vw">{getCurrentRegistrantStepComponent(currentStep)}</Box>
       <RegistrationFooter
@@ -439,7 +434,6 @@ const RegistrationSteps = ({
         handleStepNavigation={handleStepNavigation}
         isPaymentSummary={isPaymentSummary}
         isWaitlistRegistration={waitlistedCamper !== undefined}
-        isEditing={isEditing}
       />
       <RegistrationErrorModal
         onConfirm={() => {
