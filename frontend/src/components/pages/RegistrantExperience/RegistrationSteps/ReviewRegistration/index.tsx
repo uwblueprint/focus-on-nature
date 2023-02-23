@@ -20,6 +20,8 @@ type ReviewRegistrationProps = {
   requireEDLP: boolean | null;
   setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
   setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ReviewRegistration = ({
@@ -34,6 +36,8 @@ const ReviewRegistration = ({
   requireEDLP,
   setRequireEDLP,
   setEdlpSelections,
+  isEditing,
+  setIsEditing,
 }: ReviewRegistrationProps): React.ReactElement => {
   useEffect(onPageVisited);
   return !isPaymentSummary ? (
@@ -47,6 +51,8 @@ const ReviewRegistration = ({
       selectedSessions={sessions}
       edlpSelections={edlpSelections}
       setEdlpSelections={setEdlpSelections}
+      isEditing={isEditing}
+      setIsEditing={setIsEditing}
     />
   ) : (
     <PaymentSummary

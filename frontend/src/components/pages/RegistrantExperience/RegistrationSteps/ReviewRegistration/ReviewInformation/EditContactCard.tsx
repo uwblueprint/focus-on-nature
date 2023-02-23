@@ -39,6 +39,8 @@ type EditContactCardProps = {
   contactIndex: number;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
   emergencyContactQuestions: FormQuestion[];
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditContactCard = ({
@@ -47,6 +49,8 @@ const EditContactCard = ({
   contactIndex,
   dispatchPersonalInfoAction,
   emergencyContactQuestions,
+  isEditing,
+  setIsEditing,
 }: EditContactCardProps): React.ReactElement => {
   const mdWrapWidth = emergencyContactQuestions.length > 1 ? "47%" : "100%";
   const [updateMemo, setUpdateMemo] = useState(0);
@@ -60,7 +64,12 @@ const EditContactCard = ({
     [updateMemo],
   );
 
-  const [editing, setEditing] = useState(false);
+  const [editingIndividual, setEditingIndividual] = useState(false);
+
+  const setEditing = (state: boolean) => {
+    setEditingIndividual(state); // Local editing state.
+    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
+  };
 
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
@@ -117,6 +126,8 @@ const EditContactCard = ({
       setIsEmailInvalid(false);
       setIsPhoneNumberInvalid(false);
       setIsRelationInvalid(false);
+      setEditing(false);
+      setUpdateMemo(updateMemo + 1);
       return;
     }
 
@@ -217,17 +228,17 @@ const EditContactCard = ({
       <EditCardHeader
         title={contactIndex === 0 ? "Primary Contact" : "Secondary Contact"}
         onClick={() => setEditing(true)}
-        editing={editing}
+        editing={editingIndividual}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editing ? 1 : -1}
+          zIndex={editingIndividual ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"
