@@ -51,7 +51,9 @@ const PaymentSummaryList = ({
         ))}
       </VStack>
       <HStack w="100%" justify="space-between">
-        <Text textStyle={cardBoldStyles}>Total</Text>
+        <Text textStyle={cardBoldStyles}>
+          Total <Text as="i">(HST not required)</Text>
+        </Text>
         <Text textStyle={cardBoldStyles}>${calculateTotalPrice(items)}</Text>
       </HStack>
     </VStack>
