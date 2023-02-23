@@ -120,7 +120,7 @@ campRouter.post(
 );
 
 // ROLES: Admin
-/* Update a camp */
+/* Update a camp, don't create new sessions */
 campRouter.patch(
   "/:campId",
   isAuthorizedByRole(new Set(["Admin"])),
@@ -129,28 +129,78 @@ campRouter.patch(
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
-      const newCamp = await campService.updateCampById(req.params.campId, {
-        active: body.active,
-        ageLower: body.ageLower,
-        ageUpper: body.ageUpper,
-        campCoordinators: body.campCoordinators,
-        campCounsellors: body.campCounsellors,
-        name: body.name,
-        description: body.description,
-        dropoffFee: body.dropoffFee,
-        pickupFee: body.pickupFee,
-        earlyDropoff: body.earlyDropoff,
-        latePickup: body.latePickup,
-        location: body.location,
-        fee: body.fee,
-        filePath: req.file?.path,
-        fileContentType: req.file?.mimetype,
-        startTime: body.startTime,
-        endTime: body.endTime,
-        volunteers: body.volunteers,
-        campSessions: body.campSessions,
-        formQuestions: body.formQuestions,
-      });
+      const newCamp = await campService.updateCampById(
+        req.params.campId,
+        {
+          active: body.active,
+          ageLower: body.ageLower,
+          ageUpper: body.ageUpper,
+          campCoordinators: body.campCoordinators,
+          campCounsellors: body.campCounsellors,
+          name: body.name,
+          description: body.description,
+          dropoffFee: body.dropoffFee,
+          pickupFee: body.pickupFee,
+          earlyDropoff: body.earlyDropoff,
+          latePickup: body.latePickup,
+          location: body.location,
+          fee: body.fee,
+          filePath: req.file?.path,
+          fileContentType: req.file?.mimetype,
+          startTime: body.startTime,
+          endTime: body.endTime,
+          volunteers: body.volunteers,
+          campSessions: body.campSessions,
+          formQuestions: body.formQuestions,
+        },
+        false,
+      );
+      if (req.file?.path) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(200).json(newCamp);
+    } catch (error: unknown) {
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
+  },
+);
+
+// ROLES: Admin
+/* Update a camp and create new sessions */
+campRouter.patch(
+  "/newSessions/:campId",
+  isAuthorizedByRole(new Set(["Admin"])),
+  upload.single("file"),
+  updateCampDtoValidator,
+  async (req, res) => {
+    try {
+      const body = JSON.parse(req.body.data);
+      const newCamp = await campService.updateCampById(
+        req.params.campId,
+        {
+          active: body.active,
+          ageLower: body.ageLower,
+          ageUpper: body.ageUpper,
+          campCoordinators: body.campCoordinators,
+          campCounsellors: body.campCounsellors,
+          name: body.name,
+          description: body.description,
+          dropoffFee: body.dropoffFee,
+          pickupFee: body.pickupFee,
+          earlyDropoff: body.earlyDropoff,
+          latePickup: body.latePickup,
+          location: body.location,
+          fee: body.fee,
+          filePath: req.file?.path,
+          fileContentType: req.file?.mimetype,
+          startTime: body.startTime,
+          endTime: body.endTime,
+          volunteers: body.volunteers,
+          campSessions: body.campSessions,
+          formQuestions: body.formQuestions,
+        },
+        true,
+      );
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
       }

@@ -362,6 +362,7 @@ const CampCreationPage = (): React.ReactElement => {
         campResponse = await CampsAPIClient.editCampById(
           editCampId,
           campFields,
+          true,
           campImageURL,
         );
       }

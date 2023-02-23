@@ -62,6 +62,7 @@ const createNewCamp = async (
 const editCampById = async (
   id: string,
   camp: CreateUpdateCampRequest,
+  createNewSessions: boolean,
   fileURL?: string,
 ): Promise<CreateUpdateCampResponse> => {
   // Check if atleast the first step and 1 session is scheduled
@@ -79,11 +80,15 @@ const editCampById = async (
     formData.append("file", file);
   }
 
-  const { data } = await baseAPIClient.patch(`/camp/${id}`, formData, {
-    headers: {
-      Authorization: getBearerToken(),
+  const { data } = await baseAPIClient.patch(
+    `/camp/${createNewSessions ? "newSessions/" : ""}${id}`,
+    formData,
+    {
+      headers: {
+        Authorization: getBearerToken(),
+      },
     },
-  });
+  );
 
   return data;
 };

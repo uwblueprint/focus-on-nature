@@ -85,7 +85,11 @@ const Footer = ({ camp }: FooterProps): JSX.Element => {
     };
 
     try {
-      const res = await CampsAPIClient.editCampById(camp.id, updateCampFields);
+      const res = await CampsAPIClient.editCampById(
+        camp.id,
+        updateCampFields,
+        true,
+      );
 
       if (res) {
         history.push(CAMPS_PAGE);
