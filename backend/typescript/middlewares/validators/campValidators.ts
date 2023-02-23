@@ -218,8 +218,8 @@ export const createUpdateCampDtoValidator = async (
       const campSession = body.campSessions[i];
       try {
         createUpdateCampSessionDTOValidator(campSession, type);
-      } catch (err: any) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
         res.status(400).send(err.message);
       }
     }

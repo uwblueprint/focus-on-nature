@@ -140,7 +140,9 @@ const PaymentSummary = ({
         my={4}
         w={{ base: "100%", lg: "450px" }}
       >
-        <Text textStyle={totalRowTextStyles}>Total</Text>
+        <Text textStyle={totalRowTextStyles}>
+          Total <Text as="i">(HST not required)</Text>
+        </Text>
         <Text textStyle={totalRowTextStyles}>
           ${calculateTotalPrice(items).toFixed(2)}
         </Text>
