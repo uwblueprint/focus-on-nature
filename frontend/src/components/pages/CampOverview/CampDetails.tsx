@@ -37,12 +37,14 @@ type CampDetailsProps = {
 const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   const [users, setUsers] = useState([] as UserResponse[]);
   const status = getCampStatus(camp);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   useEffect(() => {
     const getUsers = async () => {
       const userResponse = await UserAPIClient.getAllUsers();
       if (userResponse) {
         setUsers(userResponse);
+        setLoadingUsers(false);
       }
     };
     getUsers();
@@ -52,7 +54,7 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
   // this is to prevent sending requests while the user is still typing out volunteers.
   useEffect(() => {
     const updateCamp = async () => {
-      await CampsAPIClient.editCampById(camp.id, camp);
+      await CampsAPIClient.editCampById(camp.id, camp, false); // No new sessions when viewing.
     };
 
     if (camp.id) {
@@ -130,7 +132,9 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           </GridItem>
           <GridItem colSpan={4}>
             <UserSelect
-              placeholderText="Add camp coordinator(s)"
+              placeholderText={
+                loadingUsers ? "Loading..." : "Add camp coordinator(s)"
+              }
               options={userSelectOptions}
               onChange={handleCoordinatorChange}
               value={selectedCoordinators}
@@ -141,7 +145,9 @@ const CampDetails = ({ camp, setCamp }: CampDetailsProps): JSX.Element => {
           </GridItem>
           <GridItem colSpan={4}>
             <UserSelect
-              placeholderText="Add camp counsellor(s)"
+              placeholderText={
+                loadingUsers ? "Loading..." : "Add camp counsellor(s)"
+              }
               options={userSelectOptions}
               onChange={handleCounsellorChange}
               value={selectedCounsellors}

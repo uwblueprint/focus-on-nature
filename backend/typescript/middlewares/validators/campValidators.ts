@@ -16,10 +16,15 @@ import {
 } from "./util";
 import { getErrorMessage } from "../../utilities/errorUtils";
 
-const createCampSessionDTOValidator = (campSession: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}): boolean => {
+enum CreateOrUpdate {
+  CREATE = 1,
+  UPDATE = 2,
+}
+
+const createUpdateCampSessionDTOValidator = (
+  campSession: { [key: string]: any }, // eslint-disable-line @typescript-eslint/no-explicit-any
+  type: CreateOrUpdate,
+): boolean => {
   if (!validateArray(campSession.dates, "string")) {
     throw new Error(getApiValidationError("dates", "string", true));
   }
@@ -29,11 +34,13 @@ const createCampSessionDTOValidator = (campSession: {
   if (!validatePrimitive(campSession.capacity, "integer")) {
     throw new Error(getApiValidationError("capacity", "integer"));
   }
-  if (campSession.campers) {
-    throw new Error("campers should be empty");
-  }
-  if (campSession.waitlist) {
-    throw new Error("waitlist should be empty");
+  if (type === CreateOrUpdate.CREATE) {
+    if (campSession.campers) {
+      throw new Error("campers should be empty");
+    }
+    if (campSession.waitlist) {
+      throw new Error("waitlist should be empty");
+    }
   }
   return true;
 };
@@ -59,6 +66,7 @@ export const createUpdateCampDtoValidator = async (
   req: Request,
   res: Response,
   next: NextFunction,
+  type: CreateOrUpdate,
 ) => {
   let body;
   try {
@@ -209,7 +217,7 @@ export const createUpdateCampDtoValidator = async (
     for (let i = 0; i < body.campSessions.length; i += 1) {
       const campSession = body.campSessions[i];
       try {
-        createCampSessionDTOValidator(campSession);
+        createUpdateCampSessionDTOValidator(campSession, type);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         res.status(400).send(err.message);
@@ -233,6 +241,22 @@ export const createUpdateCampDtoValidator = async (
     return res.status(400).send(getImageSizeValidationError());
   }
   return next();
+};
+
+export const createCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  return createUpdateCampDtoValidator(req, res, next, CreateOrUpdate.CREATE);
+};
+
+export const updateCampDtoValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  return createUpdateCampDtoValidator(req, res, next, CreateOrUpdate.UPDATE);
 };
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */

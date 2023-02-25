@@ -7,7 +7,8 @@ import ICampService from "../services/interfaces/campService";
 import CampService from "../services/implementations/campService";
 import { getErrorMessage } from "../utilities/errorUtils";
 import {
-  createUpdateCampDtoValidator,
+  createCampDtoValidator,
+  updateCampDtoValidator,
   createCampSessionsDtoValidator,
   createFormQuestionsValidator,
   deleteCampSessionsDtoValidator,
@@ -81,7 +82,7 @@ campRouter.post(
   "/",
   isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
-  createUpdateCampDtoValidator,
+  createCampDtoValidator,
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
@@ -124,32 +125,36 @@ campRouter.patch(
   "/:campId",
   isAuthorizedByRole(new Set(["Admin"])),
   upload.single("file"),
-  createUpdateCampDtoValidator,
+  updateCampDtoValidator,
   async (req, res) => {
     try {
       const body = JSON.parse(req.body.data);
-      const newCamp = await campService.updateCampById(req.params.campId, {
-        active: body.active,
-        ageLower: body.ageLower,
-        ageUpper: body.ageUpper,
-        campCoordinators: body.campCoordinators,
-        campCounsellors: body.campCounsellors,
-        name: body.name,
-        description: body.description,
-        dropoffFee: body.dropoffFee,
-        pickupFee: body.pickupFee,
-        earlyDropoff: body.earlyDropoff,
-        latePickup: body.latePickup,
-        location: body.location,
-        fee: body.fee,
-        filePath: req.file?.path,
-        fileContentType: req.file?.mimetype,
-        startTime: body.startTime,
-        endTime: body.endTime,
-        volunteers: body.volunteers,
-        campSessions: body.campSessions,
-        formQuestions: body.formQuestions,
-      });
+      const newCamp = await campService.updateCampById(
+        req.params.campId,
+        {
+          active: body.active,
+          ageLower: body.ageLower,
+          ageUpper: body.ageUpper,
+          campCoordinators: body.campCoordinators,
+          campCounsellors: body.campCounsellors,
+          name: body.name,
+          description: body.description,
+          dropoffFee: body.dropoffFee,
+          pickupFee: body.pickupFee,
+          earlyDropoff: body.earlyDropoff,
+          latePickup: body.latePickup,
+          location: body.location,
+          fee: body.fee,
+          filePath: req.file?.path,
+          fileContentType: req.file?.mimetype,
+          startTime: body.startTime,
+          endTime: body.endTime,
+          volunteers: body.volunteers,
+          campSessions: body.campSessions,
+          formQuestions: body.formQuestions,
+        },
+        body.createNewSessions,
+      );
       if (req.file?.path) {
         fs.unlinkSync(req.file.path);
       }
