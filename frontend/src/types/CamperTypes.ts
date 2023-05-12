@@ -92,11 +92,12 @@ export type WaitlistedCamper = {
   campSession: string;
   status: WaitlistedCamperStatus;
   linkExpiry?: Date;
+  registrationDate: Date;
 };
 
 export type CreateWaitlistedCamperDTO = Omit<
   WaitlistedCamper,
-  "id" | "campSession" | "status" | "linkExpiry"
+  "id" | "campSession" | "status" | "linkExpiry" | "registrationDate"
 >;
 
 export type CreateCamperResponse = {
