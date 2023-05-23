@@ -62,6 +62,10 @@ const AddQuestionModal = ({
     isQuestionOptionsInvalid,
     setIsQuestionOptionsInvalid,
   ] = useState<boolean>(false);
+  const [
+    isQuestionOptionsContainDuplicates,
+    setIsQuestionOptionsContainDuplicates,
+  ] = useState<boolean>(false);
   const [isOptionsEmpty, setIsOptionsEmpty] = useState<boolean>(false);
 
   const setDefaultState = () => {
@@ -82,6 +86,7 @@ const AddQuestionModal = ({
       );
       setIsQuestionInvalid(false);
       setIsQuestionOptionsInvalid(false);
+      setIsQuestionOptionsContainDuplicates(false);
       setIsOptionsEmpty(false);
     } else {
       setQuestion("");
@@ -92,6 +97,7 @@ const AddQuestionModal = ({
       setQuestionOptions([]);
       setIsQuestionInvalid(false);
       setIsQuestionOptionsInvalid(false);
+      setIsQuestionOptionsContainDuplicates(false);
       setIsOptionsEmpty(false);
     }
   };
@@ -108,6 +114,7 @@ const AddQuestionModal = ({
   const onSaveQuestion = () => {
     setIsQuestionInvalid(false);
     setIsQuestionOptionsInvalid(false);
+    setIsQuestionOptionsContainDuplicates(false);
     setIsOptionsEmpty(false);
 
     if (question === "") {
@@ -131,6 +138,13 @@ const AddQuestionModal = ({
       return;
     }
 
+    if (questionType !== "Text" && questionOptions.length !== new Set(questionOptions).size) {
+      setIsOptionsEmpty(false);
+      setIsQuestionOptionsInvalid(true);
+      setIsQuestionOptionsContainDuplicates(true);
+      return;
+    }
+
     if (questionType !== "Text") {
       if (
         questionOptions.some((option: string) => {
@@ -138,6 +152,7 @@ const AddQuestionModal = ({
         })
       ) {
         setIsQuestionOptionsInvalid(false);
+        setIsQuestionOptionsContainDuplicates(false);
         setIsOptionsEmpty(true);
         return;
       }
@@ -230,6 +245,7 @@ const AddQuestionModal = ({
                 value={questionType}
                 onChange={(e) => {
                   setIsQuestionOptionsInvalid(false);
+                  setIsQuestionOptionsContainDuplicates(false);
                   setQuestionType(e.target.value);
                 }}
               >
@@ -238,12 +254,18 @@ const AddQuestionModal = ({
                 <option value="Multiselect">Checkbox</option>
               </Select>
               {questionType === "MultipleChoice" &&
-                isQuestionOptionsInvalid && (
+                isQuestionOptionsInvalid && !isQuestionOptionsContainDuplicates && (
                   <FormErrorMessage>
                     You must enter at least 2 options
                   </FormErrorMessage>
                 )}
-              {questionType !== "MultipleChoice" &&
+              {questionType !== "Text" &&
+                isQuestionOptionsInvalid && isQuestionOptionsContainDuplicates && (
+                  <FormErrorMessage>
+                    Duplicate options are not allowed
+                  </FormErrorMessage>
+                )}
+              {questionType !== "MultipleChoice" && !isQuestionOptionsContainDuplicates &&
                 isQuestionOptionsInvalid && (
                   <FormErrorMessage>
                     You must enter at least 1 option
