@@ -48,9 +48,9 @@ const CampCreationPage = (): React.ReactElement => {
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
   >([]);
+  const [showScheduleSessionCardError, setShowScheduleSessionCardError] = React.useState<boolean>(false)
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
-
   const [showCreationErrors, setShowCreationErrors] = useState<boolean>(false);
 
   // Variables to determine whether or not all required fields have been filled out.
@@ -109,7 +109,8 @@ const CampCreationPage = (): React.ReactElement => {
     latestPickUpTime,
     true,
   );
-
+  
+  // Check if Camp Details are filled in
   if (
     campName &&
     campDescription &&
@@ -136,7 +137,7 @@ const CampCreationPage = (): React.ReactElement => {
   )
     isCampDetailsFilled = true;
   else isCampDetailsFilled = false;
-
+  
   const isScheduleSessionsFilled = scheduledSessions.length !== 0;
   const isRegistrationFormFilled = visitedRegistrationPage;
 
@@ -496,6 +497,7 @@ const CampCreationPage = (): React.ReactElement => {
             campTitle={`${campName} @${startTime} - ${endTime}`}
             scheduledSessions={scheduledSessions}
             setScheduledSessions={setScheduledSessions}
+            showScheduleSessionCardError={showScheduleSessionCardError}
           />
         );
       case CampCreationPages.RegistrationFormPage:
@@ -518,11 +520,18 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   const handleStepNavigation = (stepsToMove: number) => {
+    const invalidScheduleCard = !scheduledSessions.every(session => session.dates.length !== 0)
+    if (stepsToMove > 0 && currentPage === CampCreationPages.ScheduleSessionsPage && invalidScheduleCard) {
+      setShowScheduleSessionCardError(invalidScheduleCard)
+      return;
+    }
+
     const desiredStep = currentPage + stepsToMove;
     if (CampCreationPages[desiredStep]) {
       setCurrentPage(currentPage + stepsToMove);
     }
   };
+
 
   return (
     <VStack w="100vw" h="calc(100vh - 75px)">
