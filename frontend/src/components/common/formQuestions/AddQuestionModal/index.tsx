@@ -39,6 +39,14 @@ type AddQuestionModalProps = {
   isFormTemplatePage?: boolean;
 };
 
+enum OptionErrorStatus {
+  NO_OPTION = "Options cannot be empty",
+  AT_LEAST_ONE = "You must enter at least 1 option",
+  AT_LEAST_TWO = "You must enter at least 2 options",
+  NO_DUPLICATES = "Duplicate options are not allowed",
+  VALID = ""
+}
+
 const AddQuestionModal = ({
   isOpen,
   onClose,
@@ -61,12 +69,7 @@ const AddQuestionModal = ({
   const [
     isQuestionOptionsInvalid,
     setIsQuestionOptionsInvalid,
-  ] = useState<boolean>(false);
-  const [
-    isQuestionOptionsContainDuplicates,
-    setIsQuestionOptionsContainDuplicates,
-  ] = useState<boolean>(false);
-  const [isOptionsEmpty, setIsOptionsEmpty] = useState<boolean>(false);
+  ] = useState<OptionErrorStatus>(OptionErrorStatus.VALID);
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
@@ -85,9 +88,7 @@ const AddQuestionModal = ({
           : [...questionToBeEdited.options],
       );
       setIsQuestionInvalid(false);
-      setIsQuestionOptionsInvalid(false);
-      setIsQuestionOptionsContainDuplicates(false);
-      setIsOptionsEmpty(false);
+      setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
     } else {
       setQuestion("");
       setQuestionCategory("PersonalInfo");
@@ -96,9 +97,7 @@ const AddQuestionModal = ({
       setIsRequiredQuestion(false);
       setQuestionOptions([]);
       setIsQuestionInvalid(false);
-      setIsQuestionOptionsInvalid(false);
-      setIsQuestionOptionsContainDuplicates(false);
-      setIsOptionsEmpty(false);
+      setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
     }
   };
 
@@ -113,9 +112,7 @@ const AddQuestionModal = ({
 
   const onSaveQuestion = () => {
     setIsQuestionInvalid(false);
-    setIsQuestionOptionsInvalid(false);
-    setIsQuestionOptionsContainDuplicates(false);
-    setIsOptionsEmpty(false);
+    setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
 
     if (question === "") {
       setIsQuestionInvalid(true);
@@ -123,25 +120,19 @@ const AddQuestionModal = ({
     }
 
     if (
-      questionType !== "Text" &&
+      questionType === "MultipleChoice" &&
+      (questionOptions.length < 2 || !questionOptions.length)
+    ) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.AT_LEAST_TWO);
+      return;
+    }
+
+    if (
+      questionType === "Multiselect" &&
       ((questionOptions.length === 1 && questionOptions[0] === "") ||
         !questionOptions.length)
     ) {
-      setIsOptionsEmpty(false);
-      setIsQuestionOptionsInvalid(true);
-      return;
-    }
-
-    if (questionType === "MultipleChoice" && questionOptions.length === 1) {
-      setIsOptionsEmpty(false);
-      setIsQuestionOptionsInvalid(true);
-      return;
-    }
-
-    if (questionType !== "Text" && questionOptions.length !== new Set(questionOptions).size) {
-      setIsOptionsEmpty(false);
-      setIsQuestionOptionsInvalid(true);
-      setIsQuestionOptionsContainDuplicates(true);
+      setIsQuestionOptionsInvalid(OptionErrorStatus.AT_LEAST_ONE);
       return;
     }
 
@@ -151,11 +142,14 @@ const AddQuestionModal = ({
           return !option.replace(/\s/g, "").length;
         })
       ) {
-        setIsQuestionOptionsInvalid(false);
-        setIsQuestionOptionsContainDuplicates(false);
-        setIsOptionsEmpty(true);
+        setIsQuestionOptionsInvalid(OptionErrorStatus.NO_OPTION);
         return;
       }
+    }
+
+    if (questionType !== "Text" && questionOptions.length !== new Set(questionOptions).size) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.NO_DUPLICATES);
+      return;
     }
 
     closeModal();
@@ -236,7 +230,7 @@ const AddQuestionModal = ({
 
             <FormControl
               isRequired
-              isInvalid={isQuestionOptionsInvalid || isOptionsEmpty}
+              isInvalid={isQuestionOptionsInvalid !== OptionErrorStatus.VALID}
             >
               <FormLabel aria-required marginTop="14px">
                 Question Type
@@ -244,8 +238,7 @@ const AddQuestionModal = ({
               <Select
                 value={questionType}
                 onChange={(e) => {
-                  setIsQuestionOptionsInvalid(false);
-                  setIsQuestionOptionsContainDuplicates(false);
+                  setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
                   setQuestionType(e.target.value);
                 }}
               >
@@ -253,26 +246,10 @@ const AddQuestionModal = ({
                 <option value="MultipleChoice">Multiple choice</option>
                 <option value="Multiselect">Checkbox</option>
               </Select>
-              {questionType === "MultipleChoice" &&
-                isQuestionOptionsInvalid && !isQuestionOptionsContainDuplicates && (
-                  <FormErrorMessage>
-                    You must enter at least 2 options
-                  </FormErrorMessage>
-                )}
-              {questionType !== "Text" &&
-                isQuestionOptionsInvalid && isQuestionOptionsContainDuplicates && (
-                  <FormErrorMessage>
-                    Duplicate options are not allowed
-                  </FormErrorMessage>
-                )}
-              {questionType !== "MultipleChoice" && !isQuestionOptionsContainDuplicates &&
-                isQuestionOptionsInvalid && (
-                  <FormErrorMessage>
-                    You must enter at least 1 option
-                  </FormErrorMessage>
-                )}
-              {isOptionsEmpty && (
-                <FormErrorMessage>Options cannot be empty</FormErrorMessage>
+              {isQuestionOptionsInvalid !== OptionErrorStatus.VALID && (
+                <FormErrorMessage>
+                  {isQuestionOptionsInvalid}
+                </FormErrorMessage>
               )}
             </FormControl>
 
