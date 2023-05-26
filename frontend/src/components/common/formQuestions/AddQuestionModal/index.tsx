@@ -40,11 +40,11 @@ type AddQuestionModalProps = {
 };
 
 enum OptionErrorStatus {
-  NO_OPTION = "Options cannot be empty",
+  EMPTY_OPTION = "Options cannot be empty",
   AT_LEAST_ONE = "You must enter at least 1 option",
   AT_LEAST_TWO = "You must enter at least 2 options",
-  NO_DUPLICATES = "Duplicate options are not allowed",
-  VALID = ""
+  HAS_DUPLICATES = "Duplicate options are not allowed",
+  VALID = "",
 }
 
 const AddQuestionModal = ({
@@ -142,13 +142,16 @@ const AddQuestionModal = ({
           return !option.replace(/\s/g, "").length;
         })
       ) {
-        setIsQuestionOptionsInvalid(OptionErrorStatus.NO_OPTION);
+        setIsQuestionOptionsInvalid(OptionErrorStatus.EMPTY_OPTION);
         return;
       }
     }
 
-    if (questionType !== "Text" && questionOptions.length !== new Set(questionOptions).size) {
-      setIsQuestionOptionsInvalid(OptionErrorStatus.NO_DUPLICATES);
+    if (
+      questionType !== "Text" &&
+      questionOptions.length !== new Set(questionOptions).size
+    ) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.HAS_DUPLICATES);
       return;
     }
 
@@ -247,9 +250,7 @@ const AddQuestionModal = ({
                 <option value="Multiselect">Checkbox</option>
               </Select>
               {isQuestionOptionsInvalid !== OptionErrorStatus.VALID && (
-                <FormErrorMessage>
-                  {isQuestionOptionsInvalid}
-                </FormErrorMessage>
+                <FormErrorMessage>{isQuestionOptionsInvalid}</FormErrorMessage>
               )}
             </FormControl>
 
