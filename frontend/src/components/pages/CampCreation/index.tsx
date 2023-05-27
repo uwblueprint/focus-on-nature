@@ -523,14 +523,11 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   const handleStepNavigation = (stepsToMove: number) => {
-    const invalidScheduleCard = !scheduledSessions.every(
-      (session) => session.dates.length !== 0,
-    );
-    if (
+    const invalidScheduleCard =
+      !scheduledSessions.every((session) => session.dates.length !== 0) &&
       stepsToMove > 0 &&
-      currentPage === CampCreationPages.ScheduleSessionsPage &&
-      invalidScheduleCard
-    ) {
+      currentPage === CampCreationPages.ScheduleSessionsPage;
+    if (invalidScheduleCard) {
       setShowScheduleSessionCardError(invalidScheduleCard);
       return;
     }
