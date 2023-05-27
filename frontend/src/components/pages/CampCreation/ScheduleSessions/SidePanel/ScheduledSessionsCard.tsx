@@ -1,5 +1,14 @@
 import React from "react";
-import { Box, HStack, Text, Button, Wrap, WrapItem, FormControl, FormErrorMessage } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Text,
+  Button,
+  Wrap,
+  WrapItem,
+  FormControl,
+  FormErrorMessage,
+} from "@chakra-ui/react";
 import SessionDayButton from "./SessionDayButton";
 import { CreateCampSession } from "../../../../../types/CampsTypes";
 import {
@@ -97,9 +106,7 @@ const ScheduledSessionsCard = ({
         </Box>
       </Box>
       {showScheduleSessionCardError && scheduledSession.dates.length === 0 && (
-        <FormErrorMessage>
-          Please select at least one day.
-        </FormErrorMessage>
+        <FormErrorMessage>Please select at least one day.</FormErrorMessage>
       )}
     </FormControl>
   );

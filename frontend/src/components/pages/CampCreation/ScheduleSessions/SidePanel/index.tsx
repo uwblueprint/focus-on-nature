@@ -14,7 +14,6 @@ const SessionSidePanel = ({
   scheduledSessions,
   setScheduledSessions,
   showScheduleSessionCardError,
-  
 }: SessionSidePanelProps): React.ReactElement => {
   const [showAddSessionView, setShowAddSessionView] = React.useState(false);
 
