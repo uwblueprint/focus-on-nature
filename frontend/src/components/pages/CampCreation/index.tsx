@@ -48,9 +48,12 @@ const CampCreationPage = (): React.ReactElement => {
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
   >([]);
+  const [
+    showScheduleSessionCardError,
+    setShowScheduleSessionCardError,
+  ] = React.useState<boolean>(false);
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
-
   const [showCreationErrors, setShowCreationErrors] = useState<boolean>(false);
 
   // Variables to determine whether or not all required fields have been filled out.
@@ -110,6 +113,7 @@ const CampCreationPage = (): React.ReactElement => {
     true,
   );
 
+  // Check if Camp Details are filled in
   if (
     campName &&
     campDescription &&
@@ -496,6 +500,7 @@ const CampCreationPage = (): React.ReactElement => {
             campTitle={`${campName} @${startTime} - ${endTime}`}
             scheduledSessions={scheduledSessions}
             setScheduledSessions={setScheduledSessions}
+            showScheduleSessionCardError={showScheduleSessionCardError}
           />
         );
       case CampCreationPages.RegistrationFormPage:
@@ -518,6 +523,15 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   const handleStepNavigation = (stepsToMove: number) => {
+    const invalidScheduleCard =
+      !scheduledSessions.every((session) => session.dates.length !== 0) &&
+      stepsToMove > 0 &&
+      currentPage === CampCreationPages.ScheduleSessionsPage;
+    if (invalidScheduleCard) {
+      setShowScheduleSessionCardError(invalidScheduleCard);
+      return;
+    }
+
     const desiredStep = currentPage + stepsToMove;
     if (CampCreationPages[desiredStep]) {
       setCurrentPage(currentPage + stepsToMove);

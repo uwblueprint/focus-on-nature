@@ -7,11 +7,13 @@ import { CreateCampSession } from "../../../../../types/CampsTypes";
 type SessionSidePanelProps = {
   scheduledSessions: CreateCampSession[];
   setScheduledSessions: (sessions: Array<CreateCampSession>) => void;
+  showScheduleSessionCardError: boolean;
 };
 
 const SessionSidePanel = ({
   scheduledSessions,
   setScheduledSessions,
+  showScheduleSessionCardError,
 }: SessionSidePanelProps): React.ReactElement => {
   const [showAddSessionView, setShowAddSessionView] = React.useState(false);
 
@@ -28,6 +30,7 @@ const SessionSidePanel = ({
           scheduledSessions={scheduledSessions}
           setScheduledSessions={setScheduledSessions}
           setShowAddSessions={setShowAddSessionView}
+          showScheduleSessionCardError={showScheduleSessionCardError}
         />
       )}
     </Box>
