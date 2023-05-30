@@ -1,3 +1,5 @@
+import * as EmailValidator from 'email-validator';
+
 export interface IPersonalInfoReducer<A, B> {
   updateCamper(campIndex: number, data: A, field: string): void;
   updateContact(camperIndex: number, data: B, field: string): void;
@@ -22,7 +24,12 @@ export const checkAge = (
 };
 
 export const checkEmail = (email: string): boolean => {
-  return !!email;
+  const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
+  return emailRegex.test(email);
+};
+
+export const verifyEmail = (email:string): Promise<boolean> => {
+  return Promise.resolve(EmailValidator.validate(email));
 };
 
 export const checkPhoneNumber = (phoneNumber: string): boolean => {
