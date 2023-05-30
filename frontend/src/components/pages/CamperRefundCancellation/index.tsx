@@ -30,7 +30,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
           mt="10px"
         />
           <Box pr="12%" pl="12%" pt="5%">
-            <Box>
+            <Box pb="40px">
               <Text as="b" mt="70px" fontSize="40px">
                 {campName}
               </Text>
