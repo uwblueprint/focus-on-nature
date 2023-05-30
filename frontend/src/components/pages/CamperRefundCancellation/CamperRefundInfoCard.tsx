@@ -1,7 +1,7 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Checkbox } from "@chakra-ui/react";
 
-const CamperRefundInfoCard = (): React.ReactElement => {
+const CamperRefundInfoCard = (props:any): React.ReactElement => {
 
   return (
     <Box
@@ -12,9 +12,7 @@ const CamperRefundInfoCard = (): React.ReactElement => {
       borderColor="gray"
       borderWidth="1.75px"
     >
-      <Text>
-        Hello
-      </Text>
+      <Checkbox defaultChecked></Checkbox>
     </Box>
   );
 };
