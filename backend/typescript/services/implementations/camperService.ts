@@ -1233,11 +1233,9 @@ class CamperService implements ICamperService {
   async getRefundInfo(refundCode: string): Promise<RefundDTO> {
     // TODO: move this to validator
     if (refundCode === "0") {
-      throw new Error(
-        "Invalid refund code",
-      );
+      throw new Error("Invalid refund code");
     }
-    
+
     return [
       {
         firstName: "Alice",
