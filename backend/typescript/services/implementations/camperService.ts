@@ -15,6 +15,7 @@ import {
   UpdateCamperDTO,
   CamperCharges,
   CampRegistrationDTO,
+  RefundDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -1227,6 +1228,112 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
+  }
+
+  async getRefundInfo(refundCode: string): Promise<RefundDTO> {
+    // TODO: move this to validator
+    if (refundCode === "0") {
+      throw new Error(
+        "Invalid refund code",
+      );
+    }
+    
+    return [
+      {
+        firstName: "Alice",
+        lastName: "Smith",
+        age: 9,
+        campName: "Banff Camp 2023",
+        instances: [
+          {
+            id: "63b527fed9c42a8fd5ea55e6",
+            campSession: "63b01de0c71ee220ef84daee",
+            earlyDropoff: [
+              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            latePickup: [
+              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            registrationDate:
+              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
+            hasPaid: true,
+            chargeId:
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
+            charges: {
+              camp: 160,
+              earlyDropoff: 19,
+              latePickup: 19,
+            },
+            dates: [
+              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+          },
+        ],
+      },
+      {
+        firstName: "Bob",
+        lastName: "Smith",
+        age: 10,
+        campName: "Banff Camp 2023",
+        instances: [
+          {
+            id: "63b527fed9c42a8fd5ea55e6",
+            campSession: "63b01de0c71ee220ef84daee",
+            earlyDropoff: [
+              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            latePickup: [
+              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            registrationDate:
+              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
+            hasPaid: true,
+            chargeId:
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
+            charges: {
+              camp: 160,
+              earlyDropoff: 19,
+              latePickup: 19,
+            },
+            dates: [
+              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+          },
+          {
+            id: "63b527fed9c42a8fd5ea55e6",
+            campSession: "63b01de0c71ee220ef84daee",
+            earlyDropoff: [
+              "Thu Sep 14 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            latePickup: [
+              "Thu Sep 14 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+            registrationDate:
+              "Wed Jan 09 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
+            hasPaid: true,
+            chargeId:
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
+            charges: {
+              camp: 160,
+              earlyDropoff: 19,
+              latePickup: 19,
+            },
+            dates: [
+              "Thu Sep 14 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Sun Sep 10 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Mon Sep 11 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+              "Tue Sep 12 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
+            ],
+          },
+        ],
+      },
+    ];
   }
 }
 

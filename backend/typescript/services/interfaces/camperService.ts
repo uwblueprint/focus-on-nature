@@ -5,6 +5,7 @@ import {
   WaitlistedCamperDTO,
   UpdateCamperDTO,
   CampRegistrationDTO,
+  RefundDTO,
 } from "../../types";
 
 interface ICamperService {
@@ -121,6 +122,13 @@ interface ICamperService {
    * @throws Error if waitlisted camper deletion fails
    */
   deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void>;
+
+  /**
+   * Gets information associated with a charge in order to request refund
+   * @param refundCode code specific to this email to access info
+   * @throws Error if retrieval fails
+   */
+  getRefundInfo(refundCode: string): Promise<RefundDTO>;
 }
 
 export default ICamperService;
