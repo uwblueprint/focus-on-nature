@@ -46,7 +46,7 @@ const CamperRefundInfoCard = (props:any): React.ReactElement => {
             <Flex width="100%">
               <Text fontSize="2xl">Session 1</Text>
               <Spacer />
-              <Text fontSize="2xl">800$</Text>
+              <Text fontSize="2xl">$800</Text>
             </Flex>
           </VStack>
 
@@ -62,14 +62,14 @@ const CamperRefundInfoCard = (props:any): React.ReactElement => {
               </VStack>
              
               <Spacer />
-              <Text fontSize="2xl" pt="15px" pb="0px">25$</Text>
+              <Text fontSize="2xl" pt="15px">$25</Text>
             </Flex>
           </VStack>
 
           <Flex width="100%">
             <Text as="b" fontSize="xl">Total Refund for Camper 2</Text>
             <Spacer />
-            <Text as="b" fontSize="xl">825$</Text>
+            <Text as="b" fontSize="xl">$825</Text>
           </Flex>
 
         </VStack>
