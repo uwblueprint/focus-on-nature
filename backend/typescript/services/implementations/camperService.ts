@@ -143,7 +143,7 @@ class CamperService implements ICamperService {
       // Create new unused refund code
       do {
         refundCode = cryptoRandomString({length: REFUND_CODE_LENGTH, type: 'alphanumeric'});
-        campersWithRefundCode = await MgCamper.find({ checkoutSessionUrl });
+        campersWithRefundCode = await MgCamper.find({ refundCode });
       } while (campersWithRefundCode && campersWithRefundCode.length > 0);
 
       // Create a camper entity for each session
