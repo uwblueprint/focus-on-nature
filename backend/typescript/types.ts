@@ -244,6 +244,26 @@ export type UpdateCamperDTO = Omit<
   | "optionalClauses"
 >;
 
+export type RefundDTO = Array<{
+  firstName: string;
+  lastName: string;
+  age: number;
+  campName: string;
+  instances: Array<RefundCamperDTO>;
+}>;
+
+export type RefundCamperDTO = Omit<
+  CamperDTO,
+  | "firstName"
+  | "lastName"
+  | "age"
+  | "contacts"
+  | "formResponses"
+  | "optionalClauses"
+> & {
+  dates: string[];
+};
+
 export type AuthDTO = Token & UserDTO;
 
 export type Letters = "A" | "B" | "C" | "D";
