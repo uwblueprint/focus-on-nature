@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Text, Image, Box, Flex, Button, Link } from "@chakra-ui/react";
+import { Text, Image, Box, Flex, Button, Link, useToast} from "@chakra-ui/react";
 
 import FONIcon from "../../../assets/fon_icon.svg";
 import CamperRefundInfoCard from "./CamperRefundInfoCard"
 import CamperRefundFooter from "./CamperRefundFooter";
+import CamperAPIClient from "../../../APIClients/CamperAPIClient";
+import { RefundDTO, RefundDTOArray } from "../../../types/CamperTypes";
 
 const requestRefund = () => {
   // todo
@@ -15,8 +17,31 @@ const requestRefund = () => {
 // link to the refund page with each camper. 
 
 const CamperRefundCancellation = (): React.ReactElement => {
-  const campName = "Guelph Summer Camp 2022 Camp Cancellation"; // Probably should come from an API later
 
+  const refundCode = "12345" // We will have to grab this refund code from users URL
+  const toast = useToast();
+  const [refunds, setRefunds] = useState<RefundDTOArray>([])
+  const [campName, setCampName] = useState<string>("")
+  
+  useEffect(() => {
+      const getRefundInfoById = async (code: string) => { 
+        const getResponse  = await CamperAPIClient.getRefundInfo(code);
+        console.log(getResponse);
+        if (getResponse) {
+          setRefunds(getResponse)
+          setCampName(getResponse[0].campName)
+        } else {
+          toast({
+            description: `Unable to retrieve Refund Info.`,
+            status: "error",
+            duration: 3000,
+            variant: "subtle",
+          });
+        }
+      }
+      getRefundInfoById(refundCode);
+    },[toast]);
+  
   return (
     <>
       <Box>
@@ -49,7 +74,14 @@ const CamperRefundCancellation = (): React.ReactElement => {
                 </Link>
               </Text>
             </Box>
-            <CamperRefundInfoCard/>
+            <Box> 
+                {refunds.map((refund, refundIndex) => { 
+                  return <CamperRefundInfoCard 
+                  refund={refund}
+                  refundIndex={refundIndex}
+                  />
+                })}
+            </Box>
           </Box>
         </Box>
         <CamperRefundFooter/>

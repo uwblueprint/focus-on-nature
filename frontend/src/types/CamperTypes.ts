@@ -104,3 +104,31 @@ export type CreateCamperResponse = {
   campers: Camper[];
   checkoutSessionUrl: string;
 };
+
+export type RefundDTOArray = Array<{
+  firstName: string;
+  lastName: string;
+  age: number;
+  campName: string;
+  instances: Array<CamperRefundDTO>;
+}>;
+
+export type RefundDTO = { 
+  firstName: string;
+  lastName: string;
+  age: number;
+  campName: string;
+  instances: Array<CamperRefundDTO>;
+}
+
+export type CamperRefundDTO = Omit<
+Camper,
+| "firstName"
+| "lastName"
+| "age"
+| "contacts"
+| "formResponses"
+| "optionalClauses"
+> & {
+dates: string[];
+};

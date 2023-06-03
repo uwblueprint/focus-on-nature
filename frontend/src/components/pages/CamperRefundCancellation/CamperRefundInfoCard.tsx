@@ -1,7 +1,16 @@
 import React from "react";
 import { Box, Text, Checkbox,VStack, StackDivider, Flex, Spacer } from "@chakra-ui/react";
+import { RefundDTO } from "../../../types/CamperTypes";
 
-const CamperRefundInfoCard = (props:any): React.ReactElement => {
+type CamperRefundInfoCardProps = { 
+  refund: RefundDTO;
+  refundIndex: number; 
+}
+
+const CamperRefundInfoCard = ({
+  refund,
+  refundIndex,
+}: CamperRefundInfoCardProps): React.ReactElement => {
 
   return (
     <Box
@@ -10,6 +19,7 @@ const CamperRefundInfoCard = (props:any): React.ReactElement => {
       borderRadius={10}
       borderColor="gray"
       borderWidth="1.75px"
+      key={refundIndex}
     >
       <Box
         backgroundColor="background.white.100"
