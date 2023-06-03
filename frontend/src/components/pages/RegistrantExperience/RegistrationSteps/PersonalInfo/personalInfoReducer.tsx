@@ -141,22 +141,22 @@ export const checkAge = (
   return !!age && age >= campLower && age <= campUpper;
 };
 
-export const checkEmail = (email: string): boolean => {
+export const checkEmail = async (email: string): Promise<boolean> => {
   const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
   try {
-    const verifyResult = validate(email);
-    const isEmailValid_json = JSON.stringify(verifyResult);
-    const isEmailValid = JSON.parse(isEmailValid_json);
-    if (emailRegex.test(email) && isEmailValid.valid){
-      console.log("EMAIL AND REGEX VALID");
+    const valid = await validate(email);
+    console.log(valid);
+    // const isEmailValidJson = JSON.stringify(verifyResult);
+    // const isEmailValid = JSON.parse(isEmailValidJson);
+    // console.log(isEmailValidJson);
+    if (emailRegex.test(email) && valid) {
+      console.log("EMAIL VALID");
+      return true;
     }
-    else {
-      console.log("EMAIL OR REGEX INVALID")
-    }
-    return emailRegex.test(email) && isEmailValid;
+    return false;
   }
   catch (err) {
-    console.log("LIBRARY NOT WORKING, ONLY CHECKING REGEX");
+    console.log(err)
     return emailRegex.test(email);
   }
 };

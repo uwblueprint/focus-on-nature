@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@chakra-ui/react": "^2.2.1",
-    "@fortawesome/fontawesome-free": "^6.1.1"
+    "@fortawesome/fontawesome-free": "^6.1.1",
+    "deep-email-validator": "^0.1.21",
+    "email-validator": "^2.0.4"
   }
 }
