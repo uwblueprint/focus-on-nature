@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import mongoose from "mongoose";
+import cryptoRandomString from "crypto-random-string";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -35,6 +36,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const REFUND_CODE_LENGTH = 16;
+
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCampersAndCheckout(
@@ -48,7 +51,9 @@ class CamperService implements ICamperService {
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
+    let campersWithRefundCode: Camper[] = [];
     let checkoutSessionUrl = "";
+    let refundCode = "";
 
     try {
       // Perform session checks:
@@ -135,6 +140,12 @@ class CamperService implements ICamperService {
 
       checkoutSessionUrl = createStripeCheckoutSessionResponse.url;
 
+      // Create new unused refund code
+      do {
+        refundCode = cryptoRandomString({length: REFUND_CODE_LENGTH, type: 'alphanumeric'});
+        campersWithRefundCode = await MgCamper.find({ checkoutSessionUrl });
+      } while (campersWithRefundCode && campersWithRefundCode.length > 0);
+
       // Create a camper entity for each session
       const campersToRegister: Array<
         Omit<CamperDTO, "id">
@@ -159,6 +170,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 0,
               latePickup: 0,
             },
+            refundCode: refundCode,
             optionalClauses: camper.optionalClauses,
           };
         });
@@ -279,6 +291,7 @@ class CamperService implements ICamperService {
           registrationDate: newCamper.registrationDate.toString(),
           hasPaid: false,
           chargeId: newCamper.chargeId,
+          refundCode: newCamper.refundCode,
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
@@ -320,6 +333,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -377,6 +391,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -434,6 +449,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -480,6 +496,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -684,6 +701,13 @@ class CamperService implements ICamperService {
         }
       }
 
+      const { refundCode } = oldCampers[0];
+      for (let i = 0; i < oldCampers.length; i += 1) {
+        if (oldCampers[i].refundCode !== refundCode) {
+          throw new Error(`All campers must have the same refundCode.`);
+        }
+      }
+
       const oldCampSessionId = oldCampers[0].campSession;
       for (let i = 0; i < oldCampers.length; i += 1) {
         if (
@@ -885,6 +909,7 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
+        refundCode: updatedCamper.refundCode,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
       };
@@ -1024,6 +1049,13 @@ class CamperService implements ICamperService {
       for (let i = 0; i < campers.length; i += 1) {
         if (campers[i].chargeId !== oneChargeId) {
           throw new Error(`ChargeIds must all be the same.`);
+        }
+      }
+
+      const oneRefundCode = campers[0].refundCode;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].refundCode !== oneRefundCode) {
+          throw new Error(`RefundCodes must all be the same.`);
         }
       }
 
@@ -1262,6 +1294,8 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
+            refundCode: 
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
               "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
@@ -1296,6 +1330,8 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
+            refundCode: 
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
               "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
@@ -1322,6 +1358,8 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
+            refundCode: 
+              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 14 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
               "Sun Sep 10 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",

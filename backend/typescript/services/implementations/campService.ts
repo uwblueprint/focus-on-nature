@@ -130,6 +130,7 @@ class CampService implements ICampService {
                     chargeId: camper.chargeId,
                     formResponses: camper.formResponses,
                     charges: camper.charges,
+                    refundCode: camper.refundCode,
                     optionalClauses: camper.optionalClauses,
                   };
                 },
@@ -298,6 +299,7 @@ class CampService implements ICampService {
             chargeId: camper.chargeId,
             formResponses: camper.formResponses,
             charges: camper.charges,
+            refundCode: camper.refundCode,
             optionalClauses: camper.optionalClauses,
           };
         });
