@@ -1,5 +1,3 @@
-import * as EmailValidator from 'email-validator';
-
 export interface IPersonalInfoReducer<A, B> {
   updateCamper(campIndex: number, data: A, field: string): void;
   updateContact(camperIndex: number, data: B, field: string): void;
