@@ -28,10 +28,6 @@ export const checkEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export const verifyEmail = (email:string): Promise<boolean> => {
-  return Promise.resolve(EmailValidator.validate(email));
-};
-
 export const checkPhoneNumber = (phoneNumber: string): boolean => {
   return !!phoneNumber;
 };

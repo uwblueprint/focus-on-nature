@@ -1,5 +1,3 @@
-import validate from 'deep-email-validator';
-
 import React from "react";
 import {
   DeleteCamper,
@@ -141,29 +139,10 @@ export const checkAge = (
   return !!age && age >= campLower && age <= campUpper;
 };
 
-export const checkEmail = async (email: string): Promise<boolean> => {
+export const checkEmail = (email: string): boolean => {
   const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
-  try {
-    const valid = await validate(email);
-    console.log(valid);
-    // const isEmailValidJson = JSON.stringify(verifyResult);
-    // const isEmailValid = JSON.parse(isEmailValidJson);
-    // console.log(isEmailValidJson);
-    if (emailRegex.test(email) && valid) {
-      console.log("EMAIL VALID");
-      return true;
-    }
-    return false;
-  }
-  catch (err) {
-    console.log(err)
     return emailRegex.test(email);
-  }
 };
-
-// export const verifyEmail = (email:string): Promise<boolean> => {
-//   return Promise.resolve(EmailValidator.validate(email));
-// };
 
 export const checkPhoneNumber = (phoneNumber: string): boolean => {
   return !!phoneNumber;
