@@ -142,7 +142,8 @@ class CamperService implements ICamperService {
 
       // Create new unused refund code
       do {
-        refundCode = cryptoRandomString({length: REFUND_CODE_LENGTH, type: 'alphanumeric'});
+        // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
+        refundCode = cryptoRandomString(REFUND_CODE_LENGTH);
         campersWithRefundCode = await MgCamper.find({ refundCode });
       } while (campersWithRefundCode && campersWithRefundCode.length > 0);
 
@@ -1294,7 +1295,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
-            refundCode: 
+            refundCode:
               "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
@@ -1330,7 +1331,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
-            refundCode: 
+            refundCode:
               "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
@@ -1358,7 +1359,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 19,
               latePickup: 19,
             },
-            refundCode: 
+            refundCode:
               "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
             dates: [
               "Thu Sep 14 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
