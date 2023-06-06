@@ -105,14 +105,6 @@ export type CreateCamperResponse = {
   checkoutSessionUrl: string;
 };
 
-export type RefundDTOArray = Array<{
-  firstName: string;
-  lastName: string;
-  age: number;
-  campName: string;
-  instances: Array<CamperRefundDTO>;
-}>;
-
 export type RefundDTO = { 
   firstName: string;
   lastName: string;

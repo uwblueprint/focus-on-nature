@@ -4,12 +4,12 @@ import { RefundDTO } from "../../../types/CamperTypes";
 
 type CamperRefundInfoCardProps = { 
   refund: RefundDTO;
-  refundIndex: number; 
+  key: number; 
 }
 
 const CamperRefundInfoCard = ({
   refund,
-  refundIndex,
+  key,
 }: CamperRefundInfoCardProps): React.ReactElement => {
 
   return (
@@ -19,7 +19,6 @@ const CamperRefundInfoCard = ({
       borderRadius={10}
       borderColor="gray"
       borderWidth="1.75px"
-      key={refundIndex}
     >
       <Box
         backgroundColor="background.white.100"

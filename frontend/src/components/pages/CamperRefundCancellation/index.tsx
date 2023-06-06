@@ -5,7 +5,7 @@ import FONIcon from "../../../assets/fon_icon.svg";
 import CamperRefundInfoCard from "./CamperRefundInfoCard"
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
-import { RefundDTO, RefundDTOArray } from "../../../types/CamperTypes";
+import { RefundDTO } from "../../../types/CamperTypes";
 
 const requestRefund = () => {
   // todo
@@ -20,13 +20,12 @@ const CamperRefundCancellation = (): React.ReactElement => {
 
   const refundCode = "12345" // We will have to grab this refund code from users URL
   const toast = useToast();
-  const [refunds, setRefunds] = useState<RefundDTOArray>([])
+  const [refunds, setRefunds] = useState<Array<RefundDTO>>([])
   const [campName, setCampName] = useState<string>("")
   
   useEffect(() => {
       const getRefundInfoById = async (code: string) => { 
         const getResponse  = await CamperAPIClient.getRefundInfo(code);
-        console.log(getResponse);
         if (getResponse) {
           setRefunds(getResponse)
           setCampName(getResponse[0].campName)
@@ -41,7 +40,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
       }
       getRefundInfoById(refundCode);
     },[toast]);
-  
+   
   return (
     <>
       <Box>
@@ -76,10 +75,12 @@ const CamperRefundCancellation = (): React.ReactElement => {
             </Box>
             <Box> 
                 {refunds.map((refund, refundIndex) => { 
-                  return <CamperRefundInfoCard 
-                  refund={refund}
-                  refundIndex={refundIndex}
-                  />
+                  return (
+                    <CamperRefundInfoCard 
+                      refund={refund}
+                      key={refundIndex}
+                    />
+                  );
                 })}
             </Box>
           </Box>
