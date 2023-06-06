@@ -1,14 +1,22 @@
 import React from "react";
 import { Box, Text, Checkbox,VStack, StackDivider, Flex, Spacer } from "@chakra-ui/react";
-import { RefundDTO } from "../../../types/CamperTypes";
+import { CamperRefundDTO } from "../../../types/CamperTypes";
 
 type CamperRefundInfoCardProps = { 
-  refund: RefundDTO;
-  key: number; 
+  camperRefund: CamperRefundDTO;
+  firstName: string;
+  lastName: string;
+  camperNum: number;
+  sessionNum: number;
+  key: number;
 }
 
 const CamperRefundInfoCard = ({
-  refund,
+  camperRefund,
+  firstName,
+  lastName,
+  camperNum,
+  sessionNum,
   key,
 }: CamperRefundInfoCardProps): React.ReactElement => {
 
@@ -19,6 +27,7 @@ const CamperRefundInfoCard = ({
       borderRadius={10}
       borderColor="gray"
       borderWidth="1.75px"
+      marginBottom="32px"
     >
       <Box
         backgroundColor="background.white.100"
@@ -29,7 +38,7 @@ const CamperRefundInfoCard = ({
         borderRadius={10}
       >
         <Checkbox defaultChecked colorScheme="green" size="lg"> 
-          <Text as="b" fontSize="2xl" marginLeft="5px"> FirstName LastName </Text>
+          <Text as="b" fontSize="2xl" marginLeft="5px"> {firstName} {lastName} </Text>
         </Checkbox>
       </Box>
       <Box
@@ -53,9 +62,9 @@ const CamperRefundInfoCard = ({
               <Text as="b" fontSize="xl">Total Price (CAD)</Text>
             </Flex>
             <Flex width="100%">
-              <Text fontSize="2xl">Session 1</Text>
+              <Text fontSize="2xl">Session {sessionNum}</Text>
               <Spacer />
-              <Text fontSize="2xl">$800</Text>
+              <Text fontSize="2xl">${camperRefund.charges.camp}</Text>
             </Flex>
           </VStack>
 
@@ -66,19 +75,19 @@ const CamperRefundInfoCard = ({
                 spacing={2}
                 align='stretch'
               >
-                <Text fontSize="2xl">Session 1 EDLP</Text>
+                <Text fontSize="2xl">Session {sessionNum} EDLP</Text>
                 <Text fontSize="sm">150 minutes</Text>
               </VStack>
              
               <Spacer />
-              <Text fontSize="2xl" pt="15px">$25</Text>
+              <Text fontSize="2xl" pt="15px">${camperRefund.charges.earlyDropoff + camperRefund.charges.latePickup}</Text>
             </Flex>
           </VStack>
 
           <Flex width="100%">
-            <Text as="b" fontSize="xl">Total Refund for Camper 2</Text>
+            <Text as="b" fontSize="xl">Total Refund for Camper #{camperNum}</Text>
             <Spacer />
-            <Text as="b" fontSize="xl">$825</Text>
+            <Text as="b" fontSize="xl">${camperRefund.charges.earlyDropoff + camperRefund.charges.latePickup + camperRefund.charges.camp}</Text>
           </Flex>
 
         </VStack>
