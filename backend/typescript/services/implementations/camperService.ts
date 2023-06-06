@@ -51,7 +51,7 @@ class CamperService implements ICamperService {
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
-    let campersWithRefundCode: Camper[] = [];
+    let campersWithSameCode: Camper[] = [];
     let checkoutSessionUrl = "";
     let code = "";
 
@@ -145,8 +145,8 @@ class CamperService implements ICamperService {
         // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
         code = cryptoRandomString(REFUND_CODE_LENGTH);
         // eslint-disable-next-line no-await-in-loop
-        campersWithRefundCode = await MgCamper.find({ code });
-      } while (campersWithRefundCode && campersWithRefundCode.length > 0);
+        campersWithSameCode = await MgCamper.find({ code });
+      } while (campersWithSameCode && campersWithSameCode.length > 0);
 
       // Create a camper entity for each session
       const campersToRegister: Array<
