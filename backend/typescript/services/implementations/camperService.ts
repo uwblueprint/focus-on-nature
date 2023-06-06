@@ -143,7 +143,7 @@ class CamperService implements ICamperService {
       // Create new unused refund code
       do {
         // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
-        refundCode = cryptoRandomString(REFUND_CODE_LENGTH);
+        refundCode = cryptoRandomString({length: REFUND_CODE_LENGTH, type: 'alphanumeric'});
         campersWithRefundCode = await MgCamper.find({ refundCode });
       } while (campersWithRefundCode && campersWithRefundCode.length > 0);
 
