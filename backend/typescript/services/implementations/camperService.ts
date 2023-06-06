@@ -53,7 +53,7 @@ class CamperService implements ICamperService {
     let createCamperResponse: CamperDTO[] = [];
     let campersWithRefundCode: Camper[] = [];
     let checkoutSessionUrl = "";
-    let refundCode = "";
+    let code = "";
 
     try {
       // Perform session checks:
@@ -143,8 +143,9 @@ class CamperService implements ICamperService {
       // Create new unused refund code
       do {
         // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
-        refundCode = cryptoRandomString(REFUND_CODE_LENGTH);
-        campersWithRefundCode = await MgCamper.find({ refundCode });
+        code = cryptoRandomString(REFUND_CODE_LENGTH);
+        // eslint-disable-next-line no-await-in-loop
+        campersWithRefundCode = await MgCamper.find({ code });
       } while (campersWithRefundCode && campersWithRefundCode.length > 0);
 
       // Create a camper entity for each session
@@ -171,7 +172,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 0,
               latePickup: 0,
             },
-            refundCode: refundCode,
+            refundCode: code,
             optionalClauses: camper.optionalClauses,
           };
         });
