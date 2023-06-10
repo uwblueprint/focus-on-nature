@@ -1276,6 +1276,8 @@ class CamperService implements ICamperService {
         lastName: "Smith",
         age: 9,
         campName: "Banff Camp 2023",
+        startTime: "17:00",
+        endTime: "20:00",
         instances: [
           {
             id: "63b527fed9c42a8fd5ea55e6",
@@ -1312,6 +1314,8 @@ class CamperService implements ICamperService {
         lastName: "Smith",
         age: 10,
         campName: "Banff Camp 2023",
+        startTime: "17:00",
+        endTime: "20:00",
         instances: [
           {
             id: "63b527fed9c42a8fd5ea55e6",
