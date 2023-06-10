@@ -17,6 +17,7 @@ import {
   CamperCharges,
   CampRegistrationDTO,
   RefundDTO,
+  RefundCamperDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -1264,118 +1265,83 @@ class CamperService implements ICamperService {
     }
   }
 
+  /* eslint-disable class-methods-use-this */
   async getRefundInfo(refundCode: string): Promise<RefundDTO> {
-    // TODO: move this to validator
-    if (refundCode === "0") {
-      throw new Error("Invalid refund code");
-    }
+    let refundDTO: RefundDTO = [];
+    let refundCamper: RefundCamperDTO;
+    let campSession: CampSession | null = null;
+    let camper: Camper | null = null;
+    let refundDTOMap = new Map<string, any>();
+    let key : string;
+    let oldRefundInstance: any = {};
+    let newRefundInstance: any = {};
+    try {
+      const campers: Camper[] = await MgCamper.find({ refundCode });
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Refund Code ${refundCode} not found.`);
+      }
 
-    return [
-      {
-        firstName: "Alice",
-        lastName: "Smith",
-        age: 9,
-        campName: "Banff Camp 2023",
-        startTime: "17:00",
-        endTime: "20:00",
-        instances: [
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            refundCode:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
-            dates: [
-              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-        ],
-      },
-      {
-        firstName: "Bob",
-        lastName: "Smith",
-        age: 10,
-        campName: "Banff Camp 2023",
-        startTime: "17:00",
-        endTime: "20:00",
-        instances: [
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            refundCode:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
-            dates: [
-              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 14 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 14 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 09 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            refundCode:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD8",
-            dates: [
-              "Thu Sep 14 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 10 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 11 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 12 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-        ],
-      },
-    ];
+      // need a camp session to get camp id to get start and end times from camp
+      campSession = await MgCampSession.findById(campers[0].campSession);
+      if (!campSession) {
+        throw new Error(`Camp session with ID ${campers[0].campSession} not found.`);
+      }
+
+      const camp = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with ID ${campSession.camp} not found.`);
+      }
+
+      for (let i = 0; i < campers.length; i++) {
+        camper = campers[i];
+        // eslint-disable-next-line no-await-in-loop
+        campSession = await MgCampSession.findById(campers[i].campSession);
+        key = campers[i].firstName + campers[i].lastName;
+        refundCamper = {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          allergies: camper.allergies,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
+          specialNeeds: camper.specialNeeds,
+          registrationDate: camper.registrationDate.toString(),
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
+          charges: camper.charges,
+          dates: campSession ? campSession.dates.map((date) => date.toString()) : [""],
+        };
+
+        if (refundDTOMap.has(key)) {
+          // update instances
+          oldRefundInstance= refundDTOMap.get(key);
+          newRefundInstance = {
+            ...oldRefundInstance,
+            instances: oldRefundInstance.instances.push(refundCamper),
+          };
+        } else {
+          // add new value to map
+          newRefundInstance = {
+            firstName: campers[i].firstName,
+            lastName: campers[i].lastName,
+            age: campers[i].age,
+            campName: campSession ? campSession.camp : "",
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            instances: [refundCamper],
+          };
+        }
+        
+        refundDTOMap.set(key, newRefundInstance);
+      }
+
+      refundDTO = Array.from(refundDTOMap.values());
+      return refundDTO;
+
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
   }
 }
 
