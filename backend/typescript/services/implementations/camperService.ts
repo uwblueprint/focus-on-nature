@@ -1270,11 +1270,11 @@ class CamperService implements ICamperService {
     let refundDTO: RefundDTO = [];
     let refundCamper: RefundCamperDTO;
     let campSession: CampSession | null = null;
-    let camper: Camper | null = null;
-    let refundDTOMap = new Map<string, any>();
-    let key : string;
+    let key: string;
+    // using any because each object in RefundDTO does not have a specified type
     let oldRefundInstance: any = {};
     let newRefundInstance: any = {};
+    const refundDTOMap = new Map<string, any>();
     try {
       const campers: Camper[] = await MgCamper.find({ refundCode });
       if (!campers || campers.length === 0) {
@@ -1284,7 +1284,9 @@ class CamperService implements ICamperService {
       // need a camp session to get camp id to get start and end times from camp
       campSession = await MgCampSession.findById(campers[0].campSession);
       if (!campSession) {
-        throw new Error(`Camp session with ID ${campers[0].campSession} not found.`);
+        throw new Error(
+          `Camp session with ID ${campers[0].campSession} not found.`,
+        );
       }
 
       const camp = await MgCamp.findById(campSession.camp);
@@ -1292,11 +1294,11 @@ class CamperService implements ICamperService {
         throw new Error(`Camp with ID ${campSession.camp} not found.`);
       }
 
-      for (let i = 0; i < campers.length; i++) {
-        camper = campers[i];
+      // eslint-disable-next-line no-restricted-syntax
+      for (const camper of campers) {
         // eslint-disable-next-line no-await-in-loop
-        campSession = await MgCampSession.findById(campers[i].campSession);
-        key = campers[i].firstName + campers[i].lastName;
+        campSession = await MgCampSession.findById(camper.campSession);
+        key = camper.firstName + camper.lastName;
         refundCamper = {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
@@ -1309,12 +1311,14 @@ class CamperService implements ICamperService {
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
           charges: camper.charges,
-          dates: campSession ? campSession.dates.map((date) => date.toString()) : [""],
+          dates: campSession
+            ? campSession.dates.map((date) => date.toString())
+            : [""],
         };
 
         if (refundDTOMap.has(key)) {
           // update instances
-          oldRefundInstance= refundDTOMap.get(key);
+          oldRefundInstance = refundDTOMap.get(key);
           newRefundInstance = {
             ...oldRefundInstance,
             instances: oldRefundInstance.instances.push(refundCamper),
@@ -1322,22 +1326,20 @@ class CamperService implements ICamperService {
         } else {
           // add new value to map
           newRefundInstance = {
-            firstName: campers[i].firstName,
-            lastName: campers[i].lastName,
-            age: campers[i].age,
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
             campName: campSession ? campSession.camp : "",
             startTime: camp.startTime,
             endTime: camp.endTime,
             instances: [refundCamper],
           };
         }
-        
         refundDTOMap.set(key, newRefundInstance);
       }
 
       refundDTO = Array.from(refundDTOMap.values());
       return refundDTO;
-
     } catch (error: unknown) {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
