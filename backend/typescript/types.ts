@@ -247,7 +247,9 @@ export type UpdateCamperDTO = Omit<
   | "optionalClauses"
 >;
 
-export type RefundDTO = Array<{
+export type RefundDTO = Array<RefundCamperGroupDTO>;
+
+export type RefundCamperGroupDTO = {
   firstName: string;
   lastName: string;
   age: number;
@@ -255,7 +257,7 @@ export type RefundDTO = Array<{
   startTime: string;
   endTime: string;
   instances: Array<RefundCamperDTO>;
-}>;
+};
 
 export type RefundCamperDTO = Omit<
   CamperDTO,

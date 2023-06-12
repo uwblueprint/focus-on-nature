@@ -18,6 +18,7 @@ import {
   CampRegistrationDTO,
   RefundDTO,
   RefundCamperDTO,
+  RefundCamperGroupDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -1271,10 +1272,9 @@ class CamperService implements ICamperService {
     let refundCamper: RefundCamperDTO;
     let campSession: CampSession | null = null;
     let key: string;
-    // using any because each object in RefundDTO does not have a specified type
-    let oldRefundInstance: any = {};
-    let newRefundInstance: any = {};
-    const refundDTOMap = new Map<string, any>();
+    let oldRefundInstance: RefundCamperGroupDTO | undefined;
+    let newRefundInstance: RefundCamperGroupDTO;
+    const refundDTOMap = new Map<string, RefundCamperGroupDTO>();
     try {
       const campers: Camper[] = await MgCamper.find({ refundCode });
       if (!campers || campers.length === 0) {
@@ -1316,20 +1316,19 @@ class CamperService implements ICamperService {
             : [""],
         };
 
-        if (refundDTOMap.has(key)) {
+        oldRefundInstance = refundDTOMap.get(key);
+
+        if (oldRefundInstance) {
           // update instances
-          oldRefundInstance = refundDTOMap.get(key);
-          newRefundInstance = {
-            ...oldRefundInstance,
-            instances: oldRefundInstance.instances.push(refundCamper),
-          };
+          oldRefundInstance.instances.push(refundCamper);
+          newRefundInstance = oldRefundInstance;
         } else {
           // add new value to map
           newRefundInstance = {
             firstName: camper.firstName,
             lastName: camper.lastName,
             age: camper.age,
-            campName: campSession ? campSession.camp : "",
+            campName: camp ? camp.name : "",
             startTime: camp.startTime,
             endTime: camp.endTime,
             instances: [refundCamper],
