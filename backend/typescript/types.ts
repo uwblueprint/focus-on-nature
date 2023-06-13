@@ -249,6 +249,8 @@ export type RefundDTO = Array<{
   lastName: string;
   age: number;
   campName: string;
+  startTime: string;
+  endTime: string;
   instances: Array<RefundCamperDTO>;
 }>;
 
