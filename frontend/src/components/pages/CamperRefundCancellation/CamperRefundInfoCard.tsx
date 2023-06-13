@@ -27,39 +27,44 @@ const CamperRefundInfoCard = ({
   key,
   instances,
 }: CamperRefundInfoCardProps): React.ReactElement => {
-  // const getTimeDifference = (date1: Date, date2: Date) => {
-  //   return Math.abs(date2.getTime() - date1.getTime()) / 60000; // Difference in minutes
-  // };
+  const getTimeDifference = (date1: Date, date2: Date) : number => {
+    const date1Time = date1.getHours() * 60 + date1.getMinutes()
+    const date2Time = date2.getHours() * 60 + date2.getMinutes()
 
-  // const getTotalEDLPTime = () : number => {
-  //   const start = camperRefund.startTime;
-  //   const end = camperRefund.endTime;
-  //   const [startHours, startMinutes] = start.split(":").map(Number);
-  //   const [endHours, endMinutes] = end.split(":").map(Number);
+    return date2Time - date1Time; // Difference in minutes
+  };
+  
 
-  //   const startDate = new Date();
-  //   startDate.setHours(startHours);
-  //   startDate.setMinutes(startMinutes);
+  const getTotalEDLPTime = () : number => {
+    const start = camperRefund.startTime;
+    const end = camperRefund.endTime;
+    const [startHours, startMinutes] = start.split(":").map(Number);
+    const [endHours, endMinutes] = end.split(":").map(Number);
 
-  //   const endDate = new Date();
-  //   endDate.setHours(endHours);
-  //   endDate.setMinutes(endMinutes);
-    
-  //   let total = 0
-  //   instances.forEach((instance : CamperRefundDTO) => {
-  //     const earlyDropoffs = instance.earlyDropoff
-  //     const latePickups = instance.latePickup
+    const startDate = new Date();
+    startDate.setHours(startHours);
+    startDate.setMinutes(startMinutes);
+
+    const endDate = new Date();
+    endDate.setHours(endHours);
+    endDate.setMinutes(endMinutes);
+    console.log(endDate)
+
+    let total = 0
+    instances.forEach((instance : CamperRefundDTO) => {
+      const earlyDropoffs = instance.earlyDropoff
+      const latePickups = instance.latePickup
       
-  //     earlyDropoffs?.forEach((date : Date) => {
-  //       total += getTimeDifference(date, startDate)
-  //     })
+      earlyDropoffs?.forEach((date : Date) => {
+        total += getTimeDifference(new Date(date), startDate)
+      })
 
-  //     latePickups?.forEach((date: Date) => {
-  //       total += getTimeDifference(endDate, date)
-  //     })
-  //   })
-  //   return total;
-  // };
+      latePickups?.forEach((date: Date) => {
+        total += getTimeDifference(endDate, new Date(date))
+      })
+    })
+    return total;
+  };
 
   const getTotalRefundForCamper = () => { 
     let totalRefund = 0; 
@@ -146,7 +151,7 @@ const CamperRefundInfoCard = ({
                     </>
                   );
                 })}
-                {/* <Text fontSize="sm">{getTotalEDLPTime()} minutes</Text> */}
+                <Text fontSize="sm">{getTotalEDLPTime()} minutes</Text>
               </VStack>
             </Flex>
           </VStack>
