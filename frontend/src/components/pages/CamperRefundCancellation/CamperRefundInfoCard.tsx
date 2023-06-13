@@ -48,7 +48,6 @@ const CamperRefundInfoCard = ({
     const endDate = new Date();
     endDate.setHours(endHours);
     endDate.setMinutes(endMinutes);
-    console.log(endDate)
 
     let total = 0
     instances.forEach((instance : CamperRefundDTO) => {
