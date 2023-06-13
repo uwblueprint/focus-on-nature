@@ -55,11 +55,11 @@ const CamperRefundInfoCard = ({
       const earlyDropoffs = instance.earlyDropoff
       const latePickups = instance.latePickup
       
-      earlyDropoffs?.forEach((date : Date) => {
+      earlyDropoffs?.forEach((date) => {
         total += getTimeDifference(new Date(date), startDate)
       })
 
-      latePickups?.forEach((date: Date) => {
+      latePickups?.forEach((date) => {
         total += getTimeDifference(endDate, new Date(date))
       })
     })
