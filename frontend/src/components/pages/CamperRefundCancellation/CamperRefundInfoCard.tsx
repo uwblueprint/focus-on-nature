@@ -1,24 +1,73 @@
 import React from "react";
-import { Box, Text, Checkbox,VStack, StackDivider, Flex, Spacer } from "@chakra-ui/react";
-import { CamperRefundDTO } from "../../../types/CamperTypes";
+import {
+  Box,
+  Text,
+  Checkbox,
+  VStack,
+  StackDivider,
+  Flex,
+  Spacer,
+} from "@chakra-ui/react";
+import { CamperRefundDTO, RefundDTO } from "../../../types/CamperTypes";
 
-type CamperRefundInfoCardProps = { 
-  camperRefund: CamperRefundDTO;
+type CamperRefundInfoCardProps = {
+  camperRefund: any;
   firstName: string;
   lastName: string;
   camperNum: number;
-  sessionNum: number;
   key: number;
-}
+  instances: Array<CamperRefundDTO>;
+};
 
 const CamperRefundInfoCard = ({
   camperRefund,
   firstName,
   lastName,
   camperNum,
-  sessionNum,
   key,
+  instances,
 }: CamperRefundInfoCardProps): React.ReactElement => {
+  // const getTimeDifference = (date1: Date, date2: Date) => {
+  //   return Math.abs(date2.getTime() - date1.getTime()) / 60000; // Difference in minutes
+  // };
+
+  // const getTotalEDLPTime = () : number => {
+  //   const start = camperRefund.startTime;
+  //   const end = camperRefund.endTime;
+  //   const [startHours, startMinutes] = start.split(":").map(Number);
+  //   const [endHours, endMinutes] = end.split(":").map(Number);
+
+  //   const startDate = new Date();
+  //   startDate.setHours(startHours);
+  //   startDate.setMinutes(startMinutes);
+
+  //   const endDate = new Date();
+  //   endDate.setHours(endHours);
+  //   endDate.setMinutes(endMinutes);
+    
+  //   let total = 0
+  //   instances.forEach((instance : CamperRefundDTO) => {
+  //     const earlyDropoffs = instance.earlyDropoff
+  //     const latePickups = instance.latePickup
+      
+  //     earlyDropoffs?.forEach((date : Date) => {
+  //       total += getTimeDifference(date, startDate)
+  //     })
+
+  //     latePickups?.forEach((date: Date) => {
+  //       total += getTimeDifference(endDate, date)
+  //     })
+  //   })
+  //   return total;
+  // };
+
+  const getTotalRefundForCamper = () => { 
+    let totalRefund = 0; 
+    instances.forEach(instance => { 
+     totalRefund += instance.charges.earlyDropoff + instance.charges.latePickup + instance.charges.camp
+    });
+    return totalRefund;
+  }
 
   return (
     <Box
@@ -37,8 +86,11 @@ const CamperRefundInfoCard = ({
         pl="24px"
         borderRadius={10}
       >
-        <Checkbox defaultChecked colorScheme="green" size="lg"> 
-          <Text as="b" fontSize="2xl" marginLeft="5px"> {firstName} {lastName} </Text>
+        <Checkbox defaultChecked colorScheme="green" size="lg">
+          <Text as="b" fontSize="2xl" marginLeft="5px">
+            {" "}
+            {firstName} {lastName}{" "}
+          </Text>
         </Checkbox>
       </Box>
       <Box
@@ -51,45 +103,64 @@ const CamperRefundInfoCard = ({
         width="100%"
       >
         <VStack
-          divider={<StackDivider borderColor='gray.300' height="4px"/>}
+          divider={<StackDivider borderColor="gray.300" height="4px" />}
           spacing={4}
-          align='stretch'
+          align="stretch"
         >
           <VStack>
             <Flex width="100%">
-              <Text as="b" fontSize="xl">Item</Text>
+              <Text as="b" fontSize="xl">
+                Item
+              </Text>
               <Spacer />
-              <Text as="b" fontSize="xl">Total Price (CAD)</Text>
+              <Text as="b" fontSize="xl">
+                Total Price (CAD)
+              </Text>
             </Flex>
-            <Flex width="100%">
-              <Text fontSize="2xl">Session {sessionNum}</Text>
-              <Spacer />
-              <Text fontSize="2xl">${camperRefund.charges.camp}</Text>
-            </Flex>
+            <VStack width="100%">
+              {instances.map((instance, index) => {
+                return (
+                  <Flex width="100%" key={index} bg="yellow">
+                    <Text fontSize="2xl">Session {index+1}</Text>
+                    <Spacer />
+                    <Text fontSize="2xl">${instance.charges.camp}</Text>
+                  </Flex>
+                );
+              })}
+            </VStack>
           </VStack>
 
           <VStack>
             <Flex width="100%">
-              <VStack 
-                width="50%" 
-                spacing={2}
-                align='stretch'
-              >
-                <Text fontSize="2xl">Session {sessionNum} EDLP</Text>
-                <Text fontSize="sm">150 minutes</Text>
+              <VStack width="50%" spacing={2} align="stretch">
+                {instances.map((instance, index) => {
+                  return (
+                    <>
+                      <Text fontSize="2xl">Session {index+1} EDLP</Text>
+                      <Spacer />
+                      <Text fontSize="2xl" pt="15px">
+                        $
+                          {instance.charges.earlyDropoff +
+                            instance.charges.latePickup}
+                      </Text>
+                    </>
+                  );
+                })}
+                {/* <Text fontSize="sm">{getTotalEDLPTime()} minutes</Text> */}
               </VStack>
-             
-              <Spacer />
-              <Text fontSize="2xl" pt="15px">${camperRefund.charges.earlyDropoff + camperRefund.charges.latePickup}</Text>
             </Flex>
           </VStack>
 
           <Flex width="100%">
-            <Text as="b" fontSize="xl">Total Refund for Camper #{camperNum}</Text>
+            <Text as="b" fontSize="xl">
+              Total Refund for Camper #{camperNum}
+            </Text>
             <Spacer />
-            <Text as="b" fontSize="xl">${camperRefund.charges.earlyDropoff + camperRefund.charges.latePickup + camperRefund.charges.camp}</Text>
+            <Text as="b" fontSize="xl">
+              $
+              {getTotalRefundForCamper()}
+            </Text>
           </Flex>
-
         </VStack>
       </Box>
     </Box>

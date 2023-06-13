@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Text, Image, Box, Flex, Button, Link, useToast} from "@chakra-ui/react";
+import {
+  Text,
+  Image,
+  Box,
+  Flex,
+  Button,
+  Link,
+  useToast,
+} from "@chakra-ui/react";
 
 import FONIcon from "../../../assets/fon_icon.svg";
-import CamperRefundInfoCard from "./CamperRefundInfoCard"
+import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { RefundDTO } from "../../../types/CamperTypes";
@@ -14,32 +22,31 @@ const requestRefund = () => {
 // /refund/randomStr
 // each camper
 // Camp ID, camp session, everything outlined
-// link to the refund page with each camper. 
+// link to the refund page with each camper.
 
 const CamperRefundCancellation = (): React.ReactElement => {
-
-  const refundCode = "12345" // We will have to grab this refund code from users URL
+  const refundCode = "12345"; // We will have to grab this refund code from users URL
   const toast = useToast();
-  const [refunds, setRefunds] = useState<Array<RefundDTO>>([])
-  const [campName, setCampName] = useState<string>("")
-  
+  const [refunds, setRefunds] = useState<RefundDTO>([]);
+  const [campName, setCampName] = useState<string>("");
+
   useEffect(() => {
-      const getRefundInfoById = async (code: string) => { 
-        const getResponse  = await CamperAPIClient.getRefundInfo(code);
-        if (getResponse) {
-          setRefunds(getResponse)
-          setCampName(getResponse[0].campName)
-        } else {
-          toast({
-            description: `Unable to retrieve Refund Info.`,
-            status: "error",
-            duration: 3000,
-            variant: "subtle",
-          });
-        }
+    const getRefundInfoById = async (code: string) => {
+      const getResponse = await CamperAPIClient.getRefundInfo(code);
+      if (getResponse) {
+        setRefunds(getResponse);
+        setCampName(getResponse[0].campName);
+      } else {
+        toast({
+          description: `Unable to retrieve Refund Info.`,
+          status: "error",
+          duration: 3000,
+          variant: "subtle",
+        });
       }
-      getRefundInfoById(refundCode);
-    },[toast]);
+    };
+    getRefundInfoById(refundCode);
+  }, [toast]);
 
   return (
     <>
@@ -53,7 +60,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
           ml="40px"
           mt="10px"
         />
-        <Box pr={{lg: "30%", sm: "12%", md: "12%"}} pl="12%" pt="5%">
+        <Box pr={{ lg: "30%", sm: "12%", md: "12%" }} pl="12%" pt="5%">
           <Box pb="40px">
             <Text as="b" mt="70px" fontSize="40px">
               {campName}
@@ -73,28 +80,24 @@ const CamperRefundCancellation = (): React.ReactElement => {
               </Link>
             </Text>
           </Box>
-          <Box> 
-              {refunds.map((refundObject, camperNum) => { 
-                return (
-                  refundObject.instances.map((instance, sessionNum) => {
-                    return(
-                      <CamperRefundInfoCard 
-                        camperRefund={instance}
-                        firstName={refundObject.firstName}
-                        lastName={refundObject.lastName}
-                        camperNum={camperNum+1}
-                        sessionNum={sessionNum+1}
-                        key={sessionNum}
-                      />
-                    )
-                  })
-                );
-              })}
+          <Box>
+            {refunds.map((refundObject, refundNum) => {
+              return (
+                <CamperRefundInfoCard
+                  camperRefund={refundObject}
+                  firstName={refundObject.firstName}
+                  lastName={refundObject.lastName}
+                  instances={refundObject.instances}
+                  key={refundNum}
+                  camperNum={refundNum+1}
+                />
+              );
+            })}
           </Box>
         </Box>
       </Box>
-      <CamperRefundFooter/>
-  </>
+      <CamperRefundFooter />
+    </>
   );
 };
 
