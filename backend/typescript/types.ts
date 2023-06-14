@@ -259,17 +259,7 @@ export type RefundCamperGroupDTO = {
   instances: Array<RefundCamperDTO>;
 };
 
-export type RefundCamperDTO = Omit<
-  CamperDTO,
-  | "firstName"
-  | "lastName"
-  | "age"
-  | "contacts"
-  | "formResponses"
-  | "optionalClauses"
-> & {
-  dates: string[];
-};
+export type RefundCamperDTO = CamperDTO & { dates: string[] };
 
 export type AuthDTO = Token & UserDTO;
 

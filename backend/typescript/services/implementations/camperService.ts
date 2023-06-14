@@ -1266,7 +1266,6 @@ class CamperService implements ICamperService {
     }
   }
 
-  /* eslint-disable class-methods-use-this */
   async getRefundInfo(refundCode: string): Promise<RefundDTO> {
     let refundDTO: RefundDTO = [];
     let refundCamper: RefundCamperDTO;
@@ -1302,15 +1301,21 @@ class CamperService implements ICamperService {
         refundCamper = {
           id: camper.id,
           campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
           allergies: camper.allergies,
           earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
           latePickup: camper.latePickup.map((date) => date.toString()),
           specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
+          formResponses: camper.formResponses,
           charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
           dates: campSession
             ? campSession.dates.map((date) => date.toString())
             : [""],
