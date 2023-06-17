@@ -904,6 +904,40 @@ class CamperService implements ICamperService {
       const campersToBeDeleted = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
+
+      if (!campersToBeDeleted.length) {
+        throw new Error(
+          `Campers with specified camperIds and charge ID ${chargeId} not found.`,
+        );
+      }
+
+      for (let i = 0; i < camperIds.length; i += 1) {
+        await this.cancelRegistrationSession(chargeId, [camperIds[i]]);
+      }
+
+      await emailService.sendParentCancellationConfirmationEmail(
+        campersToBeDeleted,
+      );
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  /* eslint-disable class-methods-use-this */
+  async cancelRegistrationSession(
+    chargeId: string,
+    camperIds: string[],
+  ): Promise<void> {
+    try {
+      const campersWithChargeId: Array<Camper> = await MgCamper.find({
+        chargeId,
+      });
+      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+        camperIds.includes(camper.id),
+      );
       const camperIdsToBeDeleted = campersToBeDeleted.map(
         (camper) => camper.id,
       );
@@ -992,13 +1026,11 @@ class CamperService implements ICamperService {
           );
         }),
       );
-
-      await emailService.sendParentCancellationConfirmationEmail(
-        campersToBeDeleted,
-      );
     } catch (error: unknown) {
       Logger.error(
-        `Failed to cancel registration. Reason = ${getErrorMessage(error)}`,
+        `Failed to cancel session registration. Reason = ${getErrorMessage(
+          error,
+        )}`,
       );
       throw error;
     }
