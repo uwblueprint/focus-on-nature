@@ -135,7 +135,7 @@ const CamperRefundInfoCard = ({
 
           <VStack>
             <Flex width="100%">
-              <VStack width="50%" spacing={2} align="stretch">
+              <VStack width="100%" spacing={2} align="stretch">
                 {instances.map((instance, index) => {
                   return (
                     <>
