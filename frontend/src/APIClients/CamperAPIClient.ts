@@ -143,14 +143,12 @@ const waitlistCampers = async (
   }
 };
 
-const getRefundInfo = async ( 
-  refundCode: string, 
-): Promise<RefundDTO>  => { 
+const getRefundInfo = async (refundCode: string): Promise<RefundDTO> => {
   try {
     const { data } = await baseAPIClient.get(`/campers/refund/${refundCode}`, {
       headers: { Authorization: getBearerToken() },
     });
-    return data
+    return data;
   } catch (error) {
     return error as RefundDTO;
   }
@@ -181,5 +179,5 @@ export default {
   registerCampers,
   waitlistCampers,
   confirmPayment,
-  getRefundInfo
+  getRefundInfo,
 };

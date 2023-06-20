@@ -96,7 +96,7 @@ const App = (): React.ReactElement => {
                 path={Routes.CAMP_WAITLIST_PAGE}
                 component={RegistrantExperiencePage}
               />
-               <Route
+              <Route
                 exact
                 path={Routes.CAMPER_REFUND_CANCELLATION}
                 component={CamperRefundCancellation}

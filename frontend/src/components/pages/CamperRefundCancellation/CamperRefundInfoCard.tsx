@@ -29,14 +29,14 @@ const CamperRefundInfoCard = ({
   key,
   instances,
 }: CamperRefundInfoCardProps): React.ReactElement => {
-  const getTimeDifference = (date1: Date, date2: Date) : number => {
-    const date1Time = date1.getHours() * 60 + date1.getMinutes()
-    const date2Time = date2.getHours() * 60 + date2.getMinutes()
+  const getTimeDifference = (date1: Date, date2: Date): number => {
+    const date1Time = date1.getHours() * 60 + date1.getMinutes();
+    const date2Time = date2.getHours() * 60 + date2.getMinutes();
 
     return date2Time - date1Time; // Difference in minutes
   };
 
-  const getTotalEDLPTime = (instance : CamperRefundDTO) : number => {
+  const getTotalEDLPTime = (instance: CamperRefundDTO): number => {
     const start = camperRefund.startTime;
     const end = camperRefund.endTime;
     const [startHours, startMinutes] = start.split(":").map(Number);
@@ -50,49 +50,52 @@ const CamperRefundInfoCard = ({
     endDate.setHours(endHours);
     endDate.setMinutes(endMinutes);
 
-    let total = 0
-    const earlyDropoffs = instance.earlyDropoff
-    const latePickups = instance.latePickup
-    
+    let total = 0;
+    const earlyDropoffs = instance.earlyDropoff;
+    const latePickups = instance.latePickup;
+
     earlyDropoffs?.forEach((date) => {
-      total += getTimeDifference(new Date(date), startDate)
-    })
+      total += getTimeDifference(new Date(date), startDate);
+    });
 
     latePickups?.forEach((date) => {
-      total += getTimeDifference(endDate, new Date(date))
-    })
+      total += getTimeDifference(endDate, new Date(date));
+    });
     return total;
   };
 
-  const getTotalRefundForCamper = () => { 
-    let totalRefund = 0; 
-    instances.forEach(instance => { 
-     totalRefund += instance.charges.earlyDropoff + instance.charges.latePickup + instance.charges.camp
+  const getTotalRefundForCamper = () => {
+    let totalRefund = 0;
+    instances.forEach((instance) => {
+      totalRefund +=
+        instance.charges.earlyDropoff +
+        instance.charges.latePickup +
+        instance.charges.camp;
     });
     return totalRefund;
-  }
+  };
 
   const isRefundValid = () => {
-    const dates : Date[] = []
+    const dates: Date[] = [];
 
     // get all the dates of sessions
-    instances.forEach(instance => {
-      instance.dates.forEach(date => {
-        dates.push(new Date(date))
-      })
-    })
+    instances.forEach((instance) => {
+      instance.dates.forEach((date) => {
+        dates.push(new Date(date));
+      });
+    });
 
     // sort the dates and find the first session
     dates.sort((a, b) => a.getTime() - b.getTime());
-    const firstDate = dates[0]
+    const firstDate = dates[0];
     const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-    
-    return new Date().getTime() - firstDate.getTime() >= thirtyDays
-  }
 
-  const valid = isRefundValid()
+    return new Date().getTime() - firstDate.getTime() >= thirtyDays;
+  };
 
-  const textColor = valid ? "#000000" : "#00000066"
+  const valid = isRefundValid();
+
+  const textColor = valid ? "#000000" : "#00000066";
 
   return (
     <Box
@@ -111,7 +114,12 @@ const CamperRefundInfoCard = ({
         pl="24px"
         borderRadius={10}
       >
-        <Checkbox isDisabled={!valid} defaultChecked={valid} colorScheme="green" size="lg">
+        <Checkbox
+          isDisabled={!valid}
+          defaultChecked={valid}
+          colorScheme="green"
+          size="lg"
+        >
           <Text as="b" fontSize="2xl" marginLeft="5px">
             {" "}
             {firstName} {lastName}{" "}
@@ -146,9 +154,13 @@ const CamperRefundInfoCard = ({
               {instances.map((instance, index) => {
                 return (
                   <Flex width="100%" key={index}>
-                    <Text fontSize="2xl" color={textColor}>Session {index+1}</Text>
+                    <Text fontSize="2xl" color={textColor}>
+                      Session {index + 1}
+                    </Text>
                     <Spacer />
-                    <Text fontSize="2xl" color={textColor}>${instance.charges.camp}</Text>
+                    <Text fontSize="2xl" color={textColor}>
+                      ${instance.charges.camp}
+                    </Text>
                   </Flex>
                 );
               })}
@@ -163,16 +175,27 @@ const CamperRefundInfoCard = ({
                     <>
                       <Flex width="100%" key={index}>
                         <VStack width="50%" alignItems="flex-start">
-                          <Text textAlign="left" fontSize="2xl" color={textColor}>Session {index+1} EDLP</Text>
-                          <Text textAlign="left" fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }} color={textColor}>{getTotalEDLPTime(instance)} minutes</Text>
+                          <Text
+                            textAlign="left"
+                            fontSize="2xl"
+                            color={textColor}
+                          >
+                            Session {index + 1} EDLP
+                          </Text>
+                          <Text
+                            textAlign="left"
+                            fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
+                            color={textColor}
+                          >
+                            {getTotalEDLPTime(instance)} minutes
+                          </Text>
                         </VStack>
                         <Spacer />
                         <Text fontSize="2xl" pt="15px" color={textColor}>
-                            $
-                              {instance.charges.earlyDropoff +
-                                instance.charges.latePickup}
-                          </Text>
-                        
+                          $
+                          {instance.charges.earlyDropoff +
+                            instance.charges.latePickup}
+                        </Text>
                       </Flex>
                     </>
                   );
@@ -187,8 +210,7 @@ const CamperRefundInfoCard = ({
             </Text>
             <Spacer />
             <Text as="b" fontSize="xl" color={textColor}>
-              $
-              {getTotalRefundForCamper()}
+              ${getTotalRefundForCamper()}
             </Text>
           </Flex>
         </VStack>

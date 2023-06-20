@@ -89,7 +89,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
                   lastName={refundObject.lastName}
                   instances={refundObject.instances}
                   key={refundNum}
-                  camperNum={refundNum+1}
+                  camperNum={refundNum + 1}
                 />
               );
             })}
