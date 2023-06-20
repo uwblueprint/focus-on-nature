@@ -7,6 +7,8 @@ import {
   StackDivider,
   Flex,
   Spacer,
+  extendTheme,
+  ChakraProvider,
 } from "@chakra-ui/react";
 import { CamperRefundDTO, RefundDTO } from "../../../types/CamperTypes";
 
@@ -70,7 +72,27 @@ const CamperRefundInfoCard = ({
     return totalRefund;
   }
 
-  const valid = false
+  const isRefundValid = () => {
+    const dates : Date[] = []
+
+    // get all the dates of sessions
+    instances.forEach(instance => {
+      instance.dates.forEach(date => {
+        dates.push(new Date(date))
+      })
+    })
+
+    // sort the dates and find the first session
+    dates.sort((a, b) => a.getTime() - b.getTime());
+    const firstDate = dates[0]
+    const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+    
+    return new Date().getTime() - firstDate.getTime() >= thirtyDays
+  }
+
+  const valid = isRefundValid()
+
+  const textColor = valid ? "#000000" : "#00000066"
 
   return (
     <Box
@@ -89,7 +111,7 @@ const CamperRefundInfoCard = ({
         pl="24px"
         borderRadius={10}
       >
-        <Checkbox isDisabled={!valid} defaultChecked={!valid} colorScheme="green" size="lg">
+        <Checkbox isDisabled={!valid} defaultChecked={valid} colorScheme="green" size="lg">
           <Text as="b" fontSize="2xl" marginLeft="5px">
             {" "}
             {firstName} {lastName}{" "}
@@ -107,16 +129,16 @@ const CamperRefundInfoCard = ({
       >
         <VStack
           divider={<StackDivider borderColor="gray.300" height="4px" />}
-          spacing={4}
+          spacing={7}
           align="stretch"
         >
-          <VStack>
+          <VStack spacing={7}>
             <Flex width="100%">
-              <Text as="b" fontSize="xl">
+              <Text as="b" fontSize="xl" color={textColor}>
                 Item
               </Text>
               <Spacer />
-              <Text as="b" fontSize="xl">
+              <Text as="b" fontSize="xl" color={textColor}>
                 Total Price (CAD)
               </Text>
             </Flex>
@@ -124,9 +146,9 @@ const CamperRefundInfoCard = ({
               {instances.map((instance, index) => {
                 return (
                   <Flex width="100%" key={index}>
-                    <Text fontSize="2xl">Session {index+1}</Text>
+                    <Text fontSize="2xl" color={textColor}>Session {index+1}</Text>
                     <Spacer />
-                    <Text fontSize="2xl">${instance.charges.camp}</Text>
+                    <Text fontSize="2xl" color={textColor}>${instance.charges.camp}</Text>
                   </Flex>
                 );
               })}
@@ -140,15 +162,18 @@ const CamperRefundInfoCard = ({
                   return (
                     <>
                       <Flex width="100%" key={index}>
-                        <Text fontSize="2xl">Session {index+1} EDLP</Text>
+                        <VStack width="50%" alignItems="flex-start">
+                          <Text textAlign="left" fontSize="2xl" color={textColor}>Session {index+1} EDLP</Text>
+                          <Text textAlign="left" fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }} color={textColor}>{getTotalEDLPTime(instance)} minutes</Text>
+                        </VStack>
                         <Spacer />
-                        <Text fontSize="2xl" pt="15px">
-                          $
-                            {instance.charges.earlyDropoff +
-                              instance.charges.latePickup}
-                        </Text>
+                        <Text fontSize="2xl" pt="15px" color={textColor}>
+                            $
+                              {instance.charges.earlyDropoff +
+                                instance.charges.latePickup}
+                          </Text>
+                        
                       </Flex>
-                      <Text fontSize="sm">{getTotalEDLPTime(instance)} minutes</Text>
                     </>
                   );
                 })}
@@ -157,11 +182,11 @@ const CamperRefundInfoCard = ({
           </VStack>
 
           <Flex width="100%">
-            <Text as="b" fontSize="xl">
+            <Text as="b" fontSize="xl" color={textColor}>
               Total Refund for Camper #{camperNum}
             </Text>
             <Spacer />
-            <Text as="b" fontSize="xl">
+            <Text as="b" fontSize="xl" color={textColor}>
               $
               {getTotalRefundForCamper()}
             </Text>
