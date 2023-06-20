@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import {
   Text,
   Image,
@@ -15,20 +16,18 @@ import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { RefundDTO } from "../../../types/CamperTypes";
 
-const requestRefund = () => {
-  // todo
-};
-
 // /refund/randomStr
 // each camper
 // Camp ID, camp session, everything outlined
 // link to the refund page with each camper.
 
 const CamperRefundCancellation = (): React.ReactElement => {
-  const refundCode = "12345"; // We will have to grab this refund code from users URL
   const toast = useToast();
   const [refunds, setRefunds] = useState<RefundDTO>([]);
   const [campName, setCampName] = useState<string>("");
+
+  // The camper-refund-cancellation route will have an id to identify the refund code
+  const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
     const getRefundInfoById = async (code: string) => {
