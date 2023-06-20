@@ -944,13 +944,13 @@ class CamperService implements ICamperService {
         );
       }
 
-      let refundAmount = 0;
+      const refundAmountArray = await Promise.all(
+        camperIds.map(async (camperId) =>
+          this.cancelRegistrationSession(chargeId, [camperId]),
+        ),
+      );
 
-      for (let i = 0; i < camperIds.length; i += 1) {
-        refundAmount += await this.cancelRegistrationSession(chargeId, [
-          camperIds[i],
-        ]);
-      }
+      const refundAmount = refundAmountArray.reduce((a, b) => a + b);
 
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
