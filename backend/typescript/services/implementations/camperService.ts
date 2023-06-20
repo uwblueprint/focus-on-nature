@@ -904,6 +904,9 @@ class CamperService implements ICamperService {
       const campersToBeDeleted = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
+      const camperIdsToBeDeleted = campersToBeDeleted.map(
+        (camper) => camper.id,
+      );
 
       if (!campersToBeDeleted.length) {
         throw new Error(
@@ -911,10 +914,46 @@ class CamperService implements ICamperService {
         );
       }
 
+      let refundAmount = 0;
+
       for (let i = 0; i < camperIds.length; i += 1) {
-        await this.cancelRegistrationSession(chargeId, [camperIds[i]]);
+        refundAmount += await this.cancelRegistrationSession(chargeId, [
+          camperIds[i],
+        ]);
       }
 
+      // refund before db deletion - a camper should not be deleted if the refund doesn't go through
+      await stripe.refunds.create({
+        charge: chargeId,
+        amount: refundAmount,
+      });
+
+      await this.deleteCampersById(camperIdsToBeDeleted);
+      await Promise.all(
+        campersToBeDeleted.map(async (camper) => {
+          const campSession: CampSession | null = await MgCampSession.findById(
+            camper.campSession,
+          );
+
+          if (!campSession) {
+            throw new Error(
+              `Camper's camp session with campId ${camper.campSession} not found.`,
+            );
+          }
+
+          const camp = await MgCamp.findById(campSession.camp);
+          if (!camp) {
+            throw new Error(
+              `Camper's camp with campId ${campSession.camp} not found.`,
+            );
+          }
+          emailService.sendAdminCamperCancellationNoticeEmail(
+            camp,
+            camper,
+            campSession,
+          );
+        }),
+      );
       await emailService.sendParentCancellationConfirmationEmail(
         campersToBeDeleted,
       );
@@ -930,7 +969,7 @@ class CamperService implements ICamperService {
   async cancelRegistrationSession(
     chargeId: string,
     camperIds: string[],
-  ): Promise<void> {
+  ): Promise<number> {
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
@@ -981,12 +1020,6 @@ class CamperService implements ICamperService {
           );
         }
       }
-      const camp = await MgCamp.findById(campSession.camp);
-      if (!camp) {
-        throw new Error(
-          `Campers' camp with campId ${campSession.camp} not found.`,
-        );
-      }
 
       const today = new Date();
       const diffInMilliseconds: number = Math.abs(
@@ -1002,7 +1035,6 @@ class CamperService implements ICamperService {
         );
       }
 
-      // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       // calculate amount to be refunded
       let refundAmount = 0;
       campersToBeDeleted.forEach((camper) => {
@@ -1011,21 +1043,7 @@ class CamperService implements ICamperService {
           charges.camp + charges.earlyDropoff + charges.latePickup;
       });
 
-      await stripe.refunds.create({
-        charge: chargeId,
-        amount: refundAmount,
-      });
-
-      await this.deleteCampersById(camperIdsToBeDeleted);
-      await Promise.all(
-        campersToBeDeleted.map(async (camper) => {
-          emailService.sendAdminCamperCancellationNoticeEmail(
-            camp,
-            camper,
-            campSession,
-          );
-        }),
-      );
+      return refundAmount;
     } catch (error: unknown) {
       Logger.error(
         `Failed to cancel session registration. Reason = ${getErrorMessage(
