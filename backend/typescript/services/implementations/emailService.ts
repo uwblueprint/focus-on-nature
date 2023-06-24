@@ -7,6 +7,7 @@ import { Camper } from "../../models/camper.model";
 import { Camp } from "../../models/camp.model";
 import { CampSession } from "../../models/campSession.model";
 import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
+import { retrieveStripeCheckoutSession } from "../../utilities/stripeUtils";
 
 // TODO: swap out this email for the focus on nature admin email
 const ADMIN_EMAIL = "focusonnature@uwblueprint.org";
@@ -53,11 +54,27 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
+    const chargeId = campers[0].chargeId;
     const link = "DUMMY LINK"; // TODO: Update link
     const sessionDatesListItems: string[] = getSessionDatesListItems(
       campSessions,
     );
     const campLocationString: string = getLocationString(camp.location);
+    let discountAmount = 0;
+
+    try { 
+      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
+
+      if (!checkoutSession){ 
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+      
+      discountAmount = checkoutSession.total_details?.amount_discount ? checkoutSession.total_details?.amount_discount: 0;
+
+    } catch (error: unknown) {
+      Logger.error("Failed to retrieve checkout session.");
+      throw error;
+    }
 
     // Remove duplicated campers (each camper has entity per camp session)
     const uniqueCampers = campers.filter(
@@ -82,7 +99,7 @@ class EmailService implements IEmailService {
         camper.charges.earlyDropoff + camper.charges.latePickup;
     });
 
-    totalPayment = campFees + dropoffAndPickupFees;
+    totalPayment = campFees + dropoffAndPickupFees - discountAmount;
 
     await this.sendEmail(
       contact.email,
@@ -120,6 +137,7 @@ class EmailService implements IEmailService {
         uniqueCampers.length
       } campers x ${totalCampDays} total days of camp) </li> 
         <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
+        <li><b>Discount Amount:</b> $${discountAmount} </li> 
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
 
