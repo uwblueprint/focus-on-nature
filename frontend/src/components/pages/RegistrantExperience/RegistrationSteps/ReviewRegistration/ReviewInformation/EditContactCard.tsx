@@ -13,43 +13,104 @@ import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
 } from "../../../../../../types/PersonalInfoTypes";
-import { EmergencyContact } from "../../../../../../types/CamperTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../../types/CamperTypes";
 import {
   checkEmail,
   checkFirstName,
   checkLastName,
   checkPhoneNumber,
   checkRelationToCamper,
-} from "../../PersonalInfo/personalInfoReducer";
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";
 import EditCardHeader from "./EditCardHeader";
+import { FormQuestion } from "../../../../../../types/CampsTypes";
+import TextInputGroup from "../../QuestionGroups/TextInputGroup";
+import MultiselectGroup from "../../QuestionGroups/MultiselectGroup";
+import MultipleChoiceGroup from "../../QuestionGroups/MultipleChoiceGroup";
+import { checkAdditionalQuestionsAnsweredSingleCamper } from "../../AdditionalInfo/additionalInfoReducer";
 
 type EditContactCardProps = {
+  camper: RegistrantExperienceCamper;
   contact: EmergencyContact;
   contactIndex: number;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  emergencyContactQuestions: FormQuestion[];
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditContactCard = ({
+  camper,
   contact,
   contactIndex,
   dispatchPersonalInfoAction,
+  emergencyContactQuestions,
+  isEditing,
+  setIsEditing,
 }: EditContactCardProps): React.ReactElement => {
+  const mdWrapWidth = emergencyContactQuestions.length > 1 ? "47%" : "100%";
   const [updateMemo, setUpdateMemo] = useState(0);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialContact: EmergencyContact = useMemo(() => contact, [updateMemo]);
+  const initialCamperFormResponses = useMemo(
+    () =>
+      camper.formResponses ? Object.fromEntries(camper.formResponses) : {},
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updateMemo],
+  );
 
-  const [editing, setEditing] = useState(false);
+  const [editingIndividual, setEditingIndividual] = useState(false);
+
+  const setEditing = (state: boolean) => {
+    setEditingIndividual(state); // Local editing state.
+    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
+  };
 
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
   const [isEmailInvalid, setIsEmailInvalid] = useState(false);
   const [isPhoneNumberInvalid, setIsPhoneNumberInvalid] = useState(false);
   const [isRelationInvalid, setIsRelationInvalid] = useState(false);
+  const [save, setSave] = useState(false);
+
+  const handleMultipleChoiceChange = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: response,
+    });
+  };
 
   const updateFormErrorMsgs = () => {
+    setSave(true);
+
     if (
       contactIndex === 1 &&
       !(
@@ -65,6 +126,8 @@ const EditContactCard = ({
       setIsEmailInvalid(false);
       setIsPhoneNumberInvalid(false);
       setIsRelationInvalid(false);
+      setEditing(false);
+      setUpdateMemo(updateMemo + 1);
       return;
     }
 
@@ -90,7 +153,17 @@ const EditContactCard = ({
       setIsRelationInvalid(true);
       valid = false;
     }
-    if (valid) {
+
+    const requiredQuestions = emergencyContactQuestions
+      .filter((question) => question.required)
+      .map((question) => question.question);
+
+    const emergencyContactValid = checkAdditionalQuestionsAnsweredSingleCamper(
+      camper,
+      requiredQuestions,
+    );
+
+    if (valid && emergencyContactValid) {
       setEditing(false);
       setUpdateMemo(updateMemo + 1);
     }
@@ -138,7 +211,16 @@ const EditContactCard = ({
       data: initialContact.relationshipToCamper,
     });
 
+    emergencyContactQuestions.forEach((question) => {
+      dispatchPersonalInfoAction({
+        type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+        question: question.question,
+        data: initialCamperFormResponses[question.question] || "",
+      });
+    });
+
     setEditing(false);
+    setSave(false);
   };
 
   return (
@@ -146,17 +228,17 @@ const EditContactCard = ({
       <EditCardHeader
         title={contactIndex === 0 ? "Primary Contact" : "Secondary Contact"}
         onClick={() => setEditing(true)}
-        editing={editing}
+        editing={editingIndividual}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editing ? 1 : -1}
+          zIndex={editingIndividual ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"
@@ -230,7 +312,7 @@ const EditContactCard = ({
                     }}
                   />
                   <FormErrorMessage>
-                    This field cannot be empty
+                    Error validating email
                   </FormErrorMessage>
                 </FormControl>
               </WrapItem>
@@ -287,6 +369,39 @@ const EditContactCard = ({
                   </FormErrorMessage>
                 </FormControl>
               </WrapItem>
+
+              {contactIndex === 0 &&
+                emergencyContactQuestions.map((question) => (
+                  <WrapItem
+                    key={`contact_info_question_${question.question}`}
+                    width={{ sm: "100%", md: mdWrapWidth }}
+                  >
+                    {question.type === "Text" && (
+                      <TextInputGroup
+                        formResponses={camper.formResponses}
+                        question={question}
+                        handleTextChange={handleTextChange}
+                        nextClicked={save}
+                      />
+                    )}
+                    {question.type === "Multiselect" && (
+                      <MultiselectGroup
+                        formResponses={camper.formResponses}
+                        question={question}
+                        handleSelectionChange={handleSelectionChange}
+                        nextClicked={save}
+                      />
+                    )}
+                    {question.type === "MultipleChoice" && (
+                      <MultipleChoiceGroup
+                        formResponses={camper.formResponses}
+                        question={question}
+                        handleMultipleChoiceChange={handleMultipleChoiceChange}
+                        nextClicked={save}
+                      />
+                    )}
+                  </WrapItem>
+                ))}
             </Wrap>
           </Box>
 

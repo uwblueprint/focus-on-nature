@@ -42,10 +42,14 @@ const CampersTables = ({
               campSessionCapacity={campSession.capacity}
               handleRefetch={handleRefetch}
               generateCsv={generateCsv}
+              sessionDates={campSession.dates}
             />
           </TabPanel>
           <TabPanel padding="0">
-            <WaitlistedCampersTable waitlistedCampers={campSession.waitlist} />
+            <WaitlistedCampersTable
+              waitlistedCampers={campSession.waitlist}
+              handleRefetch={handleRefetch}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>

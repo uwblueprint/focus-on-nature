@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Flex, Text, Tag } from "@chakra-ui/react";
-import { getFormattedDateString } from "../../../utils/CampUtils";
+import { getFormattedDateRangeStringFromStringArray } from "../../../utils/CampUtils";
 import { CampSession } from "../../../types/CampsTypes";
 
 type PreviewModalSessionRowProps = {
@@ -38,7 +38,7 @@ const PreviewModalSessionRow = ({
         </>
       </Flex>
       <Text textStyle="subHeading">
-        {getFormattedDateString(session.dates)}
+        {getFormattedDateRangeStringFromStringArray(session.dates)}
       </Text>
       <Text textStyle="caption">
         Registrations (

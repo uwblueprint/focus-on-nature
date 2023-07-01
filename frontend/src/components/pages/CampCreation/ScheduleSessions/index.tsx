@@ -8,12 +8,14 @@ type ScheduleSessionsProps = {
   campTitle: string;
   scheduledSessions: CreateCampSession[];
   setScheduledSessions: (newSessions: CreateCampSession[]) => void;
+  showScheduleSessionCardError: boolean;
 };
 
 const ScheduleSessions = ({
   campTitle,
   scheduledSessions,
   setScheduledSessions,
+  showScheduleSessionCardError,
 }: ScheduleSessionsProps): React.ReactElement => {
   return (
     <Flex justify="flex-end" w="100%" h="100%">
@@ -29,6 +31,7 @@ const ScheduleSessions = ({
       <SessionSidePanel
         scheduledSessions={scheduledSessions}
         setScheduledSessions={setScheduledSessions}
+        showScheduleSessionCardError={showScheduleSessionCardError}
       />
     </Flex>
   );

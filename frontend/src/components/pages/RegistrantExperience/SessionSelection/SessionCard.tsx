@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Text, VStack, Flex, useMediaQuery } from "@chakra-ui/react";
 import { CampSession } from "../../../../types/CampsTypes";
 import { SessionCardState } from "./SessionSelectionTypes";
@@ -7,7 +7,10 @@ import {
   sessionCardDatesTextStyles,
   sessionCardDetailsTextStyles,
 } from "./SessionSelectionStyles";
-import { getMeridianTime } from "../../../../utils/CampUtils";
+import {
+  getFormattedDateRangeStringFromStringArray,
+  getMeridianTime,
+} from "../../../../utils/CampUtils";
 
 const WAITLISTED_COLOR = "red.100";
 const AVAILABLE_COLOR = "green.100";
@@ -52,21 +55,30 @@ const SessionCardDetails = ({
   };
 
   const [isMobile] = useMediaQuery("(max-width: 767px)");
+
+  const formattedTimeString = useMemo(
+    () => `${getMeridianTime(startTime)} - ${getMeridianTime(endTime)}`,
+    [startTime, endTime],
+  );
+
+  const dateRangeString = useMemo(
+    () => getFormattedDateRangeStringFromStringArray(campSession.dates),
+    [campSession.dates],
+  );
+
   return (
     <>
-      <Text textStyle={sessionCardDatesTextStyles}>
-        {getCampSessionDates()}
-      </Text>
+      <Text textStyle={sessionCardDatesTextStyles}>{dateRangeString}</Text>
       {isMobile ? (
         <>
           <Text textStyle={sessionCardDetailsTextStyles}>
-            {formattedTimeString(startTime, endTime)}
+            {formattedTimeString}
           </Text>
           <Text textStyle={sessionCardDetailsTextStyles}>${fee}</Text>
         </>
       ) : (
         <Text textStyle={sessionCardDetailsTextStyles}>
-          {formattedTimeString(startTime, endTime)} · ${fee}
+          {formattedTimeString} · ${fee}
         </Text>
       )}
     </>

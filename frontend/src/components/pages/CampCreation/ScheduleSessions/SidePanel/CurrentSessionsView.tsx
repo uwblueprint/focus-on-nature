@@ -19,12 +19,14 @@ type CurrentSessionsViewProps = {
   scheduledSessions: CreateCampSession[];
   setScheduledSessions: (sessions: Array<CreateCampSession>) => void;
   setShowAddSessions: (showView: boolean) => void;
+  showScheduleSessionCardError: boolean;
 };
 
 const CurrentSessionsView = ({
   scheduledSessions,
   setScheduledSessions,
   setShowAddSessions,
+  showScheduleSessionCardError,
 }: CurrentSessionsViewProps): JSX.Element => {
   const [sessionToDeleteIndex, setSessionToDeleteIndex] = React.useState(0);
   const toast = useToast();
@@ -92,6 +94,7 @@ const CurrentSessionsView = ({
                 scheduledSession={session}
                 updateSession={updateSession}
                 onDelete={deleteSession}
+                showScheduleSessionCardError={showScheduleSessionCardError}
               />
             ))}
           </>

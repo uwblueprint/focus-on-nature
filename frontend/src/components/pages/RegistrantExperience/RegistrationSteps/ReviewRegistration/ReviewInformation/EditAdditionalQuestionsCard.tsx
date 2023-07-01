@@ -18,6 +18,8 @@ type EditAdditionalQuestionsCardProps = {
   camperIndex: number;
   campSpecificFormQuestions: FormQuestion[];
   dispatchAdditionalInfoAction: (action: AdditionalInfoReducerDispatch) => void;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditAdditionalQuestionsCard = ({
@@ -25,10 +27,17 @@ const EditAdditionalQuestionsCard = ({
   camperIndex,
   campSpecificFormQuestions,
   dispatchAdditionalInfoAction,
+  isEditing,
+  setIsEditing,
 }: EditAdditionalQuestionsCardProps): React.ReactElement => {
   const mdWrapWidth = campSpecificFormQuestions.length > 1 ? "47%" : "100%";
 
-  const [editing, setEditing] = useState(false);
+  const [editingIndividual, setEditingIndividual] = useState(false);
+
+  const setEditing = (state: boolean) => {
+    setEditingIndividual(state); // Local editing state.
+    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
+  };
 
   const [updateMemo, setUpdateMemo] = useState(0);
   const initialCamperFormResponses = useMemo(
@@ -107,17 +116,17 @@ const EditAdditionalQuestionsCard = ({
       <EditCardHeader
         title={`${camper.firstName} ${camper.lastName}`}
         onClick={() => setEditing(true)}
-        editing={editing}
+        editing={editingIndividual}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editing ? 1 : -1}
+          zIndex={editingIndividual ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"
@@ -136,7 +145,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleTextChange={handleTextChange}
                       nextClicked={save}
-                      editing
+                      editing={editingIndividual}
                     />
                   )}
                   {question.type === "Multiselect" && (
@@ -145,7 +154,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleSelectionChange={handleSelectionChange}
                       nextClicked={save}
-                      editing
+                      editing={editingIndividual}
                     />
                   )}
                   {question.type === "MultipleChoice" && (
@@ -154,7 +163,7 @@ const EditAdditionalQuestionsCard = ({
                       question={question}
                       handleMultipleChoiceChange={handleMultipleChoiceChange}
                       nextClicked={save}
-                      editing
+                      editing={editingIndividual}
                     />
                   )}
                 </WrapItem>

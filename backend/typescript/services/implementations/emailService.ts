@@ -199,7 +199,6 @@ class EmailService implements IEmailService {
     const uniqueCamperIds = new Set(
       waitlistedCampers.map((camper) => camper.id),
     );
-
     await this.sendEmail(
       waitlistedCampers[0].contactEmail,
       "Focus on Nature Camp Waitlist - Confirmation",

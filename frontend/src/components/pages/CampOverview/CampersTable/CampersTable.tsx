@@ -32,6 +32,7 @@ import EditCamperModal from "../EditCamperModal";
 import ViewCamperModal from "../ViewCamperModal/index";
 import { FormQuestion } from "../../../../types/CampsTypes";
 import RemoveCamperModal from "../RemoveCamperModal/index";
+import MoveCamperModal from "../MoveCamperModal";
 
 const ExportButton = ({
   generateCsv,
@@ -60,19 +61,23 @@ const ExportButton = ({
   );
 };
 
+type CampersTableProps = {
+  campers: Camper[];
+  campSessionCapacity: number;
+  formQuestions: FormQuestion[];
+  handleRefetch: () => void;
+  generateCsv: () => void;
+  sessionDates: string[];
+};
+
 const CampersTable = ({
   campers,
   campSessionCapacity,
   formQuestions,
   handleRefetch,
   generateCsv,
-}: {
-  campers: Camper[];
-  campSessionCapacity: number;
-  formQuestions: FormQuestion[];
-  handleRefetch: () => void;
-  generateCsv: () => void;
-}): JSX.Element => {
+  sessionDates,
+}: CampersTableProps): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>(
     Filter.ALL,
@@ -88,6 +93,12 @@ const CampersTable = ({
     isOpen: viewModalIsOpen,
     onOpen: viewModalOnOpen,
     onClose: viewModalOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: moveModalIsOpen,
+    onOpen: moveModalOnOpen,
+    onClose: moveModalOnClose,
   } = useDisclosure();
 
   const {
@@ -249,7 +260,10 @@ const CampersTable = ({
                     )}
                   </Td>
                   <Td pl="7px" maxWidth="760px">
-                    <CamperDetailsBadgeGroup camper={camper} />
+                    <CamperDetailsBadgeGroup
+                      camper={camper}
+                      sessionDates={sessionDates}
+                    />
                   </Td>
                   <Td
                     justifyContent="flex-end"
@@ -267,8 +281,8 @@ const CampersTable = ({
                         viewModalOnOpen();
                       }}
                       moveCamperFunc={() => {
-                        /* eslint-disable no-console */
-                        console.log("Moving Camper");
+                        setSelectedCamper(camper);
+                        moveModalOnOpen();
                       }}
                       removeCamperFunc={() => {
                         setSelectedCamper(camper);
@@ -295,6 +309,17 @@ const CampersTable = ({
               camper={selectedCamper}
               viewCamperModalIsOpen={viewModalIsOpen}
               viewCamperOnClose={viewModalOnClose}
+              sessionDates={sessionDates}
+            />
+          )}
+
+          {selectedCamper && (
+            <MoveCamperModal
+              camper={selectedCamper}
+              moveCamperModalIsOpen={moveModalIsOpen}
+              handleRefetch={handleRefetch}
+              moveCamperModalOnClose={moveModalOnClose}
+              deleteActionCleanUp={deleteActionCleanUp}
             />
           )}
 

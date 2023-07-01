@@ -1,5 +1,12 @@
 import { Box, Flex, useDisclosure, useToast } from "@chakra-ui/react";
-import React, { useState, useReducer, Reducer, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useReducer,
+  Reducer,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
   OptionalClauseResponse,
@@ -23,7 +30,11 @@ import {
 } from "../../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../../types/AdminTypes";
 import { saveRegistrationSessionToSessionStorage } from "../../../../utils/RegistrationUtils";
-import { CheckoutData, EdlpChoice } from "../../../../types/RegistrationTypes";
+import {
+  CheckoutData,
+  EdlpChoice,
+  EdlpSelections,
+} from "../../../../types/RegistrationTypes";
 import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 import RegistrationErrorModal from "../RegistrationResult/RegistrationErrorModal";
 import { checkAdditionalQuestionsAnswered } from "./AdditionalInfo/additionalInfoReducer";
@@ -32,7 +43,7 @@ import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../constants/RegistrationCon
 
 type RegistrationStepsProps = {
   camp: CampResponse;
-  selectedSessions: CampSession[];
+  orderedSelectedSessions: CampSession[];
   waiver: WaiverType;
   waitlistedCamper?: WaitlistedCamper;
   onClickBack: () => void;
@@ -41,7 +52,7 @@ type RegistrationStepsProps = {
 
 const RegistrationSteps = ({
   camp,
-  selectedSessions,
+  orderedSelectedSessions: selectedSessions,
   waiver,
   onClickBack,
   waitlistedCamper,
@@ -57,6 +68,8 @@ const RegistrationSteps = ({
   const [currentStep, setCurrentStep] = useState<RegistrantExperienceSteps>(
     RegistrantExperienceSteps.PersonalInfoPage,
   );
+
+  const [isEditing, setIsEditing] = useState(0);
 
   const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
     {
@@ -88,13 +101,11 @@ const RegistrationSteps = ({
     setRequireEarlyDropOffLatePickup,
   ] = useState<boolean | null>(null);
 
-  // Each camp session has an array of EdlpChoice objects
-  // Each EdlpChoice object looks like {date: "date of a day of camp", edlp: ["8:30", "16:00"], edlpCost: [40, 20]}
-  const [edlpChoices, setEdlpChoices] = useState<EdlpChoice[][]>(
-    selectedSessions.map((campSession) => {
-      return campSession.dates.map((date) => {
-        return {
-          date,
+  const defaultSelections: EdlpSelections = useMemo(() => {
+    return selectedSessions.map((campSession) => {
+      const placeholderValues: { [key: string]: EdlpChoice } = {};
+      campSession.dates.forEach((date) => {
+        placeholderValues[date] = {
           earlyDropoff: {
             timeSlot: EDLP_PLACEHOLDER_TIMESLOT,
             units: 0,
@@ -107,7 +118,13 @@ const RegistrationSteps = ({
           },
         };
       });
-    }),
+
+      return placeholderValues;
+    });
+  }, [selectedSessions]);
+
+  const [edlpSelections, setEdlpSelections] = useState<EdlpSelections>(
+    defaultSelections,
   );
 
   const [waiverInterface, waiverDispatch] = useReducer<
@@ -153,7 +170,7 @@ const RegistrationSteps = ({
       waiverInterface,
       checkoutUrl: checkoutSessionUrl,
       selectedSessionIds: selectedSessions.map((session) => session.id),
-      edlpChoices,
+      edlpSelections,
       requireEarlyDropOffLatePickup,
       chargeId,
     });
@@ -187,7 +204,7 @@ const RegistrationSteps = ({
 
         // Update all the campers' optionalClauses field
         /* eslint-disable-next-line */
-      for (const camper of newCampers){
+        for (const camper of newCampers) {
           camper.optionalClauses = newCamperOptionalClauses;
         }
         return newCampers;
@@ -197,7 +214,7 @@ const RegistrationSteps = ({
 
   const registerCampers = async (
     newCampers: RegistrantExperienceCamper[],
-    edlp: EdlpChoice[][],
+    edlp: EdlpSelections,
   ) => {
     try {
       if (newCampers.length === 0) {
@@ -311,8 +328,8 @@ const RegistrationSteps = ({
             hasEDLP={hasEarlyDropOffLatePickup}
             requireEDLP={requireEarlyDropOffLatePickup}
             setRequireEDLP={setRequireEarlyDropOffLatePickup}
-            edlpChoices={edlpChoices}
-            setEdlpChoices={setEdlpChoices}
+            edlpSelections={edlpSelections}
+            setEdlpSelections={setEdlpSelections}
           />
         );
       case RegistrantExperienceSteps.WaiverPage:
@@ -330,10 +347,16 @@ const RegistrationSteps = ({
             campers={campers}
             sessions={selectedSessions}
             camp={camp}
-            edlpChoices={edlpChoices}
+            edlpSelections={edlpSelections}
             onPageVisited={() => setReviewRegistrationVisited(true)}
             setCampers={setCampers}
             isPaymentSummary={isPaymentSummary}
+            hasEDLP={hasEarlyDropOffLatePickup}
+            requireEDLP={requireEarlyDropOffLatePickup}
+            setRequireEDLP={setRequireEarlyDropOffLatePickup}
+            setEdlpSelections={setEdlpSelections}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
           />
         );
       default:
@@ -363,7 +386,7 @@ const RegistrationSteps = ({
     } else {
       // Append the optional clauses to all the campers before registering the campers
       appendOptionalClausesToCampers(waiverInterface.optionalClauses);
-      registerCampers(campers, edlpChoices);
+      registerCampers(campers, edlpSelections);
     }
   };
 
@@ -372,7 +395,7 @@ const RegistrationSteps = ({
       setCampers(failedCheckoutData.campers);
       setCheckoutUrl(failedCheckoutData.checkoutUrl);
       setCheckoutChargeId(failedCheckoutData.chargeId);
-      setEdlpChoices(failedCheckoutData.edlpChoices);
+      setEdlpSelections(failedCheckoutData.edlpSelections);
       waiverDispatch({
         type: WaiverActions.SET_WAIVER_INTERFACE,
         waiver: failedCheckoutData.waiverInterface,
@@ -394,7 +417,6 @@ const RegistrationSteps = ({
   return (
     <Flex
       direction="column"
-      w="100vw"
       pt={{ sm: "120px", md: "120px", lg: "144px" }}
       pb={{ sm: "170px", md: "108px", lg: "144px" }}
       justifyContent="flex-start"
@@ -406,6 +428,7 @@ const RegistrationSteps = ({
         isWaiverFilled={isWaiverFilled}
         isReviewRegistrationFilled={isPaymentSummary}
         setCurrentStep={setCurrentStep}
+        isEditing={isEditing}
       />
       <Box mx="10vw">{getCurrentRegistrantStepComponent(currentStep)}</Box>
       <RegistrationFooter
@@ -416,6 +439,7 @@ const RegistrationSteps = ({
         handleStepNavigation={handleStepNavigation}
         isPaymentSummary={isPaymentSummary}
         isWaitlistRegistration={waitlistedCamper !== undefined}
+        isEditing={isEditing}
       />
       <RegistrationErrorModal
         onConfirm={() => {

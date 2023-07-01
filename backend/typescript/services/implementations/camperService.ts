@@ -388,6 +388,7 @@ class CamperService implements ICamperService {
           contactNumber: camper.contactNumber,
           campSession: camper.campSession ? camper.campSession.toString() : "",
           status: camper.status,
+          registrationDate: camper.registrationDate.toString(),
         };
       });
     } catch (error: unknown) {
@@ -606,6 +607,7 @@ class CamperService implements ICamperService {
             contactNumber: waitlistedCamper.contactNumber,
             campSession: cs,
             status: "NotRegistered",
+            registrationDate: new Date().toString(),
           };
         });
       });
@@ -657,6 +659,7 @@ class CamperService implements ICamperService {
         contactNumber: c.contactNumber,
         campSession: c.campSession.toString(),
         status: c.status,
+        registrationDate: c.registrationDate.toString(),
       };
     });
   }
@@ -673,7 +676,6 @@ class CamperService implements ICamperService {
     let oldCampSession: CampSession | null = null;
     let movedCampSession = false;
     let camp: Camp | null;
-
     try {
       oldCampers = await MgCamper.find({
         _id: {
@@ -729,17 +731,49 @@ class CamperService implements ICamperService {
           );
         }
 
-        const oldCampSessionOriginalCampers = oldCampSession.campers; // for roll back
+        const currentTime = new Date();
+        // Find the earliest date for the camp session
+        const earliestDate = newCampSession.dates.reduce(
+          (earliest, date) => (earliest < date ? earliest : date),
+          new Date(Infinity),
+        );
 
-        if (newCampSession) {
-          // campers for new camp session
-          newCampSession.campers = newCampSession.campers.concat(oldCampers);
-
-          // campers for old camp session
-          oldCampSession.campers = oldCampSession.campers.filter(
-            (camperId) => !camperIds.includes(camperId.toString()),
+        const newCampSessionDate = earliestDate;
+        if (currentTime > newCampSessionDate) {
+          throw new Error(
+            `Error: you can only move campers to future sessions`,
           );
         }
+
+        const newCampSessionCapcityRemaining =
+          newCampSession.capacity - newCampSession.campers.length;
+        const oldCampSessionOriginalCampers = oldCampSession.campers; // for roll back
+
+        if (
+          oldCampSessionOriginalCampers.length > newCampSessionCapcityRemaining
+        ) {
+          throw new Error(`Error: camp session to move to is full`);
+        }
+
+        // campers for new camp session
+        newCampSession.campers = newCampSession.campers.concat(oldCampers);
+
+        // campers for old camp session
+        oldCampSession.campers = oldCampSession.campers.filter(
+          (camperId) => !camperIds.includes(camperId.toString()),
+        );
+
+        // Remove campers from old camp session
+        await MgCampSession.updateOne(
+          { _id: oldCampSession.id },
+          { $pullAll: { campers: camperIds } },
+        );
+
+        // Move campers to new camp session
+        await MgCampSession.updateOne(
+          { _id: newCampSession.id },
+          { $push: { campers: { $each: camperIds } } },
+        );
 
         try {
           await newCampSession.save();
@@ -762,7 +796,6 @@ class CamperService implements ICamperService {
           }
         }
       }
-
       try {
         const updatedResult = await MgCamper.updateMany(
           {
@@ -1135,6 +1168,7 @@ class CamperService implements ICamperService {
           contactNumber: camperToUpdate.contactNumber,
           campSession: camperToUpdate.campSession,
           status: camperToUpdate.status,
+          registrationDate: camperToUpdate.registrationDate,
         };
     } catch (error: unknown) {
       Logger.error(

@@ -19,14 +19,16 @@ type SesssionSelectionProps = {
   camp: CampResponse;
   selectedSessions: Set<string>;
   setSelectedSessions: (newSelections: Set<string>) => void;
-  onFormSubmission: () => void;
+  onWaitListSubmission: () => void;
+  onRegistrationSubmission: () => void;
 };
 
 const SessionSelection = ({
   camp,
   selectedSessions,
   setSelectedSessions,
-  onFormSubmission,
+  onWaitListSubmission,
+  onRegistrationSubmission,
 }: SesssionSelectionProps): React.ReactElement => {
   const getSessionSelectionStateForSessions = (
     sessionID: string,
@@ -94,14 +96,14 @@ const SessionSelection = ({
             colorScheme="green"
             variant="outline"
             px={8}
-            onClick={onFormSubmission}
+            onClick={onWaitListSubmission}
           >
             Register for waitlist
           </Button>
         );
       case SessionSelectionState.SelectingAvailableSessions:
         return (
-          <Button variant="primary" px={8} onClick={onFormSubmission}>
+          <Button variant="primary" px={8} onClick={onRegistrationSubmission}>
             Sign up now
           </Button>
         );

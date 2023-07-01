@@ -221,7 +221,7 @@ const ContactCard = ({
                   });
                 }}
               />
-              <FormErrorMessage>This field cannot be empty</FormErrorMessage>
+              <FormErrorMessage>The provided email is invalid</FormErrorMessage>
             </FormControl>
           </WrapItem>
           <Spacer />
@@ -282,8 +282,6 @@ const ContactCard = ({
               <WrapItem
                 key={`contact_info_question_${question.question}`}
                 width={{ sm: "100%", md: mdWrapWidth }}
-                px="20px"
-                py="12px"
               >
                 {question.type === "Text" && (
                   <TextInputGroup

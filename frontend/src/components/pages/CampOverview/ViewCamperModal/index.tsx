@@ -21,12 +21,14 @@ type ViewCamperModalProps = {
   viewCamperModalIsOpen: boolean;
   viewCamperOnClose: () => void;
   camper: Camper;
+  sessionDates: string[];
 };
 
 const ViewCamperModal = ({
   viewCamperModalIsOpen,
   viewCamperOnClose,
   camper,
+  sessionDates,
 }: ViewCamperModalProps): JSX.Element => {
   return (
     <Modal
@@ -60,7 +62,11 @@ const ViewCamperModal = ({
               (prevTotal, curCharge) => prevTotal + curCharge,
             )}
           </Text>
-          <CamperDetailsBadgeGroup camper={camper} paddingLeft="0px" />
+          <CamperDetailsBadgeGroup
+            camper={camper}
+            paddingLeft="0px"
+            sessionDates={sessionDates}
+          />
         </ModalHeader>
 
         <ModalBody pl={8} pr={8} pb={0} pt={0}>

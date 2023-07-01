@@ -9,11 +9,13 @@ import {
 import EditCamperCard from "./EditCamperCard";
 import EditContactCard from "./EditContactCard";
 import EditAdditionalQuestionsCard from "./EditAdditionalQuestionsCard";
-import { CampResponse } from "../../../../../../types/CampsTypes";
+import EditEDLPCard from "./EditEDLPCard";
+import { CampResponse, CampSession } from "../../../../../../types/CampsTypes";
 import { RegistrantExperienceCamper } from "../../../../../../types/CamperTypes";
 import { usePersonalInfoDispatcher } from "../../PersonalInfo/personalInfoReducer";
 import { useAdditionalInfoDispatcher } from "../../AdditionalInfo/additionalInfoReducer";
 import GeneralAccordionButton from "../../../../../common/GeneralAccordionButton";
+import { EdlpSelections } from "../../../../../../types/RegistrationTypes";
 
 type ReviewInformationProps = {
   camp: CampResponse;
@@ -21,12 +23,28 @@ type ReviewInformationProps = {
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
+  hasEDLP: boolean;
+  requireEDLP: boolean | null;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
+  selectedSessions: CampSession[];
+  edlpSelections: EdlpSelections;
+  setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ReviewInformation = ({
   camp,
   campers,
   setCampers,
+  hasEDLP,
+  requireEDLP,
+  setRequireEDLP,
+  selectedSessions,
+  edlpSelections,
+  setEdlpSelections,
+  isEditing,
+  setIsEditing,
 }: ReviewInformationProps): React.ReactElement => {
   const dispatchPersonalInfoAction = usePersonalInfoDispatcher(setCampers);
   const dispatchAdditionalInfoAction = useAdditionalInfoDispatcher(setCampers);
@@ -62,6 +80,11 @@ const ReviewInformation = ({
                 camper={camper}
                 camperIndex={index}
                 dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+                personalInfoQuestions={camp.formQuestions.filter(
+                  (q) => q.category === "PersonalInfo",
+                )}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
@@ -73,9 +96,15 @@ const ReviewInformation = ({
             {campers[0].contacts.map((contact, index) => (
               <EditContactCard
                 key={index}
+                camper={campers[0]}
                 contact={contact}
                 contactIndex={index}
                 dispatchPersonalInfoAction={dispatchPersonalInfoAction}
+                emergencyContactQuestions={camp.formQuestions.filter(
+                  (q) => q.category === "EmergencyContact",
+                )}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
@@ -93,10 +122,30 @@ const ReviewInformation = ({
                   (question) => question.category === "CampSpecific",
                 )}
                 dispatchAdditionalInfoAction={dispatchAdditionalInfoAction}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
               />
             ))}
           </AccordionPanel>
         </AccordionItem>
+
+        {hasEDLP && (
+          <AccordionItem border="none" mb={4}>
+            <GeneralAccordionButton title="Early Drop-off and Late Pick-up" />
+            <AccordionPanel pb={4}>
+              <EditEDLPCard
+                requireEDLP={requireEDLP}
+                setRequireEDLP={setRequireEDLP}
+                selectedSessions={selectedSessions}
+                camp={camp}
+                edlpSelections={edlpSelections}
+                setEdlpSelections={setEdlpSelections}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
+              />
+            </AccordionPanel>
+          </AccordionItem>
+        )}
       </Accordion>
     </Box>
   );

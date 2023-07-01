@@ -15,16 +15,19 @@ import { ReactComponent as SunriseIcon } from "../../../../assets/icon_sunrise.s
 import { ReactComponent as SunsetIcon } from "../../../../assets/icon_sunset.svg";
 
 import { Camper, WaitlistedCamperStatus } from "../../../../types/CamperTypes";
+import { checkDatesInRange } from "../../../../utils/CampUtils";
+
+type CamperDetailsBadgeProps = {
+  icon: JSX.Element;
+  description: string;
+  color: string;
+};
 
 const CamperDetailsBadge = ({
   icon,
   description,
   color,
-}: {
-  icon: JSX.Element;
-  description: string;
-  color: string;
-}): JSX.Element => {
+}: CamperDetailsBadgeProps): JSX.Element => {
   return (
     <HStack
       alignContent="center"
@@ -39,15 +42,33 @@ const CamperDetailsBadge = ({
   );
 };
 
+type CamperDetailsBadgeGroupProps = {
+  camper: Camper;
+  paddingLeft?: string;
+  sessionDates: string[];
+};
+
 export const CamperDetailsBadgeGroup = ({
   camper,
   paddingLeft = "16px",
-}: {
-  camper: Camper;
-  paddingLeft?: string;
-}): JSX.Element => {
-  const latePickup = camper.latePickup && camper.latePickup.length > 0;
-  const earlyDropoff = camper.earlyDropoff && camper.earlyDropoff.length > 0;
+  sessionDates,
+}: CamperDetailsBadgeGroupProps): JSX.Element => {
+  const latePickupInSessionRange = checkDatesInRange(
+    sessionDates,
+    camper.latePickup,
+  );
+  const earlyDropoffInSessionRange = checkDatesInRange(
+    sessionDates,
+    camper.earlyDropoff,
+  );
+  const latePickup =
+    camper.latePickup &&
+    camper.latePickup.length > 0 &&
+    latePickupInSessionRange;
+  const earlyDropoff =
+    camper.earlyDropoff &&
+    camper.earlyDropoff.length > 0 &&
+    earlyDropoffInSessionRange;
 
   return (
     <Container width="-webkit-fit-content" marginStart="0px" pl={paddingLeft}>

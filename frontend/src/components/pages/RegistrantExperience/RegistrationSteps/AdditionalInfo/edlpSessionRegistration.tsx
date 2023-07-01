@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useMemo } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -16,11 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import {
-  getFormattedDateString,
+  getFormattedDateRangeStringFromStringArray,
   formatAMPM,
   getFormattedSingleDateString,
+  sortDatestrings,
 } from "../../../../../utils/CampUtils";
-import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EdlpSelections } from "../../../../../types/RegistrationTypes";
 import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../../constants/RegistrationConstants";
 
 type EDLPSessionRegistrationProps = {
@@ -29,8 +30,8 @@ type EDLPSessionRegistrationProps = {
   edCost: number;
   lpCost: number;
   session: CampSession;
-  edlpChoices: EdlpChoice[][];
-  setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
+  edlpSelections: EdlpSelections;
+  setEdlpSelections: Dispatch<SetStateAction<EdlpSelections>>;
 };
 
 const computeIntervals = (
@@ -79,8 +80,8 @@ const EDLPSessionRegistration = ({
   edCost,
   lpCost,
   session,
-  edlpChoices,
-  setEdlpChoices,
+  edlpSelections,
+  setEdlpSelections,
 }: EDLPSessionRegistrationProps): React.ReactElement => {
   const edIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.startTime, camp.earlyDropoff, false),
@@ -91,17 +92,11 @@ const EDLPSessionRegistration = ({
   );
 
   const getEdCostForDay = (date: string): number => {
-    return (
-      edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.earlyDropoff.cost ?? 0
-    );
+    return edlpSelections[selectedSessionIndex][date]?.earlyDropoff.cost ?? 0;
   };
 
   const getLpCostForDay = (date: string): number => {
-    return (
-      edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.latePickup.cost ?? 0
-    );
+    return edlpSelections[selectedSessionIndex][date]?.latePickup.cost ?? 0;
   };
 
   const getTotalEdlpCostForDay = (date: string): number => {
@@ -121,11 +116,11 @@ const EDLPSessionRegistration = ({
 
   const onSelectEDLP = (
     numSlots: number,
-    dayIndex: number,
+    date: string,
     timeInterval: string,
     isLatePickup: boolean,
   ) => {
-    const newChoices = edlpChoices;
+    const newChoices = edlpSelections;
 
     const changedSlot = {
       timeSlot: timeInterval,
@@ -133,13 +128,15 @@ const EDLPSessionRegistration = ({
       cost: numSlots * (isLatePickup ? lpCost : edCost),
     };
 
-    if (isLatePickup) {
-      newChoices[selectedSessionIndex][dayIndex].latePickup = changedSlot;
-    } else {
-      newChoices[selectedSessionIndex][dayIndex].earlyDropoff = changedSlot;
+    if (newChoices[selectedSessionIndex][date]) {
+      if (isLatePickup) {
+        newChoices[selectedSessionIndex][date].latePickup = changedSlot;
+      } else {
+        newChoices[selectedSessionIndex][date].earlyDropoff = changedSlot;
+      }
     }
 
-    setEdlpChoices(newChoices);
+    setEdlpSelections(edlpSelections);
     forceUpdate();
   };
 
@@ -171,12 +168,13 @@ const EDLPSessionRegistration = ({
     });
 
   const getDefaultSelectOption = (
-    dateIndex: number,
+    date: string,
     isLatePickup: boolean,
   ): number => {
     const interval = isLatePickup
-      ? edlpChoices[selectedSessionIndex][dateIndex].latePickup.timeSlot
-      : edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff.timeSlot;
+      ? edlpSelections[selectedSessionIndex][date]?.latePickup.timeSlot
+      : edlpSelections[selectedSessionIndex][date]?.earlyDropoff.timeSlot ??
+        EDLP_PLACEHOLDER_TIMESLOT;
     if (isLatePickup) {
       return lpIntervals.indexOf(interval);
     }
@@ -184,6 +182,10 @@ const EDLPSessionRegistration = ({
       ? 0
       : edIntervals.length - edIntervals.indexOf(interval);
   };
+
+  const sortedSessionDates = useMemo(() => sortDatestrings(session.dates), [
+    session.dates,
+  ]);
 
   return (
     <AccordionItem
@@ -216,7 +218,7 @@ const EDLPSessionRegistration = ({
               as="span"
               textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
             >
-              {getFormattedDateString(session.dates)}
+              {getFormattedDateRangeStringFromStringArray(session.dates)}
             </Text>
             <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>
               {formatAMPM(camp.startTime)} - {formatAMPM(camp.endTime)}
@@ -266,7 +268,7 @@ const EDLPSessionRegistration = ({
                 </Tr>
               </Thead>
               <Tbody>
-                {session.dates.map((date: string, dateIndex: number) => {
+                {sortedSessionDates.map((date: string) => {
                   return (
                     <Tr key={`${date}_edlp_row`}>
                       <Td
@@ -279,10 +281,7 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(
-                            dateIndex,
-                            false,
-                          )}
+                          defaultValue={getDefaultSelectOption(date, false)}
                           textStyle={{
                             sm: "xSmallRegular",
                             lg: "buttonRegular",
@@ -290,7 +289,7 @@ const EDLPSessionRegistration = ({
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
-                              dateIndex,
+                              date,
                               event.target.options[
                                 event.target.options.selectedIndex
                               ].text,
@@ -304,7 +303,7 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(dateIndex, true)}
+                          defaultValue={getDefaultSelectOption(date, true)}
                           textStyle={{
                             sm: "xSmallRegular",
                             lg: "buttonRegular",
@@ -312,7 +311,7 @@ const EDLPSessionRegistration = ({
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
-                              dateIndex,
+                              date,
                               event.target.options[
                                 event.target.options.selectedIndex
                               ].text,
@@ -338,7 +337,7 @@ const EDLPSessionRegistration = ({
           </Box>
         </Hide>
         <Hide above="600px">
-          {session.dates.map((date: string, dateIndex: number) => {
+          {sortedSessionDates.map((date: string) => {
             return (
               <Box
                 padding={{
@@ -361,11 +360,11 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={getDefaultSelectOption(date, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
-                      dateIndex,
+                      date,
                       event.target.options[event.target.options.selectedIndex]
                         .text,
                       false,
@@ -381,11 +380,11 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={getDefaultSelectOption(date, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
-                      dateIndex,
+                      date,
                       event.target.options[event.target.options.selectedIndex]
                         .text,
                       true,

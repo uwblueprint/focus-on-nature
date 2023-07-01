@@ -4,7 +4,6 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  Spacer,
   Textarea,
   Wrap,
   WrapItem,
@@ -18,17 +17,24 @@ import {
   checkAge,
   checkFirstName,
   checkLastName,
-} from "../../PersonalInfo/personalInfoReducer";
-import { CampResponse } from "../../../../../../types/CampsTypes";
+} from "../../../../../common/personalInfoRegistration/personalInfoReducerInterface";
+import { CampResponse, FormQuestion } from "../../../../../../types/CampsTypes";
 import EditFormLabel from "./EditFormLabel";
 import EditCardFooter from "./EditCardFooter";
 import EditCardHeader from "./EditCardHeader";
+import MultipleChoiceGroup from "../../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../../QuestionGroups/MultiselectGroup";
+import TextInputGroup from "../../QuestionGroups/TextInputGroup";
+import { checkAdditionalQuestionsAnsweredSingleCamper } from "../../AdditionalInfo/additionalInfoReducer";
 
 type EditCamperCardProps = {
   camper: RegistrantExperienceCamper;
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  personalInfoQuestions: FormQuestion[];
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const EditCamperCard = ({
@@ -36,20 +42,39 @@ const EditCamperCard = ({
   camperIndex,
   dispatchPersonalInfoAction,
   camp,
+  personalInfoQuestions,
+  isEditing,
+  setIsEditing,
 }: EditCamperCardProps): React.ReactElement => {
+  const mdWrapWidth = personalInfoQuestions.length > 1 ? "47%" : "100%";
+
   const [updateMemo, setUpdateMemo] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialCamper: RegistrantExperienceCamper = useMemo(() => camper, [
     updateMemo,
   ]);
+  const initialCamperFormResponses = useMemo(
+    () =>
+      camper.formResponses ? Object.fromEntries(camper.formResponses) : {},
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updateMemo],
+  );
 
-  const [editing, setEditing] = useState(false);
+  const [editingIndividual, setEditingIndividual] = useState(false);
+
+  const setEditing = (state: boolean) => {
+    setEditingIndividual(state); // Local editing state.
+    setIsEditing(state ? isEditing + 1 : isEditing - 1); // Global editing state.
+  };
 
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
   const [isAgeInvalid, setIsAgeInvalid] = useState(false);
 
+  const [save, setSave] = useState(false);
+
   const updateFormErrorMsgs = () => {
+    setSave(true);
     let valid = true;
 
     if (!checkFirstName(camper.firstName)) {
@@ -64,7 +89,16 @@ const EditCamperCard = ({
       setIsAgeInvalid(true);
       valid = false;
     }
-    if (valid) {
+    const requiredQuestions = personalInfoQuestions
+      .filter((question) => question.required)
+      .map((question) => question.question);
+
+    const personalInfoValid = checkAdditionalQuestionsAnsweredSingleCamper(
+      camper,
+      requiredQuestions,
+    );
+
+    if (valid && personalInfoValid) {
       setEditing(false);
       setUpdateMemo(updateMemo + 1);
     }
@@ -110,7 +144,49 @@ const EditCamperCard = ({
       data: initialCamper.specialNeeds,
     });
 
+    personalInfoQuestions.forEach((question) => {
+      dispatchPersonalInfoAction({
+        type: PersonalInfoActions.UPDATE_RESPONSE,
+        camperIndex,
+        question: question.question,
+        data: initialCamperFormResponses[question.question] || "",
+      });
+    });
+    setSave(false);
     setEditing(false);
+  };
+
+  const handleMultipleChoiceChange = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: response,
+    });
   };
 
   return (
@@ -118,17 +194,17 @@ const EditCamperCard = ({
       <EditCardHeader
         title={`${camper.firstName} ${camper.lastName}`}
         onClick={() => setEditing(true)}
-        editing={editing}
+        editing={editingIndividual}
       />
 
       <Box
         zIndex={0}
         backgroundColor="#FFFFFFAA"
         borderRadius="0px 0px 10px 10px"
-        _hover={{ cursor: editing ? "auto" : "not-allowed" }}
+        _hover={{ cursor: editingIndividual ? "auto" : "not-allowed" }}
       >
         <Box
-          zIndex={editing ? 1 : -1}
+          zIndex={editingIndividual ? 1 : -1}
           position="relative"
           bg="background.grey.500"
           borderRadius="0px 0px 16px 16px"
@@ -234,9 +310,6 @@ const EditCamperCard = ({
                   />
                 </FormControl>
               </WrapItem>
-
-              <Spacer />
-
               <WrapItem width={{ sm: "100%", md: "47%" }}>
                 <FormControl>
                   <EditFormLabel
@@ -257,6 +330,38 @@ const EditCamperCard = ({
                   />
                 </FormControl>
               </WrapItem>
+
+              {personalInfoQuestions.map((question) => (
+                <WrapItem
+                  key={`personal_info_question_${question.question}`}
+                  width={{ sm: "100%", md: mdWrapWidth }}
+                >
+                  {question.type === "Text" && (
+                    <TextInputGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleTextChange={handleTextChange}
+                      nextClicked={save}
+                    />
+                  )}
+                  {question.type === "Multiselect" && (
+                    <MultiselectGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleSelectionChange={handleSelectionChange}
+                      nextClicked={save}
+                    />
+                  )}
+                  {question.type === "MultipleChoice" && (
+                    <MultipleChoiceGroup
+                      formResponses={camper.formResponses}
+                      question={question}
+                      handleMultipleChoiceChange={handleMultipleChoiceChange}
+                      nextClicked={save}
+                    />
+                  )}
+                </WrapItem>
+              ))}
             </Wrap>
           </Box>
 

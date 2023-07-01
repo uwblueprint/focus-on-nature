@@ -62,6 +62,7 @@ const createNewCamp = async (
 const editCampById = async (
   id: string,
   camp: CreateUpdateCampRequest,
+  createNewSessions: boolean,
   fileURL?: string,
 ): Promise<CreateUpdateCampResponse> => {
   // Check if atleast the first step and 1 session is scheduled
@@ -72,7 +73,7 @@ const editCampById = async (
   }
 
   const formData = new FormData();
-  formData.append("data", JSON.stringify({ ...camp }));
+  formData.append("data", JSON.stringify({ ...camp, createNewSessions }));
 
   if (fileURL) {
     const file = await fetch(fileURL).then((res) => res.blob());
@@ -104,7 +105,9 @@ const updateCampSessions = async (
   updatedCampSessions: Array<UpdateCampSessionsRequest>,
 ): Promise<Array<CampSessionResponse>> => {
   try {
-    const { data } = await baseAPIClient.patch(`/camp/${campId}/session`, {
+    const { data } = await baseAPIClient({
+      method: "patch",
+      url: `/camp/${campId}/session`,
       headers: {
         Authorization: getBearerToken(),
       },

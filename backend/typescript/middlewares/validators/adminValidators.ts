@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validateFormQuestion } from "./formQuestionValidators";
 import { validatePrimitive, getApiValidationError } from "./util";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateClause = (clause: any): boolean => {
   if (!validatePrimitive(clause.text, "string")) {
     return false;

@@ -51,7 +51,7 @@ export type CreateCamperDTO = Omit<
 };
 
 export type EditCamperInfoFields = Omit<
-  Camper,
+  Partial<Camper>,
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
@@ -60,7 +60,6 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
-  | "campSession"
 >;
 
 export type EditModalSetterFunctions = {
@@ -93,11 +92,12 @@ export type WaitlistedCamper = {
   campSession: string;
   status: WaitlistedCamperStatus;
   linkExpiry?: Date;
+  registrationDate: Date;
 };
 
 export type CreateWaitlistedCamperDTO = Omit<
   WaitlistedCamper,
-  "id" | "campSession" | "status" | "linkExpiry"
+  "id" | "campSession" | "status" | "linkExpiry" | "registrationDate"
 >;
 
 export type CreateCamperResponse = {

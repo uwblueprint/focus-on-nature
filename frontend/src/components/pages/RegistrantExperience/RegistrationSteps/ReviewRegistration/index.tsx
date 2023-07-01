@@ -4,36 +4,60 @@ import ReviewInformation from "./ReviewInformation";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import { mapCampToCartItems } from "../../../../../utils/RegistrationUtils";
-import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EdlpSelections } from "../../../../../types/RegistrationTypes";
 
 type ReviewRegistrationProps = {
   campers: RegistrantExperienceCamper[];
   sessions: CampSession[];
   camp: CampResponse;
-  edlpChoices: EdlpChoice[][];
+  edlpSelections: EdlpSelections;
   onPageVisited: () => void;
   setCampers: React.Dispatch<
     React.SetStateAction<RegistrantExperienceCamper[]>
   >;
   isPaymentSummary: boolean;
+  hasEDLP: boolean;
+  requireEDLP: boolean | null;
+  setRequireEDLP: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setEdlpSelections: React.Dispatch<React.SetStateAction<EdlpSelections>>;
+  isEditing: number;
+  setIsEditing: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ReviewRegistration = ({
   campers,
   sessions,
   camp,
-  edlpChoices,
+  edlpSelections,
   onPageVisited,
   setCampers,
   isPaymentSummary,
+  hasEDLP,
+  requireEDLP,
+  setRequireEDLP,
+  setEdlpSelections,
+  isEditing,
+  setIsEditing,
 }: ReviewRegistrationProps): React.ReactElement => {
   useEffect(onPageVisited);
   return !isPaymentSummary ? (
-    <ReviewInformation camp={camp} campers={campers} setCampers={setCampers} />
+    <ReviewInformation
+      camp={camp}
+      campers={campers}
+      setCampers={setCampers}
+      hasEDLP={hasEDLP}
+      requireEDLP={requireEDLP}
+      setRequireEDLP={setRequireEDLP}
+      selectedSessions={sessions}
+      edlpSelections={edlpSelections}
+      setEdlpSelections={setEdlpSelections}
+      isEditing={isEditing}
+      setIsEditing={setIsEditing}
+    />
   ) : (
     <PaymentSummary
       campName={camp.name}
-      items={mapCampToCartItems(camp, sessions, campers, edlpChoices)}
+      items={mapCampToCartItems(camp, sessions, campers, edlpSelections)}
     />
   );
 };

@@ -23,6 +23,7 @@ import CampersTables from "./CampersTable/CampersTables";
 import * as Routes from "../../../constants/Routes";
 import ManageSessionsModal from "./ManageSessions/ManageSessionsModal";
 import { downloadCSV, generateCSVName } from "../../../utils/CSVUtils";
+import { sortSessions } from "../../../utils/CampUtils";
 
 type ManageSessionsPromisesResult = {
   deletedSessions?: boolean;
@@ -243,20 +244,14 @@ const CampOverviewPage = (): JSX.Element => {
             <ManageSessionsModal
               campStartTime={camp.startTime}
               campEndTime={camp.endTime}
-              sessions={camp.campSessions
-                .sort(
-                  (sessionA, sessionB) =>
-                    new Date(sessionA.dates[0]).getUTCMilliseconds() -
-                    new Date(sessionB.dates[0]).getUTCMilliseconds(),
-                )
-                .map((session) => {
-                  return {
-                    id: session.id,
-                    capacity: session.capacity,
-                    dates: session.dates,
-                    registeredCampers: session.campers.length,
-                  };
-                })}
+              sessions={sortSessions(camp.campSessions).map((session) => {
+                return {
+                  id: session.id,
+                  capacity: session.capacity,
+                  dates: session.dates,
+                  registeredCampers: session.campers.length,
+                };
+              })}
               onSaveChanges={onManageSessionsSave}
               isOpen={isOpenManageSessionsModal}
               onClose={onCloseManageSessionsModal}
