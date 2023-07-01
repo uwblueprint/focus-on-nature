@@ -50,10 +50,6 @@ const SessionCardDetails = ({
     return "";
   };
 
-  const formattedTimeString = (start: string, end: string): string => {
-    return `${getMeridianTime(start)} - ${getMeridianTime(end)}`;
-  };
-
   const [isMobile] = useMediaQuery("(max-width: 767px)");
 
   const formattedTimeString = useMemo(
