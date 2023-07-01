@@ -10,7 +10,7 @@ const CamperRefundFooter = (props: any): React.ReactElement => {
       width="100%"
       height="7%"
       bottom="0"
-      alignItems="flex-end"
+      alignItems="center"
       backgroundColor="#FFFFFF"
       borderTop="2px solid #EEEFF1"
     >
@@ -20,9 +20,11 @@ const CamperRefundFooter = (props: any): React.ReactElement => {
         variant="primary"
         background={true ? "primary.green.100" : "primary.green_disabled.100"}
         mr="50px"
-        mb="12px"
+        pr="25px"
+        pl="25px"
       >
-        Request refund
+          Request refund
+        
       </Button>
     </Flex>
   );

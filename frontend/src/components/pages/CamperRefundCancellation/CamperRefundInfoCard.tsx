@@ -87,10 +87,11 @@ const CamperRefundInfoCard = ({
 
     // sort the dates and find the first session
     dates.sort((a, b) => a.getTime() - b.getTime());
-    const firstDate = dates[0];
+    const firstDate = dates[0].getTime();
+    const today = new Date().getTime()
     const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-    return new Date().getTime() - firstDate.getTime() >= thirtyDays;
+    return (firstDate - today) >= thirtyDays;
   };
 
   const valid = isRefundValid();
