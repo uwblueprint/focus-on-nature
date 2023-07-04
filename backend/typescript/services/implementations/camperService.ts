@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import mongoose from "mongoose";
+import cryptoRandomString from "crypto-random-string";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -16,6 +17,8 @@ import {
   CamperCharges,
   CampRegistrationDTO,
   RefundDTO,
+  RefundCamperDTO,
+  RefundCamperGroupDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -35,6 +38,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const REFUND_CODE_LENGTH = 16;
+
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCampersAndCheckout(
@@ -48,7 +53,9 @@ class CamperService implements ICamperService {
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
+    let campersWithSameCode: Camper[] = [];
     let checkoutSessionUrl = "";
+    let refundCode = "";
 
     try {
       // Perform session checks:
@@ -135,6 +142,14 @@ class CamperService implements ICamperService {
 
       checkoutSessionUrl = createStripeCheckoutSessionResponse.url;
 
+      // Create new unused refund code
+      do {
+        // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
+        refundCode = cryptoRandomString(REFUND_CODE_LENGTH);
+        // eslint-disable-next-line no-await-in-loop
+        campersWithSameCode = await MgCamper.find({ refundCode });
+      } while (campersWithSameCode && campersWithSameCode.length > 0);
+
       // Create a camper entity for each session
       const campersToRegister: Array<
         Omit<CamperDTO, "id">
@@ -159,6 +174,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 0,
               latePickup: 0,
             },
+            refundCode,
             optionalClauses: camper.optionalClauses,
           };
         });
@@ -279,6 +295,7 @@ class CamperService implements ICamperService {
           registrationDate: newCamper.registrationDate.toString(),
           hasPaid: false,
           chargeId: newCamper.chargeId,
+          refundCode: newCamper.refundCode,
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
@@ -320,6 +337,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -377,6 +395,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -434,6 +453,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -480,6 +500,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -684,6 +705,13 @@ class CamperService implements ICamperService {
         }
       }
 
+      const { refundCode } = oldCampers[0];
+      for (let i = 0; i < oldCampers.length; i += 1) {
+        if (oldCampers[i].refundCode !== refundCode) {
+          throw new Error(`All campers must have the same refundCode.`);
+        }
+      }
+
       const oldCampSessionId = oldCampers[0].campSession;
       for (let i = 0; i < oldCampers.length; i += 1) {
         if (
@@ -885,6 +913,7 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
+        refundCode: updatedCamper.refundCode,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
       };
@@ -1024,6 +1053,13 @@ class CamperService implements ICamperService {
       for (let i = 0; i < campers.length; i += 1) {
         if (campers[i].chargeId !== oneChargeId) {
           throw new Error(`ChargeIds must all be the same.`);
+        }
+      }
+
+      const oneRefundCode = campers[0].refundCode;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].refundCode !== oneRefundCode) {
+          throw new Error(`RefundCodes must all be the same.`);
         }
       }
 
@@ -1231,111 +1267,87 @@ class CamperService implements ICamperService {
   }
 
   async getRefundInfo(refundCode: string): Promise<RefundDTO> {
-    // TODO: move this to validator
-    if (refundCode === "0") {
-      throw new Error("Invalid refund code");
-    }
+    let refundDTO: RefundDTO = [];
+    let refundCamper: RefundCamperDTO;
+    let campSession: CampSession | null = null;
+    let key: string;
+    let oldRefundInstance: RefundCamperGroupDTO | undefined;
+    let newRefundInstance: RefundCamperGroupDTO;
+    const refundDTOMap = new Map<string, RefundCamperGroupDTO>();
+    try {
+      const campers: Camper[] = await MgCamper.find({ refundCode });
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Refund Code ${refundCode} not found.`);
+      }
 
-    return [
-      {
-        firstName: "Alice",
-        lastName: "Smith",
-        age: 9,
-        campName: "Banff Camp 2023",
-        startTime: "17:00",
-        endTime: "20:00",
-        instances: [
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            dates: [
-              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-        ],
-      },
-      {
-        firstName: "Bob",
-        lastName: "Smith",
-        age: 10,
-        campName: "Banff Camp 2023",
-        startTime: "17:00",
-        endTime: "20:00",
-        instances: [
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 07 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 07 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 04 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            dates: [
-              "Thu Sep 07 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 03 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 04 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 05 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-          {
-            id: "63b527fed9c42a8fd5ea55e6",
-            campSession: "63b01de0c71ee220ef84daee",
-            earlyDropoff: [
-              "Thu Sep 14 2023 14:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            latePickup: [
-              "Thu Sep 14 2023 21:30:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-            registrationDate:
-              "Wed Jan 09 2023 07:17:18 GMT+0000 (Coordinated Universal Time)",
-            hasPaid: true,
-            chargeId:
-              "cs_test_b1ynp34YOUVYdI6Fn6Xq1q8Ka2kCgM6TlVoWy1vPbZpiSfTPY0rrDwAtD9",
-            charges: {
-              camp: 160,
-              earlyDropoff: 19,
-              latePickup: 19,
-            },
-            dates: [
-              "Thu Sep 14 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Sun Sep 10 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Mon Sep 11 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-              "Tue Sep 12 2023 17:00:00 GMT+0000 (Coordinated Universal Time)",
-            ],
-          },
-        ],
-      },
-    ];
+      // need a camp session to get camp id to get start and end times from camp
+      campSession = await MgCampSession.findById(campers[0].campSession);
+      if (!campSession) {
+        throw new Error(
+          `Camp session with ID ${campers[0].campSession} not found.`,
+        );
+      }
+
+      const camp = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with ID ${campSession.camp} not found.`);
+      }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const camper of campers) {
+        // eslint-disable-next-line no-await-in-loop
+        campSession = await MgCampSession.findById(camper.campSession);
+        key = camper.firstName + camper.lastName;
+        refundCamper = {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
+          registrationDate: camper.registrationDate.toString(),
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
+          formResponses: camper.formResponses,
+          charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
+          dates: campSession
+            ? campSession.dates.map((date) => date.toString())
+            : [""],
+        };
+
+        oldRefundInstance = refundDTOMap.get(key);
+
+        if (oldRefundInstance) {
+          // update instances
+          oldRefundInstance.instances.push(refundCamper);
+          newRefundInstance = oldRefundInstance;
+        } else {
+          // add new value to map
+          newRefundInstance = {
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            campName: camp ? camp.name : "",
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            instances: [refundCamper],
+          };
+        }
+        refundDTOMap.set(key, newRefundInstance);
+      }
+
+      refundDTO = Array.from(refundDTOMap.values());
+      return refundDTO;
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
   }
 }
 
