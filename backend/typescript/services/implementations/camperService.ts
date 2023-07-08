@@ -28,7 +28,6 @@ import EmailService from "./emailService";
 import {
   createStripeCheckoutSession,
   createStripeLineItems,
-  retrieveStripeCheckoutSession,
 } from "../../utilities/stripeUtils";
 import { getEDUnits, getLPUnits } from "../../utilities/CampUtils";
 
@@ -261,13 +260,6 @@ class CamperService implements ICamperService {
             sessionsToRegister,
           );
         }),
-      );
-
-      // Email the parent about all the campers and sessions they have signed up for
-      await emailService.sendParentConfirmationEmail(
-        camp,
-        registeredCampers,
-        sessionsToRegister,
       );
 
       // Send admin an email for all the sessions that are now full
@@ -518,17 +510,6 @@ class CamperService implements ICamperService {
     session.startTransaction();
 
     try {
-      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
-      if (!checkoutSession) {
-        throw new Error(`Could not find checkout session with id ${chargeId}`);
-      }
-
-      if (checkoutSession.payment_status !== "paid") {
-        throw new Error(
-          `Checkout session status is ${checkoutSession.payment_status}, expected status to be "paid"`,
-        );
-      }
-
       const campers = await MgCamper.find({ chargeId });
       if (!campers || campers.length === 0) {
         throw new Error(
@@ -541,6 +522,36 @@ class CamperService implements ICamperService {
         { $set: { hasPaid: true } },
         { session, runValidators: true },
       );
+
+      const campSessionIds = Array.from(
+        new Set(campers.map((camper: Camper) => camper.campSession)),
+      );
+
+      const campSessions: Array<CampSession> = await MgCampSession.find({
+        _id: { $in: campSessionIds },
+      });
+
+      if (!campSessions || campSessions.length === 0) {
+        throw new Error(
+          `Could not find camp session(s) associated with objects in checkout session with id ${chargeId}`,
+        );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campSessions[0].camp);
+
+      if (!camp) {
+        throw new Error(
+          `Could not find camp associated with objects in checkout session with id ${chargeId}`,
+        );
+      }
+
+      // Email the parent about all the campers and sessions they have signed up for
+      await emailService.sendParentConfirmationEmail(
+        camp,
+        campers,
+        campSessions,
+      );
+
       await session.commitTransaction();
     } catch (error: unknown) {
       await session.abortTransaction();
