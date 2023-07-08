@@ -22,6 +22,11 @@ function sessionDatesToString(dates: Date[] | undefined) {
 
 // Returns a list item for each camp session with the dates of the camp session
 function getSessionDatesListItems(campSessions: CampSession[]) {
+  campSessions.map((campSession) => {
+    return campSession.dates.sort((a, b) => {
+      return a.getTime() - b.getTime();
+    });
+  });
   return campSessions.map((campSession) => {
     return `<li>${sessionDatesToString(campSession.dates)}</li>`;
   });
