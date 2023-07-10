@@ -23,6 +23,11 @@ function sessionDatesToString(dates: Date[] | undefined) {
 
 // Returns a list item for each camp session with the dates of the camp session
 function getSessionDatesListItems(campSessions: CampSession[]) {
+  campSessions.map((campSession) => {
+    return campSession.dates.sort((a, b) => {
+      return a.getTime() - b.getTime();
+    });
+  });
   return campSessions.map((campSession) => {
     return `<li>${sessionDatesToString(campSession.dates)}</li>`;
   });
@@ -54,8 +59,7 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
-    const chargeId = campers[0].chargeId;
-    const link = "DUMMY LINK"; // TODO: Update link
+    const link = `${process.env.CLIENT_URL}/refund/${campers[0].refundCode}`;
     const sessionDatesListItems: string[] = getSessionDatesListItems(
       campSessions,
     );

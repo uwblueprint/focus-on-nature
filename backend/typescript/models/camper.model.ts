@@ -26,6 +26,7 @@ export interface Camper extends Document {
     earlyDropoff: number;
     latePickup: number;
   };
+  refundCode: string;
   optionalClauses: [
     {
       clause: string;
@@ -116,6 +117,11 @@ const CamperSchema: Schema = new Schema({
       type: Number,
       required: true,
     },
+  },
+  refundCode: {
+    type: String,
+    required: true,
+    index: true,
   },
   optionalClauses: [
     {

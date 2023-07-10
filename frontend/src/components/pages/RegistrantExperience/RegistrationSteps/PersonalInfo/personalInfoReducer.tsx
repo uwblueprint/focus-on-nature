@@ -140,7 +140,8 @@ export const checkAge = (
 };
 
 export const checkEmail = (email: string): boolean => {
-  return !!email;
+  const emailRegex = new RegExp("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
+  return emailRegex.test(email);
 };
 
 export const checkPhoneNumber = (phoneNumber: string): boolean => {

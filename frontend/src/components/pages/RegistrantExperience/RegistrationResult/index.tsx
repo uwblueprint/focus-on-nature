@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Text, Flex, VStack, HStack } from "@chakra-ui/react";
 import { CartItem, EdlpSelections } from "../../../../types/RegistrationTypes";
 
@@ -16,7 +16,6 @@ import {
 } from "./textStyles";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import { RegistrantExperienceCamper } from "../../../../types/CamperTypes";
-import CamperAPIClient from "../../../../APIClients/CamperAPIClient";
 
 const NoSessionDataFound = (): React.ReactElement => {
   return (
@@ -75,12 +74,6 @@ const RegistrationResult = ({
   edlpSelections,
   chargeId,
 }: RegistrationResultProps): React.ReactElement => {
-  useEffect(() => {
-    if (chargeId) {
-      CamperAPIClient.confirmPayment(chargeId);
-    }
-  }, [chargeId]);
-
   return (
     <Flex
       direction="column"

@@ -29,6 +29,27 @@ const SessionCardDetails = ({
   endTime,
   campSession,
 }: SessionCardDetailsProps): React.ReactElement => {
+  const getCampSessionDates = (): string => {
+    if (campSession.dates.length > 1) {
+      const startDate = new Date(campSession.dates[0]);
+      const endDate = new Date(campSession.dates[campSession.dates.length - 1]);
+      return `${startDate.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${startDate.getDate()} - ${endDate.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+    }
+
+    if (campSession.dates.length === 1) {
+      const date = new Date(campSession.dates[0]);
+      return `${date.toLocaleDateString("en-us", {
+        month: "short",
+      })} ${date.getDate()}, ${date.getFullYear()}`;
+    }
+
+    return "";
+  };
+
   const [isMobile] = useMediaQuery("(max-width: 767px)");
 
   const formattedTimeString = useMemo(

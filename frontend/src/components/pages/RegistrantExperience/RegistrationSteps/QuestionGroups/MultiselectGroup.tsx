@@ -33,7 +33,7 @@ const MultiselectGroup = ({
   const getInitialSelections = (): Set<string> => {
     const questionResponse = formResponses?.get(question.question);
     if (questionResponse) {
-      const items = questionResponse.split(", ");
+      const items = questionResponse.split("@ ");
       return new Set(items);
     }
     return new Set();
@@ -58,7 +58,7 @@ const MultiselectGroup = ({
     }
 
     setSelections(newSelections);
-    const selectionsResponse = Array.from(newSelections).join(", ");
+    const selectionsResponse = Array.from(newSelections).join("@ ");
 
     handleSelectionChange(selectionsResponse, question);
   };
