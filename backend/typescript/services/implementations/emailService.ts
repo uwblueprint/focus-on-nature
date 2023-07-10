@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import nodemailer, { Transporter } from "nodemailer";
 import IEmailService from "../interfaces/emailService";
 import { CampLocation, NodemailerConfig } from "../../types";
@@ -59,6 +60,7 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
+    const chargeId = campers[0].chargeId; 
     const link = `${process.env.CLIENT_URL}/refund/${campers[0].refundCode}`;
     const sessionDatesListItems: string[] = getSessionDatesListItems(
       campSessions,
@@ -67,7 +69,7 @@ class EmailService implements IEmailService {
     let discountAmount = 0;
 
     try { 
-      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(chargeId);
 
       if (!checkoutSession){ 
         throw new Error(`Could not find checkout session with id ${chargeId}`);
