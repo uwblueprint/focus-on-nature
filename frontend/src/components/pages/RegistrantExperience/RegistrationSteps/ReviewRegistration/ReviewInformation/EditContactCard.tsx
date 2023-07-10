@@ -311,9 +311,7 @@ const EditContactCard = ({
                       });
                     }}
                   />
-                  <FormErrorMessage>
-                    Error validating email
-                  </FormErrorMessage>
+                  <FormErrorMessage>Error validating email</FormErrorMessage>
                 </FormControl>
               </WrapItem>
               <Spacer />

@@ -23,8 +23,7 @@ const CamperRefundFooter = (props: any): React.ReactElement => {
         pr="25px"
         pl="25px"
       >
-          Request refund
-        
+        Request refund
       </Button>
     </Flex>
   );
