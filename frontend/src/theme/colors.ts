@@ -61,6 +61,9 @@ const colors = {
     informative: {
       100: "#0362A5",
     },
+    green: {
+      100: "#10741A",
+    },
   },
   background: {
     white: {
@@ -123,6 +126,9 @@ const colors = {
     },
     informative: {
       100: "#98C6CD",
+    },
+    grey: {
+      100: "#A3AEBE",
     },
   },
   waitlistCards: {
