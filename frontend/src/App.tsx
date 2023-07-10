@@ -25,6 +25,7 @@ import CampCreationPage from "./components/pages/CampCreation";
 import CampsList from "./components/pages/CampsList/index";
 import RegistrantExperiencePage from "./components/pages/RegistrantExperience";
 import CamperRefundCancellation from "./components/pages/CamperRefundCancellation";
+import CamperRefundConfirmation from "./components/pages/CamperRefundConfirmation";
 
 const App = (): React.ReactElement => {
   const currentUser: AuthenticatedUser = getLocalStorageObj<AuthenticatedUser>(
@@ -100,6 +101,11 @@ const App = (): React.ReactElement => {
                 exact
                 path={Routes.CAMPER_REFUND_CANCELLATION}
                 component={CamperRefundCancellation}
+              />
+              <Route
+                exact
+                path={Routes.CAMPER_REFUND_CONFIRMATION}
+                component={CamperRefundConfirmation}
               />
               <Route exact path="*" component={NotFound} />
             </Switch>
