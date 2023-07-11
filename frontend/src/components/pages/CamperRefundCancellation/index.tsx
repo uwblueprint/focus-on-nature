@@ -62,7 +62,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
         <Box pr={{ lg: "30%", sm: "12%", md: "12%" }} pl="12%" pt="5%">
           <Box pb="40px">
             <Text as="b" mt="70px" fontSize="40px">
-              {campName}
+              {campName} Camp Cancellation
             </Text>
             <Text color="#10741A" mt="16px" fontSize="20px">
               Please select the campers you wish to request a refund for.

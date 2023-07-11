@@ -75,6 +75,16 @@ const CamperRefundInfoCard = ({
     return totalRefund;
   };
 
+  const getEDLPTotalCharge = () => {
+    let totalCharge = 0
+    instances.forEach((instance) => {
+      totalCharge += 
+        instance.charges.earlyDropoff + 
+        instance.charges.latePickup
+    });
+    return totalCharge
+  }
+
   const isRefundValid = () => {
     const dates: Date[] = [];
 
@@ -142,11 +152,10 @@ const CamperRefundInfoCard = ({
           align="stretch"
         >
           <VStack spacing={7}>
-            <Flex width="100%">
+            <Flex width="100%" justifyContent="space-between">
               <Text as="b" fontSize="xl" color={textColor}>
                 Item
               </Text>
-              <Spacer />
               <Text as="b" fontSize="xl" color={textColor}>
                 Total Price (CAD)
               </Text>
@@ -154,11 +163,10 @@ const CamperRefundInfoCard = ({
             <VStack width="100%">
               {instances.map((instance, index) => {
                 return (
-                  <Flex width="100%" key={index}>
+                  <Flex width="100%" key={index} justifyContent="space-between">
                     <Text fontSize="2xl" color={textColor}>
                       Session {index + 1}
                     </Text>
-                    <Spacer />
                     <Text fontSize="2xl" color={textColor}>
                       ${instance.charges.camp}
                     </Text>
@@ -167,49 +175,46 @@ const CamperRefundInfoCard = ({
               })}
             </VStack>
           </VStack>
-
-          <VStack>
-            <Flex width="100%">
-              <VStack width="100%" spacing={2} align="stretch">
-                {instances.map((instance, index) => {
-                  return (
-                    <>
-                      <Flex width="100%" key={index}>
-                        <VStack width="50%" alignItems="flex-start">
-                          <Text
-                            textAlign="left"
-                            fontSize="2xl"
-                            color={textColor}
-                          >
-                            Session {index + 1} EDLP
-                          </Text>
-                          <Text
-                            textAlign="left"
-                            fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
-                            color={textColor}
-                          >
-                            {getTotalEDLPTime(instance)} minutes
-                          </Text>
-                        </VStack>
-                        <Spacer />
-                        <Text fontSize="2xl" pt="15px" color={textColor}>
-                          $
-                          {instance.charges.earlyDropoff +
-                            instance.charges.latePickup}
-                        </Text>
-                      </Flex>
-                    </>
-                  );
-                })}
-              </VStack>
-            </Flex>
+          
+          { getEDLPTotalCharge() !== 0 ? 
+            <VStack width="100%" spacing={2} align="stretch">
+            {instances.map((instance, index) => {
+              const totalCharge = instance.charges.earlyDropoff + instance.charges.latePickup
+              if (totalCharge !== 0) {
+                return (
+                  <Flex width="100%" key={index} justifyContent="space-between">
+                    <VStack width="50%" alignItems="flex-start">
+                      <Text
+                        textAlign="left"
+                        fontSize="2xl"
+                        color={textColor}
+                      >
+                        Session {index + 1} EDLP
+                      </Text>
+                      <Text
+                        textAlign="left"
+                        fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
+                        color={textColor}
+                      >
+                        {getTotalEDLPTime(instance)} minutes
+                      </Text>
+                    </VStack>
+                    <Text fontSize="2xl" pt="15px" color={textColor}>
+                      ${totalCharge}
+                    </Text>
+                  </Flex>
+                );
+              }
+              return (null)
+            })}
           </VStack>
+          : {}
+          }
 
-          <Flex width="100%">
+          <Flex width="100%" justifyContent="space-between">
             <Text as="b" fontSize="xl" color={textColor}>
               Total Refund for Camper #{camperNum}
             </Text>
-            <Spacer />
             <Text as="b" fontSize="xl" color={textColor}>
               ${getTotalRefundForCamper()}
             </Text>
