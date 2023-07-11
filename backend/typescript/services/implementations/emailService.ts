@@ -60,7 +60,7 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
-    const chargeId = campers[0].chargeId; 
+    const { chargeId } = campers[0];
     const link = `${process.env.CLIENT_URL}/refund/${campers[0].refundCode}`;
     const sessionDatesListItems: string[] = getSessionDatesListItems(
       campSessions,
@@ -68,15 +68,18 @@ class EmailService implements IEmailService {
     const campLocationString: string = getLocationString(camp.location);
     let discountAmount = 0;
 
-    try { 
-      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(chargeId);
+    try {
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(
+        chargeId,
+      );
 
-      if (!checkoutSession){ 
+      if (!checkoutSession) {
         throw new Error(`Could not find checkout session with id ${chargeId}`);
       }
-      
-      discountAmount = checkoutSession.total_details?.amount_discount ? checkoutSession.total_details?.amount_discount: 0;
 
+      discountAmount = checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount
+        : 0;
     } catch (error: unknown) {
       Logger.error("Failed to retrieve checkout session.");
       throw error;
