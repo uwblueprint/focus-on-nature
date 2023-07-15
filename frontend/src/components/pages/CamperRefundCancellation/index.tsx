@@ -47,6 +47,19 @@ const CamperRefundCancellation = (): React.ReactElement => {
     getRefundInfoById(refundCode);
   }, [toast]);
 
+  const getTotalRefund = () => {
+    let totalRefund = 0
+    refunds.forEach((refund, i) => {
+      refund.instances.forEach((instance, j) => {
+        totalRefund +=
+          instance.charges.earlyDropoff +
+          instance.charges.latePickup +
+          instance.charges.camp;
+      })
+    })
+    return totalRefund
+  }
+
   return (
     <>
       <Box pb="7%">
@@ -79,7 +92,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
               </Link>
             </Text>
           </Box>
-          <Box>
+          <Box pb="20px">
             {refunds.map((refundObject, refundNum) => {
               return (
                 <CamperRefundInfoCard
@@ -93,6 +106,15 @@ const CamperRefundCancellation = (): React.ReactElement => {
               );
             })}
           </Box>
+          <Flex width="100%" justifyContent="space-between">
+            <Text as="b" fontSize="25px">
+              Total Refund
+            </Text>
+            <Text  fontSize="25px">
+              ${getTotalRefund()}
+            </Text>
+          </Flex>
+
         </Box>
       </Box>
       <CamperRefundFooter />

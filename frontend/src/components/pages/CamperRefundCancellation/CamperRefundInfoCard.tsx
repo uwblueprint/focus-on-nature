@@ -176,7 +176,7 @@ const CamperRefundInfoCard = ({
             </VStack>
           </VStack>
           
-            <VStack width="100%" spacing={2} align="stretch">
+          <VStack width="100%" spacing={2} align="stretch">
             {instances.map((instance, index) => {
               const totalCharge = instance.charges.earlyDropoff + instance.charges.latePickup
               if (totalCharge !== 0) {
