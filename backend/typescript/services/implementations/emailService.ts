@@ -77,8 +77,9 @@ class EmailService implements IEmailService {
         throw new Error(`Could not find checkout session with id ${chargeId}`);
       }
 
+      // Stripe returns value without decimal point so divide by 100.0 to convert to float
       discountAmount = checkoutSession.total_details?.amount_discount
-        ? checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount / 100.0
         : 0;
     } catch (error: unknown) {
       Logger.error("Failed to retrieve checkout session.");
