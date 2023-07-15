@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Redirect } from "react-router-dom";
 import {
   Text,
   Image,
@@ -15,6 +15,7 @@ import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { RefundDTO } from "../../../types/CamperTypes";
+import { HOME_PAGE } from "../../../constants/Routes";
 
 // /refund/randomStr
 // each camper
@@ -25,27 +26,32 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const toast = useToast();
   const [refunds, setRefunds] = useState<RefundDTO>([]);
   const [campName, setCampName] = useState<string>("");
+  const [validCode, setValidCode] = useState<boolean>(false)
 
   // The camper-refund-cancellation route will have an id to identify the refund code
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
-    const getRefundInfoById = async (code: string) => {
-      const getResponse = await CamperAPIClient.getRefundInfo(code);
-      if (getResponse) {
-        setRefunds(getResponse);
-        setCampName(getResponse[0].campName);
-      } else {
-        toast({
-          description: `Unable to retrieve Refund Info.`,
-          status: "error",
-          duration: 3000,
-          variant: "subtle",
-        });
-      }
-    };
-    getRefundInfoById(refundCode);
-  }, [toast]);
+    if (!validCode) {
+      const getRefundInfoById = async (code: string) => {
+        try {
+          const getResponse = await CamperAPIClient.getRefundInfo(code);
+          setRefunds(getResponse);
+          setCampName(getResponse[0].campName);
+          await setValidCode(true)
+        } catch {
+          toast({
+            description: `Unable to retrieve Refund Info.`,
+            status: "error",
+            duration: 3000,
+            variant: "subtle",
+          });
+          setValidCode(false)
+        }
+      };
+      getRefundInfoById(refundCode);
+    }
+  }, []);
 
   const getTotalRefund = () => {
     let totalRefund = 0
@@ -58,6 +64,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
       })
     })
     return totalRefund
+  }
+
+  console.log(validCode)
+  if (!validCode) {
+    return <Redirect to={HOME_PAGE} />;
   }
 
   return (
