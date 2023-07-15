@@ -176,7 +176,7 @@ const CamperRefundInfoCard = ({
             </VStack>
           </VStack>
           
-          <VStack width="100%" spacing={2} align="stretch">
+          {getEDLPTotalCharge() !== 0 && <VStack width="100%" spacing={2} align="stretch">
             {instances.map((instance, index) => {
               const totalCharge = instance.charges.earlyDropoff + instance.charges.latePickup
               if (totalCharge !== 0) {
@@ -206,7 +206,7 @@ const CamperRefundInfoCard = ({
               }
               return (null)
             })}
-          </VStack>
+          </VStack>}
 
           <Flex width="100%" justifyContent="space-between">
             <Text as="b" fontSize="xl" color={textColor}>
