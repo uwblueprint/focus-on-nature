@@ -147,7 +147,11 @@ class EmailService implements IEmailService {
         uniqueCampers.length
       } campers x ${totalCampDays} total days of camp) </li> 
         <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
-        <li><b>Discount Amount:</b> $${discountAmount} </li> 
+        ${
+          discountAmount > 0
+            ? `<li><b>Discount Amount:</b> $${discountAmount} </li>`
+            : ``
+        }
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
 
