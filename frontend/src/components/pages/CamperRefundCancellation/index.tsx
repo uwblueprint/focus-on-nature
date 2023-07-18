@@ -8,6 +8,7 @@ import {
   Button,
   Link,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 
 import FONIcon from "../../../assets/fon_icon.svg";
@@ -27,30 +28,31 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [refunds, setRefunds] = useState<RefundDTO>([]);
   const [campName, setCampName] = useState<string>("");
   const [validCode, setValidCode] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true);
 
   // The camper-refund-cancellation route will have an id to identify the refund code
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
-    if (!validCode) {
-      const getRefundInfoById = async (code: string) => {
-        try {
-          const getResponse = await CamperAPIClient.getRefundInfo(code);
-          setRefunds(getResponse);
-          setCampName(getResponse[0].campName);
-          await setValidCode(true)
-        } catch {
-          toast({
-            description: `Unable to retrieve Refund Info.`,
-            status: "error",
-            duration: 3000,
-            variant: "subtle",
-          });
-          setValidCode(false)
-        }
-      };
-      getRefundInfoById(refundCode);
-    }
+    const getRefundInfoById = async (code: string) => {
+      try {
+        const getResponse = await CamperAPIClient.getRefundInfo(code);
+        setValidCode(true)
+        setRefunds(getResponse);
+        setCampName(getResponse[0].campName);
+      } catch {
+        setValidCode(false)
+        toast({
+          description: `Unable to retrieve Refund Info.`,
+          status: "error",
+          duration: 3000,
+          variant: "subtle",
+        });
+      } finally {
+        setLoading(false)
+      }
+    };
+    getRefundInfoById(refundCode);
   }, []);
 
   const getTotalRefund = () => {
@@ -66,8 +68,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
     return totalRefund
   }
 
-  console.log(validCode)
-  if (!validCode) {
+  if (loading) {
+    return <Spinner />
+  }
+
+  if (validCode === false) {
     return <Redirect to={HOME_PAGE} />;
   }
 
