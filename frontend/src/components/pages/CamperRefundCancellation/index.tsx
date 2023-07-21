@@ -28,7 +28,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const toast = useToast();
   const [refunds, setRefunds] = useState<RefundDTO>([]);
   const [campName, setCampName] = useState<string>("");
-  const [validCode, setValidCode] = useState<boolean>(false)
+  const [validCode, setValidCode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // The camper-refund-cancellation route will have an id to identify the refund code
@@ -38,11 +38,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
     const getRefundInfoById = async (code: string) => {
       try {
         const getResponse = await CamperAPIClient.getRefundInfo(code);
-        setValidCode(true)
+        setValidCode(true);
         setRefunds(getResponse);
         setCampName(getResponse[0].campName);
       } catch {
-        setValidCode(false)
+        setValidCode(false);
         toast({
           description: `Unable to retrieve Refund Info.`,
           status: "error",
@@ -50,31 +50,32 @@ const CamperRefundCancellation = (): React.ReactElement => {
           variant: "subtle",
         });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     getRefundInfoById(refundCode);
   }, []);
 
   const getTotalRefund = () => {
-    let totalRefund = 0
+    let totalRefund = 0;
     refunds.forEach((refund, i) => {
       refund.instances.forEach((instance, j) => {
         totalRefund +=
           instance.charges.earlyDropoff +
           instance.charges.latePickup +
           instance.charges.camp;
-      })
-    })
-    return totalRefund
-  }
+      });
+    });
+    return totalRefund;
+  };
 
   if (loading) {
     return (
-    <Center p="30px">
-      <Spinner size='lg'/>
-    </Center>
-  )}
+      <Center p="30px">
+        <Spinner size="lg" />
+      </Center>
+    );
+  }
 
   if (validCode === false) {
     return <Redirect to={HOME_PAGE} />;
@@ -130,11 +131,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
             <Text as="b" fontSize="25px">
               Total Refund
             </Text>
-            <Text  fontSize="25px">
-              ${getTotalRefund()}
-            </Text>
+            <Text fontSize="25px">${getTotalRefund()}</Text>
           </Flex>
-
         </Box>
       </Box>
       <CamperRefundFooter />

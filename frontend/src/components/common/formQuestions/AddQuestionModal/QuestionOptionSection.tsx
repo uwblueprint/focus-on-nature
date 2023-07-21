@@ -34,7 +34,8 @@ const QuestionOptionSection = ({
     });
   }
 
-  if (!optionsToBeEdited || optionsToBeEdited.length === 0) existingOptions = [{ option: "" }];
+  if (!optionsToBeEdited || optionsToBeEdited.length === 0)
+    existingOptions = [{ option: "" }];
   const [options, setOptions] = useState<Array<Option>>(existingOptions);
 
   const handleFormChange = (

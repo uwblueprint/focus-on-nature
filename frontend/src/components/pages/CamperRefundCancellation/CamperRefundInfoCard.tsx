@@ -76,14 +76,13 @@ const CamperRefundInfoCard = ({
   };
 
   const getEDLPTotalCharge = () => {
-    let totalCharge = 0
+    let totalCharge = 0;
     instances.forEach((instance) => {
-      totalCharge += 
-        instance.charges.earlyDropoff + 
-        instance.charges.latePickup
+      totalCharge +=
+        instance.charges.earlyDropoff + instance.charges.latePickup;
     });
-    return totalCharge
-  }
+    return totalCharge;
+  };
 
   const isRefundValid = () => {
     const dates: Date[] = [];
@@ -98,10 +97,10 @@ const CamperRefundInfoCard = ({
     // sort the dates and find the first session
     dates.sort((a, b) => a.getTime() - b.getTime());
     const firstDate = dates[0].getTime();
-    const today = new Date().getTime()
+    const today = new Date().getTime();
     const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-    return (firstDate - today) >= thirtyDays;
+    return firstDate - today >= thirtyDays;
   };
 
   const valid = isRefundValid();
@@ -175,38 +174,41 @@ const CamperRefundInfoCard = ({
               })}
             </VStack>
           </VStack>
-          
-          {getEDLPTotalCharge() !== 0 && <VStack width="100%" spacing={2} align="stretch">
-            {instances.map((instance, index) => {
-              const totalCharge = instance.charges.earlyDropoff + instance.charges.latePickup
-              if (totalCharge !== 0) {
-                return (
-                  <Flex width="100%" key={index} justifyContent="space-between">
-                    <VStack width="50%" alignItems="flex-start">
-                      <Text
-                        textAlign="left"
-                        fontSize="2xl"
-                        color={textColor}
-                      >
-                        Session {index + 1} EDLP
+
+          {getEDLPTotalCharge() !== 0 && (
+            <VStack width="100%" spacing={2} align="stretch">
+              {instances.map((instance, index) => {
+                const totalCharge =
+                  instance.charges.earlyDropoff + instance.charges.latePickup;
+                if (totalCharge !== 0) {
+                  return (
+                    <Flex
+                      width="100%"
+                      key={index}
+                      justifyContent="space-between"
+                    >
+                      <VStack width="50%" alignItems="flex-start">
+                        <Text textAlign="left" fontSize="2xl" color={textColor}>
+                          Session {index + 1} EDLP
+                        </Text>
+                        <Text
+                          textAlign="left"
+                          fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
+                          color={textColor}
+                        >
+                          {getTotalEDLPTime(instance)} minutes
+                        </Text>
+                      </VStack>
+                      <Text fontSize="2xl" pt="15px" color={textColor}>
+                        ${totalCharge}
                       </Text>
-                      <Text
-                        textAlign="left"
-                        fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
-                        color={textColor}
-                      >
-                        {getTotalEDLPTime(instance)} minutes
-                      </Text>
-                    </VStack>
-                    <Text fontSize="2xl" pt="15px" color={textColor}>
-                      ${totalCharge}
-                    </Text>
-                  </Flex>
-                );
-              }
-              return (null)
-            })}
-          </VStack>}
+                    </Flex>
+                  );
+                }
+                return null;
+              })}
+            </VStack>
+          )}
 
           <Flex width="100%" justifyContent="space-between">
             <Text as="b" fontSize="xl" color={textColor}>
