@@ -9,6 +9,7 @@ import {
   Link,
   useToast,
   Spinner,
+  Center,
 } from "@chakra-ui/react";
 
 import FONIcon from "../../../assets/fon_icon.svg";
@@ -69,8 +70,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
   }
 
   if (loading) {
-    return <Spinner />
-  }
+    return (
+    <Center p="30px">
+      <Spinner size='lg'/>
+    </Center>
+  )}
 
   if (validCode === false) {
     return <Redirect to={HOME_PAGE} />;
