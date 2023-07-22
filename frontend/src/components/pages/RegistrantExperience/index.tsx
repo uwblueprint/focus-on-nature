@@ -162,7 +162,12 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         // recognize this change and regenerate a new checkout link, and notify them of the change in
         // checkout items. Checkouts expire within a day (?) so it's a very limited case.
         setSelectedSessions(new Set(cachedRegistration.selectedSessionIds));
-        setCurrentStep("registration");
+        // Other case -- if they complete Stripe checkout successfully and come back
+        // current step has been set to registrationResult
+        if (registrationResult !== SUCCESS_RESULT_CODE) {
+          // only set current step to registration if checkout hasn't been completed yet
+          setCurrentStep("registration");
+        }
         setCamp(cachedRegistration.camp);
         setWaiver(cachedRegistration.waiverInterface.waiver);
       }
