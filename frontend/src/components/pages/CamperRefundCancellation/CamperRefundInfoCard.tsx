@@ -130,7 +130,7 @@ const CamperRefundInfoCard = ({
           colorScheme="green"
           size="lg"
         >
-          <Text as="b" fontSize="2xl" marginLeft="5px">
+          <Text as="b" fontSize="2xl" marginLeft="5px" textStyle={{ sm: "xSmallBold", md:"captionSemiBold", lg:"displaySmallSemiBold" }} >
             {" "}
             {firstName} {lastName}{" "}
           </Text>
@@ -152,10 +152,10 @@ const CamperRefundInfoCard = ({
         >
           <VStack spacing={7}>
             <Flex width="100%" justifyContent="space-between">
-              <Text as="b" fontSize="xl" color={textColor}>
+              <Text as="b" color={textColor} textStyle={{ sm: "xSmallMedium", md: "captionSemiBold", lg: "bodyBold" }}>
                 Item
               </Text>
-              <Text as="b" fontSize="xl" color={textColor}>
+              <Text as="b" color={textColor} textStyle={{ sm: "xSmallMedium", md: "captionSemiBold", lg: "bodyBold" }}>
                 Total Price (CAD)
               </Text>
             </Flex>
@@ -163,10 +163,10 @@ const CamperRefundInfoCard = ({
               {instances.map((instance, index) => {
                 return (
                   <Flex width="100%" key={index} justifyContent="space-between">
-                    <Text fontSize="2xl" color={textColor}>
+                    <Text color={textColor} textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "displaySmallRegular" }}>
                       Session {index + 1}
                     </Text>
-                    <Text fontSize="2xl" color={textColor}>
+                    <Text color={textColor} textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "displaySmallRegular" }}>
                       ${instance.charges.camp}
                     </Text>
                   </Flex>
@@ -188,18 +188,18 @@ const CamperRefundInfoCard = ({
                       justifyContent="space-between"
                     >
                       <VStack width="50%" alignItems="flex-start">
-                        <Text textAlign="left" fontSize="2xl" color={textColor}>
+                        <Text textAlign="left" color={textColor} textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "displaySmallRegular" }}>
                           Session {index + 1} EDLP
                         </Text>
                         <Text
                           textAlign="left"
-                          fontSize={{ lg: "sm", sm: "2xl", md: "2xl" }}
                           color={textColor}
+                          textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "xSmallMedium" }}
                         >
                           {getTotalEDLPTime(instance)} minutes
                         </Text>
                       </VStack>
-                      <Text fontSize="2xl" pt="15px" color={textColor}>
+                      <Text fontSize="2xl" color={textColor} textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "displaySmallRegular" }}>
                         ${totalCharge}
                       </Text>
                     </Flex>
@@ -211,10 +211,10 @@ const CamperRefundInfoCard = ({
           )}
 
           <Flex width="100%" justifyContent="space-between">
-            <Text as="b" fontSize="xl" color={textColor}>
+            <Text as="b" color={textColor} textStyle={{ sm: "xSmallBold", md: "xSmallBold", lg: "bodyBold" }}>
               Total Refund for Camper #{camperNum}
             </Text>
-            <Text as="b" fontSize="xl" color={textColor}>
+            <Text as="b" color={textColor} textStyle={{ sm: "xSmallBold", md: "xSmallBold", lg: "bodyBold" }}>
               ${getTotalRefundForCamper()}
             </Text>
           </Flex>
