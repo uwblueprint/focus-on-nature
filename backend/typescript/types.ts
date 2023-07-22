@@ -67,6 +67,7 @@ export type CamperDTO = {
   }[];
   registrationDate: string;
   hasPaid: boolean;
+  refundStatus: string;
   formResponses: Map<string, string>;
   chargeId: string;
   charges: CamperCharges;

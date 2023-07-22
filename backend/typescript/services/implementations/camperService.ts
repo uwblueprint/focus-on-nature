@@ -151,6 +151,7 @@ class CamperService implements ICamperService {
             contacts: camper.contacts,
             registrationDate: new Date().toString(),
             hasPaid: false,
+            refundStatus: "Not Refunded",
             formResponses: camper.formResponses,
             chargeId: createStripeCheckoutSessionResponse.id,
             charges: {
@@ -884,6 +885,7 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
+        refundStatus: updatedCamper.refundStatus,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
       };
@@ -928,6 +930,9 @@ class CamperService implements ICamperService {
         amount: refundAmount,
       });
 
+      // await this.updateCampersById(camperIdsToBeDeleted, {
+      //   firstName: "firstName"
+      // })
       await this.deleteCampersById(camperIdsToBeDeleted);
       await Promise.all(
         campersToBeDeleted.map(async (camper) => {
@@ -1102,6 +1107,7 @@ class CamperService implements ICamperService {
       const oldCampers = campSession.campers; // clone the full array of campers for rollback
 
       try {
+        // TODO MAKE CHANGES HERE
         // delete camper IDs from the array of campers in the camp session
         const newCampers = campSession.campers.filter(
           (camperId) => !camperIds.includes(camperId.toString()),
@@ -1141,6 +1147,121 @@ class CamperService implements ICamperService {
         // could not delete camper, rollback camp's campers deletion
         try {
           await MgCamper.create(campers);
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB campers' creation after deleting campers failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper ids that could not be deleted =",
+            camperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete campers with camper IDs [${camperIds}]. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
+
+  /* eslint-disable class-methods-use-this */
+  async changeCamperRefundStatusById(camperIds: Array<string>): Promise<void> {
+    try {
+      const campers: Array<Camper> | null = await MgCamper.find({
+        _id: {
+          $in: camperIds,
+        },
+      });
+
+      if (campers === null || campers.length !== camperIds.length) {
+        throw new Error(
+          `Not all campers with camper IDs [${camperIds}] are found.`,
+        );
+      }
+
+      const oneChargeId = campers[0].chargeId;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].chargeId !== oneChargeId) {
+          throw new Error(`ChargeIds must all be the same.`);
+        }
+      }
+
+      const campSessionId = campers[0].campSession;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].campSession.toString() !== campSessionId.toString()) {
+          throw new Error(
+            `Not all campers are registered for the same campSession.`,
+          );
+        }
+      }
+
+      const campSession: CampSession | null = await MgCampSession.findById(
+        campers[0].campSession,
+      );
+      if (!campSession) {
+        throw new Error(
+          `Camp session with ID ${campers[0].campSession} not found.`,
+        );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with campId ${campSession.camp} not found.`);
+      }
+
+      const oldCampers = campSession.campers; // clone the full array of campers for rollback
+
+      try {
+        // delete camper IDs from the array of campers in the camp session
+        const newCampers = campSession.campers.filter(
+          (camperId) => !camperIds.includes(camperId.toString()),
+        );
+
+        campSession.campers = newCampers;
+        const updatedCampSessionCampers = await campSession.save();
+
+        if (!updatedCampSessionCampers) {
+          throw new Error(
+            `Failed to update ${campSession} with refunded campers.`,
+          );
+        }
+      } catch (mongoDbError: unknown) {
+        try {
+          campSession.campers = oldCampers;
+          await campSession.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB update to campSession to restore deleted camperIds. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper ids that could not be restored in the camp Session=",
+            camperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+      }
+
+      // changing camper table refund status
+      try {
+        await MgCamper.updateMany({
+          _id: {
+            $in: camperIds,
+          },
+          $set: { "refundStatus": "Refunded" }
+        });
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's campers deletion
+        try {
+          await MgCamper.updateMany({
+            _id: {
+              $in: camperIds,
+            },
+            $set: { "refundStatus": "Not Refunded" }
+          });
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB campers' creation after deleting campers failure. Reason =",
