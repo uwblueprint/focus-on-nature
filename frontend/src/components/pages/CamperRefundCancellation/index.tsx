@@ -133,7 +133,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
             </Text>
             <Text as="b" textStyle={{ sm: "xSmallBold", md: "captionSemiBold", lg: "displayMediumBold" }}>
               ${getTotalRefund()}
-              </Text>
+            </Text>
           </Flex>
         </Box>
       </Box>

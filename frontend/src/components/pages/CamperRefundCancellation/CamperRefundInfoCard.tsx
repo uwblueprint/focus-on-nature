@@ -152,10 +152,10 @@ const CamperRefundInfoCard = ({
         >
           <VStack spacing={7}>
             <Flex width="100%" justifyContent="space-between">
-              <Text as="b" color={textColor} textStyle={{ sm: "xSmallMedium", md: "captionSemiBold", lg: "bodyBold" }}>
+              <Text as="b" color={textColor} textStyle={{ sm: "xSmallBold", md: "captionSemiBold", lg: "bodyBold" }}>
                 Item
               </Text>
-              <Text as="b" color={textColor} textStyle={{ sm: "xSmallMedium", md: "captionSemiBold", lg: "bodyBold" }}>
+              <Text as="b" color={textColor} textStyle={{ sm: "xSmallBold", md: "captionSemiBold", lg: "bodyBold" }}>
                 Total Price (CAD)
               </Text>
             </Flex>
