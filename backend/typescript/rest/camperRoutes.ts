@@ -24,7 +24,7 @@ const camperRouter: Router = Router();
 const camperService: ICamperService = new CamperService();
 
 // TODO: secure stripe keys
-const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
+// const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
 
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
