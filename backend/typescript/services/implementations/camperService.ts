@@ -282,6 +282,7 @@ class CamperService implements ICamperService {
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
+          refundStatus: newCamper.refundStatus,
         };
       });
       // Commit the transaction if everything was successful
@@ -381,6 +382,7 @@ class CamperService implements ICamperService {
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
+          refundStatus: camper.refundStatus,
         };
       });
 

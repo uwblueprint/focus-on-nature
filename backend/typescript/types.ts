@@ -243,6 +243,7 @@ export type UpdateCamperDTO = Omit<
   | "latePickup"
   | "contacts"
   | "optionalClauses"
+  | "refundStatus"
 >;
 
 export type AuthDTO = Token & UserDTO;

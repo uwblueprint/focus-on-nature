@@ -300,6 +300,7 @@ class CampService implements ICampService {
             formResponses: camper.formResponses,
             charges: camper.charges,
             optionalClauses: camper.optionalClauses,
+            refundStatus: camper.refundStatus,
           };
         });
         const waitlist = (campSession.waitlist as WaitlistedCamper[]).map(
