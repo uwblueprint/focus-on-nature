@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex, Button } from "@chakra-ui/react";
 
-const CamperRefundFooter = (props: any): React.ReactElement => {
+const CamperRefundFooter = (): React.ReactElement => {
   return (
     <Flex
       color="#FFFFFF"
@@ -22,7 +22,7 @@ const CamperRefundFooter = (props: any): React.ReactElement => {
         width={{ sm: "100vw", md: "auto", lg: "auto" }}
         height="48px"
         variant="primary"
-        background={true ? "primary.green.100" : "primary.green_disabled.100"}
+        background="primary.green.100"
         textStyle="buttonSemiBold"
         pt="12px"
         pr="25px"

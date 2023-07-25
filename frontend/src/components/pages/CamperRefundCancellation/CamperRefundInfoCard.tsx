@@ -6,11 +6,8 @@ import {
   VStack,
   StackDivider,
   Flex,
-  Spacer,
-  extendTheme,
-  ChakraProvider,
 } from "@chakra-ui/react";
-import { CamperRefundDTO, RefundDTO } from "../../../types/CamperTypes";
+import { CamperRefundDTO } from "../../../types/CamperTypes";
 
 type CamperRefundInfoCardProps = {
   camperRefund: any;

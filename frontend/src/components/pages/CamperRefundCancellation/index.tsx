@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Redirect } from "react-router-dom";
 import {
   Text,
   Image,
   Box,
   Flex,
-  Button,
   Link,
   useToast,
   Spinner,
@@ -54,12 +53,12 @@ const CamperRefundCancellation = (): React.ReactElement => {
       }
     };
     getRefundInfoById(refundCode);
-  }, []);
+  });
 
   const getTotalRefund = () => {
     let totalRefund = 0;
-    refunds.forEach((refund, i) => {
-      refund.instances.forEach((instance, j) => {
+    refunds.forEach((refund) => {
+      refund.instances.forEach((instance) => {
         totalRefund +=
           instance.charges.earlyDropoff +
           instance.charges.latePickup +
