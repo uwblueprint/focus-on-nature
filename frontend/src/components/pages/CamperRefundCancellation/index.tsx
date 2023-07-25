@@ -95,13 +95,36 @@ const CamperRefundCancellation = (): React.ReactElement => {
         />
         <Box pr={{ lg: "30%", sm: "12%", md: "12%" }} pl="12%" pt="5%">
           <Box pb="40px">
-            <Text as="b" mt="70px" textStyle={{ sm: "xSmallBold", md: "bodyBold", lg: "displayXLarge" }} >
+            <Text
+              as="b"
+              mt="70px"
+              textStyle={{
+                sm: "xSmallBold",
+                md: "bodyBold",
+                lg: "displayXLarge",
+              }}
+            >
               {campName} Camp Cancellation
             </Text>
-            <Text color="#10741A" mt="16px" textStyle={{ sm: "xSmallMedium", md: "xSmallBold", lg: "displayLarge" }}> 
+            <Text
+              color="#10741A"
+              mt="16px"
+              textStyle={{
+                sm: "xSmallMedium",
+                md: "xSmallBold",
+                lg: "displayLarge",
+              }}
+            >
               Please select the campers you wish to request a refund for.
             </Text>
-            <Text mt="16px" textStyle={{ sm: "xSmallRegular", md: "xSmallRegular", lg: "displayMediumRegular" }}>
+            <Text
+              mt="16px"
+              textStyle={{
+                sm: "xSmallRegular",
+                md: "xSmallRegular",
+                lg: "displayMediumRegular",
+              }}
+            >
               {
                 "This form can only be used if you want to get a full refund for each camper. For other circumstances, please contact Focus on Nature via "
               }
@@ -128,10 +151,24 @@ const CamperRefundCancellation = (): React.ReactElement => {
             })}
           </Box>
           <Flex width="100%" justifyContent="space-between">
-            <Text as="b" textStyle={{ sm: "xSmallBold", md: "captionSemiBold", lg: "displayMediumBold" }}>
+            <Text
+              as="b"
+              textStyle={{
+                sm: "xSmallBold",
+                md: "captionSemiBold",
+                lg: "displayMediumBold",
+              }}
+            >
               Total Refund
             </Text>
-            <Text as="b" textStyle={{ sm: "xSmallBold", md: "captionSemiBold", lg: "displayMediumBold" }}>
+            <Text
+              as="b"
+              textStyle={{
+                sm: "xSmallBold",
+                md: "captionSemiBold",
+                lg: "displayMediumBold",
+              }}
+            >
               ${getTotalRefund()}
             </Text>
           </Flex>
