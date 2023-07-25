@@ -128,6 +128,7 @@ class CampService implements ICampService {
                     registrationDate: camper.registrationDate.toString(),
                     hasPaid: camper.hasPaid,
                     chargeId: camper.chargeId,
+                    refundStatus: camper.refundStatus,
                     formResponses: camper.formResponses,
                     charges: camper.charges,
                     optionalClauses: camper.optionalClauses,
