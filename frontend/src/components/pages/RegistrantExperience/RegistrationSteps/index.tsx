@@ -76,7 +76,7 @@ const RegistrationSteps = ({
       firstName: "",
       lastName: "",
       age: NaN,
-      refundStatus: "Not Refunded",
+      refundStatus: "Paid",
       contacts: [
         {
           firstName: "",

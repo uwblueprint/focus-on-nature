@@ -151,7 +151,7 @@ class CamperService implements ICamperService {
             contacts: camper.contacts,
             registrationDate: new Date().toString(),
             hasPaid: false,
-            refundStatus: "Not Refunded",
+            refundStatus: "Paid",
             formResponses: camper.formResponses,
             chargeId: createStripeCheckoutSessionResponse.id,
             charges: {
@@ -1254,7 +1254,7 @@ class CamperService implements ICamperService {
           _id: {
             $in: camperIds,
           },
-          $set: { "refundStatus": "Pending" }
+          $set: { "refundStatus": "Refunded" }
         });
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
@@ -1263,7 +1263,7 @@ class CamperService implements ICamperService {
             _id: {
               $in: camperIds,
             },
-            $set: { "refundStatus": "Not Refunded" }
+            $set: { "refundStatus": "Paid" }
           });
         } catch (rollbackDbError: unknown) {
           const errorMessage = [

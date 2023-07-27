@@ -198,7 +198,7 @@ camperRouter.patch(
 
 // ROLES: Leave unprotected as we'll probably need this in cancellation flow
 /* Cancel registration for the list of campers with the chargeId */
-camperRouter.delete(
+camperRouter.patch(
   "/cancel-registration",
   cancelCamperDtoValidator,
   async (req, res) => {
