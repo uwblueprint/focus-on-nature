@@ -908,14 +908,14 @@ class CamperService implements ICamperService {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
-      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+      const campersToBeRefunded = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
-      const camperIdsToBeDeleted = campersToBeDeleted.map(
+      const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
 
-      if (!campersToBeDeleted.length) {
+      if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
         );
@@ -935,12 +935,10 @@ class CamperService implements ICamperService {
         amount: refundAmount,
       });
 
-      // await this.updateCampersById(camperIdsToBeDeleted, {
-      //   firstName: "firstName"
-      // })
-      await this.deleteCampersById(camperIdsToBeDeleted);
+      await this.changeCamperRefundStatusById(camperIdsToBeRefunded);
+
       await Promise.all(
-        campersToBeDeleted.map(async (camper) => {
+        campersToBeRefunded.map(async (camper) => {
           const campSession: CampSession | null = await MgCampSession.findById(
             camper.campSession,
           );
@@ -965,7 +963,7 @@ class CamperService implements ICamperService {
         }),
       );
       await emailService.sendParentCancellationConfirmationEmail(
-        campersToBeDeleted,
+        campersToBeRefunded,
       );
     } catch (error: unknown) {
       Logger.error(
@@ -984,14 +982,14 @@ class CamperService implements ICamperService {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
-      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+      const campersToBeRefunded = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
-      const camperIdsToBeDeleted = campersToBeDeleted.map(
+      const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
 
-      if (!campersToBeDeleted.length) {
+      if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
         );
@@ -999,30 +997,30 @@ class CamperService implements ICamperService {
 
       // check if there are any campers that need to be removed but were not found
       const remainingCamperIds = camperIds.filter(
-        (camperId) => !camperIdsToBeDeleted.includes(camperId),
+        (camperId) => !camperIdsToBeRefunded.includes(camperId),
       );
 
       if (remainingCamperIds.length) {
         throw new Error(
-          `Failed to find these camper IDs to delete: ${JSON.stringify(
+          `Failed to find these camper IDs to cancel: ${JSON.stringify(
             remainingCamperIds,
           )}`,
         );
       }
 
       const campSession: CampSession | null = await MgCampSession.findById(
-        campersToBeDeleted[0].campSession,
+        campersToBeRefunded[0].campSession,
       );
 
       if (!campSession) {
         throw new Error(
-          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} not found.`,
+          `Campers' camp session with campId ${campersToBeRefunded[0].campSession} not found.`,
         );
       }
 
-      for (let i = 0; i < campersToBeDeleted.length; i += 1) {
+      for (let i = 0; i < campersToBeRefunded.length; i += 1) {
         if (
-          campersToBeDeleted[i].campSession.toString() !==
+          campersToBeRefunded[i].campSession.toString() !==
           campSession.id.toString()
         ) {
           throw new Error(
@@ -1041,13 +1039,13 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30 && campSession.waitlist.length === 0) {
         throw new Error(
-          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days and the waitlist is empty.`,
+          `Campers' camp session with campId ${campersToBeRefunded[0].campSession} has a start date in less than 30 days and the waitlist is empty.`,
         );
       }
 
       // calculate amount to be refunded
       let refundAmount = 0;
-      campersToBeDeleted.forEach((camper) => {
+      campersToBeRefunded.forEach((camper) => {
         const { charges } = camper;
         refundAmount +=
           charges.camp + charges.earlyDropoff + charges.latePickup;
@@ -1256,7 +1254,7 @@ class CamperService implements ICamperService {
           _id: {
             $in: camperIds,
           },
-          $set: { "refundStatus": "Refunded" }
+          $set: { "refundStatus": "Pending" }
         });
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
