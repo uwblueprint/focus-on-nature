@@ -24,10 +24,8 @@ const CamperRefundFooter = (): React.ReactElement => {
         variant="primary"
         background="primary.green.100"
         textStyle="buttonSemiBold"
-        pt="12px"
-        pr="25px"
-        pb="12px"
-        pl="25px"
+        py="12px"
+        px="25px"
       >
         Request refund
       </Button>
