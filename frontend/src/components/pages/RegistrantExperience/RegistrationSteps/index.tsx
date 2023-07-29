@@ -6,6 +6,8 @@ import React, {
   useRef,
   useEffect,
   useMemo,
+  SetStateAction,
+  Dispatch,
 } from "react";
 import { CampResponse, CampSession } from "../../../../types/CampsTypes";
 import {
@@ -43,6 +45,8 @@ import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../constants/RegistrationCon
 
 type RegistrationStepsProps = {
   camp: CampResponse;
+  campers: RegistrantExperienceCamper[];
+  setCampers: Dispatch<SetStateAction<RegistrantExperienceCamper[]>>;
   orderedSelectedSessions: CampSession[];
   waiver: WaiverType;
   waitlistedCamper?: WaitlistedCamper;
@@ -52,6 +56,8 @@ type RegistrationStepsProps = {
 
 const RegistrationSteps = ({
   camp,
+  campers,
+  setCampers,
   orderedSelectedSessions: selectedSessions,
   waiver,
   onClickBack,
@@ -71,30 +77,6 @@ const RegistrationSteps = ({
 
   const [isEditing, setIsEditing] = useState(0);
 
-  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
-    {
-      firstName: "",
-      lastName: "",
-      age: NaN,
-      contacts: [
-        {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneNumber: "",
-          relationshipToCamper: "",
-        },
-        {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneNumber: "",
-          relationshipToCamper: "",
-        },
-      ],
-      optionalClauses: [],
-    },
-  ]);
 
   const [
     requireEarlyDropOffLatePickup,
