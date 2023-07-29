@@ -128,7 +128,6 @@ const CamperRefundInfoCard = ({
           size="lg"
         >
           <Text
-            as="b"
             fontSize="2xl"
             marginLeft="5px"
             textStyle={{
@@ -159,7 +158,6 @@ const CamperRefundInfoCard = ({
           <VStack spacing={7}>
             <Flex width="100%" justifyContent="space-between">
               <Text
-                as="b"
                 color={textColor}
                 textStyle={{
                   sm: "xSmallBold",
@@ -170,7 +168,6 @@ const CamperRefundInfoCard = ({
                 Item
               </Text>
               <Text
-                as="b"
                 color={textColor}
                 textStyle={{
                   sm: "xSmallBold",
@@ -268,14 +265,12 @@ const CamperRefundInfoCard = ({
 
           <Flex width="100%" justifyContent="space-between">
             <Text
-              as="b"
               color={textColor}
               textStyle={{ sm: "xSmallBold", md: "xSmallBold", lg: "bodyBold" }}
             >
               Total Refund for Camper #{camperNum}
             </Text>
             <Text
-              as="b"
               color={textColor}
               textStyle={{ sm: "xSmallBold", md: "xSmallBold", lg: "bodyBold" }}
             >

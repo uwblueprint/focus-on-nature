@@ -41,7 +41,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
         setRefunds(getResponse);
         setCampName(getResponse[0].campName);
       } catch {
-        setValidCode(false);
         toast({
           description: `Unable to retrieve Refund Info.`,
           status: "error",
@@ -76,7 +75,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
     );
   }
 
-  if (validCode === false) {
+  if (!validCode) {
     return <Redirect to={HOME_PAGE} />;
   }
 
@@ -95,7 +94,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
         <Box pr={{ lg: "30%", sm: "12%", md: "12%" }} pl="12%" pt="5%">
           <Box pb="40px">
             <Text
-              as="b"
               mt="70px"
               textStyle={{
                 sm: "xSmallBold",
@@ -151,7 +149,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
           </Box>
           <Flex width="100%" justifyContent="space-between">
             <Text
-              as="b"
               textStyle={{
                 sm: "xSmallBold",
                 md: "captionSemiBold",
@@ -161,7 +158,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
               Total Refund
             </Text>
             <Text
-              as="b"
               textStyle={{
                 sm: "xSmallBold",
                 md: "captionSemiBold",
