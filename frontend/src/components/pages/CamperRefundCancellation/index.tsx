@@ -56,7 +56,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
 
   const getTotalRefund = () => {
     let totalRefund = 0;
-    console.log(refunds);
     refunds.forEach((refund) => {
       refund.instances.forEach((instance) => {
         totalRefund +=
