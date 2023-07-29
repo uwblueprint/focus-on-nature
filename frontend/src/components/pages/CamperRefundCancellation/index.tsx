@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Redirect } from "react-router-dom";
 import {
   Text,
   Image,
   Box,
   Flex,
-  Button,
   Link,
   useToast,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 
 import FONIcon from "../../../assets/fon_icon.svg";
@@ -15,6 +16,7 @@ import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { RefundDTO } from "../../../types/CamperTypes";
+import { HOME_PAGE } from "../../../constants/Routes";
 
 // /refund/randomStr
 // each camper
@@ -23,29 +25,59 @@ import { RefundDTO } from "../../../types/CamperTypes";
 
 const CamperRefundCancellation = (): React.ReactElement => {
   const toast = useToast();
-  const [refunds, setRefunds] = useState<RefundDTO>([]);
+  const [refunds, setRefunds] = useState<RefundDTO[]>([]);
   const [campName, setCampName] = useState<string>("");
+  const [validCode, setValidCode] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // The camper-refund-cancellation route will have an id to identify the refund code
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
     const getRefundInfoById = async (code: string) => {
-      const getResponse = await CamperAPIClient.getRefundInfo(code);
-      if (getResponse) {
+      try {
+        const getResponse = await CamperAPIClient.getRefundInfo(code);
+        setValidCode(true);
         setRefunds(getResponse);
         setCampName(getResponse[0].campName);
-      } else {
+      } catch {
         toast({
           description: `Unable to retrieve Refund Info.`,
           status: "error",
           duration: 3000,
           variant: "subtle",
         });
+      } finally {
+        setLoading(false);
       }
     };
     getRefundInfoById(refundCode);
-  }, [toast]);
+  });
+
+  const getTotalRefund = () => {
+    let totalRefund = 0;
+    refunds.forEach((refund) => {
+      refund.instances.forEach((instance) => {
+        totalRefund +=
+          instance.charges.earlyDropoff +
+          instance.charges.latePickup +
+          instance.charges.camp;
+      });
+    });
+    return totalRefund;
+  };
+
+  if (loading) {
+    return (
+      <Center p="30px">
+        <Spinner size="lg" />
+      </Center>
+    );
+  }
+
+  if (!validCode) {
+    return <Redirect to={HOME_PAGE} />;
+  }
 
   return (
     <>
@@ -61,13 +93,35 @@ const CamperRefundCancellation = (): React.ReactElement => {
         />
         <Box pr={{ lg: "30%", sm: "12%", md: "12%" }} pl="12%" pt="5%">
           <Box pb="40px">
-            <Text as="b" mt="70px" fontSize="40px">
-              {campName}
+            <Text
+              mt="70px"
+              textStyle={{
+                sm: "xSmallBold",
+                md: "bodyBold",
+                lg: "displayXLarge",
+              }}
+            >
+              {campName} Camp Cancellation
             </Text>
-            <Text color="#10741A" mt="16px" fontSize="20px">
+            <Text
+              color="#10741A"
+              mt="16px"
+              textStyle={{
+                sm: "xSmallMedium",
+                md: "xSmallBold",
+                lg: "displayLarge",
+              }}
+            >
               Please select the campers you wish to request a refund for.
             </Text>
-            <Text mt="16px" fontSize="20px">
+            <Text
+              mt="16px"
+              textStyle={{
+                sm: "xSmallRegular",
+                md: "xSmallRegular",
+                lg: "displayMediumRegular",
+              }}
+            >
               {
                 "This form can only be used if you want to get a full refund for each camper. For other circumstances, please contact Focus on Nature via "
               }
@@ -79,7 +133,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
               </Link>
             </Text>
           </Box>
-          <Box>
+          <Box pb="20px">
             {refunds.map((refundObject, refundNum) => {
               return (
                 <CamperRefundInfoCard
@@ -93,6 +147,26 @@ const CamperRefundCancellation = (): React.ReactElement => {
               );
             })}
           </Box>
+          <Flex width="100%" justifyContent="space-between">
+            <Text
+              textStyle={{
+                sm: "xSmallBold",
+                md: "captionSemiBold",
+                lg: "displayMediumBold",
+              }}
+            >
+              Total Refund
+            </Text>
+            <Text
+              textStyle={{
+                sm: "xSmallBold",
+                md: "captionSemiBold",
+                lg: "displayMediumBold",
+              }}
+            >
+              ${getTotalRefund()}
+            </Text>
+          </Flex>
         </Box>
       </Box>
       <CamperRefundFooter />
