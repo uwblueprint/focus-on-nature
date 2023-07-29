@@ -14,7 +14,6 @@ type CamperRefundInfoCardProps = {
   firstName: string;
   lastName: string;
   camperNum: number;
-  key: number;
   instances: Array<CamperRefundDTO>;
 };
 
@@ -23,7 +22,6 @@ const CamperRefundInfoCard = ({
   firstName,
   lastName,
   camperNum,
-  key,
   instances,
 }: CamperRefundInfoCardProps): React.ReactElement => {
   const getTimeDifference = (date1: Date, date2: Date): number => {
