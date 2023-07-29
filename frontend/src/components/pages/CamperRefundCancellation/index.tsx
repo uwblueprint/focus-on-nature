@@ -15,7 +15,7 @@ import FONIcon from "../../../assets/fon_icon.svg";
 import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
-import { RefundDTO } from "../../../types/CamperTypes";
+import { RefundDTOArray } from "../../../types/CamperTypes";
 import { HOME_PAGE } from "../../../constants/Routes";
 
 // /refund/randomStr
@@ -25,7 +25,7 @@ import { HOME_PAGE } from "../../../constants/Routes";
 
 const CamperRefundCancellation = (): React.ReactElement => {
   const toast = useToast();
-  const [refunds, setRefunds] = useState<RefundDTO>([]);
+  const [refunds, setRefunds] = useState<RefundDTOArray>([]);
   const [campName, setCampName] = useState<string>("");
   const [validCode, setValidCode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);

@@ -8,7 +8,7 @@ import {
   CreateWaitlistedCamperDTO,
   CreateCamperDTO,
   CreateCamperResponse,
-  RefundDTO,
+  RefundDTOArray,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -143,14 +143,14 @@ const waitlistCampers = async (
   }
 };
 
-const getRefundInfo = async (refundCode: string): Promise<RefundDTO> => {
+const getRefundInfo = async (refundCode: string): Promise<RefundDTOArray> => {
   try {
     const { data } = await baseAPIClient.get(`/campers/refund/${refundCode}`, {
       headers: { Authorization: getBearerToken() },
     });
     return data;
   } catch (error) {
-    return error as RefundDTO;
+    return error as RefundDTOArray;
   }
 };
 

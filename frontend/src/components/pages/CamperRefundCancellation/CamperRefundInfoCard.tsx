@@ -7,10 +7,10 @@ import {
   StackDivider,
   Flex,
 } from "@chakra-ui/react";
-import { CamperRefundDTO } from "../../../types/CamperTypes";
+import { CamperRefundDTO, RefundDTO } from "../../../types/CamperTypes";
 
 type CamperRefundInfoCardProps = {
-  camperRefund: any;
+  camperRefund: RefundDTO;
   firstName: string;
   lastName: string;
   camperNum: number;

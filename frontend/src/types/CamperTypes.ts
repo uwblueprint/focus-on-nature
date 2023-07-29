@@ -105,7 +105,9 @@ export type CreateCamperResponse = {
   checkoutSessionUrl: string;
 };
 
-export type RefundDTO = Array<{
+export type RefundDTOArray = Array<RefundDTO>;
+
+export type RefundDTO = {
   firstName: string;
   lastName: string;
   age: number;
@@ -113,7 +115,7 @@ export type RefundDTO = Array<{
   instances: Array<CamperRefundDTO>;
   startTime: string;
   endTime: string;
-}>;
+}
 
 export type CamperRefundDTO = Omit<
   Camper,
