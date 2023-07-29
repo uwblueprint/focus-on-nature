@@ -14,21 +14,18 @@ const CamperRefundFooter = (): React.ReactElement => {
       backgroundColor="#FFFFFF"
       borderTop="2px solid #EEEFF1"
       pt="24px"
-      pr={{ sm:"12%", md:"12%", lg:"80px" }}
+      pr={{ sm: "12%", md: "12%", lg: "80px" }}
       pb="24px"
       pl="12%"
     >
-
       <Button
         width={{ sm: "100vw", md: "auto", lg: "auto" }}
         height="48px"
         variant="primary"
-        background={true ? "primary.green.100" : "primary.green_disabled.100"}
+        background="primary.green.100"
         textStyle="buttonSemiBold"
-        pt="12px"
-        pr="25px"
-        pb="12px"
-        pl="25px"
+        py="12px"
+        px="25px"
       >
         Request refund
       </Button>
