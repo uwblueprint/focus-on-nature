@@ -32,6 +32,8 @@ const CamperRefundConfirmation = (): React.ReactElement => {
 
   const refunds: RefundDTO = [
     {
+      campPhotoUrl:
+        "https://storage.googleapis.com/focus-on-nature.appspot.com/02f84e84-578d-4887-af9f-3b64e56834b9?GoogleAccessId=firebase-adminsdk-49yfc%40focus-on-nature.iam.gserviceaccount.com&Expires=1690850787&Signature=NDcK7lMeN3Ft53UP%2F3bVWz2PGw96GU3%2BdJuqExlwCu3r%2BD0tbyLkHeic4nRRt9Ic7gtj7%2BF1QsqUSl8NhhHaoIAtYOFDeQlnRb9wFPMo1V5mj9kfNUk8asuZZAF%2BduWEphjjUAiSbBFBILVhfC2nCPzEyIJjfkWBrhFEQf4GlyZQ0oALYGNvP05c5PvI7XvUPW7oVMCe1kHGvrYPZK5V4gLDudOAPQo2inPBzj46RZAAoIwX5%2B6VVPSrA%2BXTKlJjEFiLPYOlIVKOjygY4T4gRLcZzgbKEmtM1PN6%2FZFi1hOdwZNYZMYh%2Fni2VtUNNfV3Xpcz41YC%2F%2FLNPW7geI6%2BVQ%3D%3D",
       startTime: "5:00",
       endTime: "7:00",
       firstName: "Alice",
@@ -73,6 +75,7 @@ const CamperRefundConfirmation = (): React.ReactElement => {
       ],
     },
     {
+      campPhotoUrl: "",
       startTime: "5:00",
       endTime: "7:00",
       firstName: "Bob",
@@ -169,6 +172,7 @@ const CamperRefundConfirmation = (): React.ReactElement => {
                 campName={refundObject.campName}
                 key={refundNum}
                 instances={refundObject.instances}
+                campPhotoUrl={refundObject.campPhotoUrl}
               />
             );
           })}

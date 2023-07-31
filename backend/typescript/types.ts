@@ -256,6 +256,7 @@ export type RefundCamperGroupDTO = {
   lastName: string;
   age: number;
   campName: string;
+  campPhotoUrl?: string;
   startTime: string;
   endTime: string;
   instances: Array<RefundCamperDTO>;

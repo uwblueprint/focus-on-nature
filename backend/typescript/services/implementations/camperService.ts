@@ -25,12 +25,19 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
+import FileStorageService from "../implementations/fileStorageService";
+import IFileStorageService from "../interfaces/fileStorageService";
 import {
   createStripeCheckoutSession,
   createStripeLineItems,
   retrieveStripeCheckoutSession,
 } from "../../utilities/stripeUtils";
 import { getEDUnits, getLPUnits } from "../../utilities/CampUtils";
+
+const defaultBucket = process.env.FIREBASE_STORAGE_DEFAULT_BUCKET || "";
+const fileStorageService: IFileStorageService = new FileStorageService(
+  defaultBucket,
+);
 
 const Logger = logger(__filename);
 const emailService: IEmailService = new EmailService(nodemailerConfig);
@@ -1495,6 +1502,19 @@ class CamperService implements ICamperService {
         throw new Error(`Camp with ID ${campSession.camp} not found.`);
       }
 
+      let campPhotoUrl;
+      if (camp.fileName) {
+        try {
+          campPhotoUrl = await fileStorageService.getFile(camp.fileName);
+        } catch (error: unknown) {
+          Logger.error(
+            `Failed to get camp photo for camp with id ${
+              camp.id
+            }. Reason = ${getErrorMessage(error)}`,
+          );
+        }
+      }
+
       // eslint-disable-next-line no-restricted-syntax
       for (const camper of campers) {
         // eslint-disable-next-line no-await-in-loop
@@ -1540,6 +1560,7 @@ class CamperService implements ICamperService {
             startTime: camp.startTime,
             endTime: camp.endTime,
             instances: [refundCamper],
+            campPhotoUrl: campPhotoUrl,
           };
         }
         refundDTOMap.set(key, newRefundInstance);
