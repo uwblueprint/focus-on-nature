@@ -1,12 +1,14 @@
 import React from "react";
 import { Box, Image, Text, HStack } from "@chakra-ui/react";
 import { CamperRefundDTO } from "../../../types/CamperTypes";
+import defaultCampImage from "../../../assets/default_camp_image.png";
 
 type RefundConfirmationCardProps = {
   firstName: string;
   age: number;
   campName: string;
   key: number;
+  campPhotoUrl?: string;
   instances: Array<CamperRefundDTO>;
 };
 
@@ -15,6 +17,7 @@ const RefundConfirmationCard = ({
   age,
   campName,
   key,
+  campPhotoUrl,
   instances,
 }: RefundConfirmationCardProps): React.ReactElement => {
   const dateOptions: Intl.DateTimeFormatOptions = {
@@ -34,16 +37,17 @@ const RefundConfirmationCard = ({
     >
       <HStack>
         <Image
-          objectFit="scale-down"
-          src="https://cdn.britannica.com/55/174255-050-526314B6/brown-Guernsey-cow.jpg?w=400&h=300&c=crop"
-          alt="Camp Image"
-          width="20%"
+          fallbackSrc={defaultCampImage}
+          src={campPhotoUrl}
+          alt="Camp image"
+          maxW={{ base: "192px", lg: "120px" }}
+          maxH={{ base: "192px", lg: "120px" }}
+          mb={{ sm: 5, md: 0 }}
+          fit="contain"
           p="24px"
         />
         <Box p="24px">
-          <Text as="b" textStyle="displayMediumBold">
-            {campName}
-          </Text>
+          <Text textStyle="displayMediumBold">{campName}</Text>
           {instances.map((instance, index) => {
             const date1 = new Date(instance.dates[0]);
             const date2 = new Date(instance.dates[1]);
