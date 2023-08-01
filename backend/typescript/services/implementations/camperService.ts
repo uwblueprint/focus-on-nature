@@ -503,7 +503,7 @@ class CamperService implements ICamperService {
     }
   }
 
-  async confirmCamperPayment(chargeId: string): Promise<boolean> {
+  async confirmCamperPayment(chargeId: string, paymentIntent: string): Promise<boolean> {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
@@ -525,9 +525,8 @@ class CamperService implements ICamperService {
         );
       }
       await MgCamper.updateMany(
-        { chargeId },
-        { $set: { hasPaid: true,
-          paymentIntentId: checkoutSession.payment_intent } },
+        {  chargeId: chargeId },
+        { $set: { hasPaid: true, paymentIntendId: paymentIntent }},
         { session, runValidators: true },
       );
       await session.commitTransaction();
