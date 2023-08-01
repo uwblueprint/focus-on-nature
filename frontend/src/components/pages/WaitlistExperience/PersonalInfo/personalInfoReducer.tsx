@@ -88,8 +88,8 @@ export const checkAge = (
 };
 
 export const checkEmail = (email: string): boolean => {
-  const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return regex.test(email);
+  const emailRegex = new RegExp("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
+  return emailRegex.test(email);
 };
 
 export const checkPhoneNumber = (phoneNumber: string): boolean => {
