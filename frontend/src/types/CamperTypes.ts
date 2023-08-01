@@ -33,6 +33,7 @@ export type Camper = {
     latePickup: number;
   };
   optionalClauses?: OptionalClause[];
+  refundStatus?: string;
 };
 
 export type RegistrantExperienceCamper = Omit<
@@ -115,6 +116,7 @@ export type RefundDTO = {
   instances: Array<CamperRefundDTO>;
   startTime: string;
   endTime: string;
+  refundStatus?: string;
 };
 
 export type CamperRefundDTO = Omit<
@@ -125,6 +127,7 @@ export type CamperRefundDTO = Omit<
   | "contacts"
   | "formResponses"
   | "optionalClauses"
+  | "refundStatus"
 > & {
   dates: string[];
 };
