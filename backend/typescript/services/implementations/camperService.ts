@@ -25,7 +25,7 @@ import logger from "../../utilities/logger";
 import IEmailService from "../interfaces/emailService";
 import nodemailerConfig from "../../nodemailer.config";
 import EmailService from "./emailService";
-import FileStorageService from "../implementations/fileStorageService";
+import FileStorageService from "./fileStorageService";
 import IFileStorageService from "../interfaces/fileStorageService";
 import {
   createStripeCheckoutSession,
@@ -1560,7 +1560,7 @@ class CamperService implements ICamperService {
             startTime: camp.startTime,
             endTime: camp.endTime,
             instances: [refundCamper],
-            campPhotoUrl: campPhotoUrl,
+            campPhotoUrl,
           };
         }
         refundDTOMap.set(key, newRefundInstance);
