@@ -123,7 +123,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
     return <Redirect to={HOME_PAGE} />;
   }
 
-  if (refunds[0].refundStatus === "Refunded") {
+  if (refunds[0].refundStatus && refunds[0].refundStatus === "Refunded") {
     return <RefundConfirmation refunds={refunds} />;
   }
 
