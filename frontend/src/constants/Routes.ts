@@ -25,5 +25,3 @@ export const CAMP_REGISTER_PAGE = "/register/camp/:id";
 export const CAMP_WAITLIST_PAGE = "/waitlist/camp/:id";
 
 export const CAMPER_REFUND_CANCELLATION = "/refund/:id";
-
-export const CAMPER_REFUND_CONFIRMATION = "/refund/confirmation/:id";
