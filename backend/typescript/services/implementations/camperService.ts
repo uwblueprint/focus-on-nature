@@ -908,6 +908,7 @@ class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async cancelRegistration(
     chargeId: string,
+    paymentIntentId: string,
     camperIds: string[],
   ): Promise<void> {
     try {
@@ -938,6 +939,7 @@ class CamperService implements ICamperService {
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
         charge: chargeId,
+        payment_intent: paymentIntentId,
         amount: refundAmount,
       });
 

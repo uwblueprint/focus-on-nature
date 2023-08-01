@@ -205,6 +205,7 @@ camperRouter.patch(
     try {
       await camperService.cancelRegistration(
         req.body.chargeId,
+        req.body.paymentIntentId,
         req.body.camperIds,
       );
       res.status(204).send();
