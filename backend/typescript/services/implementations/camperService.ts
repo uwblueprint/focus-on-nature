@@ -154,6 +154,7 @@ class CamperService implements ICamperService {
             refundStatus: "Paid",
             formResponses: camper.formResponses,
             chargeId: createStripeCheckoutSessionResponse.id,
+            paymentIntentId: ' ',
             charges: {
               camp: 0,
               earlyDropoff: 0,
@@ -193,6 +194,7 @@ class CamperService implements ICamperService {
           return cs.save({ session });
         }),
       );
+      console.log("Got past adding campers to session")
 
       /**
        * FINISHED CREATING REGISTERED CAMPERS.
@@ -262,6 +264,7 @@ class CamperService implements ICamperService {
       if (fullSessions.length) {
         await emailService.sendAdminFullCampNoticeEmail(camp, fullSessions);
       }
+      console.log("Got past email")
 
       // Create the DTO return objects
       createCamperResponse = registeredCampers.map((newCamper) => {
@@ -283,6 +286,7 @@ class CamperService implements ICamperService {
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
           refundStatus: newCamper.refundStatus,
+          paymentIntentId: newCamper.paymentIntentId,
         };
       });
       // Commit the transaction if everything was successful
@@ -322,6 +326,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          paymentIntentId: camper.paymentIntentId,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -379,6 +384,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          paymentIntentId: camper.paymentIntentId,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -438,6 +444,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          paymentIntentId: camper.paymentIntentId,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -485,6 +492,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          paymentIntentId: camper.paymentIntentId,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -890,6 +898,7 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
+        paymentIntentId: updatedCamper.paymentIntentId,
         refundStatus: updatedCamper.refundStatus,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
@@ -1110,7 +1119,6 @@ class CamperService implements ICamperService {
       const oldCampers = campSession.campers; // clone the full array of campers for rollback
 
       try {
-        // TODO MAKE CHANGES HERE
         // delete camper IDs from the array of campers in the camp session
         const newCampers = campSession.campers.filter(
           (camperId) => !camperIds.includes(camperId.toString()),

@@ -70,6 +70,7 @@ export type CamperDTO = {
   refundStatus: string;
   formResponses: Map<string, string>;
   chargeId: string;
+  paymentIntentId: string;
   charges: CamperCharges;
   optionalClauses: [
     {
@@ -244,6 +245,7 @@ export type UpdateCamperDTO = Omit<
   | "contacts"
   | "optionalClauses"
   | "refundStatus"
+  | "paymentIntentId"
 >;
 
 export type AuthDTO = Token & UserDTO;
