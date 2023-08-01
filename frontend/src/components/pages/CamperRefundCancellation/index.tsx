@@ -15,6 +15,7 @@ import FONIcon from "../../../assets/fon_icon.svg";
 import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
+import RefundConfirmation from "./RefundConfirmation";
 import { RefundDTO } from "../../../types/CamperTypes";
 import { HOME_PAGE } from "../../../constants/Routes";
 
@@ -77,6 +78,10 @@ const CamperRefundCancellation = (): React.ReactElement => {
 
   if (!validCode) {
     return <Redirect to={HOME_PAGE} />;
+  }
+
+  if (refunds[0].refundStatus === "Refunded") {
+    return <RefundConfirmation refunds={refunds} />;
   }
 
   return (
