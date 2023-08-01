@@ -194,7 +194,6 @@ class CamperService implements ICamperService {
           return cs.save({ session });
         }),
       );
-      console.log("Got past adding campers to session")
 
       /**
        * FINISHED CREATING REGISTERED CAMPERS.
@@ -264,7 +263,6 @@ class CamperService implements ICamperService {
       if (fullSessions.length) {
         await emailService.sendAdminFullCampNoticeEmail(camp, fullSessions);
       }
-      console.log("Got past email")
 
       // Create the DTO return objects
       createCamperResponse = registeredCampers.map((newCamper) => {
@@ -508,7 +506,6 @@ class CamperService implements ICamperService {
   async confirmCamperPayment(chargeId: string): Promise<boolean> {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
       const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
       if (!checkoutSession) {
@@ -527,10 +524,10 @@ class CamperService implements ICamperService {
           `Could not find campers belonging to checkout session with id ${chargeId}`,
         );
       }
-
       await MgCamper.updateMany(
         { chargeId },
-        { $set: { hasPaid: true } },
+        { $set: { hasPaid: true,
+          paymentIntentId: checkoutSession.payment_intent } },
         { session, runValidators: true },
       );
       await session.commitTransaction();
