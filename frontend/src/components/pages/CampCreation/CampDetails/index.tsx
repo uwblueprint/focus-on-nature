@@ -161,6 +161,7 @@ const CampCreationDetails = ({
   };
 
   const campFeePositive = dailyCampFee > 0;
+  const priceEDLPPositive = priceEDLP > 0;
   const ageLowerPositive = ageLower > 0;
   const ageUpperPositive = ageUpper > 0;
   const ageLowerLessThanAgeUpper = ageLower <= ageUpper;
@@ -432,12 +433,12 @@ const CampCreationDetails = ({
               type="number"
               placeholder="0.00"
               defaultValue={priceEDLP}
-              borderColor={!priceEDLP && showErrors ? "red" : "gray.200"}
-              borderWidth={!priceEDLP && showErrors ? "2px" : "1px"}
+              borderColor={!priceEDLPPositive && showErrors ? "red" : "gray.200"}
+              borderWidth={!priceEDLPPositive && showErrors ? "2px" : "1px"}
               onChange={handlePriceEDLP}
             />
           </InputGroup>
-          {errorText(priceEDLP, "You must add a fee.")}
+          {errorText(priceEDLPPositive, "You must add a non-negative fee.")}
         </Box>
       )}
       <Box
