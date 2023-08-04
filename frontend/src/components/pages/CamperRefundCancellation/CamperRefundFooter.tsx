@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Flex, Button, useToast } from "@chakra-ui/react";
 import { RefundDTO } from "../../../types/CamperTypes";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
@@ -16,6 +16,7 @@ const CamperRefundFooter = ({
   refundCode,
   setRefunds,
 }: CamperRefundFooterProps): React.ReactElement => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
   const sendData = async (code: string) => {
     const selectedRefunds: Array<RefundDTO> = [];
@@ -25,6 +26,7 @@ const CamperRefundFooter = ({
       }
     });
     try {
+      setIsLoading(true)
       const response = await CamperAPIClient.sendSelectedRefundInfo(
         code,
         selectedRefunds,
@@ -37,6 +39,8 @@ const CamperRefundFooter = ({
         duration: 3000,
         variant: "subtle",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,6 +67,7 @@ const CamperRefundFooter = ({
         background="primary.green.100"
         textStyle="buttonSemiBold"
         onClick={() => sendData(refundCode)}
+        isLoading={isLoading}
         py="12px"
         px="25px"
       >
