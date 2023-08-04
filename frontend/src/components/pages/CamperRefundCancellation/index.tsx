@@ -29,6 +29,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [campName, setCampName] = useState<string>("");
   const [validCode, setValidCode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [checkedRefunds, setCheckedRefunds] = useState<boolean[]>([]);
 
   // The camper-refund-cancellation route will have an id to identify the refund code
   const { id: refundCode } = useParams<{ id: string }>();
@@ -40,6 +41,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
         setValidCode(true);
         setRefunds(getResponse);
         setCampName(getResponse[0].campName);
+        const checkedRefundsArray = Array.from(
+          { length: getResponse.length },
+          () => true,
+        );
+        setCheckedRefunds(checkedRefundsArray);
       } catch {
         toast({
           description: `Unable to retrieve Refund Info.`,
@@ -52,7 +58,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
       }
     };
     getRefundInfoById(refundCode);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getTotalRefund = () => {
     let totalRefund = 0;
@@ -143,6 +150,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
                   instances={refundObject.instances}
                   key={refundNum}
                   camperNum={refundNum + 1}
+                  checkedRefunds={checkedRefunds}
+                  setCheckedRefunds={setCheckedRefunds}
                 />
               );
             })}
@@ -169,7 +178,12 @@ const CamperRefundCancellation = (): React.ReactElement => {
           </Flex>
         </Box>
       </Box>
-      <CamperRefundFooter />
+      <CamperRefundFooter
+        refunds={refunds}
+        checkedRefunds={checkedRefunds}
+        refundCode={refundCode}
+        setRefunds={setRefunds}
+      />
     </>
   );
 };
