@@ -26,7 +26,7 @@ const CamperRefundFooter = ({
       }
     });
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const response = await CamperAPIClient.sendSelectedRefundInfo(
         code,
         selectedRefunds,

@@ -160,9 +160,13 @@ const sendSelectedRefundInfo = async (
 ): Promise<RefundDTO[]> => {
   try {
     const body = { selectedRefunds };
-    const { data } = await baseAPIClient.put(`/campers/refund/${refundCode}`, body, {
-      headers: { Authorization: getBearerToken() },
-    });
+    const { data } = await baseAPIClient.put(
+      `/campers/refund/${refundCode}`,
+      body,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
 
     return data;
   } catch (error) {
