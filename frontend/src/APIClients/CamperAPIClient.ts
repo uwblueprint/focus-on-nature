@@ -154,6 +154,22 @@ const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
   }
 };
 
+const sendSelectedRefundInfo = async (
+  refundCode: string,
+  selectedRefunds: Array<RefundDTO>,
+): Promise<RefundDTO[]> => {
+  try {
+    const body = { selectedRefunds };
+    const { data } = await baseAPIClient.put(`/campers/refund/${refundCode}`, body, {
+      headers: { Authorization: getBearerToken() },
+    });
+
+    return data;
+  } catch (error) {
+    return error as RefundDTO[];
+  }
+};
+
 const confirmPayment = async (chargeId: string): Promise<boolean> => {
   try {
     const { data } = await baseAPIClient.post(
@@ -180,4 +196,5 @@ export default {
   waitlistCampers,
   confirmPayment,
   getRefundInfo,
+  sendSelectedRefundInfo,
 };

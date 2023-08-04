@@ -101,6 +101,14 @@ camperRouter.get("/refund/:refundCode", async (req, res) => {
   }
 });
 
+camperRouter.put("/refund/:refundCode", async (req, res) => {
+  try {
+    res.status(200).json([]); // TODO: replace [] with proper response
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 // ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   const { chargeId } = req.params;

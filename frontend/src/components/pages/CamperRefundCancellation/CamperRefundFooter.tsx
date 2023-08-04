@@ -1,7 +1,45 @@
 import React from "react";
-import { Flex, Button } from "@chakra-ui/react";
+import { Flex, Button, useToast } from "@chakra-ui/react";
+import { RefundDTO } from "../../../types/CamperTypes";
+import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 
-const CamperRefundFooter = (): React.ReactElement => {
+type CamperRefundFooterProps = {
+  refunds: Array<RefundDTO>;
+  checkedRefunds: Array<boolean>;
+  refundCode: string;
+  setRefunds: React.Dispatch<React.SetStateAction<RefundDTO[]>>;
+};
+
+const CamperRefundFooter = ({
+  refunds,
+  checkedRefunds,
+  refundCode,
+  setRefunds,
+}: CamperRefundFooterProps): React.ReactElement => {
+  const toast = useToast();
+  const sendData = async (code: string) => {
+    const selectedRefunds: Array<RefundDTO> = [];
+    checkedRefunds.forEach((checked, i) => {
+      if (checked) {
+        selectedRefunds.push(refunds[i]);
+      }
+    });
+    try {
+      const response = await CamperAPIClient.sendSelectedRefundInfo(
+        code,
+        selectedRefunds,
+      );
+      setRefunds(refunds); // TODO: change this to response once the endpoint is implemented
+    } catch {
+      toast({
+        description: `Unable to process selected refunds.`,
+        status: "error",
+        duration: 3000,
+        variant: "subtle",
+      });
+    }
+  };
+
   return (
     <Flex
       color="#FFFFFF"
@@ -24,6 +62,7 @@ const CamperRefundFooter = (): React.ReactElement => {
         variant="primary"
         background="primary.green.100"
         textStyle="buttonSemiBold"
+        onClick={() => sendData(refundCode)}
         py="12px"
         px="25px"
       >
