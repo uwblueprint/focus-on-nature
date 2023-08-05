@@ -1,27 +1,31 @@
 import React from "react";
 import { Flex, Button } from "@chakra-ui/react";
 
-const CamperRefundFooter = (props: any): React.ReactElement => {
+const CamperRefundFooter = (): React.ReactElement => {
   return (
     <Flex
       color="#FFFFFF"
       justify="flex-end"
       position="fixed"
       width="100%"
-      height="7%"
+      height="96px"
       bottom="0"
       alignItems="center"
       backgroundColor="#FFFFFF"
       borderTop="2px solid #EEEFF1"
+      pt="24px"
+      pr={{ sm: "12%", md: "12%", lg: "80px" }}
+      pb="24px"
+      pl="12%"
     >
       <Button
-        width="auto"
+        width={{ sm: "100vw", md: "auto", lg: "auto" }}
         height="48px"
         variant="primary"
-        background={true ? "primary.green.100" : "primary.green_disabled.100"}
-        mr="50px"
-        pr="25px"
-        pl="25px"
+        background="primary.green.100"
+        textStyle="buttonSemiBold"
+        py="12px"
+        px="25px"
       >
         Request refund
       </Button>
