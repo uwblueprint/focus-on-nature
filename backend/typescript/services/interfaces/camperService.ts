@@ -140,6 +140,13 @@ interface ICamperService {
    * @throws Error if retrieval fails
    */
   getRefundInfo(refundCode: string): Promise<RefundDTO>;
+
+  /**
+   * Returns the associated discount from coupons from a specific chargeId
+   * @param chargeId code specific to the checkout session
+   * @throws Error if retrieval fails
+   */
+  getRefundDiscountInfo(chargeId: string): Promise<number>;
 }
 
 export default ICamperService;

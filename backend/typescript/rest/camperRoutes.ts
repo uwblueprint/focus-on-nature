@@ -89,6 +89,7 @@ camperRouter.get(
   },
 );
 
+// ROLES: Unprotected
 camperRouter.get("/refund/:refundCode", async (req, res) => {
   const { refundCode } = req.params;
   try {
@@ -96,6 +97,20 @@ camperRouter.get("/refund/:refundCode", async (req, res) => {
       (refundCode as unknown) as string,
     );
     res.status(200).json(refundInfo);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+// ROLES: Unprotected
+// Used to contact stripe to obtain refund discount information
+camperRouter.get("/refund-discount-info/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const discountInfo = await camperService.getRefundDiscountInfo(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(discountInfo);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
