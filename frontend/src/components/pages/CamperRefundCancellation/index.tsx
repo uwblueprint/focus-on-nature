@@ -88,7 +88,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
 
   return (
     <>
-      <Box pb="7%">
+      <Box pb="156px">
         <Image
           src={FONIcon}
           alt="FON icon"
