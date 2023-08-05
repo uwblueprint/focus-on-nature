@@ -154,7 +154,6 @@ class CamperService implements ICamperService {
             refundStatus: "Paid",
             formResponses: camper.formResponses,
             chargeId: createStripeCheckoutSessionResponse.id,
-            paymentIntentId: ' ',
             charges: {
               camp: 0,
               earlyDropoff: 0,
@@ -284,7 +283,6 @@ class CamperService implements ICamperService {
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
           refundStatus: newCamper.refundStatus,
-          paymentIntentId: newCamper.paymentIntentId,
         };
       });
       // Commit the transaction if everything was successful
@@ -324,7 +322,6 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
-          paymentIntentId: camper.paymentIntentId,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -382,7 +379,6 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
-          paymentIntentId: camper.paymentIntentId,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -442,7 +438,6 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
-          paymentIntentId: camper.paymentIntentId,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -490,7 +485,6 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
-          paymentIntentId: camper.paymentIntentId,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -526,8 +520,7 @@ class CamperService implements ICamperService {
       }
       await MgCamper.updateMany(
         { chargeId },
-        { $set: { hasPaid: true,
-          paymentIntentId: checkoutSession.payment_intent } },
+        { $set: { hasPaid: true }},
         { session, runValidators: true },
       );
       await session.commitTransaction();
@@ -895,7 +888,6 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
-        paymentIntentId: updatedCamper.paymentIntentId,
         refundStatus: updatedCamper.refundStatus,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
@@ -908,7 +900,6 @@ class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async cancelRegistration(
     chargeId: string,
-    paymentIntentId: string,
     camperIds: string[],
   ): Promise<void> {
     try {
@@ -936,9 +927,15 @@ class CamperService implements ICamperService {
 
       const refundAmount = refundAmountArray.reduce((a, b) => a + b);
 
+      // retrieve payment intent id from checkout session
+
+      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
+      console.log(checkoutSession);
+      const paymentIntentId = checkoutSession.payment_intent;
+
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
-        charge: chargeId,
+        // charge: chargeId,
         payment_intent: paymentIntentId,
         amount: refundAmount,
       });

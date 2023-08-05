@@ -22,7 +22,6 @@ export interface Camper extends Document {
   hasPaid: boolean;
   refundStatus: string;
   chargeId: string;
-  paymentIntentId: string;
   charges: {
     camp: number;
     earlyDropoff: number;
@@ -106,10 +105,6 @@ const CamperSchema: Schema = new Schema({
     required: true,
   },
   chargeId: {
-    type: String,
-    required: true,
-  },
-  paymentIntentId: {
     type: String,
     required: true,
   },

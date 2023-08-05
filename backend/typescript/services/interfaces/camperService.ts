@@ -100,7 +100,7 @@ interface ICamperService {
    * @param camperIds is the array of camper IDs to be deleted
    * @throws Error if camper cancellation fails
    */
-  cancelRegistration(chargeId: string, paymentIntentId: string, camperIds: string[]): Promise<void>;
+  cancelRegistration(chargeId: string, camperIds: string[]): Promise<void>;
 
   /**
    * Returns the refund amount for all campers in camperIds associated with the charge ID if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request

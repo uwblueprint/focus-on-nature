@@ -27,7 +27,6 @@ export type Camper = {
   hasPaid: boolean;
   refundStatus: string;
   chargeId: string;
-  paymentIntentId: string;
   charges: {
     camp: number;
     earlyDropoff: number;
