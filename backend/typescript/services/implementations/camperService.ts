@@ -497,7 +497,7 @@ class CamperService implements ICamperService {
     }
   }
 
-  async confirmCamperPayment(chargeId: string): Promise<boolean> {
+  async confirmCamperPayment(chargeId: string, paymentIntent: string): Promise<boolean> {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {

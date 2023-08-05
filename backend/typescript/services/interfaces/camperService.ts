@@ -68,7 +68,7 @@ interface ICamperService {
    * @returns boolean result, if camper `hasPaid` status updates successfully
    * @throws Error if camper update fails
    */
-  confirmCamperPayment(chargeId: string): Promise<boolean>;
+  confirmCamperPayment(chargeId: string, paymentIntent: string): Promise<boolean>;
 
   /**
    * Creates a waitlisted camper entity for each camper in each campSession
