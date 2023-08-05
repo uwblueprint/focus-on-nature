@@ -1,5 +1,5 @@
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
 import { CreateWaitlistedCamperDTO } from "../../../types/CamperTypes";
 import { CampResponse, CampSession } from "../../../types/CampsTypes";
@@ -13,6 +13,8 @@ import WaitlistFooter from "./WaitlistFooter";
 
 interface WaitlistExperiencePageProps {
   camp: CampResponse;
+  campers: CreateWaitlistedCamperDTO[];
+  setCampers: Dispatch<SetStateAction<CreateWaitlistedCamperDTO[]>>
   selectedCampSessions: CampSession[];
   onClickBack: () => void;
 }
@@ -22,6 +24,8 @@ waitListNextStepTxtMap.set(WaitListExperienceSteps.PersonalInfoPage, "Submit");
 
 const WaitlistExperiencePage = ({
   camp,
+  campers,
+  setCampers,
   selectedCampSessions,
   onClickBack,
 }: WaitlistExperiencePageProps): React.ReactElement => {
@@ -31,17 +35,6 @@ const WaitlistExperiencePage = ({
     WaitListExperienceSteps.PersonalInfoPage,
   );
   const toast = useToast();
-  const [campers, setCampers] = useState<CreateWaitlistedCamperDTO[]>([
-    {
-      firstName: "",
-      lastName: "",
-      age: NaN,
-      contactEmail: "",
-      contactFirstName: "",
-      contactLastName: "",
-      contactNumber: "",
-    },
-  ]);
 
   if (!camp)
     return (

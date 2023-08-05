@@ -11,7 +11,7 @@ import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { RegistrantExperienceCamper, WaitlistedCamper } from "../../../types/CamperTypes";
+import { CreateWaitlistedCamperDTO, RegistrantExperienceCamper, WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
 import { sortSessions } from "../../../utils/CampUtils";
 import WaitlistExperiencePage from "../WaitlistExperience";
@@ -84,6 +84,17 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     },
   ]);
 
+  const [waitlistedCampers, setWaitlistedCampers] = useState<CreateWaitlistedCamperDTO[]>([
+    {
+      firstName: "",
+      lastName: "",
+      age: NaN,
+      contactEmail: "",
+      contactFirstName: "",
+      contactLastName: "",
+      contactNumber: "",
+    },
+  ]);
 
   const getCurrentStep = () => {
     switch (currentStep) {
@@ -125,6 +136,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         return (
           <WaitlistExperiencePage
             camp={camp as CampResponse}
+            campers={waitlistedCampers}
+            setCampers={setWaitlistedCampers}
             selectedCampSessions={(camp as CampResponse).campSessions.filter(
               (session) => selectedSessions.has(session.id),
             )}
