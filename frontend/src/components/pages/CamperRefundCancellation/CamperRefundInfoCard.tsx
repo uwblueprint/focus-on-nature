@@ -16,6 +16,8 @@ type CamperRefundInfoCardProps = {
   camperNum: number;
   instances: Array<CamperRefundDTO>;
   setCardsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  checkedRefunds: Array<boolean>;
+  setCheckedRefunds: React.Dispatch<React.SetStateAction<boolean[]>>;
   refundAmountMap: Array<number>;
   setRefundAmountMap: React.Dispatch<React.SetStateAction<Array<number>>>;
 };
@@ -27,6 +29,8 @@ const CamperRefundInfoCard = ({
   camperNum,
   instances,
   setCardsDisabled,
+  checkedRefunds,
+  setCheckedRefunds,
   refundAmountMap,
   setRefundAmountMap,
 }: CamperRefundInfoCardProps): React.ReactElement => {
@@ -105,11 +109,16 @@ const CamperRefundInfoCard = ({
   };
 
   const handleCheckboxChange = (index: number) => {
-    // const updatedCheckedRefunds = [...checkedRefunds];
-    // const checked = !updatedCheckedRefunds[index];
-    // updatedCheckedRefunds[index] = checked;
-    // setCheckedRefunds(updatedCheckedRefunds);
-    // console.log(updatedCheckedRefunds);
+    const updatedCheckedRefunds = [...checkedRefunds];
+    const checked = !updatedCheckedRefunds[index];
+    updatedCheckedRefunds[index] = checked;
+    setCheckedRefunds(updatedCheckedRefunds);
+
+    const updatedRefundAmountMap = [...refundAmountMap];
+    updatedRefundAmountMap[index] = checked ? getTotalRefundForCamper() : 0;
+    setRefundAmountMap(updatedRefundAmountMap);
+    console.log(updatedCheckedRefunds);
+    console.log(updatedRefundAmountMap);
   };
 
   const valid = isRefundValid();

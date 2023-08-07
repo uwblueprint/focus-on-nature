@@ -33,24 +33,49 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [refundDiscountAmount, setRefundDiscountAmount] = useState<number>(-1);
   const [cardsDisabled, setCardsDisabled] = useState<boolean>(false);
   const [refundAmountMap, setRefundAmountMap] = useState<Array<number>>([]);
+  const [checkedRefunds, setCheckedRefunds] = useState<Array<boolean>>([]);
   const { id: refundCode } = useParams<{ id: string }>();
+
+  const intializeRefundAmountMap = () => {
+    const refundAmounts = [...refundAmountMap]
+    refunds.forEach((refund, index) => {
+      let charge = 0;
+      refund.instances.forEach((instance) => {
+        charge +=
+          instance.charges.earlyDropoff +
+          instance.charges.latePickup +
+          instance.charges.camp;
+      });
+      refundAmounts[index] = charge;
+      setRefundAmountMap(refundAmounts);
+    });
+  };
 
   useEffect(() => {
     const getRefundInfoById = async (code: string) => {
+      let numberOfRefunds = 0;
       try {
         const getRefunds = await CamperAPIClient.getRefundInfo(code);
+        numberOfRefunds = getRefunds.length;
         setValidCode(true);
         setRefunds(getRefunds);
         setCampName(getRefunds[0].campName);
-        // const refundAmountMapArray = Array.from(
-        //   { length: getRefunds.length },
-        //   () => 0,
-        // );
-        // setRefundAmountMap(refundAmountMapArray);
         const getDiscountAmount = await CamperAPIClient.getRefundDiscountInfo(
           getRefunds[0].instances[0].chargeId,
         );
         setRefundDiscountAmount(getDiscountAmount);
+        const refundAmountMapArray = Array(numberOfRefunds);
+        getRefunds.forEach((refund, index) => {
+          let charge = 0;
+          refund.instances.forEach((instance) => {
+            charge +=
+              instance.charges.earlyDropoff +
+              instance.charges.latePickup +
+              instance.charges.camp;
+          });
+          refundAmountMapArray[index] = charge;
+        });
+        setRefundAmountMap(refundAmountMapArray);
       } catch {
         toast({
           description: `Unable to retrieve Refund Info.`,
@@ -59,13 +84,17 @@ const CamperRefundCancellation = (): React.ReactElement => {
           variant: "subtle",
         });
       } finally {
+        const checkedRefundsArray = Array.from(
+          { length: numberOfRefunds },
+          () => true,
+        );
+        setCheckedRefunds(checkedRefundsArray);
         setLoading(false);
       }
     };
     getRefundInfoById(refundCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const getTotalRefund = () => {
     if (cardsDisabled) {
       return 0;
@@ -168,6 +197,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
                   key={refundNum}
                   camperNum={refundNum + 1}
                   setCardsDisabled={setCardsDisabled}
+                  checkedRefunds={checkedRefunds}
+                  setCheckedRefunds={setCheckedRefunds}
                   refundAmountMap={refundAmountMap}
                   setRefundAmountMap={setRefundAmountMap}
                 />
