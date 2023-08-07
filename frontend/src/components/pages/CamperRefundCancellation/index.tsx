@@ -31,8 +31,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [validCode, setValidCode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [refundDiscountAmount, setRefundDiscountAmount] = useState<number>(-1);
-
-  // The camper-refund-cancellation route will have an id to identify the refund code
+  const [cardsDisabled, setCardsDisabled] = useState<boolean>(false);
+  const [refundAmountMap, setRefundAmountMap] = useState<Array<number>>([]);
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -42,6 +42,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
         setValidCode(true);
         setRefunds(getRefunds);
         setCampName(getRefunds[0].campName);
+        // const refundAmountMapArray = Array.from(
+        //   { length: getRefunds.length },
+        //   () => 0,
+        // );
+        // setRefundAmountMap(refundAmountMapArray);
         const getDiscountAmount = await CamperAPIClient.getRefundDiscountInfo(
           getRefunds[0].instances[0].chargeId,
         );
@@ -58,17 +63,16 @@ const CamperRefundCancellation = (): React.ReactElement => {
       }
     };
     getRefundInfoById(refundCode);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getTotalRefund = () => {
+    if (cardsDisabled) {
+      return 0;
+    }
     let totalRefund = 0;
-    refunds.forEach((refund) => {
-      refund.instances.forEach((instance) => {
-        totalRefund +=
-          instance.charges.earlyDropoff +
-          instance.charges.latePickup +
-          instance.charges.camp;
-      });
+    refundAmountMap.forEach((refundAmount) => {
+      totalRefund += refundAmount;
     });
     return totalRefund;
   };
@@ -84,7 +88,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
   if (!validCode) {
     return <Redirect to={HOME_PAGE} />;
   }
-
   return (
     <>
       <Box pb="7%">
@@ -139,6 +142,21 @@ const CamperRefundCancellation = (): React.ReactElement => {
               </Link>
             </Text>
           </Box>
+          {cardsDisabled && (
+            <Box pb="15px" mt="-15px">
+              <Text color="#E5240B" textStyle="displaySmall" as="i">
+                Note: You cannot request a refund within 30 days of the camp’s
+                start date. Please contact us at
+                <Link
+                  textDecoration="underline"
+                  href="mailto:camps@focusonnature.ca."
+                >
+                  {" camps@focusonnature.ca "}
+                </Link>
+                to manually request a refund.
+              </Text>
+            </Box>
+          )}
           <Box pb="20px">
             {refunds.map((refundObject, refundNum) => {
               return (
@@ -149,6 +167,9 @@ const CamperRefundCancellation = (): React.ReactElement => {
                   instances={refundObject.instances}
                   key={refundNum}
                   camperNum={refundNum + 1}
+                  setCardsDisabled={setCardsDisabled}
+                  refundAmountMap={refundAmountMap}
+                  setRefundAmountMap={setRefundAmountMap}
                 />
               );
             })}
