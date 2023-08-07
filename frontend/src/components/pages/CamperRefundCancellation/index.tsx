@@ -36,21 +36,6 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [checkedRefunds, setCheckedRefunds] = useState<Array<boolean>>([]);
   const { id: refundCode } = useParams<{ id: string }>();
 
-  const intializeRefundAmountMap = () => {
-    const refundAmounts = [...refundAmountMap]
-    refunds.forEach((refund, index) => {
-      let charge = 0;
-      refund.instances.forEach((instance) => {
-        charge +=
-          instance.charges.earlyDropoff +
-          instance.charges.latePickup +
-          instance.charges.camp;
-      });
-      refundAmounts[index] = charge;
-      setRefundAmountMap(refundAmounts);
-    });
-  };
-
   useEffect(() => {
     const getRefundInfoById = async (code: string) => {
       let numberOfRefunds = 0;
@@ -105,6 +90,15 @@ const CamperRefundCancellation = (): React.ReactElement => {
     });
     return totalRefund;
   };
+
+  const isFooterButtonDisabled = (): boolean => {
+    // return true if disabled, false otherwise
+    let state = false;
+    checkedRefunds.forEach((isChecked) => {
+      state = state || isChecked;
+    });
+    return cardsDisabled || !state;
+  }
 
   if (loading) {
     return (
@@ -261,7 +255,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
           )}
         </Box>
       </Box>
-      <CamperRefundFooter />
+      <CamperRefundFooter isDisabled={isFooterButtonDisabled()} />
     </>
   );
 };

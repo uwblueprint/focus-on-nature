@@ -1,7 +1,13 @@
 import React from "react";
 import { Flex, Button } from "@chakra-ui/react";
 
-const CamperRefundFooter = (): React.ReactElement => {
+type CamperRefundFooterProps = {
+  isDisabled: boolean;
+};
+
+const CamperRefundFooter = ({
+  isDisabled,
+}: CamperRefundFooterProps): React.ReactElement => {
   return (
     <Flex
       color="#FFFFFF"
@@ -24,6 +30,7 @@ const CamperRefundFooter = (): React.ReactElement => {
         variant="primary"
         background="primary.green.100"
         textStyle="buttonSemiBold"
+        disabled={isDisabled}
         py="12px"
         px="25px"
       >
