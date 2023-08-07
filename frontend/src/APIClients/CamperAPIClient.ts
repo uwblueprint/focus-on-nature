@@ -156,9 +156,12 @@ const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
 
 const getRefundDiscountInfo = async (chargeId: string): Promise<number> => {
   try {
-    const { data } = await baseAPIClient.get(`/campers/refund-discount-info/${chargeId}`, {
-      headers: { Authorization: getBearerToken() },
-    });
+    const { data } = await baseAPIClient.get(
+      `/campers/refund-discount-info/${chargeId}`,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
     return data;
   } catch (error) {
     return error as number;

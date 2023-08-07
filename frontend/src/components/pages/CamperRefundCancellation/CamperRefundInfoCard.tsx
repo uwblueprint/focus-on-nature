@@ -117,8 +117,6 @@ const CamperRefundInfoCard = ({
     const updatedRefundAmountMap = [...refundAmountMap];
     updatedRefundAmountMap[index] = checked ? getTotalRefundForCamper() : 0;
     setRefundAmountMap(updatedRefundAmountMap);
-    console.log(updatedCheckedRefunds);
-    console.log(updatedRefundAmountMap);
   };
 
   const valid = isRefundValid();

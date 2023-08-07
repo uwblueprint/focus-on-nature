@@ -98,7 +98,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
       state = state || isChecked;
     });
     return cardsDisabled || !state;
-  }
+  };
 
   if (loading) {
     return (
