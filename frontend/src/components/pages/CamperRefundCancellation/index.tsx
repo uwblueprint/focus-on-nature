@@ -91,13 +91,17 @@ const CamperRefundCancellation = (): React.ReactElement => {
     return totalRefund;
   };
 
-  const isFooterButtonDisabled = (): boolean => {
-    // return true if disabled, false otherwise
+  const isCardChecked = (): boolean => {
     let state = false;
     checkedRefunds.forEach((isChecked) => {
       state = state || isChecked;
     });
-    return cardsDisabled || !state;
+    return state;
+  };
+
+  const isFooterButtonDisabled = (): boolean => {
+    // return true if disabled, false otherwise
+    return cardsDisabled || !isCardChecked();
   };
 
   if (loading) {
@@ -199,7 +203,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
               );
             })}
           </Box>
-          {refundDiscountAmount > 0 && (
+          {refundDiscountAmount > 0 && !cardsDisabled && isCardChecked() && (
             <>
               <Box>
                 <Flex width="100%" justifyContent="space-between">
@@ -217,7 +221,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
             </>
           )}
 
-          {refundDiscountAmount === 0 ? (
+          {refundDiscountAmount === 0 || cardsDisabled || !isCardChecked() ? (
             <Flex width="100%" justifyContent="space-between">
               <Text
                 textStyle={{
@@ -236,7 +240,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
                 }}
                 py="10px"
               >
-                ${getTotalRefund() - refundDiscountAmount}
+                ${Math.max(getTotalRefund(), 0)}
               </Text>
             </Flex>
           ) : (
