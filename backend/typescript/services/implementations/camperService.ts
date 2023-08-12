@@ -912,7 +912,7 @@ class CamperService implements ICamperService {
       const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
-
+      console.log(camperIdsToBeRefunded)
       if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
@@ -930,9 +930,9 @@ class CamperService implements ICamperService {
       // retrieve payment intent id from checkout session
 
       const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
-      console.log(checkoutSession);
-      const paymentIntentId = checkoutSession.payment_intent;
-
+      
+      const paymentIntentId = checkoutSession.payment_intent as string;
+      console.log(paymentIntentId)
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
         // charge: chargeId,
@@ -1179,11 +1179,17 @@ class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async changeCamperRefundStatusById(camperIds: Array<string>): Promise<void> {
     try {
+      const camperObjectIds = camperIds.map((camperId) => {
+        const ObjId = new mongoose.Types.ObjectId(camperId);
+        return ObjId;
+      });
       const campers: Array<Camper> | null = await MgCamper.find({
         _id: {
-          $in: camperIds,
+          // $in: camperObjectIds,
+          $in: ["64d72f71912c4b50e17b0b7d"],
         },
       });
+      console.log(campers)
 
       if (campers === null || campers.length !== camperIds.length) {
         throw new Error(
@@ -1256,7 +1262,7 @@ class CamperService implements ICamperService {
       try {
         await MgCamper.updateMany({
           _id: {
-            $in: camperIds,
+            $in: camperObjectIds,
           },
           $set: { "refundStatus": "Refunded" }
         });
@@ -1265,13 +1271,13 @@ class CamperService implements ICamperService {
         try {
           await MgCamper.updateMany({
             _id: {
-              $in: camperIds,
+              $in: camperObjectIds,
             },
             $set: { "refundStatus": "Paid" }
           });
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
-            "Failed to rollback MongoDB campers' creation after deleting campers failure. Reason =",
+            "Failed to rollback MongoDB campers' creation after updating campers failure. Reason =",
             getErrorMessage(rollbackDbError),
             "MongoDB camper ids that could not be deleted =",
             camperIds,
