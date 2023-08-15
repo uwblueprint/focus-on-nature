@@ -227,7 +227,9 @@ const CamperRefundCancellation = (): React.ReactElement => {
             </>
           )}
 
-          {proportionalDiscountAmount === 0 || cardsDisabled || !isCardChecked() ? (
+          {proportionalDiscountAmount === 0 ||
+          cardsDisabled ||
+          !isCardChecked() ? (
             <Flex width="100%" justifyContent="space-between">
               <Text
                 textStyle={{
