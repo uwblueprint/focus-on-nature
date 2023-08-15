@@ -231,6 +231,11 @@ const RegistrationSteps = ({
       );
 
       setRegistrationLoading(false);
+      // save camper ids for possible deletion of camper entities if checkout fails
+      sessionStorage.setItem(
+        'CAMPER_IDS',
+        JSON.stringify(campersResponse.map((camper) => camper.id)),
+      );
       goToCheckout(checkoutSessionUrl, campersResponse[0].chargeId);
     } catch (error: Error | unknown) {
       setRegistrationLoading(false);
@@ -390,6 +395,17 @@ const RegistrationSteps = ({
     }
   };
 
+  const deleteCamperEntities = async (
+    campersToDeleteIds: string[]
+  ) => {
+      const deletionSuccessful = await CamperAPIClient.deleteMultipleCampersById(campersToDeleteIds);
+  
+      if (!deletionSuccessful) {
+        console.log("deletion not successful");
+        // TODO: handle case if deletion is not successful
+      }
+  };
+
   useEffect(() => {
     if (failedCheckoutData) {
       setCampers(failedCheckoutData.campers);
@@ -408,6 +424,14 @@ const RegistrationSteps = ({
       setRequireEarlyDropOffLatePickup(
         failedCheckoutData.requireEarlyDropOffLatePickup,
       );
+      
+      // delete created camper entities
+      const sessionData = sessionStorage.getItem('CAMPER_IDS');
+      if (sessionData) {
+        const parsedCamperIds = JSON.parse(sessionData);
+        deleteCamperEntities(parsedCamperIds);
+      }
+      sessionStorage.clear();
 
       setCurrentStep(RegistrantExperienceSteps.ReviewRegistrationPage);
       errorModalOnOpen();

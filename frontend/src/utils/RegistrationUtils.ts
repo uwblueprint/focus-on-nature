@@ -157,7 +157,7 @@ export const restoreRegistrationSessionFromSessionStorage = ():
           ),
         };
       }
-      sessionStorage.clear();
+      sessionStorage.removeItem(checkoutKey);
     }
 
     return restoredSession;
