@@ -497,7 +497,7 @@ class CamperService implements ICamperService {
     }
   }
 
-  async confirmCamperPayment(chargeId: string, paymentIntent: string): Promise<boolean> {
+  async confirmCamperPayment(chargeId: string): Promise<boolean> {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
@@ -520,7 +520,7 @@ class CamperService implements ICamperService {
       }
       await MgCamper.updateMany(
         { chargeId },
-        { $set: { hasPaid: true }},
+        { $set: { hasPaid: true } },
         { session, runValidators: true },
       );
       await session.commitTransaction();
@@ -929,7 +929,7 @@ class CamperService implements ICamperService {
       // retrieve payment intent id from checkout session
 
       const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
-      
+
       const paymentIntentId = checkoutSession.payment_intent as string;
 
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
@@ -981,7 +981,7 @@ class CamperService implements ICamperService {
     chargeId: string,
     camperIds: string[],
   ): Promise<number> {
-    const DollarsToCents: number = 100;
+    const DollarsToCents = 100;
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
@@ -1258,23 +1258,29 @@ class CamperService implements ICamperService {
 
       // changing camper table refund status
       try {
-        await MgCamper.updateMany({
-          _id: {
-            $in: camperObjectIds,
-          }
-        }, {
-          $set: { "refundStatus": "Refunded" }
-        });
+        await MgCamper.updateMany(
+          {
+            _id: {
+              $in: camperObjectIds,
+            },
+          },
+          {
+            $set: { refundStatus: "Refunded" },
+          },
+        );
       } catch (mongoDbError: unknown) {
         // could not delete camper, rollback camp's campers deletion
         try {
-          await MgCamper.updateMany({
-            _id: {
-              $in: camperObjectIds,
-            }
-          }, {
-            $set: { "refundStatus": "Paid" }
-          });
+          await MgCamper.updateMany(
+            {
+              _id: {
+                $in: camperObjectIds,
+              },
+            },
+            {
+              $set: { refundStatus: "Paid" },
+            },
+          );
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB campers' creation after updating campers failure. Reason =",

@@ -120,22 +120,15 @@ camperRouter.post("/confirm-payment", async (req, res) => {
   try {
     const event = req.body;
 
-    if (event.type == 'checkout.session.completed') {
+    if (event.type === "checkout.session.completed") {
       const chargeId = event.data.object.id;
       const paymentIntentId = event.data.object.payment_intent;
 
-      console.log(chargeId);
-      console.log(paymentIntentId);
-
-      const camper = await camperService.confirmCamperPayment(
-        "cs_test_b1Hi1ddfciZ0VjOSwHpPgRJUtHlpu4Uijgq7A4LCsTMZi2QOwIOEs5Q6H5",
-        "456",
-      );
+      const camper = await camperService.confirmCamperPayment(chargeId);
       res.status(200).json(camper);
     }
-    res.status(200).send();    
+    res.status(200).send();
   } catch (error: unknown) {
-    console.log(getErrorMessage(error));
     res.status(500).json({ error: getErrorMessage(error) });
   }
 });
