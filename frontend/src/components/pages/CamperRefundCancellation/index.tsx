@@ -31,6 +31,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [validCode, setValidCode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [refundDiscountAmount, setRefundDiscountAmount] = useState<number>(-1);
+  const [totalRefundAmount, setTotalRefundAmount] = useState<number>(-1);
   const [cardsDisabled, setCardsDisabled] = useState<boolean>(false);
   const [refundAmountMap, setRefundAmountMap] = useState<Array<number>>([]);
   const [checkedRefunds, setCheckedRefunds] = useState<Array<boolean>>([]);
@@ -39,6 +40,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   useEffect(() => {
     const getRefundInfoById = async (code: string) => {
       let numberOfRefunds = 0;
+      let allRefunds = 0;
       try {
         const getRefunds = await CamperAPIClient.getRefundInfo(code);
         numberOfRefunds = getRefunds.length;
@@ -57,7 +59,9 @@ const CamperRefundCancellation = (): React.ReactElement => {
               instance.charges.earlyDropoff +
               instance.charges.latePickup +
               instance.charges.camp;
+            allRefunds += charge;
           });
+          setTotalRefundAmount(allRefunds);
           refundAmountMapArray[index] = charge;
         });
         setRefundAmountMap(refundAmountMapArray);
@@ -90,6 +94,8 @@ const CamperRefundCancellation = (): React.ReactElement => {
     });
     return totalRefund;
   };
+  const discountPercentage = refundDiscountAmount / totalRefundAmount;
+  const proportionalDiscountAmount = discountPercentage * getTotalRefund();
 
   const isCardChecked = (): boolean => {
     let state = false;
@@ -203,7 +209,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
               );
             })}
           </Box>
-          {refundDiscountAmount > 0 && !cardsDisabled && isCardChecked() && (
+          {proportionalDiscountAmount > 0 && !cardsDisabled && isCardChecked() && (
             <>
               <Box>
                 <Flex width="100%" justifyContent="space-between">
@@ -213,7 +219,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
                 <Flex width="100%" justifyContent="space-between" py="10px">
                   <Text textStyle="captionSemiBold">Discount</Text>
                   <Text textStyle="captionSemiBold">
-                    -${refundDiscountAmount}
+                    -${proportionalDiscountAmount}
                   </Text>
                 </Flex>
               </Box>
@@ -221,7 +227,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
             </>
           )}
 
-          {refundDiscountAmount === 0 || cardsDisabled || !isCardChecked() ? (
+          {proportionalDiscountAmount === 0 || cardsDisabled || !isCardChecked() ? (
             <Flex width="100%" justifyContent="space-between">
               <Text
                 textStyle={{
@@ -253,7 +259,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
                 }}
                 py="10px"
               >
-                ${getTotalRefund() - refundDiscountAmount}
+                ${getTotalRefund() - proportionalDiscountAmount}
               </Text>
             </Flex>
           )}
