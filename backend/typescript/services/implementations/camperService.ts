@@ -912,7 +912,6 @@ class CamperService implements ICamperService {
       const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
-      console.log(camperIdsToBeRefunded)
       if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
@@ -932,10 +931,9 @@ class CamperService implements ICamperService {
       const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
       
       const paymentIntentId = checkoutSession.payment_intent as string;
-      console.log(paymentIntentId)
+
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
-        // charge: chargeId,
         payment_intent: paymentIntentId,
         amount: refundAmount,
       });
@@ -983,6 +981,7 @@ class CamperService implements ICamperService {
     chargeId: string,
     camperIds: string[],
   ): Promise<number> {
+    const DollarsToCents: number = 100;
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
@@ -1054,6 +1053,7 @@ class CamperService implements ICamperService {
         const { charges } = camper;
         refundAmount +=
           charges.camp + charges.earlyDropoff + charges.latePickup;
+        refundAmount *= DollarsToCents;
       });
 
       return refundAmount;
@@ -1185,11 +1185,9 @@ class CamperService implements ICamperService {
       });
       const campers: Array<Camper> | null = await MgCamper.find({
         _id: {
-          // $in: camperObjectIds,
-          $in: ["64d72f71912c4b50e17b0b7d"],
+          $in: camperIds,
         },
       });
-      console.log(campers)
 
       if (campers === null || campers.length !== camperIds.length) {
         throw new Error(
@@ -1263,7 +1261,8 @@ class CamperService implements ICamperService {
         await MgCamper.updateMany({
           _id: {
             $in: camperObjectIds,
-          },
+          }
+        }, {
           $set: { "refundStatus": "Refunded" }
         });
       } catch (mongoDbError: unknown) {
@@ -1272,7 +1271,8 @@ class CamperService implements ICamperService {
           await MgCamper.updateMany({
             _id: {
               $in: camperObjectIds,
-            },
+            }
+          }, {
             $set: { "refundStatus": "Paid" }
           });
         } catch (rollbackDbError: unknown) {
