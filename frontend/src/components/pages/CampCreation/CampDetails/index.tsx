@@ -433,7 +433,9 @@ const CampCreationDetails = ({
               type="number"
               placeholder="0.00"
               defaultValue={priceEDLP}
-              borderColor={!priceEDLPPositive && showErrors ? "red" : "gray.200"}
+              borderColor={
+                !priceEDLPPositive && showErrors ? "red" : "gray.200"
+              }
               borderWidth={!priceEDLPPositive && showErrors ? "2px" : "1px"}
               onChange={handlePriceEDLP}
             />
