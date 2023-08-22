@@ -11,7 +11,7 @@ import RegistrationResultPage from "./RegistrationResult";
 import RegistrationSteps from "./RegistrationSteps";
 import SessionSelection from "./SessionSelection";
 import AdminAPIClient from "../../../APIClients/AdminAPIClient";
-import { WaitlistedCamper } from "../../../types/CamperTypes";
+import { CreateWaitlistedCamperDTO, RegistrantExperienceCamper, WaitlistedCamper } from "../../../types/CamperTypes";
 import { Waiver as WaiverType } from "../../../types/AdminTypes";
 import { sortSessions } from "../../../utils/CampUtils";
 import WaitlistExperiencePage from "../WaitlistExperience";
@@ -59,6 +59,43 @@ const RegistrantExperiencePage = (): React.ReactElement => {
     CheckoutData | undefined
   >(undefined);
 
+  const [campers, setCampers] = useState<RegistrantExperienceCamper[]>([
+    {
+      firstName: "",
+      lastName: "",
+      age: NaN,
+      contacts: [
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+        {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          relationshipToCamper: "",
+        },
+      ],
+      optionalClauses: [],
+    },
+  ]);
+
+  const [waitlistedCampers, setWaitlistedCampers] = useState<CreateWaitlistedCamperDTO[]>([
+    {
+      firstName: "",
+      lastName: "",
+      age: NaN,
+      contactEmail: "",
+      contactFirstName: "",
+      contactLastName: "",
+      contactNumber: "",
+    },
+  ]);
+
   const getCurrentStep = () => {
     switch (currentStep) {
       case "loading":
@@ -82,6 +119,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         return (
           <RegistrationSteps
             camp={camp as CampResponse}
+            campers={campers}
+            setCampers={setCampers}
             orderedSelectedSessions={sortSessions(
               (camp as CampResponse).campSessions.filter((session) =>
                 selectedSessions.has(session.id),
@@ -97,6 +136,8 @@ const RegistrantExperiencePage = (): React.ReactElement => {
         return (
           <WaitlistExperiencePage
             camp={camp as CampResponse}
+            campers={waitlistedCampers}
+            setCampers={setWaitlistedCampers}
             selectedCampSessions={(camp as CampResponse).campSessions.filter(
               (session) => selectedSessions.has(session.id),
             )}
