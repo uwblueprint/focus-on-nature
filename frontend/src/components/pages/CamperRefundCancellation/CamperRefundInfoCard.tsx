@@ -15,6 +15,11 @@ type CamperRefundInfoCardProps = {
   lastName: string;
   camperNum: number;
   instances: Array<CamperRefundDTO>;
+  setCardsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  checkedRefunds: Array<boolean>;
+  setCheckedRefunds: React.Dispatch<React.SetStateAction<boolean[]>>;
+  refundAmountMap: Array<number>;
+  setRefundAmountMap: React.Dispatch<React.SetStateAction<Array<number>>>;
 };
 
 const CamperRefundInfoCard = ({
@@ -23,6 +28,11 @@ const CamperRefundInfoCard = ({
   lastName,
   camperNum,
   instances,
+  setCardsDisabled,
+  checkedRefunds,
+  setCheckedRefunds,
+  refundAmountMap,
+  setRefundAmountMap,
 }: CamperRefundInfoCardProps): React.ReactElement => {
   const getTimeDifference = (date1: Date, date2: Date): number => {
     const date1Time = date1.getHours() * 60 + date1.getMinutes();
@@ -98,7 +108,21 @@ const CamperRefundInfoCard = ({
     return firstDate - today >= thirtyDays;
   };
 
+  const handleCheckboxChange = (index: number) => {
+    const updatedCheckedRefunds = [...checkedRefunds];
+    const checked = !updatedCheckedRefunds[index];
+    updatedCheckedRefunds[index] = checked;
+    setCheckedRefunds(updatedCheckedRefunds);
+
+    const updatedRefundAmountMap = [...refundAmountMap];
+    updatedRefundAmountMap[index] = checked ? getTotalRefundForCamper() : 0;
+    setRefundAmountMap(updatedRefundAmountMap);
+  };
+
   const valid = isRefundValid();
+  if (!valid) {
+    setCardsDisabled(true);
+  }
 
   const textColor = valid ? "#000000" : "#00000066";
 
@@ -122,6 +146,7 @@ const CamperRefundInfoCard = ({
         <Checkbox
           isDisabled={!valid}
           defaultChecked={valid}
+          onChange={() => handleCheckboxChange(camperNum - 1)}
           colorScheme="green"
           size="lg"
         >

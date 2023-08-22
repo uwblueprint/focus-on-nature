@@ -28,6 +28,7 @@ import EmailService from "./emailService";
 import {
   createStripeCheckoutSession,
   createStripeLineItems,
+  retrieveStripeCheckoutSession,
 } from "../../utilities/stripeUtils";
 import { getEDUnits, getLPUnits } from "../../utilities/CampUtils";
 
@@ -1409,6 +1410,30 @@ class CamperService implements ICamperService {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
+  }
+
+  async getRefundDiscountInfo(chargeId: string): Promise<number> {
+    let discountAmount = 0;
+
+    try {
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(
+        chargeId,
+      );
+
+      if (!checkoutSession) {
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+
+      // Stripe returns value without decimal point so divide by 100.0 to convert to float
+      discountAmount = checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount / 100.0
+        : 0;
+    } catch (error: unknown) {
+      Logger.error("Failed to retrieve checkout session.");
+      throw error;
+    }
+
+    return discountAmount;
   }
 }
 
