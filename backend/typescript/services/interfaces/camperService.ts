@@ -120,6 +120,14 @@ interface ICamperService {
    * @throws Error if camper deletion fails
    */
   deleteCampersById(camperIds: Array<string>): Promise<void>;
+
+  /**
+   * Update camper's refund status to "requested"
+   * @param camperIds array of camper Ids
+   * @throws Error if camper refund status update fails
+   */
+  changeCamperRefundStatusById(camperIds: Array<string>): Promise<void>;
+
   /**
    * Sends email inviting waitlisted camper to register and updates their status
    * @param waitlistedCamperId waitlisted camper's Id

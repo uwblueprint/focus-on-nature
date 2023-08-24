@@ -128,6 +128,7 @@ class CampService implements ICampService {
                     registrationDate: camper.registrationDate.toString(),
                     hasPaid: camper.hasPaid,
                     chargeId: camper.chargeId,
+                    refundStatus: camper.refundStatus,
                     formResponses: camper.formResponses,
                     charges: camper.charges,
                     refundCode: camper.refundCode,
@@ -301,6 +302,7 @@ class CampService implements ICampService {
             charges: camper.charges,
             refundCode: camper.refundCode,
             optionalClauses: camper.optionalClauses,
+            refundStatus: camper.refundStatus,
           };
         });
         const waitlist = (campSession.waitlist as WaitlistedCamper[]).map(
