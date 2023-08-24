@@ -8,6 +8,7 @@ import {
   CreateWaitlistedCamperDTO,
   CreateCamperDTO,
   CreateCamperResponse,
+  RefundDTO,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -142,6 +143,31 @@ const waitlistCampers = async (
   }
 };
 
+const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
+  try {
+    const { data } = await baseAPIClient.get(`/campers/refund/${refundCode}`, {
+      headers: { Authorization: getBearerToken() },
+    });
+    return data;
+  } catch (error) {
+    return error as RefundDTO[];
+  }
+};
+
+const getRefundDiscountInfo = async (chargeId: string): Promise<number> => {
+  try {
+    const { data } = await baseAPIClient.get(
+      `/campers/refund-discount-info/${chargeId}`,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as number;
+  }
+};
+
 const confirmPayment = async (chargeId: string): Promise<boolean> => {
   try {
     const { data } = await baseAPIClient.post(
@@ -167,4 +193,6 @@ export default {
   registerCampers,
   waitlistCampers,
   confirmPayment,
+  getRefundInfo,
+  getRefundDiscountInfo,
 };

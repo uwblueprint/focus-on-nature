@@ -23,6 +23,9 @@ const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
 
+// TODO: secure stripe keys
+// const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
+
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
 camperRouter.post("/register", createCampersDtoValidator, async (req, res) => {
@@ -86,6 +89,33 @@ camperRouter.get(
   },
 );
 
+// ROLES: Unprotected
+camperRouter.get("/refund/:refundCode", async (req, res) => {
+  const { refundCode } = req.params;
+  try {
+    const refundInfo = await camperService.getRefundInfo(
+      (refundCode as unknown) as string,
+    );
+    res.status(200).json(refundInfo);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+// ROLES: Unprotected
+// Used to contact stripe to obtain refund discount information
+camperRouter.get("/refund-discount-info/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const discountInfo = await camperService.getRefundDiscountInfo(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(discountInfo);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 // ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   const { chargeId } = req.params;
@@ -129,7 +159,8 @@ camperRouter.post("/confirm-payment", async (req, res) => {
     }
     res.status(200).send();
   } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
+    // Stripe requires that 200 response sent
+    res.status(200).json({ error: getErrorMessage(error) });
   }
 });
 

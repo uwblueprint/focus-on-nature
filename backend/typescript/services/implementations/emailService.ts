@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import nodemailer, { Transporter } from "nodemailer";
 import IEmailService from "../interfaces/emailService";
 import { CampLocation, NodemailerConfig } from "../../types";
@@ -7,6 +8,7 @@ import { Camper } from "../../models/camper.model";
 import { Camp } from "../../models/camp.model";
 import { CampSession } from "../../models/campSession.model";
 import { WaitlistedCamper } from "../../models/waitlistedCamper.model";
+import { retrieveStripeCheckoutSession } from "../../utilities/stripeUtils";
 
 // TODO: swap out this email for the focus on nature admin email
 const ADMIN_EMAIL = "focusonnature@uwblueprint.org";
@@ -22,6 +24,11 @@ function sessionDatesToString(dates: Date[] | undefined) {
 
 // Returns a list item for each camp session with the dates of the camp session
 function getSessionDatesListItems(campSessions: CampSession[]) {
+  campSessions.map((campSession) => {
+    return campSession.dates.sort((a, b) => {
+      return a.getTime() - b.getTime();
+    });
+  });
   return campSessions.map((campSession) => {
     return `<li>${sessionDatesToString(campSession.dates)}</li>`;
   });
@@ -53,11 +60,31 @@ class EmailService implements IEmailService {
     campSessions: CampSession[],
   ): Promise<void> {
     const contact = campers[0].contacts[0];
-    const link = "DUMMY LINK"; // TODO: Update link
+    const { chargeId } = campers[0];
+    const link = `${process.env.CLIENT_URL}/refund/${campers[0].refundCode}`;
     const sessionDatesListItems: string[] = getSessionDatesListItems(
       campSessions,
     );
     const campLocationString: string = getLocationString(camp.location);
+    let discountAmount = 0;
+
+    try {
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(
+        chargeId,
+      );
+
+      if (!checkoutSession) {
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+
+      // Stripe returns value without decimal point so divide by 100.0 to convert to float
+      discountAmount = checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount / 100.0
+        : 0;
+    } catch (error: unknown) {
+      Logger.error("Failed to retrieve checkout session.");
+      throw error;
+    }
 
     // Remove duplicated campers (each camper has entity per camp session)
     const uniqueCampers = campers.filter(
@@ -82,7 +109,7 @@ class EmailService implements IEmailService {
         camper.charges.earlyDropoff + camper.charges.latePickup;
     });
 
-    totalPayment = campFees + dropoffAndPickupFees;
+    totalPayment = campFees + dropoffAndPickupFees - discountAmount;
 
     await this.sendEmail(
       contact.email,
@@ -120,6 +147,11 @@ class EmailService implements IEmailService {
         uniqueCampers.length
       } campers x ${totalCampDays} total days of camp) </li> 
         <li><b>Early drop-off and late pick-up fees:</b> $${dropoffAndPickupFees} </li>
+        ${
+          discountAmount > 0
+            ? `<li><b>Discount Amount:</b> $${discountAmount} </li>`
+            : ``
+        }
         <li><b>Total payment:</b> $${totalPayment} </li>
       </ul>
 

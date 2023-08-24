@@ -311,9 +311,7 @@ const EditContactCard = ({
                       });
                     }}
                   />
-                  <FormErrorMessage>
-                    This field cannot be empty
-                  </FormErrorMessage>
+                  <FormErrorMessage>Error validating email</FormErrorMessage>
                 </FormControl>
               </WrapItem>
               <Spacer />

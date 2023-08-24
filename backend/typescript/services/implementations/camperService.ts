@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import mongoose from "mongoose";
+import cryptoRandomString from "crypto-random-string";
 import ICamperService from "../interfaces/camperService";
 import MgCamper, { Camper } from "../../models/camper.model";
 import MgWaitlistedCamper, {
@@ -15,6 +16,9 @@ import {
   UpdateCamperDTO,
   CamperCharges,
   CampRegistrationDTO,
+  RefundDTO,
+  RefundCamperDTO,
+  RefundCamperGroupDTO,
 } from "../../types";
 import { getErrorMessage } from "../../utilities/errorUtils";
 import logger from "../../utilities/logger";
@@ -34,6 +38,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY ?? "", {
   apiVersion: "2020-08-27",
 });
 
+const REFUND_CODE_LENGTH = 16;
+
 class CamperService implements ICamperService {
   /* eslint-disable class-methods-use-this */
   async createCampersAndCheckout(
@@ -47,7 +53,9 @@ class CamperService implements ICamperService {
     let registeredCampers: Camper[];
     let sessionsToRegister: CampSession[];
     let createCamperResponse: CamperDTO[] = [];
+    let campersWithSameCode: Camper[] = [];
     let checkoutSessionUrl = "";
+    let refundCode = "";
 
     try {
       // Perform session checks:
@@ -134,6 +142,14 @@ class CamperService implements ICamperService {
 
       checkoutSessionUrl = createStripeCheckoutSessionResponse.url;
 
+      // Create new unused refund code
+      do {
+        // cryptoRandomString v2.0 takes in an integer for length and outputs alphanumeric random string of length specified
+        refundCode = cryptoRandomString(REFUND_CODE_LENGTH);
+        // eslint-disable-next-line no-await-in-loop
+        campersWithSameCode = await MgCamper.find({ refundCode });
+      } while (campersWithSameCode && campersWithSameCode.length > 0);
+
       // Create a camper entity for each session
       const campersToRegister: Array<
         Omit<CamperDTO, "id">
@@ -159,6 +175,7 @@ class CamperService implements ICamperService {
               earlyDropoff: 0,
               latePickup: 0,
             },
+            refundCode,
             optionalClauses: camper.optionalClauses,
           };
         });
@@ -247,13 +264,6 @@ class CamperService implements ICamperService {
         }),
       );
 
-      // Email the parent about all the campers and sessions they have signed up for
-      await emailService.sendParentConfirmationEmail(
-        camp,
-        registeredCampers,
-        sessionsToRegister,
-      );
-
       // Send admin an email for all the sessions that are now full
       // Note: At this point, the sessionsToRegister's campers field has been updated with the registered campers
       const fullSessions = sessionsToRegister.filter(
@@ -279,6 +289,7 @@ class CamperService implements ICamperService {
           registrationDate: newCamper.registrationDate.toString(),
           hasPaid: false,
           chargeId: newCamper.chargeId,
+          refundCode: newCamper.refundCode,
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
@@ -322,6 +333,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -379,6 +391,7 @@ class CamperService implements ICamperService {
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -438,6 +451,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -485,6 +499,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
         };
@@ -501,17 +516,6 @@ class CamperService implements ICamperService {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
-      if (!checkoutSession) {
-        throw new Error(`Could not find checkout session with id ${chargeId}`);
-      }
-
-      if (checkoutSession.payment_status !== "paid") {
-        throw new Error(
-          `Checkout session status is ${checkoutSession.payment_status}, expected status to be "paid"`,
-        );
-      }
-
       const campers = await MgCamper.find({ chargeId });
       if (!campers || campers.length === 0) {
         throw new Error(
@@ -523,6 +527,36 @@ class CamperService implements ICamperService {
         { $set: { hasPaid: true } },
         { session, runValidators: true },
       );
+
+      const campSessionIds = Array.from(
+        new Set(campers.map((camper: Camper) => camper.campSession)),
+      );
+
+      const campSessions: Array<CampSession> = await MgCampSession.find({
+        _id: { $in: campSessionIds },
+      });
+
+      if (!campSessions || campSessions.length === 0) {
+        throw new Error(
+          `Could not find camp session(s) associated with objects in checkout session with id ${chargeId}`,
+        );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campSessions[0].camp);
+
+      if (!camp) {
+        throw new Error(
+          `Could not find camp associated with objects in checkout session with id ${chargeId}`,
+        );
+      }
+
+      // Email the parent about all the campers and sessions they have signed up for
+      await emailService.sendParentConfirmationEmail(
+        camp,
+        campers,
+        campSessions,
+      );
+
       await session.commitTransaction();
     } catch (error: unknown) {
       await session.abortTransaction();
@@ -684,6 +718,13 @@ class CamperService implements ICamperService {
       for (let i = 0; i < oldCampers.length; i += 1) {
         if (oldCampers[i].chargeId !== chargeId) {
           throw new Error(`All campers must have the same chargeId.`);
+        }
+      }
+
+      const { refundCode } = oldCampers[0];
+      for (let i = 0; i < oldCampers.length; i += 1) {
+        if (oldCampers[i].refundCode !== refundCode) {
+          throw new Error(`All campers must have the same refundCode.`);
         }
       }
 
@@ -889,6 +930,7 @@ class CamperService implements ICamperService {
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
         refundStatus: updatedCamper.refundStatus,
+        refundCode: updatedCamper.refundCode,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
       };
@@ -1086,6 +1128,13 @@ class CamperService implements ICamperService {
       for (let i = 0; i < campers.length; i += 1) {
         if (campers[i].chargeId !== oneChargeId) {
           throw new Error(`ChargeIds must all be the same.`);
+        }
+      }
+
+      const oneRefundCode = campers[0].refundCode;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].refundCode !== oneRefundCode) {
+          throw new Error(`RefundCodes must all be the same.`);
         }
       }
 
@@ -1417,6 +1466,115 @@ class CamperService implements ICamperService {
       );
       throw error;
     }
+  }
+
+  async getRefundInfo(refundCode: string): Promise<RefundDTO> {
+    let refundDTO: RefundDTO = [];
+    let refundCamper: RefundCamperDTO;
+    let campSession: CampSession | null = null;
+    let key: string;
+    let oldRefundInstance: RefundCamperGroupDTO | undefined;
+    let newRefundInstance: RefundCamperGroupDTO;
+    const refundDTOMap = new Map<string, RefundCamperGroupDTO>();
+    try {
+      const campers: Camper[] = await MgCamper.find({ refundCode });
+      if (!campers || campers.length === 0) {
+        throw new Error(`Campers with Refund Code ${refundCode} not found.`);
+      }
+
+      // need a camp session to get camp id to get start and end times from camp
+      campSession = await MgCampSession.findById(campers[0].campSession);
+      if (!campSession) {
+        throw new Error(
+          `Camp session with ID ${campers[0].campSession} not found.`,
+        );
+      }
+
+      const camp = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with ID ${campSession.camp} not found.`);
+      }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const camper of campers) {
+        // eslint-disable-next-line no-await-in-loop
+        campSession = await MgCampSession.findById(camper.campSession);
+        key = camper.firstName + camper.lastName;
+        refundCamper = {
+          id: camper.id,
+          campSession: camper.campSession ? camper.campSession.toString() : "",
+          firstName: camper.firstName,
+          lastName: camper.lastName,
+          age: camper.age,
+          allergies: camper.allergies,
+          earlyDropoff: camper.earlyDropoff.map((date) => date.toString()),
+          latePickup: camper.latePickup.map((date) => date.toString()),
+          specialNeeds: camper.specialNeeds,
+          contacts: camper.contacts,
+          registrationDate: camper.registrationDate.toString(),
+          hasPaid: camper.hasPaid,
+          chargeId: camper.chargeId,
+          refundCode: camper.refundCode,
+          refundStatus: camper.refundStatus,
+          formResponses: camper.formResponses,
+          charges: camper.charges,
+          optionalClauses: camper.optionalClauses,
+          dates: campSession
+            ? campSession.dates.map((date) => date.toString())
+            : [""],
+        };
+
+        oldRefundInstance = refundDTOMap.get(key);
+
+        if (oldRefundInstance) {
+          // update instances
+          oldRefundInstance.instances.push(refundCamper);
+          newRefundInstance = oldRefundInstance;
+        } else {
+          // add new value to map
+          newRefundInstance = {
+            firstName: camper.firstName,
+            lastName: camper.lastName,
+            age: camper.age,
+            campName: camp ? camp.name : "",
+            startTime: camp.startTime,
+            endTime: camp.endTime,
+            instances: [refundCamper],
+          };
+        }
+        refundDTOMap.set(key, newRefundInstance);
+      }
+
+      refundDTO = Array.from(refundDTOMap.values());
+      return refundDTO;
+    } catch (error: unknown) {
+      Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
+      throw error;
+    }
+  }
+
+  async getRefundDiscountInfo(chargeId: string): Promise<number> {
+    let discountAmount = 0;
+
+    try {
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(
+        chargeId,
+      );
+
+      if (!checkoutSession) {
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+
+      // Stripe returns value without decimal point so divide by 100.0 to convert to float
+      discountAmount = checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount / 100.0
+        : 0;
+    } catch (error: unknown) {
+      Logger.error("Failed to retrieve checkout session.");
+      throw error;
+    }
+
+    return discountAmount;
   }
 }
 

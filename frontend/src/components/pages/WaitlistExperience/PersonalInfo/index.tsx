@@ -237,7 +237,7 @@ const WaitlistPersonalInfoPage = ({
             heading: "Email",
             required: true,
             errorInfo: {
-              errorMessage: "This field cannot be empty",
+              errorMessage: "Error validating email",
               isInvalid: !checkEmail(campers[0].contactEmail),
             },
             dispatchAction(eventValue) {

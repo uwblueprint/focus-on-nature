@@ -71,6 +71,7 @@ export type CamperDTO = {
   formResponses: Map<string, string>;
   chargeId: string;
   charges: CamperCharges;
+  refundCode: string;
   optionalClauses: [
     {
       clause: string;
@@ -224,6 +225,7 @@ export type CreateCampersDTO = Array<
     | "charges"
     | "hasPaid"
     | "chargeId"
+    | "refundCode"
     | "registrationDate"
   >
 >;
@@ -239,12 +241,27 @@ export type UpdateCamperDTO = Omit<
   | "registrationDate"
   | "chargeId"
   | "charges"
+  | "refundCode"
   | "earlyDropoff"
   | "latePickup"
   | "contacts"
   | "optionalClauses"
   | "refundStatus"
 >;
+
+export type RefundDTO = Array<RefundCamperGroupDTO>;
+
+export type RefundCamperGroupDTO = {
+  firstName: string;
+  lastName: string;
+  age: number;
+  campName: string;
+  startTime: string;
+  endTime: string;
+  instances: Array<RefundCamperDTO>;
+};
+
+export type RefundCamperDTO = CamperDTO & { dates: string[] };
 
 export type AuthDTO = Token & UserDTO;
 
