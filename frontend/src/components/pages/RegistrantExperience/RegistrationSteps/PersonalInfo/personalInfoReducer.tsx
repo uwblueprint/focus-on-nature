@@ -34,6 +34,7 @@ export const CamperReducer = (
           firstName: "",
           lastName: "",
           age: NaN,
+          refundStatus: "Paid",
           contacts: [],
           optionalClauses: [],
         });

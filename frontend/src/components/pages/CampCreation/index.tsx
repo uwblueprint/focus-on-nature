@@ -127,7 +127,7 @@ const CampCreationPage = (): React.ReactElement => {
     (offersEDLP
       ? earliestDropOffTime &&
         latestPickUpTime &&
-        priceEDLP &&
+        priceEDLP > 0 &&
         earlyDropoffTimeBeforeLatePickupTime &&
         earlyDropoffTimeBeforeStartTime &&
         endTimeBeforeLatePickupTime

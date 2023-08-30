@@ -120,6 +120,14 @@ interface ICamperService {
    * @throws Error if camper deletion fails
    */
   deleteCampersById(camperIds: Array<string>): Promise<void>;
+
+  /**
+   * Update camper's refund status to "requested"
+   * @param camperIds array of camper Ids
+   * @throws Error if camper refund status update fails
+   */
+  changeCamperRefundStatusById(camperIds: Array<string>): Promise<void>;
+
   /**
    * Sends email inviting waitlisted camper to register and updates their status
    * @param waitlistedCamperId waitlisted camper's Id
@@ -140,6 +148,13 @@ interface ICamperService {
    * @throws Error if retrieval fails
    */
   getRefundInfo(refundCode: string): Promise<RefundDTO>;
+
+  /**
+   * Returns the associated discount from coupons from a specific chargeId
+   * @param chargeId code specific to the checkout session
+   * @throws Error if retrieval fails
+   */
+  getRefundDiscountInfo(chargeId: string): Promise<number>;
 }
 
 export default ICamperService;

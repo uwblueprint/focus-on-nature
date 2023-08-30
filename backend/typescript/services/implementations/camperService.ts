@@ -28,6 +28,7 @@ import EmailService from "./emailService";
 import {
   createStripeCheckoutSession,
   createStripeLineItems,
+  retrieveStripeCheckoutSession,
 } from "../../utilities/stripeUtils";
 import { getEDUnits, getLPUnits } from "../../utilities/CampUtils";
 
@@ -166,6 +167,7 @@ class CamperService implements ICamperService {
             contacts: camper.contacts,
             registrationDate: new Date().toString(),
             hasPaid: false,
+            refundStatus: "Paid",
             formResponses: camper.formResponses,
             chargeId: createStripeCheckoutSessionResponse.id,
             charges: {
@@ -291,6 +293,7 @@ class CamperService implements ICamperService {
           formResponses: newCamper.formResponses,
           charges: newCamper.charges,
           optionalClauses: newCamper.optionalClauses,
+          refundStatus: newCamper.refundStatus,
         };
       });
       // Commit the transaction if everything was successful
@@ -328,6 +331,7 @@ class CamperService implements ICamperService {
           contacts: camper.contacts,
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
+          refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
           formResponses: camper.formResponses,
@@ -391,6 +395,7 @@ class CamperService implements ICamperService {
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
+          refundStatus: camper.refundStatus,
         };
       });
 
@@ -444,6 +449,7 @@ class CamperService implements ICamperService {
           formResponses: camper.formResponses,
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
+          refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
           charges: camper.charges,
@@ -491,6 +497,7 @@ class CamperService implements ICamperService {
           formResponses: camper.formResponses,
           registrationDate: camper.registrationDate.toString(),
           hasPaid: camper.hasPaid,
+          refundStatus: camper.refundStatus,
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
           charges: camper.charges,
@@ -508,7 +515,6 @@ class CamperService implements ICamperService {
   async confirmCamperPayment(chargeId: string): Promise<boolean> {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
       const campers = await MgCamper.find({ chargeId });
       if (!campers || campers.length === 0) {
@@ -516,7 +522,6 @@ class CamperService implements ICamperService {
           `Could not find campers belonging to checkout session with id ${chargeId}`,
         );
       }
-
       await MgCamper.updateMany(
         { chargeId },
         { $set: { hasPaid: true } },
@@ -924,6 +929,7 @@ class CamperService implements ICamperService {
         registrationDate: updatedCamper.registrationDate.toString(),
         hasPaid: updatedCamper.hasPaid,
         chargeId: updatedCamper.chargeId,
+        refundStatus: updatedCamper.refundStatus,
         refundCode: updatedCamper.refundCode,
         charges: updatedCamper.charges,
         optionalClauses: updatedCamper.optionalClauses,
@@ -942,14 +948,13 @@ class CamperService implements ICamperService {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
-      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+      const campersToBeRefunded = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
-      const camperIdsToBeDeleted = campersToBeDeleted.map(
+      const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
-
-      if (!campersToBeDeleted.length) {
+      if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
         );
@@ -963,15 +968,22 @@ class CamperService implements ICamperService {
 
       const refundAmount = refundAmountArray.reduce((a, b) => a + b);
 
+      // retrieve payment intent id from checkout session
+
+      const checkoutSession = await retrieveStripeCheckoutSession(chargeId);
+
+      const paymentIntentId = checkoutSession.payment_intent as string;
+
       // refund before db deletion - a camper should not be deleted if the refund doesn't go through
       await stripe.refunds.create({
-        charge: chargeId,
+        payment_intent: paymentIntentId,
         amount: refundAmount,
       });
 
-      await this.deleteCampersById(camperIdsToBeDeleted);
+      await this.changeCamperRefundStatusById(camperIdsToBeRefunded);
+
       await Promise.all(
-        campersToBeDeleted.map(async (camper) => {
+        campersToBeRefunded.map(async (camper) => {
           const campSession: CampSession | null = await MgCampSession.findById(
             camper.campSession,
           );
@@ -996,7 +1008,7 @@ class CamperService implements ICamperService {
         }),
       );
       await emailService.sendParentCancellationConfirmationEmail(
-        campersToBeDeleted,
+        campersToBeRefunded,
       );
     } catch (error: unknown) {
       Logger.error(
@@ -1011,18 +1023,19 @@ class CamperService implements ICamperService {
     chargeId: string,
     camperIds: string[],
   ): Promise<number> {
+    const DollarsToCents = 100;
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
       });
-      const campersToBeDeleted = campersWithChargeId.filter((camper) =>
+      const campersToBeRefunded = campersWithChargeId.filter((camper) =>
         camperIds.includes(camper.id),
       );
-      const camperIdsToBeDeleted = campersToBeDeleted.map(
+      const camperIdsToBeRefunded = campersToBeRefunded.map(
         (camper) => camper.id,
       );
 
-      if (!campersToBeDeleted.length) {
+      if (!campersToBeRefunded.length) {
         throw new Error(
           `Campers with specified camperIds and charge ID ${chargeId} not found.`,
         );
@@ -1030,30 +1043,30 @@ class CamperService implements ICamperService {
 
       // check if there are any campers that need to be removed but were not found
       const remainingCamperIds = camperIds.filter(
-        (camperId) => !camperIdsToBeDeleted.includes(camperId),
+        (camperId) => !camperIdsToBeRefunded.includes(camperId),
       );
 
       if (remainingCamperIds.length) {
         throw new Error(
-          `Failed to find these camper IDs to delete: ${JSON.stringify(
+          `Failed to find these camper IDs to cancel: ${JSON.stringify(
             remainingCamperIds,
           )}`,
         );
       }
 
       const campSession: CampSession | null = await MgCampSession.findById(
-        campersToBeDeleted[0].campSession,
+        campersToBeRefunded[0].campSession,
       );
 
       if (!campSession) {
         throw new Error(
-          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} not found.`,
+          `Campers' camp session with campId ${campersToBeRefunded[0].campSession} not found.`,
         );
       }
 
-      for (let i = 0; i < campersToBeDeleted.length; i += 1) {
+      for (let i = 0; i < campersToBeRefunded.length; i += 1) {
         if (
-          campersToBeDeleted[i].campSession.toString() !==
+          campersToBeRefunded[i].campSession.toString() !==
           campSession.id.toString()
         ) {
           throw new Error(
@@ -1072,16 +1085,17 @@ class CamperService implements ICamperService {
 
       if (daysUntilStartOfCamp < 30 && campSession.waitlist.length === 0) {
         throw new Error(
-          `Campers' camp session with campId ${campersToBeDeleted[0].campSession} has a start date in less than 30 days and the waitlist is empty.`,
+          `Campers' camp session with campId ${campersToBeRefunded[0].campSession} has a start date in less than 30 days and the waitlist is empty.`,
         );
       }
 
       // calculate amount to be refunded
       let refundAmount = 0;
-      campersToBeDeleted.forEach((camper) => {
+      campersToBeRefunded.forEach((camper) => {
         const { charges } = camper;
         refundAmount +=
           charges.camp + charges.earlyDropoff + charges.latePickup;
+        refundAmount *= DollarsToCents;
       });
 
       return refundAmount;
@@ -1192,6 +1206,133 @@ class CamperService implements ICamperService {
         } catch (rollbackDbError: unknown) {
           const errorMessage = [
             "Failed to rollback MongoDB campers' creation after deleting campers failure. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper ids that could not be deleted =",
+            camperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+
+        throw mongoDbError;
+      }
+    } catch (error: unknown) {
+      Logger.error(
+        `Failed to delete campers with camper IDs [${camperIds}]. Reason = ${getErrorMessage(
+          error,
+        )}`,
+      );
+      throw error;
+    }
+  }
+
+  /* eslint-disable class-methods-use-this */
+  async changeCamperRefundStatusById(camperIds: Array<string>): Promise<void> {
+    try {
+      const camperObjectIds = camperIds.map((camperId) => {
+        const ObjId = new mongoose.Types.ObjectId(camperId);
+        return ObjId;
+      });
+      const campers: Array<Camper> | null = await MgCamper.find({
+        _id: {
+          $in: camperIds,
+        },
+      });
+
+      if (campers === null || campers.length !== camperIds.length) {
+        throw new Error(
+          `Not all campers with camper IDs [${camperIds}] are found.`,
+        );
+      }
+
+      const oneChargeId = campers[0].chargeId;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].chargeId !== oneChargeId) {
+          throw new Error(`ChargeIds must all be the same.`);
+        }
+      }
+
+      const campSessionId = campers[0].campSession;
+      for (let i = 0; i < campers.length; i += 1) {
+        if (campers[i].campSession.toString() !== campSessionId.toString()) {
+          throw new Error(
+            `Not all campers are registered for the same campSession.`,
+          );
+        }
+      }
+
+      const campSession: CampSession | null = await MgCampSession.findById(
+        campers[0].campSession,
+      );
+      if (!campSession) {
+        throw new Error(
+          `Camp session with ID ${campers[0].campSession} not found.`,
+        );
+      }
+
+      const camp: Camp | null = await MgCamp.findById(campSession.camp);
+      if (!camp) {
+        throw new Error(`Camp with campId ${campSession.camp} not found.`);
+      }
+
+      const oldCampers = campSession.campers; // clone the full array of campers for rollback
+
+      try {
+        // delete camper IDs from the array of campers in the camp session
+        const newCampers = campSession.campers.filter(
+          (camperId) => !camperIds.includes(camperId.toString()),
+        );
+
+        campSession.campers = newCampers;
+        const updatedCampSessionCampers = await campSession.save();
+
+        if (!updatedCampSessionCampers) {
+          throw new Error(
+            `Failed to update ${campSession} with refunded campers.`,
+          );
+        }
+      } catch (mongoDbError: unknown) {
+        try {
+          campSession.campers = oldCampers;
+          await campSession.save();
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB update to campSession to restore deleted camperIds. Reason =",
+            getErrorMessage(rollbackDbError),
+            "MongoDB camper ids that could not be restored in the camp Session=",
+            camperIds,
+          ];
+          Logger.error(errorMessage.join(" "));
+        }
+      }
+
+      // changing camper table refund status
+      try {
+        await MgCamper.updateMany(
+          {
+            _id: {
+              $in: camperObjectIds,
+            },
+          },
+          {
+            $set: { refundStatus: "Refunded" },
+          },
+        );
+      } catch (mongoDbError: unknown) {
+        // could not delete camper, rollback camp's campers deletion
+        try {
+          await MgCamper.updateMany(
+            {
+              _id: {
+                $in: camperObjectIds,
+              },
+            },
+            {
+              $set: { refundStatus: "Paid" },
+            },
+          );
+        } catch (rollbackDbError: unknown) {
+          const errorMessage = [
+            "Failed to rollback MongoDB campers' creation after updating campers failure. Reason =",
             getErrorMessage(rollbackDbError),
             "MongoDB camper ids that could not be deleted =",
             camperIds,
@@ -1374,6 +1515,7 @@ class CamperService implements ICamperService {
           hasPaid: camper.hasPaid,
           chargeId: camper.chargeId,
           refundCode: camper.refundCode,
+          refundStatus: camper.refundStatus,
           formResponses: camper.formResponses,
           charges: camper.charges,
           optionalClauses: camper.optionalClauses,
@@ -1409,6 +1551,30 @@ class CamperService implements ICamperService {
       Logger.error(`Failed to get campers. Reason = ${getErrorMessage(error)}`);
       throw error;
     }
+  }
+
+  async getRefundDiscountInfo(chargeId: string): Promise<number> {
+    let discountAmount = 0;
+
+    try {
+      const checkoutSession: Stripe.Checkout.Session = await retrieveStripeCheckoutSession(
+        chargeId,
+      );
+
+      if (!checkoutSession) {
+        throw new Error(`Could not find checkout session with id ${chargeId}`);
+      }
+
+      // Stripe returns value without decimal point so divide by 100.0 to convert to float
+      discountAmount = checkoutSession.total_details?.amount_discount
+        ? checkoutSession.total_details?.amount_discount / 100.0
+        : 0;
+    } catch (error: unknown) {
+      Logger.error("Failed to retrieve checkout session.");
+      throw error;
+    }
+
+    return discountAmount;
   }
 }
 

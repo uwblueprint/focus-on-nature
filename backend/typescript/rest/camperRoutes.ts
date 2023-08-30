@@ -89,6 +89,7 @@ camperRouter.get(
   },
 );
 
+// ROLES: Unprotected
 camperRouter.get("/refund/:refundCode", async (req, res) => {
   const { refundCode } = req.params;
   try {
@@ -101,9 +102,15 @@ camperRouter.get("/refund/:refundCode", async (req, res) => {
   }
 });
 
-camperRouter.put("/refund/:refundCode", async (req, res) => {
+// ROLES: Unprotected
+// Used to contact stripe to obtain refund discount information
+camperRouter.get("/refund-discount-info/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
   try {
-    res.status(200).json([]); // TODO: replace [] with proper response
+    const discountInfo = await camperService.getRefundDiscountInfo(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(discountInfo);
   } catch (error: unknown) {
     res.status(500).json({ error: getErrorMessage(error) });
   }
@@ -138,22 +145,19 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 });
 
 // ROLES: unprotected
-/* Initiated by Stripe webhook. On successful payment, mark camper as paid. */
+/* On successful payment, mark camper as paid */
 camperRouter.post("/confirm-payment", async (req, res) => {
   try {
-    const { body } = req;
+    const event = req.body;
 
-    if (body.type === "checkout.session.completed") {
-      const chargeId = body.data.object.id;
+    if (event.type === "checkout.session.completed") {
+      const chargeId = event.data.object.id;
+      const paymentIntentId = event.data.object.payment_intent;
 
-      if (body.data.object.payment_status === "paid") {
-        await camperService.confirmCamperPayment(
-          (chargeId as unknown) as string,
-        );
-      }
+      const camper = await camperService.confirmCamperPayment(chargeId);
+      res.status(200).json(camper);
     }
-
-    res.status(200).json();
+    res.status(200).send();
   } catch (error: unknown) {
     // Stripe requires that 200 response sent
     res.status(200).json({ error: getErrorMessage(error) });
@@ -230,7 +234,7 @@ camperRouter.patch(
 
 // ROLES: Leave unprotected as we'll probably need this in cancellation flow
 /* Cancel registration for the list of campers with the chargeId */
-camperRouter.delete(
+camperRouter.patch(
   "/cancel-registration",
   cancelCamperDtoValidator,
   async (req, res) => {

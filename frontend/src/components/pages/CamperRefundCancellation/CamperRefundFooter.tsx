@@ -8,6 +8,7 @@ type CamperRefundFooterProps = {
   checkedRefunds: Array<boolean>;
   refundCode: string;
   setRefunds: React.Dispatch<React.SetStateAction<RefundDTO[]>>;
+  isDisabled: boolean;
 };
 
 const CamperRefundFooter = ({
@@ -15,10 +16,12 @@ const CamperRefundFooter = ({
   checkedRefunds,
   refundCode,
   setRefunds,
+  isDisabled,
 }: CamperRefundFooterProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
   const sendData = async (code: string) => {
+    console.log("clicked button");
     const selectedRefunds: Array<RefundDTO> = [];
     checkedRefunds.forEach((checked, i) => {
       if (checked) {
@@ -28,8 +31,7 @@ const CamperRefundFooter = ({
     try {
       setIsLoading(true);
       const response = await CamperAPIClient.sendSelectedRefundInfo(
-        code,
-        selectedRefunds,
+        selectedRefunds
       );
       setRefunds(refunds); // TODO: change this to response once the endpoint is implemented
     } catch {
@@ -42,8 +44,8 @@ const CamperRefundFooter = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
+  }
+  
   return (
     <Flex
       color="#FFFFFF"
@@ -68,6 +70,7 @@ const CamperRefundFooter = ({
         textStyle="buttonSemiBold"
         onClick={() => sendData(refundCode)}
         isLoading={isLoading}
+        disabled={isDisabled}
         py="12px"
         px="25px"
       >
