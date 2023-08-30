@@ -123,7 +123,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   }
   return (
     <>
-      <Box pb="7%">
+      <Box pb="156px">
         <Image
           src={FONIcon}
           alt="FON icon"
@@ -267,7 +267,13 @@ const CamperRefundCancellation = (): React.ReactElement => {
           )}
         </Box>
       </Box>
-      <CamperRefundFooter isDisabled={isFooterButtonDisabled()} />
+      <CamperRefundFooter
+        refunds={refunds}
+        checkedRefunds={checkedRefunds}
+        refundCode={refundCode}
+        setRefunds={setRefunds}
+        isDisabled={isFooterButtonDisabled()}
+      />
     </>
   );
 };

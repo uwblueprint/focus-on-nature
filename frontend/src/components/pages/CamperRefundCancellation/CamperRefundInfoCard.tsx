@@ -146,7 +146,7 @@ const CamperRefundInfoCard = ({
         <Checkbox
           isDisabled={!valid}
           defaultChecked={valid}
-          onChange={() => handleCheckboxChange(camperNum - 1)}
+          onChange={() => handleCheckboxChange(camperNum)}
           colorScheme="green"
           size="lg"
         >

@@ -154,6 +154,30 @@ const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
   }
 };
 
+const sendSelectedRefundInfo = async (
+  selectedRefunds: Array<RefundDTO>,
+): Promise<RefundDTO[]> => {
+  try {
+    const { chargeId } = selectedRefunds[0].instances[0];
+    const camperIds: Array<string> = selectedRefunds.map((refund) => { 
+      return refund.instances[0].id;
+    });
+
+    const body = { chargeId, camperIds };
+    const { data } = await baseAPIClient.patch(
+      `/campers/cancel-registration`,
+      body,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+
+    return data;
+  } catch (error) {
+    return error as RefundDTO[];
+  }
+};
+
 const getRefundDiscountInfo = async (chargeId: string): Promise<number> => {
   try {
     const { data } = await baseAPIClient.get(
@@ -194,5 +218,6 @@ export default {
   waitlistCampers,
   confirmPayment,
   getRefundInfo,
+  sendSelectedRefundInfo,
   getRefundDiscountInfo,
 };
