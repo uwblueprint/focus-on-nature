@@ -15,6 +15,7 @@ import { sendResponseByMimeType } from "../utilities/responseUtil";
 import {
   CamperDTO,
   CreateWaitlistedCamperDTO,
+  RefundDTO,
   WaitlistedCamperDTO,
 } from "../types";
 import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/waitlistedCampersValidators";

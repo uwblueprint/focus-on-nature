@@ -21,7 +21,6 @@ const CamperRefundFooter = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
   const sendData = async (code: string) => {
-    console.log("clicked button");
     const selectedRefunds: Array<RefundDTO> = [];
     checkedRefunds.forEach((checked, i) => {
       if (checked) {
@@ -31,7 +30,7 @@ const CamperRefundFooter = ({
     try {
       setIsLoading(true);
       const response = await CamperAPIClient.sendSelectedRefundInfo(
-        selectedRefunds
+        selectedRefunds,
       );
       setRefunds(refunds); // TODO: change this to response once the endpoint is implemented
     } catch {

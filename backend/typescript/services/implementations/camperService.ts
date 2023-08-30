@@ -943,7 +943,7 @@ class CamperService implements ICamperService {
   async cancelRegistration(
     chargeId: string,
     camperIds: string[],
-  ): Promise<void> {
+  ): Promise<RefundDTO> {
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,
