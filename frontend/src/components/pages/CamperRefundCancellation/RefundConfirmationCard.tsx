@@ -51,12 +51,16 @@ const RefundConfirmationCard = ({
           {instances.map((instance, index) => {
             const date1 = new Date(instance.dates[0]);
             const date2 = new Date(instance.dates[1]);
+            console.log(date1);
+            console.log(date2);
+            console.log(instance.dates[1]);
             return (
               <>
                 <Text key="index" textStyle="displaySmallRegular">
                   Session {index + 1} -{" "}
-                  {date1.toLocaleDateString("en-US", dateOptions)} -{" "}
-                  {date2.toLocaleDateString("en-US", dateOptions)}
+                  {date1.toLocaleDateString("en-US", dateOptions)}
+                   {/* -{" "} */}
+                  {/* {date2 === null ? date1.toLocaleDateString("en-US", dateOptions) : date2.toLocaleDateString("en-US", dateOptions)} */}
                 </Text>
               </>
             );

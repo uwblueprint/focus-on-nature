@@ -11,6 +11,10 @@ type RefundConfirmationProps = {
 const RefundConfirmation = ({
   refunds,
 }: RefundConfirmationProps): React.ReactElement => {
+  refunds.filter((refund) => {
+    return refund.instances[0].refundStatus === "Refunded"
+  });
+
   return (
     <>
       <VStack p="64px">

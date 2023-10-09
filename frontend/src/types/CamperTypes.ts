@@ -126,7 +126,6 @@ export type CamperRefundDTO = Omit<
   | "contacts"
   | "formResponses"
   | "optionalClauses"
-  | "refundStatus"
 > & {
   dates: string[];
 };
