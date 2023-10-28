@@ -1322,8 +1322,6 @@ class CampService implements ICampService {
     let newSessions: CampSessionDTO[];
     let newFormQuestions: string[];
 
-    console.log('hello we are creating a camp');
-
     const session = await mongoose.startSession();
     session.startTransaction();
 
