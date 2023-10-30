@@ -25,7 +25,6 @@ export type Camper = {
   formResponses?: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
-  refundStatus: string;
   chargeId: string;
   charges: {
     camp: number;

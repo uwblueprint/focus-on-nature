@@ -156,7 +156,7 @@ const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
 
 const sendSelectedRefundInfo = async (
   selectedRefunds: Array<RefundDTO>,
-): Promise<RefundDTO[]> => {
+): Promise<boolean> => {
   try {
     const { chargeId } = selectedRefunds[0].instances[0];
     const camperIds: Array<string> = selectedRefunds.map((refund) => { 
@@ -164,7 +164,7 @@ const sendSelectedRefundInfo = async (
     });
 
     const body = { chargeId, camperIds };
-    const { data } = await baseAPIClient.patch(
+    await baseAPIClient.patch(
       `/campers/cancel-registration`,
       body,
       {
@@ -172,9 +172,9 @@ const sendSelectedRefundInfo = async (
       },
     );
 
-    return data;
+    return true;
   } catch (error) {
-    return error as RefundDTO[];
+    return false;
   }
 };
 

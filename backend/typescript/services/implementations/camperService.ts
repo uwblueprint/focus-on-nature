@@ -950,7 +950,7 @@ class CamperService implements ICamperService {
   async cancelRegistration(
     chargeId: string,
     camperIds: string[],
-  ): Promise<RefundDTO> {
+    ): Promise<void> {
     try {
       const campersWithChargeId: Array<Camper> = await MgCamper.find({
         chargeId,

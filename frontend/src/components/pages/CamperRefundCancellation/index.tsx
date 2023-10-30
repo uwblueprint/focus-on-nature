@@ -36,6 +36,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [cardsDisabled, setCardsDisabled] = useState<boolean>(false);
   const [refundAmountMap, setRefundAmountMap] = useState<Array<number>>([]);
   const [checkedRefunds, setCheckedRefunds] = useState<Array<boolean>>([]);
+  const [refundRequestSuccessful, setRefundRequestSuccessful] = useState<boolean>(false);
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -123,7 +124,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
     return <Redirect to={HOME_PAGE} />;
   }
 
-  if (refunds[0].refundStatus && refunds[0].refundStatus === "Refunded") {
+  if (refundRequestSuccessful) {
     return <RefundConfirmation refunds={refunds} />;
   }
 
@@ -277,7 +278,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
         refunds={refunds}
         checkedRefunds={checkedRefunds}
         refundCode={refundCode}
-        setRefunds={setRefunds}
+        setRefundRequestSuccessful={setRefundRequestSuccessful}
         isDisabled={isFooterButtonDisabled()}
       />
     </>

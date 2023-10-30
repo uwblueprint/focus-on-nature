@@ -7,7 +7,7 @@ type CamperRefundFooterProps = {
   refunds: Array<RefundDTO>;
   checkedRefunds: Array<boolean>;
   refundCode: string;
-  setRefunds: React.Dispatch<React.SetStateAction<RefundDTO[]>>;
+  setRefundRequestSuccessful: React.Dispatch<React.SetStateAction<boolean>>;
   isDisabled: boolean;
 };
 
@@ -15,7 +15,7 @@ const CamperRefundFooter = ({
   refunds,
   checkedRefunds,
   refundCode,
-  setRefunds,
+  setRefundRequestSuccessful,
   isDisabled,
 }: CamperRefundFooterProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -32,7 +32,10 @@ const CamperRefundFooter = ({
       const response = await CamperAPIClient.sendSelectedRefundInfo(
         selectedRefunds,
       );
-      setRefunds(response);
+      if (response === false) {
+        throw Error();
+      }
+      setRefundRequestSuccessful(response);
     } catch {
       toast({
         description: `Unable to process selected refunds.`,
