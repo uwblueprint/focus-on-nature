@@ -25,6 +25,9 @@ const RefundConfirmation = ({
           A Focus on Nature admin will confirm that your registration has been
           cancelled via email, and you should receive a refund within a few
           hours.
+          <br/>
+          <br/>
+          If you do not receive an email, contact Focus on Nature here: camps@focusonnature.ca
         </Text>
         <Text textStyle="displayLarge" color="text.green.100" pb="12px">
           Cancellation Information
