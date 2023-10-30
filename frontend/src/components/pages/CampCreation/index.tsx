@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { useParams, useHistory } from "react-router-dom";
 
@@ -48,8 +48,13 @@ const CampCreationPage = (): React.ReactElement => {
   const [scheduledSessions, setScheduledSessions] = React.useState<
     CreateCampSession[]
   >([]);
+  const [
+    showScheduleSessionCardError,
+    setShowScheduleSessionCardError,
+  ] = React.useState<boolean>(false);
 
   const [visitedRegistrationPage, setVisitedRegistrationPage] = useState(false);
+  const [showCreationErrors, setShowCreationErrors] = useState<boolean>(false);
 
   // Variables to determine whether or not all required fields have been filled out.
   // NOTE: This will depend on what type of state a page requires, i.e. determining
@@ -57,22 +62,80 @@ const CampCreationPage = (): React.ReactElement => {
 
   let isCampDetailsFilled = false;
 
+  const useValidateTimeOrder = (
+    start: string,
+    end: string,
+    canBeEqual = false,
+  ): boolean => {
+    return useMemo(() => {
+      try {
+        const [startHours, startMinutes] = start
+          .split(":")
+          .map((num) => parseInt(num, 10));
+        const [endHours, endMinutes] = end
+          .split(":")
+          .map((num) => parseInt(num, 10));
+
+        if (Number.isNaN(startHours) || Number.isNaN(endHours)) {
+          return true;
+        }
+
+        if (canBeEqual) {
+          return (
+            startHours < endHours ||
+            (startHours === endHours && startMinutes <= endMinutes)
+          );
+        }
+
+        return (
+          startHours < endHours ||
+          (startHours === endHours && startMinutes < endMinutes)
+        );
+      } catch (error: unknown) {
+        return true;
+      }
+    }, [start, end, canBeEqual]);
+  };
+
+  const startTimeBeforeEndTime = useValidateTimeOrder(startTime, endTime);
+  const earlyDropoffTimeBeforeLatePickupTime = useValidateTimeOrder(
+    earliestDropOffTime,
+    latestPickUpTime,
+  );
+  const earlyDropoffTimeBeforeStartTime = useValidateTimeOrder(
+    earliestDropOffTime,
+    startTime,
+    true,
+  );
+  const endTimeBeforeLatePickupTime = useValidateTimeOrder(
+    endTime,
+    latestPickUpTime,
+    true,
+  );
+
+  // Check if Camp Details are filled in
   if (
     campName &&
     campDescription &&
-    dailyCampFee &&
+    dailyCampFee > 0 &&
     startTime &&
     endTime &&
-    ageLower &&
-    ageUpper &&
+    startTimeBeforeEndTime &&
+    ageLower > 0 &&
+    ageUpper > 0 &&
+    ageLower < ageUpper &&
     (offersEDLP
-      ? earliestDropOffTime && latestPickUpTime && priceEDLP
+      ? earliestDropOffTime &&
+        latestPickUpTime &&
+        priceEDLP > 0 &&
+        earlyDropoffTimeBeforeLatePickupTime &&
+        earlyDropoffTimeBeforeStartTime &&
+        endTimeBeforeLatePickupTime
       : true) &&
-    campCapacity &&
+    campCapacity > 0 &&
     addressLine1 &&
     city &&
-    province &&
-    province &&
+    province !== "-" &&
     postalCode
   )
     isCampDetailsFilled = true;
@@ -295,11 +358,16 @@ const CampCreationPage = (): React.ReactElement => {
       let campResponse: CreateUpdateCampResponse;
 
       if (isNewCamp) {
-        campResponse = await CampsAPIClient.createNewCamp(campFields);
+        campResponse = await CampsAPIClient.createNewCamp(
+          campFields,
+          campImageURL,
+        );
       } else {
         campResponse = await CampsAPIClient.editCampById(
           editCampId,
           campFields,
+          true, // We want to create new sessions when editing.
+          campImageURL,
         );
       }
 
@@ -383,8 +451,8 @@ const CampCreationPage = (): React.ReactElement => {
                 event: React.ChangeEvent<HTMLInputElement>,
               ) => setCampCapacity(Number(event.target.value))}
               toggleEDLP={(event: React.ChangeEvent<HTMLInputElement>) => {
-                // If currently offers EDLP, reset the state of the timings to default values
-                if (offersEDLP) {
+                // When EDLP reset, change timings to default values
+                if (!offersEDLP) {
                   setEarliestDropOffTime("");
                   setLatestPickUpTime("");
                   setPriceEDLP(0);
@@ -416,6 +484,13 @@ const CampCreationPage = (): React.ReactElement => {
                 setPostalCode(event.target.value)
               }
               setCampImageURL={setCampImageURL}
+              showErrors={showCreationErrors}
+              startTimeBeforeEndTime={startTimeBeforeEndTime}
+              earlyDropoffTimeBeforeLatePickupTime={
+                earlyDropoffTimeBeforeLatePickupTime
+              }
+              earlyDropoffTimeBeforeStartTime={earlyDropoffTimeBeforeStartTime}
+              endTimeBeforeLatePickupTime={endTimeBeforeLatePickupTime}
             />
           </React.Fragment>
         );
@@ -425,6 +500,7 @@ const CampCreationPage = (): React.ReactElement => {
             campTitle={`${campName} @${startTime} - ${endTime}`}
             scheduledSessions={scheduledSessions}
             setScheduledSessions={setScheduledSessions}
+            showScheduleSessionCardError={showScheduleSessionCardError}
           />
         );
       case CampCreationPages.RegistrationFormPage:
@@ -447,6 +523,15 @@ const CampCreationPage = (): React.ReactElement => {
   };
 
   const handleStepNavigation = (stepsToMove: number) => {
+    const invalidScheduleCard =
+      !scheduledSessions.every((session) => session.dates.length !== 0) &&
+      stepsToMove > 0 &&
+      currentPage === CampCreationPages.ScheduleSessionsPage;
+    if (invalidScheduleCard) {
+      setShowScheduleSessionCardError(invalidScheduleCard);
+      return;
+    }
+
     const desiredStep = currentPage + stepsToMove;
     if (CampCreationPages[desiredStep]) {
       setCurrentPage(currentPage + stepsToMove);
@@ -462,7 +547,13 @@ const CampCreationPage = (): React.ReactElement => {
         isScheduleSessionsFilled={isScheduleSessionsFilled}
         isRegistrationFormFilled={isRegistrationFormFilled}
       />
-      <Box w="100%" flex="1" mt={[0, "0 !important"]} pb={20}>
+      <Box
+        w="100%"
+        flex="1"
+        mt={[0, "0 !important"]}
+        pb={20}
+        overflowX="hidden"
+      >
         {getCampCreationStepComponent(currentPage)}
       </Box>
       <CampCreationFooter
@@ -471,6 +562,7 @@ const CampCreationPage = (): React.ReactElement => {
         handleStepNavigation={handleStepNavigation}
         createUpdateCamp={createUpdateCampHelper}
         isEditingCamp={editCampId !== undefined}
+        setShowCreationErrors={setShowCreationErrors}
       />
     </VStack>
   );

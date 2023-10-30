@@ -1,3 +1,4 @@
+import { AxiosError, AxiosResponse } from "axios";
 import { getBearerToken } from "../constants/AuthConstants";
 import {
   Camper,
@@ -7,6 +8,7 @@ import {
   CreateWaitlistedCamperDTO,
   CreateCamperDTO,
   CreateCamperResponse,
+  RefundDTO,
 } from "../types/CamperTypes";
 import baseAPIClient from "./BaseAPIClient";
 
@@ -28,7 +30,6 @@ const updateCampersById = async (
         ),
       );
     }
-
     const { data } = await baseAPIClient.patch(`/campers`, body, {
       headers: { Authorization: getBearerToken() },
     });
@@ -131,12 +132,64 @@ const waitlistCampers = async (
   campers: CreateWaitlistedCamperDTO[],
   campSessions: string[],
 ): Promise<WaitlistedCamper[]> => {
-  const body = { waitlistedCampers: campers, campSessions };
-  const { data } = await baseAPIClient.post("/campers/waitlist", body, {
-    headers: { Authorization: getBearerToken() },
-  });
+  try {
+    const body = { waitlistedCampers: campers, campSessions };
+    const { data } = await baseAPIClient.post("/campers/waitlist", body, {
+      headers: { Authorization: getBearerToken() },
+    });
+    return data;
+  } catch (error: AxiosError | unknown) {
+    throw Error(((error as AxiosError).response as AxiosResponse).data.error);
+  }
+};
 
-  return data;
+const getRefundInfo = async (refundCode: string): Promise<RefundDTO[]> => {
+  try {
+    const { data } = await baseAPIClient.get(`/campers/refund/${refundCode}`, {
+      headers: { Authorization: getBearerToken() },
+    });
+    return data;
+  } catch (error) {
+    return error as RefundDTO[];
+  }
+};
+
+const sendSelectedRefundInfo = async (
+  selectedRefunds: Array<RefundDTO>,
+): Promise<boolean> => {
+  try {
+    const { chargeId } = selectedRefunds[0].instances[0];
+    const camperIds: Array<string> = selectedRefunds.map((refund) => { 
+      return refund.instances[0].id;
+    });
+
+    const body = { chargeId, camperIds };
+    await baseAPIClient.patch(
+      `/campers/cancel-registration`,
+      body,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const getRefundDiscountInfo = async (chargeId: string): Promise<number> => {
+  try {
+    const { data } = await baseAPIClient.get(
+      `/campers/refund-discount-info/${chargeId}`,
+      {
+        headers: { Authorization: getBearerToken() },
+      },
+    );
+    return data;
+  } catch (error) {
+    return error as number;
+  }
 };
 
 const confirmPayment = async (chargeId: string): Promise<boolean> => {
@@ -164,4 +217,7 @@ export default {
   registerCampers,
   waitlistCampers,
   confirmPayment,
+  getRefundInfo,
+  sendSelectedRefundInfo,
+  getRefundDiscountInfo,
 };

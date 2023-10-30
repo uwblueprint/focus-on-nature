@@ -39,7 +39,11 @@ interface ICampService {
 
   deleteCamp(campId: string): Promise<void>;
 
-  updateCampById(campId: string, camp: CreateUpdateCampDTO): Promise<CampDTO>;
+  updateCampById(
+    campId: string,
+    camp: CreateUpdateCampDTO,
+    createNewSessions: boolean,
+  ): Promise<CampDTO>;
 
   deleteCampSessionById(campId: string, campSessionId: string): Promise<void>;
 

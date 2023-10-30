@@ -15,16 +15,19 @@ import { ReactComponent as SunriseIcon } from "../../../../assets/icon_sunrise.s
 import { ReactComponent as SunsetIcon } from "../../../../assets/icon_sunset.svg";
 
 import { Camper, WaitlistedCamperStatus } from "../../../../types/CamperTypes";
+import { checkDatesInRange } from "../../../../utils/CampUtils";
+
+type CamperDetailsBadgeProps = {
+  icon: JSX.Element;
+  description: string;
+  color: string;
+};
 
 const CamperDetailsBadge = ({
   icon,
   description,
   color,
-}: {
-  icon: JSX.Element;
-  description: string;
-  color: string;
-}): JSX.Element => {
+}: CamperDetailsBadgeProps): JSX.Element => {
   return (
     <HStack
       alignContent="center"
@@ -39,15 +42,33 @@ const CamperDetailsBadge = ({
   );
 };
 
+type CamperDetailsBadgeGroupProps = {
+  camper: Camper;
+  paddingLeft?: string;
+  sessionDates: string[];
+};
+
 export const CamperDetailsBadgeGroup = ({
   camper,
   paddingLeft = "16px",
-}: {
-  camper: Camper;
-  paddingLeft?: string;
-}): JSX.Element => {
-  const latePickup = camper.latePickup && camper.latePickup.length > 0;
-  const earlyDropoff = camper.earlyDropoff && camper.earlyDropoff.length > 0;
+  sessionDates,
+}: CamperDetailsBadgeGroupProps): JSX.Element => {
+  const latePickupInSessionRange = checkDatesInRange(
+    sessionDates,
+    camper.latePickup,
+  );
+  const earlyDropoffInSessionRange = checkDatesInRange(
+    sessionDates,
+    camper.earlyDropoff,
+  );
+  const latePickup =
+    camper.latePickup &&
+    camper.latePickup.length > 0 &&
+    latePickupInSessionRange;
+  const earlyDropoff =
+    camper.earlyDropoff &&
+    camper.earlyDropoff.length > 0 &&
+    earlyDropoffInSessionRange;
 
   return (
     <Container width="-webkit-fit-content" marginStart="0px" pl={paddingLeft}>
@@ -97,18 +118,26 @@ export const WaitlistDetailsBadgeGroup = ({
   linkExpiry,
 }: {
   status: WaitlistedCamperStatus;
-  linkExpiry: Date | undefined;
-}): JSX.Element => {
+  linkExpiry?: Date;
+}): React.ReactElement => {
   let bkgColor = "";
   let statusText = "";
   let icon: JSX.Element = <FontAwesomeIcon icon={faEnvelopesBulk} />;
   let validStatus = true;
 
+  // This is a work around to a typing issue we are having
+  // The linkExpiry prop is passed as a string, probably because we are using JSX.Element
+  // This checks if the type is string and creates a date
+  let linkExpiryDate = linkExpiry;
+  if (typeof linkExpiry === "string") {
+    linkExpiryDate = new Date(linkExpiry);
+  }
+
   if (status === "Registered") {
     bkgColor = "waitlistCards.complete";
     statusText = "registration complete";
     icon = <FontAwesomeIcon icon={faUserCheck} />;
-  } else if (linkExpiry && linkExpiry.getTime() < Date.now()) {
+  } else if (linkExpiryDate && linkExpiryDate.getTime() < Date.now()) {
     bkgColor = "waitlistCards.expired";
     statusText = "registration expired";
     icon = <FontAwesomeIcon icon={faHourglassEnd} />;

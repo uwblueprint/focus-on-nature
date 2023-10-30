@@ -15,6 +15,7 @@ import { sendResponseByMimeType } from "../utilities/responseUtil";
 import {
   CamperDTO,
   CreateWaitlistedCamperDTO,
+  RefundDTO,
   WaitlistedCamperDTO,
 } from "../types";
 import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/waitlistedCampersValidators";
@@ -22,6 +23,9 @@ import { createWaitlistedCampersDtoValidator } from "../middlewares/validators/w
 const camperRouter: Router = Router();
 
 const camperService: ICamperService = new CamperService();
+
+// TODO: secure stripe keys
+// const STRIPE_ENDPOINT_KEY = process.env.STRIPE_ENDPOINT_SECRET || "";
 
 // ROLES: Leaving unprotected as the registration flow probs needs this endpoint to register @dhruv
 /* Create a camper */
@@ -86,6 +90,33 @@ camperRouter.get(
   },
 );
 
+// ROLES: Unprotected
+camperRouter.get("/refund/:refundCode", async (req, res) => {
+  const { refundCode } = req.params;
+  try {
+    const refundInfo = await camperService.getRefundInfo(
+      (refundCode as unknown) as string,
+    );
+    res.status(200).json(refundInfo);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
+// ROLES: Unprotected
+// Used to contact stripe to obtain refund discount information
+camperRouter.get("/refund-discount-info/:chargeId", async (req, res) => {
+  const { chargeId } = req.params;
+  try {
+    const discountInfo = await camperService.getRefundDiscountInfo(
+      (chargeId as unknown) as string,
+    );
+    res.status(200).json(discountInfo);
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) });
+  }
+});
+
 // ROLES: TODO- Leaving unprotected as parent might need this route for refund flow @dhruv
 camperRouter.get("/refund-confirm/:chargeId", async (req, res) => {
   const { chargeId } = req.params;
@@ -116,15 +147,21 @@ camperRouter.get("/:chargeId/:sessionId", async (req, res) => {
 
 // ROLES: unprotected
 /* On successful payment, mark camper as paid */
-camperRouter.post("/confirm-payment/:chargeId", async (req, res) => {
-  const { chargeId } = req.params;
+camperRouter.post("/confirm-payment", async (req, res) => {
   try {
-    const camper = await camperService.confirmCamperPayment(
-      (chargeId as unknown) as string,
-    );
-    res.status(200).json(camper);
+    const event = req.body;
+
+    if (event.type === "checkout.session.completed") {
+      const chargeId = event.data.object.id;
+      const paymentIntentId = event.data.object.payment_intent;
+
+      const camper = await camperService.confirmCamperPayment(chargeId);
+      res.status(200).json(camper);
+    }
+    res.status(200).send();
   } catch (error: unknown) {
-    res.status(500).json({ error: getErrorMessage(error) });
+    // Stripe requires that 200 response sent
+    res.status(200).json({ error: getErrorMessage(error) });
   }
 });
 
@@ -198,7 +235,7 @@ camperRouter.patch(
 
 // ROLES: Leave unprotected as we'll probably need this in cancellation flow
 /* Cancel registration for the list of campers with the chargeId */
-camperRouter.delete(
+camperRouter.patch(
   "/cancel-registration",
   cancelCamperDtoValidator,
   async (req, res) => {

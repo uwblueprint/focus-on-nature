@@ -205,6 +205,7 @@ export const updateCamperDtoValidator = async (
       .status(400)
       .send("There must be at least one camperId specified.");
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
     return res
       .status(400)
@@ -286,6 +287,7 @@ export const deleteCamperDtoValidator = async (
       .status(400)
       .send("There must be at least one camperId specified.");
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!req.body.camperIds.every((id: any) => validatePrimitive(id, "string"))) {
     return res
       .status(400)

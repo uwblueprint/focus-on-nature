@@ -20,12 +20,14 @@ export interface Camper extends Document {
   formResponses: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
+  refundStatus: string;
   chargeId: string;
   charges: {
     camp: number;
     earlyDropoff: number;
     latePickup: number;
   };
+  refundCode: string;
   optionalClauses: [
     {
       clause: string;
@@ -99,6 +101,10 @@ const CamperSchema: Schema = new Schema({
     type: Boolean,
     required: true,
   },
+  refundStatus: {
+    type: String,
+    required: true,
+  },
   chargeId: {
     type: String,
     required: true,
@@ -116,6 +122,11 @@ const CamperSchema: Schema = new Schema({
       type: Number,
       required: true,
     },
+  },
+  refundCode: {
+    type: String,
+    required: true,
+    index: true,
   },
   optionalClauses: [
     {

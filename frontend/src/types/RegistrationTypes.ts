@@ -16,10 +16,14 @@ export type EdlpDetails = {
 };
 
 export type EdlpChoice = {
-  date: string;
   earlyDropoff: EdlpDetails;
   latePickup: EdlpDetails;
 };
+
+// Ordered array by session date
+export type EdlpSelections = Array<{
+  [key: string]: EdlpChoice;
+}>;
 
 // Used for caching data useful for restoring session on failure,
 // or for passing data through checkout flow to display on success
@@ -31,6 +35,6 @@ export type CheckoutData = {
   selectedSessionIds: string[];
   checkoutUrl: string;
   requireEarlyDropOffLatePickup: boolean | null;
-  edlpChoices: EdlpChoice[][];
+  edlpSelections: EdlpSelections;
   chargeId: string;
 };

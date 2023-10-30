@@ -5,6 +5,7 @@ import {
   WaitlistedCamperDTO,
   UpdateCamperDTO,
   CampRegistrationDTO,
+  RefundDTO,
 } from "../../types";
 
 interface ICamperService {
@@ -95,7 +96,7 @@ interface ICamperService {
   ): Promise<Array<CamperDTO>>;
 
   /**
-   * Delete all campers in camperIds associated with the charge ID if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request
+   * Batch process deletion of all campers in camperIds associated with the charge ID and send confirmation email to their parent
    * @param chargeId the charge ID for the payment
    * @param camperIds is the array of camper IDs to be deleted
    * @throws Error if camper cancellation fails
@@ -103,11 +104,30 @@ interface ICamperService {
   cancelRegistration(chargeId: string, camperIds: string[]): Promise<void>;
 
   /**
+   * Returns the refund amount for all campers in camperIds associated with the charge ID if the camp session start date is > 30 days from this cancellation request OR the waitlist for that camp session is not empty and the camp session start date is <= 30 days from this cancellation request
+   * @param chargeId the charge ID for the payment
+   * @param camperIds is the array of camper IDs to be deleted
+   * @throws Error if camper cancellation fails
+   */
+  cancelRegistrationSession(
+    chargeId: string,
+    camperIds: string[],
+  ): Promise<number>;
+
+  /**
    * Delete campers associated with the camper IDs
    * @param camperIds array of camper Ids
    * @throws Error if camper deletion fails
    */
   deleteCampersById(camperIds: Array<string>): Promise<void>;
+
+  /**
+   * Update camper's refund status to "requested"
+   * @param camperIds array of camper Ids
+   * @throws Error if camper refund status update fails
+   */
+  changeCamperRefundStatusById(camperIds: Array<string>): Promise<void>;
+
   /**
    * Sends email inviting waitlisted camper to register and updates their status
    * @param waitlistedCamperId waitlisted camper's Id
@@ -121,6 +141,20 @@ interface ICamperService {
    * @throws Error if waitlisted camper deletion fails
    */
   deleteWaitlistedCamperById(waitlistedCamperId: string): Promise<void>;
+
+  /**
+   * Gets information associated with a charge in order to request refund
+   * @param refundCode code specific to this email to access info
+   * @throws Error if retrieval fails
+   */
+  getRefundInfo(refundCode: string): Promise<RefundDTO>;
+
+  /**
+   * Returns the associated discount from coupons from a specific chargeId
+   * @param chargeId code specific to the checkout session
+   * @throws Error if retrieval fails
+   */
+  getRefundDiscountInfo(chargeId: string): Promise<number>;
 }
 
 export default ICamperService;

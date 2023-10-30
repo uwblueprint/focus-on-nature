@@ -11,6 +11,7 @@ export type CampCreationFooterProps = {
     isPublishedCamp: boolean,
     isNewCamp: boolean,
   ) => Promise<void>;
+  setShowCreationErrors: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CampCreationFooter = ({
@@ -19,6 +20,7 @@ const CampCreationFooter = ({
   handleStepNavigation,
   createUpdateCamp,
   isEditingCamp,
+  setShowCreationErrors,
 }: CampCreationFooterProps): React.ReactElement => {
   const [isAwaitingReq, setIsAwaitingReq] = React.useState(false);
 
@@ -30,6 +32,10 @@ const CampCreationFooter = ({
   };
 
   const onNextStep = async () => {
+    if (!isCurrentStepCompleted) {
+      setShowCreationErrors(true);
+      return;
+    }
     handleStepNavigation(1);
 
     if (currentStep === CampCreationPages.RegistrationFormPage) {
@@ -79,7 +85,12 @@ const CampCreationFooter = ({
         height="48px"
         variant="primary"
         onClick={onNextStep}
-        disabled={!isCurrentStepCompleted}
+        background={
+          isCurrentStepCompleted
+            ? "primary.green.100"
+            : "primary.green_disabled.100"
+        }
+        _hover={{ cursor: isCurrentStepCompleted ? "pointer" : "not-allowed" }}
         isLoading={
           isAwaitingReq &&
           currentStep === CampCreationPages.RegistrationFormPage

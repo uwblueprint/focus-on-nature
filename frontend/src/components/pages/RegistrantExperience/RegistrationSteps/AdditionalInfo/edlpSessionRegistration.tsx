@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useMemo } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -16,11 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { CampResponse, CampSession } from "../../../../../types/CampsTypes";
 import {
-  getFormattedDateString,
+  getFormattedDateRangeStringFromStringArray,
   formatAMPM,
   getFormattedSingleDateString,
+  sortDatestrings,
 } from "../../../../../utils/CampUtils";
-import { EdlpChoice } from "../../../../../types/RegistrationTypes";
+import { EdlpSelections } from "../../../../../types/RegistrationTypes";
 import { EDLP_PLACEHOLDER_TIMESLOT } from "../../../../../constants/RegistrationConstants";
 
 type EDLPSessionRegistrationProps = {
@@ -29,8 +30,8 @@ type EDLPSessionRegistrationProps = {
   edCost: number;
   lpCost: number;
   session: CampSession;
-  edlpChoices: EdlpChoice[][];
-  setEdlpChoices: Dispatch<SetStateAction<EdlpChoice[][]>>;
+  edlpSelections: EdlpSelections;
+  setEdlpSelections: Dispatch<SetStateAction<EdlpSelections>>;
 };
 
 const computeIntervals = (
@@ -79,8 +80,8 @@ const EDLPSessionRegistration = ({
   edCost,
   lpCost,
   session,
-  edlpChoices,
-  setEdlpChoices,
+  edlpSelections,
+  setEdlpSelections,
 }: EDLPSessionRegistrationProps): React.ReactElement => {
   const edIntervals = [EDLP_PLACEHOLDER_TIMESLOT].concat(
     computeIntervals(camp.startTime, camp.earlyDropoff, false),
@@ -91,17 +92,11 @@ const EDLPSessionRegistration = ({
   );
 
   const getEdCostForDay = (date: string): number => {
-    return (
-      edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.earlyDropoff.cost ?? 0
-    );
+    return edlpSelections[selectedSessionIndex][date]?.earlyDropoff.cost ?? 0;
   };
 
   const getLpCostForDay = (date: string): number => {
-    return (
-      edlpChoices[selectedSessionIndex].find((day) => day.date === date)
-        ?.latePickup.cost ?? 0
-    );
+    return edlpSelections[selectedSessionIndex][date]?.latePickup.cost ?? 0;
   };
 
   const getTotalEdlpCostForDay = (date: string): number => {
@@ -121,11 +116,11 @@ const EDLPSessionRegistration = ({
 
   const onSelectEDLP = (
     numSlots: number,
-    dayIndex: number,
+    date: string,
     timeInterval: string,
     isLatePickup: boolean,
   ) => {
-    const newChoices = edlpChoices;
+    const newChoices = edlpSelections;
 
     const changedSlot = {
       timeSlot: timeInterval,
@@ -133,13 +128,15 @@ const EDLPSessionRegistration = ({
       cost: numSlots * (isLatePickup ? lpCost : edCost),
     };
 
-    if (isLatePickup) {
-      newChoices[selectedSessionIndex][dayIndex].latePickup = changedSlot;
-    } else {
-      newChoices[selectedSessionIndex][dayIndex].earlyDropoff = changedSlot;
+    if (newChoices[selectedSessionIndex][date]) {
+      if (isLatePickup) {
+        newChoices[selectedSessionIndex][date].latePickup = changedSlot;
+      } else {
+        newChoices[selectedSessionIndex][date].earlyDropoff = changedSlot;
+      }
     }
 
-    setEdlpChoices(newChoices);
+    setEdlpSelections(edlpSelections);
     forceUpdate();
   };
 
@@ -171,12 +168,13 @@ const EDLPSessionRegistration = ({
     });
 
   const getDefaultSelectOption = (
-    dateIndex: number,
+    date: string,
     isLatePickup: boolean,
   ): number => {
     const interval = isLatePickup
-      ? edlpChoices[selectedSessionIndex][dateIndex].latePickup.timeSlot
-      : edlpChoices[selectedSessionIndex][dateIndex].earlyDropoff.timeSlot;
+      ? edlpSelections[selectedSessionIndex][date]?.latePickup.timeSlot
+      : edlpSelections[selectedSessionIndex][date]?.earlyDropoff.timeSlot ??
+        EDLP_PLACEHOLDER_TIMESLOT;
     if (isLatePickup) {
       return lpIntervals.indexOf(interval);
     }
@@ -184,6 +182,10 @@ const EDLPSessionRegistration = ({
       ? 0
       : edIntervals.length - edIntervals.indexOf(interval);
   };
+
+  const sortedSessionDates = useMemo(() => sortDatestrings(session.dates), [
+    session.dates,
+  ]);
 
   return (
     <AccordionItem
@@ -196,8 +198,9 @@ const EDLPSessionRegistration = ({
       {/* Each accordionButton must be wrapped in a heading tag */}
       <h2>
         <AccordionButton
-          bg="white"
-          padding={{ base: "12px 20px", sm: "16px 40px", md: "32px 80px" }}
+          bg="background.white.100"
+          px={{ sm: "5", lg: "20" }}
+          py={{ sm: "4", lg: "8" }}
           borderRadius="10px"
           _expanded={{
             borderBottomRadius: "0",
@@ -207,17 +210,17 @@ const EDLPSessionRegistration = ({
           <Box as="span" flex="1" textAlign="left">
             <Text
               as="span"
-              textStyle={{ base: "xSmallBold", md: "displayMediumBold" }}
+              textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
             >
               Session:{" "}
             </Text>
             <Text
               as="span"
-              textStyle={{ base: "xSmallBold", md: "displayMediumBold" }}
+              textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}
             >
-              {getFormattedDateString(session.dates)}
+              {getFormattedDateRangeStringFromStringArray(session.dates)}
             </Text>
-            <Text textStyle={{ base: "xSmallRegular", md: "buttonRegular" }}>
+            <Text textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}>
               {formatAMPM(camp.startTime)} - {formatAMPM(camp.endTime)}
             </Text>
           </Box>
@@ -228,48 +231,65 @@ const EDLPSessionRegistration = ({
       <AccordionPanel padding="0">
         <Hide below="600px">
           <Box
-            padding={{ base: "12px 20px", sm: "16px 40px", md: "32px 80px" }}
+            padding={{ sm: "16px 40px", lg: "32px 80px" }}
+            bg="background.grey.500"
           >
-            <Table
-              variant="simple"
-              colorScheme="blackAlpha"
-              background="#FBFBFB"
-              size="sm"
-            >
+            <Table variant="simple" colorScheme="blackAlpha" size="sm">
               <Thead>
                 <Tr textAlign="left">
                   <Td color="text.default.100" border="none" padding="3px">
-                    Date
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Date
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    Early Dropoff
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Early Dropoff
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    Late Pickup
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Late Pickup
+                    </Text>
                   </Td>
                   <Td color="text.default.100" border="none" padding="3px">
-                    Cost/Child
+                    <Text
+                      textStyle={{ sm: "xSmallBold", lg: "buttonSemiBold" }}
+                    >
+                      Cost/Child
+                    </Text>
                   </Td>
                 </Tr>
               </Thead>
               <Tbody>
-                {session.dates.map((date: string, dateIndex: number) => {
+                {sortedSessionDates.map((date: string) => {
                   return (
                     <Tr key={`${date}_edlp_row`}>
-                      <Td border="none" textStyle="buttonRegular" padding="3px">
+                      <Td
+                        border="none"
+                        textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                        padding="3px"
+                      >
                         {getFormattedSingleDateString(date)}
                       </Td>
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(
-                            dateIndex,
-                            false,
-                          )}
+                          defaultValue={getDefaultSelectOption(date, false)}
+                          textStyle={{
+                            sm: "xSmallRegular",
+                            lg: "buttonRegular",
+                          }}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
-                              dateIndex,
+                              date,
                               event.target.options[
                                 event.target.options.selectedIndex
                               ].text,
@@ -283,11 +303,15 @@ const EDLPSessionRegistration = ({
                       <Td border="none" padding="3px">
                         <Select
                           width="120px"
-                          defaultValue={getDefaultSelectOption(dateIndex, true)}
+                          defaultValue={getDefaultSelectOption(date, true)}
+                          textStyle={{
+                            sm: "xSmallRegular",
+                            lg: "buttonRegular",
+                          }}
                           onChange={(event) => {
                             onSelectEDLP(
                               Number(event.target.value),
-                              dateIndex,
+                              date,
                               event.target.options[
                                 event.target.options.selectedIndex
                               ].text,
@@ -298,7 +322,11 @@ const EDLPSessionRegistration = ({
                           {getLpOptions(date)}
                         </Select>
                       </Td>
-                      <Td border="none" padding="3px">
+                      <Td
+                        border="none"
+                        textStyle={{ sm: "xSmallRegular", lg: "buttonRegular" }}
+                        padding="3px"
+                      >
                         ${getTotalEdlpCostForDay(date)}
                       </Td>
                     </Tr>
@@ -309,7 +337,7 @@ const EDLPSessionRegistration = ({
           </Box>
         </Hide>
         <Hide above="600px">
-          {session.dates.map((date: string, dateIndex: number) => {
+          {sortedSessionDates.map((date: string) => {
             return (
               <Box
                 padding={{
@@ -332,11 +360,11 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={getDefaultSelectOption(date, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
-                      dateIndex,
+                      date,
                       event.target.options[event.target.options.selectedIndex]
                         .text,
                       false,
@@ -352,11 +380,11 @@ const EDLPSessionRegistration = ({
                 <Select
                   minWidth="120px"
                   marginTop="8px"
-                  defaultValue={getDefaultSelectOption(dateIndex, true)}
+                  defaultValue={getDefaultSelectOption(date, true)}
                   onChange={(event) => {
                     onSelectEDLP(
                       Number(event.target.value),
-                      dateIndex,
+                      date,
                       event.target.options[event.target.options.selectedIndex]
                         .text,
                       true,
@@ -370,19 +398,21 @@ const EDLPSessionRegistration = ({
           })}
         </Hide>
         <Box
-          bg="white"
-          padding={{ base: "12px 20px", sm: "16px 40px", md: "32px 80px" }}
+          bg="background.white.100"
+          px={{ sm: "5", lg: "20" }}
+          py={{ sm: "4", lg: "8" }}
           borderBottomRadius="10px"
+          borderTop="1px solid #EEEFF1"
         >
           <Text
             as="span"
-            textStyle={{ base: "xSmallBold", md: "displayMediumBold" }}
+            textStyle={{ sm: "xSmallBold", lg: "displayMediumBold" }}
           >
             Total Cost:{" "}
           </Text>
           <Text
             as="span"
-            textStyle={{ base: "xSmallRegular", md: "displayMediumRegular" }}
+            textStyle={{ sm: "xSmallRegular", lg: "displayMediumRegular" }}
           >
             ${getTotalEdlpCostForSession()} per camper
           </Text>

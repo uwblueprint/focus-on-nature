@@ -17,7 +17,10 @@ import {
   PersonalInfoActions,
   PersonalInfoReducerDispatch,
 } from "../../../../../types/PersonalInfoTypes";
-import { EmergencyContact } from "../../../../../types/CamperTypes";
+import {
+  EmergencyContact,
+  RegistrantExperienceCamper,
+} from "../../../../../types/CamperTypes";
 import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import {
   checkEmail,
@@ -26,20 +29,60 @@ import {
   checkPhoneNumber,
   checkRelationToCamper,
 } from "./personalInfoReducer";
+import { FormQuestion } from "../../../../../types/CampsTypes";
+import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../QuestionGroups/MultiselectGroup";
+import TextInputGroup from "../QuestionGroups/TextInputGroup";
 
 type ContactCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
   contact: EmergencyContact;
   contactIndex: number;
+  camper: RegistrantExperienceCamper;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  emergencyContactQuestions: FormQuestion[];
 };
 
 const ContactCard = ({
   nextBtnRef,
+  camper,
   contact,
   contactIndex,
   dispatchPersonalInfoAction,
+  emergencyContactQuestions,
 }: ContactCardProps): React.ReactElement => {
+  const mdWrapWidth = emergencyContactQuestions.length > 1 ? "47%" : "100%";
+
+  const handleMultipleChoiceChange = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_CONTACT_QUESTIONS_RESPONSE,
+      question: question.question,
+      data: response,
+    });
+  };
+
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
@@ -47,6 +90,8 @@ const ContactCard = ({
     false,
   );
   const [isRelationInvalid, setIsRelationInvalid] = useState<boolean>(false);
+
+  const [nextClicked, setNextClicked] = useState(false);
 
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
@@ -76,6 +121,7 @@ const ContactCard = ({
       if (!checkPhoneNumber(contact.phoneNumber)) setIsPhoneNumberInvalid(true);
       if (!checkRelationToCamper(contact.relationshipToCamper))
         setIsRelationInvalid(true);
+      setNextClicked(true);
     };
 
     if (nextBtnRef && nextBtnRef.current) {
@@ -175,7 +221,7 @@ const ContactCard = ({
                   });
                 }}
               />
-              <FormErrorMessage>This field cannot be empty</FormErrorMessage>
+              <FormErrorMessage>The provided email is invalid</FormErrorMessage>
             </FormControl>
           </WrapItem>
           <Spacer />
@@ -230,6 +276,39 @@ const ContactCard = ({
               <FormErrorMessage>This field cannot be empty</FormErrorMessage>
             </FormControl>
           </WrapItem>
+
+          {contactIndex === 0 &&
+            emergencyContactQuestions.map((question) => (
+              <WrapItem
+                key={`contact_info_question_${question.question}`}
+                width={{ sm: "100%", md: mdWrapWidth }}
+              >
+                {question.type === "Text" && (
+                  <TextInputGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    handleTextChange={handleTextChange}
+                    nextClicked={nextClicked}
+                  />
+                )}
+                {question.type === "Multiselect" && (
+                  <MultiselectGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    handleSelectionChange={handleSelectionChange}
+                    nextClicked={nextClicked}
+                  />
+                )}
+                {question.type === "MultipleChoice" && (
+                  <MultipleChoiceGroup
+                    formResponses={camper.formResponses}
+                    question={question}
+                    handleMultipleChoiceChange={handleMultipleChoiceChange}
+                    nextClicked={nextClicked}
+                  />
+                )}
+              </WrapItem>
+            ))}
         </Wrap>
       </Box>
     </Box>

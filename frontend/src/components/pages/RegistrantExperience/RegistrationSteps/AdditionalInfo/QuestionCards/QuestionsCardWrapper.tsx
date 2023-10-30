@@ -1,4 +1,4 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import React from "react";
 
 type QuestionsCardWrapperProps = {
@@ -13,7 +13,7 @@ const QuestionsCardWrapper = ({
   return (
     <Box
       width="100%"
-      backgroundColor="background.grey.200"
+      backgroundColor="background.grey.500"
       marginY={10}
       boxShadow="lg"
       rounded="xl"
@@ -23,11 +23,13 @@ const QuestionsCardWrapper = ({
       <Box
         backgroundColor="background.white.100"
         borderTopRadius={10}
-        px="40px"
-        py="12px"
         borderBottomWidth={1}
       >
-        <Text textStyle="displaySmallSemiBold">{title}</Text>
+        <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
+          <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
+            {title}
+          </Text>
+        </Flex>
       </Box>
       {children}
     </Box>

@@ -32,6 +32,7 @@ export type Camper = {
     latePickup: number;
   };
   optionalClauses?: OptionalClause[];
+  refundStatus?: string;
 };
 
 export type RegistrantExperienceCamper = Omit<
@@ -51,7 +52,7 @@ export type CreateCamperDTO = Omit<
 };
 
 export type EditCamperInfoFields = Omit<
-  Camper,
+  Partial<Camper>,
   | "earlyDropoff"
   | "latePickup"
   | "registrationDate"
@@ -60,7 +61,6 @@ export type EditCamperInfoFields = Omit<
   | "charges"
   | "optionalClauses"
   | "id"
-  | "campSession"
 >;
 
 export type EditModalSetterFunctions = {
@@ -86,20 +86,47 @@ export type WaitlistedCamper = {
   firstName: string;
   lastName: string;
   age: number;
-  contactName: string;
+  contactFirstName: string;
+  contactLastName: string;
   contactEmail: string;
   contactNumber: string;
   campSession: string;
   status: WaitlistedCamperStatus;
   linkExpiry?: Date;
+  registrationDate: Date;
 };
 
 export type CreateWaitlistedCamperDTO = Omit<
   WaitlistedCamper,
-  "id" | "campSession" | "status" | "linkExpiry"
+  "id" | "campSession" | "status" | "linkExpiry" | "registrationDate"
 >;
 
 export type CreateCamperResponse = {
   campers: Camper[];
   checkoutSessionUrl: string;
+};
+
+export type RefundDTO = {
+  firstName: string;
+  lastName: string;
+  age: number;
+  campName: string;
+  campPhotoUrl?: string;
+  instances: Array<CamperRefundDTO>;
+  startTime: string;
+  endTime: string;
+  refundStatus?: string;
+};
+
+export type CamperRefundDTO = Omit<
+  Camper,
+  | "firstName"
+  | "lastName"
+  | "age"
+  | "contacts"
+  | "formResponses"
+  | "optionalClauses"
+  | "refundStatus"
+> & {
+  dates: string[];
 };

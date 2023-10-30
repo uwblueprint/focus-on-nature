@@ -1,19 +1,13 @@
 import React from "react";
 
-import {
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+import { AccordionItem, AccordionPanel } from "@chakra-ui/react";
 
 import {
   CreateFormQuestionRequest,
   FormQuestion,
 } from "../../../types/CampsTypes";
 import QuestionCard from "./QuestionCard";
+import GeneralAccordionButton from "../GeneralAccordionButton";
 import RegistrationQuestionCard from "../../pages/CampCreation/RegistrationForm/RegistrationQuestionCard";
 import NoRegistrationQuestionsCard from "../../pages/CampCreation/RegistrationForm/NoRegistrationQuestionsCard";
 
@@ -42,18 +36,7 @@ const QuestionsAccordionItem = ({
 
   return (
     <AccordionItem border="none" marginBottom="40px">
-      <AccordionButton
-        borderRadius="20px"
-        bg="primary.green.600"
-        _hover={{ bg: "primary.green.600" }}
-      >
-        <Box flex="1" textAlign="left">
-          <Text color="text.white.100" textStyle="heading" p={2}>
-            {accordionTitle}
-          </Text>
-        </Box>
-        <AccordionIcon color="white" fontSize="2.5em" />
-      </AccordionButton>
+      <GeneralAccordionButton title={accordionTitle} />
 
       {isTemplatePage ? (
         <AccordionPanel>

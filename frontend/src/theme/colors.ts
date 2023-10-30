@@ -5,6 +5,9 @@ const colors = {
       200: "#3A7035",
       600: "#146600",
     },
+    green_disabled: {
+      100: "#B5CFB3",
+    },
   },
   secondary: {
     critical: {
@@ -58,6 +61,9 @@ const colors = {
     informative: {
       100: "#0362A5",
     },
+    green: {
+      100: "#10741A",
+    },
   },
   background: {
     white: {
@@ -68,6 +74,7 @@ const colors = {
       200: "#F5F5F5",
       300: "#F4F4F4",
       400: "#D8DBDF",
+      500: "#FBFBFB",
     },
     interactive: {
       100: "#D3E9D3",
@@ -119,6 +126,9 @@ const colors = {
     },
     informative: {
       100: "#98C6CD",
+    },
+    grey: {
+      100: "#A3AEBE",
     },
   },
   waitlistCards: {

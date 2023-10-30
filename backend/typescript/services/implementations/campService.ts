@@ -128,8 +128,10 @@ class CampService implements ICampService {
                     registrationDate: camper.registrationDate.toString(),
                     hasPaid: camper.hasPaid,
                     chargeId: camper.chargeId,
+                    refundStatus: camper.refundStatus,
                     formResponses: camper.formResponses,
                     charges: camper.charges,
+                    refundCode: camper.refundCode,
                     optionalClauses: camper.optionalClauses,
                   };
                 },
@@ -142,10 +144,12 @@ class CampService implements ICampService {
                     firstName: waitlistedCamper.firstName,
                     lastName: waitlistedCamper.lastName,
                     age: waitlistedCamper.age,
-                    contactName: waitlistedCamper.contactName,
+                    contactFirstName: waitlistedCamper.contactFirstName,
+                    contactLastName: waitlistedCamper.contactLastName,
                     contactEmail: waitlistedCamper.contactEmail,
                     contactNumber: waitlistedCamper.contactNumber,
                     status: waitlistedCamper.status,
+                    registrationDate: waitlistedCamper.registrationDate.toString(),
                   };
                 },
               );
@@ -296,7 +300,9 @@ class CampService implements ICampService {
             chargeId: camper.chargeId,
             formResponses: camper.formResponses,
             charges: camper.charges,
+            refundCode: camper.refundCode,
             optionalClauses: camper.optionalClauses,
+            refundStatus: camper.refundStatus,
           };
         });
         const waitlist = (campSession.waitlist as WaitlistedCamper[]).map(
@@ -307,10 +313,13 @@ class CampService implements ICampService {
               firstName: waitlistedCamper.firstName,
               lastName: waitlistedCamper.lastName,
               age: waitlistedCamper.age,
-              contactName: waitlistedCamper.contactName,
+              contactFirstName: waitlistedCamper.contactFirstName,
+              contactLastName: waitlistedCamper.contactLastName,
               contactEmail: waitlistedCamper.contactEmail,
               contactNumber: waitlistedCamper.contactNumber,
               status: waitlistedCamper.status,
+              linkExpiry: waitlistedCamper.linkExpiry,
+              registrationDate: waitlistedCamper.registrationDate.toString(),
             };
           },
         );
@@ -401,6 +410,7 @@ class CampService implements ICampService {
   async updateCampById(
     campId: string,
     camp: CreateUpdateCampDTO,
+    createNewSessions: boolean,
   ): Promise<CampDTO> {
     let oldCamp: Camp | null;
     let newCamp: Camp | null;
@@ -513,20 +523,22 @@ class CampService implements ICampService {
         throw new Error(`Camp' with campId ${campId} not found.`);
       }
 
-      // Update the campSessions by deleting all current sessions and creating new sessions
-      const currCampSessionIds = (newCamp.campSessions as CampSession[]).map(
-        (cs) => cs.id,
-      );
-      await this.deleteCampSessionsByIds(
-        newCamp.id,
-        currCampSessionIds,
-        session,
-      );
-      newCampSessions = await this.createCampSessions(
-        newCamp.id,
-        camp.campSessions,
-        session,
-      );
+      if (createNewSessions) {
+        // Update the campSessions by deleting all current sessions and creating new sessions
+        const currCampSessionIds = (newCamp.campSessions as CampSession[]).map(
+          (cs) => cs.id,
+        );
+        await this.deleteCampSessionsByIds(
+          newCamp.id,
+          currCampSessionIds,
+          session,
+        );
+        newCampSessions = await this.createCampSessions(
+          newCamp.id,
+          camp.campSessions,
+          session,
+        );
+      }
 
       // Update the FormQuestions by deleting all the current questions and creating new ones
       const currFormQuestions = (newCamp.formQuestions as FormQuestion[]).map(

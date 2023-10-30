@@ -39,6 +39,14 @@ type AddQuestionModalProps = {
   isFormTemplatePage?: boolean;
 };
 
+enum OptionErrorStatus {
+  EMPTY_OPTION = "Options cannot be empty",
+  AT_LEAST_ONE = "You must enter at least 1 option",
+  AT_LEAST_TWO = "You must enter at least 2 options",
+  HAS_DUPLICATES = "Duplicate options are not allowed",
+  VALID = "",
+}
+
 const AddQuestionModal = ({
   isOpen,
   onClose,
@@ -58,6 +66,10 @@ const AddQuestionModal = ({
   const [questionOptions, setQuestionOptions] = useState<Array<string>>([]);
 
   const [isQuestionInvalid, setIsQuestionInvalid] = useState<boolean>(false);
+  const [
+    isQuestionOptionsInvalid,
+    setIsQuestionOptionsInvalid,
+  ] = useState<OptionErrorStatus>(OptionErrorStatus.VALID);
 
   const setDefaultState = () => {
     if (editing && questionToBeEdited) {
@@ -76,6 +88,7 @@ const AddQuestionModal = ({
           : [...questionToBeEdited.options],
       );
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
     } else {
       setQuestion("");
       setQuestionCategory("PersonalInfo");
@@ -84,6 +97,7 @@ const AddQuestionModal = ({
       setIsRequiredQuestion(false);
       setQuestionOptions([]);
       setIsQuestionInvalid(false);
+      setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
     }
   };
 
@@ -97,10 +111,51 @@ const AddQuestionModal = ({
   };
 
   const onSaveQuestion = () => {
+    setIsQuestionInvalid(false);
+    setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
+
     if (question === "") {
       setIsQuestionInvalid(true);
       return;
     }
+
+    if (
+      questionType === "MultipleChoice" &&
+      (questionOptions.length < 2 || !questionOptions.length)
+    ) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.AT_LEAST_TWO);
+      return;
+    }
+
+    if (
+      questionType === "Multiselect" &&
+      ((questionOptions.length === 1 && questionOptions[0] === "") ||
+        !questionOptions.length)
+    ) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.AT_LEAST_ONE);
+      return;
+    }
+
+    if (questionType !== "Text") {
+      if (
+        questionOptions.some((option: string) => {
+          return !option.replace(/\s/g, "").length;
+        })
+      ) {
+        setIsQuestionOptionsInvalid(OptionErrorStatus.EMPTY_OPTION);
+        return;
+      }
+    }
+
+    if (
+      questionType !== "Text" &&
+      questionOptions.length !== new Set(questionOptions).size
+    ) {
+      setIsQuestionOptionsInvalid(OptionErrorStatus.HAS_DUPLICATES);
+      return;
+    }
+
+    closeModal();
 
     const formQuestion: CreateFormQuestionRequest = {
       type: questionType as QuestionType,
@@ -121,7 +176,6 @@ const AddQuestionModal = ({
     } else if (onSave) {
       onSave(formQuestion);
     }
-    closeModal();
   };
 
   return (
@@ -177,18 +231,27 @@ const AddQuestionModal = ({
               )}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl
+              isRequired
+              isInvalid={isQuestionOptionsInvalid !== OptionErrorStatus.VALID}
+            >
               <FormLabel aria-required marginTop="14px">
                 Question Type
               </FormLabel>
               <Select
                 value={questionType}
-                onChange={(e) => setQuestionType(e.target.value)}
+                onChange={(e) => {
+                  setIsQuestionOptionsInvalid(OptionErrorStatus.VALID);
+                  setQuestionType(e.target.value);
+                }}
               >
                 <option value="Text">Short answer</option>
                 <option value="MultipleChoice">Multiple choice</option>
                 <option value="Multiselect">Checkbox</option>
               </Select>
+              {isQuestionOptionsInvalid !== OptionErrorStatus.VALID && (
+                <FormErrorMessage>{isQuestionOptionsInvalid}</FormErrorMessage>
+              )}
             </FormControl>
 
             {questionType !== "Text" && editing && (

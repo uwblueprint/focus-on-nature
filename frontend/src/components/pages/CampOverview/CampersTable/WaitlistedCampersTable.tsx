@@ -37,10 +37,12 @@ import DeleteModal from "../../../common/DeleteModal";
 
 type WaitlistedCampersTableProps = {
   waitlistedCampers: WaitlistedCamper[];
+  handleRefetch: () => void;
 };
 
 const WaitlistedCampersTable = ({
   waitlistedCampers,
+  handleRefetch,
 }: WaitlistedCampersTableProps): JSX.Element => {
   const [search, setSearch] = React.useState("");
   const [
@@ -48,8 +50,15 @@ const WaitlistedCampersTable = ({
     setCamperToDelete,
   ] = React.useState<WaitlistedCamper | null>(null);
 
+  const sortedCampers = waitlistedCampers.sort((camper1, camper2) => {
+    return (
+      new Date(camper1.registrationDate).getTime() -
+      new Date(camper2.registrationDate).getTime()
+    );
+  });
+
   const tableData = React.useMemo(() => {
-    const filteredCampers = waitlistedCampers;
+    const filteredCampers = sortedCampers;
 
     if (!search) return filteredCampers;
     return filteredCampers.filter((camper: WaitlistedCamper) =>
@@ -58,7 +67,7 @@ const WaitlistedCampersTable = ({
         .concat(" ", camper.lastName.toLowerCase())
         .includes(search.toLowerCase()),
     );
-  }, [search, waitlistedCampers]);
+  }, [search, sortedCampers]);
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -103,12 +112,12 @@ const WaitlistedCampersTable = ({
   const confirmDeleteWaitlistedCamper = async (
     waitlistedCamper: WaitlistedCamper | null,
   ) => {
+    onClose();
     if (waitlistedCamper) {
       const deletedWaitlistedCamperResponse = await CamperAPIClient.deleteWaitlistedCamperById(
         waitlistedCamper.id,
       );
 
-      onClose();
       if (deletedWaitlistedCamperResponse) {
         toast({
           description: `${camperToDeleteName} has been removed from the waitlist for this camp session.`,
@@ -124,6 +133,7 @@ const WaitlistedCampersTable = ({
           duration: 3000,
         });
       }
+      handleRefetch();
     }
   };
 
@@ -194,7 +204,7 @@ const WaitlistedCampersTable = ({
                   <Td paddingRight="0px" maxWidth="320px">
                     <VStack align="start">
                       <Text style={textStyles.buttonSemiBold}>
-                        {camper.contactName}
+                        {camper.contactFirstName} {camper.contactLastName}
                       </Text>
                       <Text>
                         {camper.contactNumber}&nbsp;|&nbsp;{camper.contactEmail}

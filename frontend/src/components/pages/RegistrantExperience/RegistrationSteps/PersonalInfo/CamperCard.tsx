@@ -28,7 +28,10 @@ import RequiredAsterisk from "../../../../common/RequiredAsterisk";
 import { RegistrantExperienceCamper } from "../../../../../types/CamperTypes";
 import { checkAge, checkFirstName, checkLastName } from "./personalInfoReducer";
 import DeleteModal from "../../../../common/DeleteModal";
-import { CampResponse } from "../../../../../types/CampsTypes";
+import { CampResponse, FormQuestion } from "../../../../../types/CampsTypes";
+import MultipleChoiceGroup from "../QuestionGroups/MultipleChoiceGroup";
+import MultiselectGroup from "../QuestionGroups/MultiselectGroup";
+import TextInputGroup from "../QuestionGroups/TextInputGroup";
 
 type CamperCardProps = {
   nextBtnRef: React.RefObject<HTMLButtonElement>;
@@ -36,6 +39,7 @@ type CamperCardProps = {
   camperIndex: number;
   camp: CampResponse;
   dispatchPersonalInfoAction: (action: PersonalInfoReducerDispatch) => void;
+  personalInfoQuestions: FormQuestion[];
 };
 
 const CamperCard = ({
@@ -44,10 +48,48 @@ const CamperCard = ({
   camperIndex,
   dispatchPersonalInfoAction,
   camp,
+  personalInfoQuestions,
 }: CamperCardProps): React.ReactElement => {
+  const mdWrapWidth = personalInfoQuestions.length > 1 ? "47%" : "100%";
+
   const [isFirstNameInvalid, setIsFirstNameInvalid] = useState<boolean>(false);
   const [isLastNameInvalid, setIsLastNameInvalid] = useState<boolean>(false);
   const [isAgeInvalid, setIsAgeInvalid] = useState<boolean>(false);
+
+  const [nextClicked, setNextClicked] = useState(false);
+
+  const handleMultipleChoiceChange = (
+    choice: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: choice,
+    });
+  };
+
+  const handleSelectionChange = (
+    selectionsResponse: string,
+    question: FormQuestion,
+  ) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: selectionsResponse,
+    });
+  };
+
+  const handleTextChange = (response: string, question: FormQuestion) => {
+    dispatchPersonalInfoAction({
+      type: PersonalInfoActions.UPDATE_RESPONSE,
+      camperIndex,
+      question: question.question,
+      data: response,
+    });
+  };
 
   useEffect(() => {
     let nextBtnRefValue: HTMLButtonElement; // Reference to the next step button
@@ -56,6 +98,7 @@ const CamperCard = ({
       if (!checkLastName(camper.lastName)) setIsLastNameInvalid(true);
       if (!checkAge(camper.age, camp.ageUpper, camp.ageLower))
         setIsAgeInvalid(true);
+      setNextClicked(true);
     };
 
     if (nextBtnRef && nextBtnRef.current) {
@@ -116,8 +159,14 @@ const CamperCard = ({
   }
 
   return (
-    <Box boxShadow="lg" rounded="xl" borderWidth={1} width="100%">
-      <Box backgroundColor="#FFFFFF" rounded="xl">
+    <Box
+      boxShadow="lg"
+      rounded="xl"
+      borderWidth={1}
+      width="100%"
+      backgroundColor="background.grey.500"
+    >
+      <Box backgroundColor="background.white.100" rounded="xl">
         <Heading textStyle="displayLarge">
           <Flex py={6} px={{ sm: "5", lg: "20" }} alignItems="center">
             <Text textStyle={{ sm: "xSmallBold", lg: "displayLarge" }}>
@@ -208,10 +257,7 @@ const CamperCard = ({
                   </Text>
                 </Text>
               </FormLabel>
-              <NumberInput
-                precision={0}
-                defaultValue={camper.age ? camper.age : ""}
-              >
+              <NumberInput precision={0} value={camper.age || ""}>
                 <NumberInputField
                   backgroundColor="#FFFFFF"
                   onChange={(event) => {
@@ -269,7 +315,6 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
-          <Spacer />
           <WrapItem width={{ sm: "100%", md: "47%" }}>
             <FormControl>
               <FormLabel>
@@ -295,6 +340,37 @@ const CamperCard = ({
               />
             </FormControl>
           </WrapItem>
+          {personalInfoQuestions.map((question) => (
+            <WrapItem
+              key={`personal_info_question_${question.question}`}
+              width={{ sm: "100%", md: mdWrapWidth }}
+            >
+              {question.type === "Text" && (
+                <TextInputGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  handleTextChange={handleTextChange}
+                  nextClicked={nextClicked}
+                />
+              )}
+              {question.type === "Multiselect" && (
+                <MultiselectGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  handleSelectionChange={handleSelectionChange}
+                  nextClicked={nextClicked}
+                />
+              )}
+              {question.type === "MultipleChoice" && (
+                <MultipleChoiceGroup
+                  formResponses={camper.formResponses}
+                  question={question}
+                  handleMultipleChoiceChange={handleMultipleChoiceChange}
+                  nextClicked={nextClicked}
+                />
+              )}
+            </WrapItem>
+          ))}
         </Wrap>
       </Box>
     </Box>
