@@ -58,11 +58,6 @@ const RefundConfirmationCard = ({
                   {date1.toLocaleDateString("en-US", dateOptions)} -{" "}
                   {date2.toLocaleDateString("en-US", dateOptions)}
                 </Text>
-              </>
-            );
-          })}
-          <Text textStyle="displaySmallSemiBold">
-            Camper name: {firstName} (Age {age})
           </Text>
         </Box>
       </HStack>
