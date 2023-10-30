@@ -25,7 +25,6 @@ export type Camper = {
   formResponses?: Map<string, string>;
   registrationDate: Date;
   hasPaid: boolean;
-  refundStatus: string;
   chargeId: string;
   charges: {
     camp: number;
@@ -33,6 +32,7 @@ export type Camper = {
     latePickup: number;
   };
   optionalClauses?: OptionalClause[];
+  refundStatus?: string;
 };
 
 export type RegistrantExperienceCamper = Omit<
@@ -111,9 +111,11 @@ export type RefundDTO = {
   lastName: string;
   age: number;
   campName: string;
+  campPhotoUrl?: string;
   instances: Array<CamperRefundDTO>;
   startTime: string;
   endTime: string;
+  refundStatus?: string;
 };
 
 export type CamperRefundDTO = Omit<
@@ -124,6 +126,7 @@ export type CamperRefundDTO = Omit<
   | "contacts"
   | "formResponses"
   | "optionalClauses"
+  | "refundStatus"
 > & {
   dates: string[];
 };

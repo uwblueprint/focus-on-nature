@@ -16,6 +16,7 @@ import FONIcon from "../../../assets/fon_icon.svg";
 import CamperRefundInfoCard from "./CamperRefundInfoCard";
 import CamperRefundFooter from "./CamperRefundFooter";
 import CamperAPIClient from "../../../APIClients/CamperAPIClient";
+import RefundConfirmation from "./RefundConfirmation";
 import { RefundDTO } from "../../../types/CamperTypes";
 import { HOME_PAGE } from "../../../constants/Routes";
 
@@ -35,6 +36,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
   const [cardsDisabled, setCardsDisabled] = useState<boolean>(false);
   const [refundAmountMap, setRefundAmountMap] = useState<Array<number>>([]);
   const [checkedRefunds, setCheckedRefunds] = useState<Array<boolean>>([]);
+  const [refundRequestSuccessful, setRefundRequestSuccessful] = useState<boolean>(false);
   const { id: refundCode } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -121,6 +123,11 @@ const CamperRefundCancellation = (): React.ReactElement => {
   if (!validCode) {
     return <Redirect to={HOME_PAGE} />;
   }
+
+  if (refundRequestSuccessful) {
+    return <RefundConfirmation refunds={refunds} />;
+  }
+
   return (
     <>
       <Box pb="156px">
@@ -271,7 +278,7 @@ const CamperRefundCancellation = (): React.ReactElement => {
         refunds={refunds}
         checkedRefunds={checkedRefunds}
         refundCode={refundCode}
-        setRefunds={setRefunds}
+        setRefundRequestSuccessful={setRefundRequestSuccessful}
         isDisabled={isFooterButtonDisabled()}
       />
     </>
