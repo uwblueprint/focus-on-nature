@@ -58,7 +58,9 @@ const RefundConfirmationCard = ({
                   {date1.toLocaleDateString("en-US", dateOptions)} -{" "}
                   {date2.toLocaleDateString("en-US", dateOptions)}
                 </Text>
-          </Text>
+              </>
+            );
+          })}
         </Box>
       </HStack>
     </Box>
