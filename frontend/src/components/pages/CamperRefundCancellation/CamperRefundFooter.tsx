@@ -32,7 +32,7 @@ const CamperRefundFooter = ({
       const response = await CamperAPIClient.sendSelectedRefundInfo(
         selectedRefunds,
       );
-      setRefunds(refunds); // TODO: change this to response once the endpoint is implemented
+      setRefunds(response);
     } catch {
       toast({
         description: `Unable to process selected refunds.`,
