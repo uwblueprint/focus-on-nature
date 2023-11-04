@@ -14,7 +14,6 @@ const login = async (
     const { data } = await baseAPIClient.post(
       "/auth/login",
       { email, password },
-      { withCredentials: true },
     );
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
@@ -30,7 +29,6 @@ const loginWithGoogle = async (
     const { data } = await baseAPIClient.post(
       "/auth/login",
       { idToken },
-      { withCredentials: true },
     );
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
@@ -67,7 +65,6 @@ const register = async (
     const { data } = await baseAPIClient.post(
       "/auth/register",
       { firstName, lastName, email, password },
-      { withCredentials: true },
     );
     localStorage.setItem(AUTHENTICATED_USER_KEY, JSON.stringify(data));
     return data;
@@ -99,7 +96,6 @@ const refresh = async (): Promise<boolean> => {
     const { data } = await baseAPIClient.post(
       "/auth/refresh",
       {},
-      { withCredentials: true },
     );
     setLocalStorageObjProperty(
       AUTHENTICATED_USER_KEY,
