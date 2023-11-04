@@ -82,6 +82,7 @@ const Login = (): React.ReactElement => {
           <VStack spacing={5} w="300px">
             <GoogleLogin
               onSuccess={(response: CredentialResponse): void => {
+                console.log(response);
                 if (response.credential) {
                   onGoogleLoginSuccess(response.credential);
                 } else {
