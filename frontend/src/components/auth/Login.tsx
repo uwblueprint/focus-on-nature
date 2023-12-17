@@ -43,7 +43,7 @@ const Login = (): React.ReactElement => {
     const res: AuthenticatedUser | string = await authAPIClient.loginWithGoogle(
       tokenId,
     );
-
+    console.log(res);
     if (isAuthenticatedUserType(res)) {
       setLoginStatus("success");
       setAuthenticatedUser(res);
