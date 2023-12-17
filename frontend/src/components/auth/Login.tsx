@@ -43,7 +43,7 @@ const Login = (): React.ReactElement => {
     const res: AuthenticatedUser | string = await authAPIClient.loginWithGoogle(
       tokenId,
     );
-
+    console.log(res);
     if (isAuthenticatedUserType(res)) {
       setLoginStatus("success");
       setAuthenticatedUser(res);
@@ -82,7 +82,6 @@ const Login = (): React.ReactElement => {
           <VStack spacing={5} w="300px">
             <GoogleLogin
               onSuccess={(response: CredentialResponse): void => {
-                console.log(response);
                 if (response.credential) {
                   onGoogleLoginSuccess(response.credential);
                 } else {

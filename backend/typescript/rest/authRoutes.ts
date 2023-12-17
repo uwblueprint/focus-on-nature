@@ -25,6 +25,11 @@ const cookieOptions: CookieOptions = {
   secure: process.env.NODE_ENV === "production",
 };
 
+authRouter.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 /* Returns access token and user info in response body and sets refreshToken as an httpOnly cookie */
 authRouter.post("/login", loginRequestValidator, async (req, res) => {
   try {
