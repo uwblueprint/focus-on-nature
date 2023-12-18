@@ -50,7 +50,13 @@ const DeleteModal = ({
             <Button mr={3} onClick={onClose}>
               <Text>Cancel</Text>
             </Button>
-            <Button colorScheme="red" onClick={onDelete}>
+            <Button
+              colorScheme="red"
+              onClick={() => {
+                onClose();
+                onDelete();
+              }}
+            >
               {buttonLabel}
             </Button>
           </HStack>
